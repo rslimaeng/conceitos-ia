@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao--api">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito da família Automação. Peças: balcão em passos com diagrama, pedido anotado clicável, verbos mudando uma tabela, simulador de pedido, régua dos números, quiz, cartões de credencial, alternância cofre × colado, prompt para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--accent-soft); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.fam { font-size: .92rem; color: var(--text-muted); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* ---- só desta peça ---- */
+/* 1 · balcão */
+.ap-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.ap-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.ap-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.ap-box .t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.ap-box .s { font: 400 13px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.ap-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.ap-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke .25s ease; }
+.ap-arr.on { stroke: var(--accent); stroke-width: 2.8; }
+.ap-lbl { font: 500 12px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.ap-lbl.on { fill: var(--accent); }
+.ap-menu rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-dasharray: 4 3; }
+.ap-menu text { font: 400 11.5px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.caption p { color: var(--text-muted); }
+
+/* 2 · pedido anotado */
+.ap-anat { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ap-req { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; font-family: var(--font-mono); font-size: .86rem; }
+.ap-req .lab { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-top: 6px; }
+.ap-line { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ap-part { font-family: var(--font-mono); font-size: .86rem; text-align: left; border: 1px dashed var(--border-strong); background: var(--bg); border-radius: 5px; padding: 4px 8px; overflow-wrap: anywhere; white-space: pre-wrap; max-width: 100%; }
+.ap-part[aria-pressed="true"] { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.ap-detail { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; min-height: 260px; align-content: start; }
+.ap-detail h3 { font-size: 1.25rem; }
+.ap-detail dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.ap-detail dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.ap-detail dd { margin: 0; }
+.ap-detail dd.cuid { color: var(--atencao-texto); }
+
+/* 3 · verbos */
+.ap-verb { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ap-tbl { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); font-size: .95rem; }
+.ap-tbl th, .ap-tbl td { text-align: left; padding: 9px 12px; border-top: 1px solid var(--border); transition: background .3s ease; }
+.ap-tbl th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.ap-tbl tr.lido td { background: var(--accent-soft); }
+.ap-tbl tr.novo td { background: var(--ok-soft); color: var(--ok-texto); }
+.ap-tbl td.mudou { background: var(--atencao-soft); color: var(--atencao-texto); font-weight: 600; }
+.ap-tbl tr.fora td { text-decoration: line-through; color: var(--text-dim); }
+.ap-vcard { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.ap-vcard .say { font-size: 1.1rem; }
+.ap-vcard code { font-size: .85rem; }
+
+/* 4 · simulador */
+.ap-sim { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.ap-ctrl { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.ap-ctrl .row { display: grid; gap: 6px; }
+.ap-ctrl .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-out { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; min-height: 320px; }
+.ap-reqline { font-family: var(--font-mono); font-size: .86rem; color: var(--text-muted); overflow-wrap: anywhere; }
+.ap-status { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.ap-code { font-family: var(--font-mono); font-size: 2.2rem; line-height: 1; color: var(--accent); }
+.ap-code.no { color: var(--atencao-texto); }
+.ap-code.srv { color: var(--text-muted); }
+.ap-out pre { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ap-rule svg { width: 100%; height: auto; display: block; }
+.ap-seg2 { fill: var(--ok-soft); stroke: var(--ok); }
+.ap-seg4 { fill: var(--atencao-soft); stroke: var(--atencao); }
+.ap-seg5 { fill: var(--bg); stroke: var(--border-strong); }
+.ap-rt { font: 600 12px var(--font-mono); fill: var(--text); text-anchor: middle; }
+.ap-rs { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.ap-pin { fill: var(--accent); transition: transform .4s ease; }
+.ap-pinl { font: 600 12px var(--font-mono); fill: var(--accent); text-anchor: middle; }
+
+/* 5 · quiz */
+.ap-quiz { display: grid; gap: 12px; }
+.ap-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.ap-q .sit { font-size: 1.02rem; }
+.ap-q .sit b { font-family: var(--font-mono); color: var(--accent); }
+.ap-q .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.ap-q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 14px; font-size: .95rem; }
+.ap-q .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.ap-q .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.ap-q .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.ap-q .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.ap-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 6 · credenciais */
+.ap-creds { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.ap-cred { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.ap-cred .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.ap-cred b { font-weight: 600; }
+.ap-cred p { font-size: .9rem; color: var(--text-muted); }
+.ap-cred.rare { border-style: dashed; }
+.ap-cred[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ap-cdet { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+.ap-cdet .rec { border-left: 3px solid var(--accent); padding-left: 12px; }
+.ap-vault { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.ap-file { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.ap-file mark { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.ap-file mark.safe { background: var(--ok-soft); color: var(--ok-texto); }
+
+/* 7 · puxar × avisar */
+.ap-dir { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ap-dcard { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 8px; align-content: start; }
+.ap-dcard.focal { border-color: var(--accent); background: var(--accent-soft); }
+.ap-dcard .arrow { font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent); }
+
+/* 8 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.pocket { border: 1.5px dashed var(--accent); border-radius: 8px; padding: 14px 18px; background: var(--accent-soft); display: grid; gap: 4px; }
+.pocket b { font-size: 1.15rem; font-weight: 500; color: var(--accent); }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .ap-anat, .ap-verb, .ap-sim, .ap-vault, .ap-dir, .take { grid-template-columns: 1fr; }
+  .ap-creds { grid-template-columns: 1fr 1fr; }
+  .ap-detail dl { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; gap: 2px 0; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .ap-creds { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .ap-box rect, .ap-arr, .ap-tbl th, .ap-tbl td, .ap-pin { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao.html">← Visão geral</a><a href="./automacao--webhook.html">7.2 Webhook →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html">Visão geral</a><a href="./automacao--api.html" aria-current="page"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a></div>
+  </nav>
+  <span class="eyebrow">7.1 · 1 de 3</span>
+  <h1>API</h1>
+  <p class="sub">Um sistema pedindo coisas a outro, por um balcão com regras</p>
+  <p class="lead">Quando a sua planilha busca a cotação do dia, quando o site mostra o frete antes de você pagar, quando uma automação cria um cliente no sistema de vendas: por trás existe um pedido de um sistema para outro. <strong>API é o balcão por onde esse pedido passa.</strong> Quem pede não entra na cozinha: pede o que está no cardápio, do jeito combinado, e recebe o prato ou um aviso de por que ele não veio.</p>
+  <p class="fam">Família <a href="./automacao.html">Automação</a> · nesta família também: <a href="./automacao--webhook.html">Webhook</a> · <a href="./automacao--json.html">JSON</a></p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-balcao">O balcão</a><a href="#s-pedido">Do que um pedido é feito</a><a href="#s-verbos">Os quatro verbos</a><a href="#s-simular">Faça um pedido</a><a href="#s-numero">O número que volta</a><a href="#s-cracha">O crachá</a><a href="#s-direcao">Puxar ou ser avisado</a><a href="#s-levar">Para levar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-balcao" aria-labelledby="h-balcao">
+  <span class="eyebrow">O balcão</span>
+  <h2 id="h-balcao">Você não entra na cozinha: faz o pedido no balcão</h2>
+  <p class="intro">Pense num restaurante. Você tem fome, a cozinha tem a comida, e você não pode entrar lá. <strong>O garçom leva o pedido e traz o prato.</strong> Numa automação, você é o sistema que pede, a cozinha é o servidor da outra empresa, e o garçom é a API. Siga um pedido do começo ao fim.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="apLab">Passo 1 de 6</span>
+    <div class="nav"><button type="button" class="btn" id="apPrev">← Anterior</button><button type="button" class="btn primary" id="apNext">Próximo →</button></div>
+  </div>
+  <div class="ap-scroll" role="region" tabindex="0" aria-label="Diagrama do pedido. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ap-t">
+      <title id="ap-t">Um pedido saindo do seu sistema, passando pela API e chegando ao servidor, e a resposta voltando pelo mesmo caminho</title>
+      <defs>
+        <marker id="ap-mm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker>
+        <marker id="ap-ma" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-a"/></marker>
+      </defs>
+      <g class="ap-box" data-b="1"><rect x="20" y="60" width="200" height="150" rx="10"/><text class="t" x="120" y="100">SEU SISTEMA</text><text class="s" x="120" y="126">a mesa com fome:</text><text class="s" x="120" y="146">planilha, automação,</text><text class="s" x="120" y="166">aplicativo</text></g>
+      <g class="ap-box" data-b="2"><rect x="350" y="60" width="200" height="150" rx="10"/><text class="t" x="450" y="100">A API</text><text class="s" x="450" y="126">o garçom:</text><text class="s" x="450" y="146">recebe, confere o formato</text><text class="s" x="450" y="166">e leva o pedido</text></g>
+      <g class="ap-box" data-b="3"><rect x="680" y="60" width="200" height="150" rx="10"/><text class="t" x="780" y="100">O SERVIDOR</text><text class="s" x="780" y="126">a cozinha:</text><text class="s" x="780" y="146">confere o crachá,</text><text class="s" x="780" y="166">prepara a resposta</text></g>
+      <g class="ap-menu"><rect x="370" y="232" width="160" height="48" rx="6"/><text x="450" y="252">o cardápio:</text><text x="450" y="268">a documentação</text></g>
+      <path class="ap-arr" data-a="1" d="M222,105 H346" marker-end="url(#ap-mm)"/>
+      <text class="ap-lbl" data-l="1" x="284" y="95">pedido</text>
+      <path class="ap-arr" data-a="2" d="M552,105 H676" marker-end="url(#ap-mm)"/>
+      <text class="ap-lbl" data-l="2" x="614" y="95">pedido</text>
+      <path class="ap-arr" data-a="3" d="M678,170 H554" marker-end="url(#ap-mm)"/>
+      <text class="ap-lbl" data-l="3" x="614" y="192">prato + número</text>
+      <path class="ap-arr" data-a="4" d="M348,170 H224" marker-end="url(#ap-mm)"/>
+      <text class="ap-lbl" data-l="4" x="284" y="192">prato + número</text>
+    </svg>
+  </div>
+  <div class="caption" id="apCap" aria-live="polite"></div>
+  <p class="punch">Você não precisa saber cozinhar. Precisa <em>saber pedir do jeito que o cardápio aceita</em>, e ler o que volta.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-pedido" aria-labelledby="h-pedido">
+  <span class="eyebrow">Do que um pedido é feito</span>
+  <h2 id="h-pedido">Cinco palavras leem quase toda documentação</h2>
+  <p class="intro">O garçom só entende pedido em formato fixo: pedido confuso, cozinha não entende, e volta erro. Este é um pedido real no formato, para uma loja de exemplo que quer os dados do cliente 42. <strong>Clique em cada parte.</strong></p>
+  <div class="ap-anat">
+    <div class="ap-req" role="group" aria-label="Partes do pedido e da resposta">
+      <span class="lab">O pedido</span>
+      <div class="ap-line"><button type="button" class="ap-part" data-p="verbo" aria-pressed="true">GET</button><button type="button" class="ap-part" data-p="end" aria-pressed="false">https://api.loja-exemplo.com/clientes/42</button><button type="button" class="ap-part" data-p="param" aria-pressed="false">?campos=nome,cidade</button></div>
+      <div class="ap-line"><button type="button" class="ap-part" data-p="cab" aria-pressed="false">Authorization: Bearer sua-chave-aqui
+Content-Type: application/json</button></div>
+      <div class="ap-line"><button type="button" class="ap-part" data-p="corpo" aria-pressed="false">(corpo vazio: quem só busca não manda conteúdo)</button></div>
+      <span class="lab">A resposta</span>
+      <div class="ap-line"><button type="button" class="ap-part" data-p="status" aria-pressed="false">200 OK</button></div>
+      <div class="ap-line"><button type="button" class="ap-part" data-p="resp" aria-pressed="false">{ "id": 42, "nome": "Ana Souza", "cidade": "Recife" }</button></div>
+    </div>
+    <div class="ap-detail" id="apDet" aria-live="polite"></div>
+  </div>
+  <p class="hint">Toda documentação decente mostra três coisas para cada operação: o endereço, o que ele aceita e como é a resposta. Procure primeiro a seção de início rápido, depois a de autenticação, depois o limite de pedidos.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-verbos" aria-labelledby="h-verbos">
+  <span class="eyebrow">Os quatro verbos</span>
+  <h2 id="h-verbos">Buscar, criar, mudar, apagar</h2>
+  <p class="intro">O verbo diz o que você quer que a cozinha faça. São quatro, e <strong>buscar e criar resolvem a maior parte do dia a dia</strong>. Troque o verbo e veja o que acontece com a tabela de clientes do outro lado.</p>
+  <div class="seg" role="group" aria-label="Verbo">
+    <button type="button" data-v="get" aria-pressed="true">GET · buscar</button>
+    <button type="button" data-v="post" aria-pressed="false">POST · criar</button>
+    <button type="button" data-v="patch" aria-pressed="false">PATCH · mudar</button>
+    <button type="button" data-v="del" aria-pressed="false">DELETE · apagar</button>
+  </div>
+  <div class="ap-verb">
+    <div>
+      <span class="eyebrow">Do outro lado: a tabela de clientes</span>
+      <table class="ap-tbl" id="apTbl">
+        <thead><tr><th>id</th><th>nome</th><th>situação</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="ap-vcard" id="apVerb" aria-live="polite"></div>
+  </div>
+  <p class="hint">O verbo não é intercambiável. Se a documentação diz buscar e você manda criar, a cozinha recusa com um número que quer dizer "esse verbo não serve aqui".</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-simular" aria-labelledby="h-simular">
+  <span class="eyebrow">Faça um pedido</span>
+  <h2 id="h-simular">Monte o pedido e veja o que a cozinha responde</h2>
+  <p class="intro">A loja de exemplo tem um cardápio pequeno: clientes, e um cliente pelo número. Monte o pedido, envie e <strong>leia o número antes de ler o resto</strong>. Tente tirar a credencial, pedir o cliente 999 ou mandar cinquenta pedidos de uma vez.</p>
+  <div class="ap-sim">
+    <div class="ap-ctrl">
+      <div class="row"><span class="eyebrow">Verbo</span>
+        <div class="seg" role="group" aria-label="Verbo do pedido"><button type="button" data-sm="GET" aria-pressed="true">GET</button><button type="button" data-sm="POST" aria-pressed="false">POST</button><button type="button" data-sm="DELETE" aria-pressed="false">DELETE</button></div></div>
+      <div class="row"><span class="eyebrow">Endereço</span>
+        <div class="seg" role="group" aria-label="Endereço do pedido"><button type="button" data-se="/clientes" aria-pressed="false">/clientes</button><button type="button" data-se="/clientes/42" aria-pressed="true">/clientes/42</button><button type="button" data-se="/clientes/999" aria-pressed="false">/clientes/999</button></div></div>
+      <div class="row"><span class="eyebrow">Credencial</span>
+        <div class="seg" role="group" aria-label="Credencial"><button type="button" data-sc="sim" aria-pressed="true">com a chave</button><button type="button" data-sc="nao" aria-pressed="false">sem a chave</button></div></div>
+      <div class="row"><span class="eyebrow">A cozinha</span>
+        <div class="seg" role="group" aria-label="Estado do servidor"><button type="button" data-sk="ok" aria-pressed="true">funcionando</button><button type="button" data-sk="fora" aria-pressed="false">com problema</button></div></div>
+      <div class="acts"><button type="button" class="btn primary" id="apSend">Enviar pedido</button><button type="button" class="btn" id="apBurst">Enviar 50 de uma vez</button></div>
+    </div>
+    <div class="ap-out" aria-live="polite">
+      <div class="ap-reqline" id="apReqLine"></div>
+      <div class="ap-status"><span class="ap-code" id="apCode">—</span><b id="apCodeName"></b></div>
+      <p id="apWhy" class="hint">Envie um pedido para ver a resposta.</p>
+      <pre id="apBody" hidden></pre>
+    </div>
+  </div>
+  <div class="ap-rule">
+    <svg viewBox="0 0 900 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ap-rt">
+      <title id="ap-rt">Régua dos números de resposta: começando com 2 deu certo, com 4 o problema está no pedido, com 5 o problema está do outro lado</title>
+      <rect class="ap-seg2" x="10" y="44" width="280" height="40" rx="6"/><text class="ap-rt" x="150" y="68">2xx · deu certo</text>
+      <rect class="ap-seg4" x="310" y="44" width="280" height="40" rx="6"/><text class="ap-rt" x="450" y="68">4xx · o pedido tem problema</text>
+      <rect class="ap-seg5" x="610" y="44" width="280" height="40" rx="6"/><text class="ap-rt" x="750" y="68">5xx · a cozinha tem problema</text>
+      <text class="ap-rs" x="150" y="106">continue</text><text class="ap-rs" x="450" y="106">confira o que você mandou</text><text class="ap-rs" x="750" y="106">não é seu: tente depois</text>
+      <g id="apPin" class="ap-pin" style="opacity:0"><path d="M0,26 L-8,12 L8,12 z"/><text class="ap-pinl" id="apPinT" x="0" y="8">200</text></g>
+    </svg>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-numero" aria-labelledby="h-numero">
+  <span class="eyebrow">O número que volta</span>
+  <h2 id="h-numero">Leia o número antes de mexer em qualquer coisa</h2>
+  <p class="intro">O erro mais caro não é o erro: é ver o aviso vermelho e refazer tudo sem ler o número. <strong>Cada número aponta para um lugar diferente.</strong> Diga o que você confere primeiro em cada caso.</p>
+  <div class="ap-quiz" id="apQuiz"></div>
+  <p class="ap-score" id="apScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-cracha" aria-labelledby="h-cracha">
+  <span class="eyebrow">O crachá</span>
+  <h2 id="h-cracha">Credencial: como a cozinha sabe que é você</h2>
+  <p class="intro">Credencial é um crachá com o seu nome e a assinatura da empresa. A cada pedido, o seu sistema mostra o crachá; o servidor confere e libera. <strong>Sem o crachá certo, volta 401, que não é defeito: é a porta fechada.</strong> Quatro tipos cobrem quase todos os serviços.</p>
+  <div class="ap-creds" role="group" aria-label="Tipos de credencial">
+    <button type="button" class="ap-cred" data-c="chave" aria-pressed="true"><span class="et">Chave de API</span><b>Um código que você cola</b><p>O serviço gera, você copia e guarda.</p></button>
+    <button type="button" class="ap-cred" data-c="oauth" aria-pressed="false"><span class="et">Entrar com a conta</span><b>Você autoriza numa janela</b><p>O famoso "entrar com Google".</p></button>
+    <button type="button" class="ap-cred" data-c="cab" aria-pressed="false"><span class="et">Cabeçalho próprio</span><b>A chave num campo com nome</b><p>Quando a API tem o seu próprio padrão.</p></button>
+    <button type="button" class="ap-cred rare" data-c="basic" aria-pressed="false"><span class="et">Usuário e senha</span><b>O jeito antigo</b><p>Aparece em sistema legado.</p></button>
+  </div>
+  <div class="ap-cdet" id="apCred" aria-live="polite"></div>
+  <span class="eyebrow">Onde a chave mora</span>
+  <div class="seg" role="group" aria-label="Onde a chave está">
+    <button type="button" data-vt="colada" aria-pressed="true">Colada no fluxo</button>
+    <button type="button" data-vt="cofre" aria-pressed="false">Guardada no cofre</button>
+  </div>
+  <div class="ap-vault">
+    <pre class="ap-file" id="apFile" aria-live="polite"></pre>
+    <div class="verdict" id="apVaultV"></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-direcao" aria-labelledby="h-direcao">
+  <span class="eyebrow">Puxar ou ser avisado</span>
+  <h2 id="h-direcao">Pedir é uma direção; ser avisado é a outra</h2>
+  <p class="intro">Tudo nesta página é você indo buscar: o seu sistema liga para o garçom. Existe a direção contrária, em que <strong>o outro sistema toca a sua campainha</strong> quando algo acontece. A maior parte das automações usa as duas.</p>
+  <div class="ap-dir">
+    <div class="ap-dcard"><span class="eyebrow">API · você puxa</span><span class="arrow">seu sistema → outro sistema</span><p>Você decide quando pedir: agora, toda manhã, quando alguém clicar. Serve para buscar, criar, mudar e apagar.</p></div>
+    <div class="ap-dcard focal"><span class="eyebrow">Webhook · você é avisado</span><span class="arrow">outro sistema → seu sistema</span><p>O outro lado decide quando avisar: chegou um pagamento, alguém preencheu o formulário. Está na página <a href="./automacao--webhook.html">Webhook</a>.</p></div>
+  </div>
+  <p class="hint">O par mais comum: o aviso chega curto ("o pedido 781 foi pago"), e o seu sistema usa a API para buscar o pedido completo. O que vem dentro do aviso e da resposta está escrito num formato só, explicado na página <a href="./automacao--json.html">JSON</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Você pede, não cozinha</h3><p>Automação que fala com outro sistema não precisa saber como ele funciona por dentro. Precisa do cardápio e do pedido no formato.</p></div>
+    <div class="take-card"><h3>O número diz de quem é o problema</h3><p>Começa com 4, confira o seu pedido. Começa com 5, é do outro lado. Leia antes de refazer.</p></div>
+    <div class="take-card"><h3>A chave mora no cofre</h3><p>Nunca colada no fluxo, nunca em print. Quem sai da empresa leva o crachá: revogue no serviço.</p></div>
+  </div>
+  <div class="pocket"><span class="eyebrow">Pergunta de bolso</span><b>Que número voltou?</b><span class="hint">Antes de mexer em qualquer coisa, é a primeira pergunta. Ela sozinha resolve metade dos erros.</span></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Pedido pronto · ler uma documentação com a IA</span><button type="button" class="btn" id="apCopy">Copiar</button></div>
+    <pre id="apPrompt"><b>Papel:</b> alguém que liga sistemas entre si e explica para quem não é da área.
+<b>Contexto:</b> quero que <i>[a minha automação / a minha planilha]</i> faça <i>[o quê, por exemplo: buscar os pedidos do dia]</i> usando a API de <i>[nome do serviço]</i>. Vou colar abaixo o trecho da documentação.
+<b>Tarefa:</b> me diga o endereço, o verbo, o que vai no cabeçalho, o que vai no corpo, que tipo de credencial ela pede e qual o limite de pedidos.
+<b>Formato:</b> uma tabela com essas seis linhas. Depois, o pedido de exemplo pronto, com sua-chave-aqui no lugar da chave.
+<b>Limitações:</b> use só o que está no trecho. Se algo não estiver escrito, diga "não está na documentação" em vez de supor. Nunca me peça a chave de verdade.
+<b>Critério de sucesso:</b> eu monto o pedido na minha ferramenta sem voltar à documentação.
+
+<i>[cole aqui o trecho da documentação]</i></pre>
+  </div>
+  <dl class="gloss">
+    <dt>API</dt><dd>O balcão por onde um sistema faz pedidos a outro, com formato e regras combinados.</dd>
+    <dt>Endereço (endpoint)</dt><dd>O endereço de uma operação. Não é o site da empresa: é um endereço próprio, como <code>api.loja-exemplo.com/clientes</code>.</dd>
+    <dt>Verbo (método)</dt><dd>O que você quer que aconteça: GET busca, POST cria, PUT ou PATCH mudam, DELETE apaga.</dd>
+    <dt>Cabeçalho (header)</dt><dd>A etiqueta do pedido: quem é você e em que formato está mandando.</dd>
+    <dt>Corpo (body)</dt><dd>O conteúdo do pedido, quando você cria ou muda algo.</dd>
+    <dt>Código de resposta (status)</dt><dd>O número que volta resumindo o que aconteceu: 2 deu certo, 4 problema no pedido, 5 problema do outro lado.</dd>
+    <dt>Credencial</dt><dd>O crachá que prova que o pedido é seu e que você tem permissão.</dd>
+    <dt>OAuth</dt><dd>A credencial em que você entra com a sua conta numa janela e autoriza o que o sistema pode fazer.</dd>
+    <dt>Limite de pedidos (rate limit)</dt><dd>Quantos pedidos o serviço aceita por minuto ou por dia. Passou, volta 429.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A loja, os clientes e as respostas do simulador são fictícios; serviços reais variam nos nomes e nos detalhes, e o mesmo número às vezes vem com explicações diferentes. A analogia do restaurante explica a direção dos pedidos, não como um servidor funciona por dentro.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <a class="famfoot-prev" href="./automacao.html"><span>← anterior</span><b>Visão geral · Pensar como automação</b></a>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao--webhook.html"><span>próxima →</span><b>7.2 · Webhook</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · balcão */
+  var ST = [
+    { t: 'O seu sistema monta o pedido', b: [1], a: [], d: 'Três coisas, sempre: <b>para onde</b> (o endereço), <b>o que fazer</b> (o verbo) e <b>quem está pedindo</b> (a credencial). Se for criar algo, vai também o conteúdo.' },
+    { t: 'O pedido sai pela internet até o balcão', b: [], a: [1], d: 'O pedido viaja do seu sistema até o endereço da API. Isso leva, em geral, menos de um segundo.' },
+    { t: 'O garçom confere o formato e leva à cozinha', b: [2], a: [2], d: 'A API só aceita o que está no cardápio, a documentação. Pedido fora do formato volta daqui mesmo, com um número que começa com 4.' },
+    { t: 'A cozinha confere o crachá e prepara', b: [3], a: [], d: 'O servidor confere se a credencial vale, consulta o que precisa e monta a resposta. Você não vê nada disso, e não precisa.' },
+    { t: 'A resposta volta: um número e o conteúdo', b: [], a: [3, 4], d: 'Sempre um <b>número</b> que resume o que aconteceu (200 é tudo certo) e, quase sempre, o <b>conteúdo</b> no formato <a href="./automacao--json.html">JSON</a>.' },
+    { t: 'O seu sistema usa o que voltou', b: [1], a: [], d: 'O conteúdo vira o dado do passo seguinte: vai para a planilha, para o e-mail, para a próxima decisão. O garçom já foi atender outra mesa.' }
+  ];
+  var cur = 1, N = ST.length;
+  var boxes = document.querySelectorAll('.ap-box'), arrs = document.querySelectorAll('.ap-arr'), lbls = document.querySelectorAll('.ap-lbl');
+  function go(n) {
+    cur = Math.max(1, Math.min(N, n)); var s = ST[cur - 1];
+    boxes.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.b) > -1); });
+    arrs.forEach(function (p) { var on = s.a.indexOf(+p.dataset.a) > -1; p.classList.toggle('on', on); p.setAttribute('marker-end', on ? 'url(#ap-ma)' : 'url(#ap-mm)'); });
+    lbls.forEach(function (t) { t.classList.toggle('on', s.a.indexOf(+t.dataset.l) > -1); });
+    document.getElementById('apCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('apLab').textContent = 'Passo ' + cur + ' de ' + N;
+    document.getElementById('apPrev').disabled = cur === 1;
+    document.getElementById('apNext').textContent = cur === N ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('apPrev').addEventListener('click', function () { go(cur - 1); });
+  document.getElementById('apNext').addEventListener('click', function () { go(cur === N ? 1 : cur + 1); });
+  go(1);
+
+  /* 2 · pedido anotado */
+  var PT = {
+    verbo: { t: 'Verbo', tec: 'método', o: 'O que você quer que aconteça. GET é "me dá", o verbo de buscar.', r: 'É o "eu quero" do pedido: ver o cardápio, pedir um prato, trocar, cancelar.', c: 'Verbo errado volta recusado, mesmo com tudo o mais certo.' },
+    end: { t: 'Endereço', tec: 'endpoint', o: 'Para onde vai o pedido. Cada operação tem o seu: um para a lista de clientes, outro para um cliente só.', r: 'É a mesa certa da cozinha certa.', c: 'O endereço da API não é o site da empresa. <code>loja-exemplo.com</code> é a vitrine; <code>api.loja-exemplo.com/clientes/42</code> é o balcão.' },
+    param: { t: 'Parâmetros', tec: 'query params', o: 'Detalhes que vão grudados no endereço, depois do ponto de interrogação: quais campos, quantos itens, de qual cidade.', r: 'É o "sem cebola, porção pequena".', c: 'Tudo que vai no endereço fica visível e registrado. Dado sensível não vai aqui.' },
+    cab: { t: 'Cabeçalho', tec: 'header', o: 'A etiqueta do pedido: quem está pedindo (a credencial) e em que formato você está mandando.', r: 'É mostrar o crachá e dizer em que língua você fala.', c: 'Aqui aparece a chave. Num exemplo, ela é sempre <code>sua-chave-aqui</code>; a de verdade fica guardada no cofre da ferramenta.' },
+    corpo: { t: 'Corpo', tec: 'body', o: 'O conteúdo do pedido. Quem busca, em geral, não manda corpo; quem cria ou muda, manda os dados do que quer criar.', r: 'É o recado escrito que acompanha o pedido.', c: 'Se você manda dados, diga no cabeçalho que eles estão em JSON, ou o outro lado lê tudo como texto solto.' },
+    status: { t: 'Número da resposta', tec: 'status code', o: 'Um número de três algarismos que resume o que aconteceu. 200 é tudo certo; 201, criado.', r: 'É o garçom dizendo "saiu", "acabou" ou "a cozinha pegou fogo".', c: 'Leia o número antes de ler o resto. Ele diz se o problema é seu ou deles.' },
+    resp: { t: 'Conteúdo da resposta', tec: 'response body', o: 'O prato: os dados que você pediu, quase sempre em JSON, prontos para o passo seguinte.', r: 'É o prato na mesa.', c: 'O formato do prato está no cardápio. Os valores mudam a cada pedido; o formato, não.' }
+  };
+  var pBtns = document.querySelectorAll('.ap-part'), pDet = document.getElementById('apDet');
+  function showPart(k) {
+    pressGroup(pBtns, function (x) { return x.dataset.p === k; });
+    var p = PT[k];
+    pDet.innerHTML = '<span class="eyebrow">nome técnico · ' + p.tec + '</span><h3>' + p.t + '</h3><dl><dt>O que é</dt><dd>' + p.o + '</dd><dt>No restaurante</dt><dd>' + p.r + '</dd><dt>Cuidado</dt><dd class="cuid">' + p.c + '</dd></dl>';
+  }
+  pBtns.forEach(function (b) { b.addEventListener('click', function () { showPart(b.dataset.p); }); });
+  showPart('verbo');
+
+  /* 3 · verbos */
+  var VB = {
+    get: { say: '"Me dá os dados do cliente 42."', req: 'GET /clientes/42', res: 'Volta 200 e os dados. <b>Nada mudou do outro lado</b>: buscar só lê.' },
+    post: { say: '"Crie este cliente novo."', req: 'POST /clientes  +  corpo com nome e situação', res: 'Volta 201, "criado", e o número que o outro lado deu ao cliente novo: 43.' },
+    patch: { say: '"Mude a situação do cliente 42 para qualificado."', req: 'PATCH /clientes/42  +  corpo com a situação nova', res: 'Volta 200. Só o campo pedido mudou; o resto do cliente ficou como estava. PUT faz parecido, trocando o registro inteiro.' },
+    del: { say: '"Remova o cliente 42."', req: 'DELETE /clientes/42', res: 'Volta 200 ou 204. O cliente saiu. Em muitos serviços não há desfazer, e por isso apagar pede mais cuidado que os outros três.' }
+  };
+  var vBtns = document.querySelectorAll('[data-v]'), tb = document.querySelector('#apTbl tbody');
+  function setVerb(k) {
+    pressGroup(vBtns, function (x) { return x.dataset.v === k; });
+    var rows = [[41, 'Bruno Lima', 'ativo'], [42, 'Ana Souza', k === 'patch' ? 'qualificado' : 'novo']];
+    if (k === 'post') rows.push([43, 'Carla Dias', 'novo']);
+    tb.innerHTML = rows.map(function (r) {
+      var cls = r[0] === 43 ? 'novo' : (r[0] === 42 && k === 'get' ? 'lido' : (r[0] === 42 && k === 'del' ? 'fora' : ''));
+      return '<tr class="' + cls + '"><td>' + r[0] + '</td><td>' + r[1] + '</td><td' + (r[0] === 42 && k === 'patch' ? ' class="mudou"' : '') + '>' + r[2] + '</td></tr>';
+    }).join('');
+    var v = VB[k];
+    document.getElementById('apVerb').innerHTML = '<span class="eyebrow">O pedido, em português</span><p class="say">' + v.say + '</p><code>' + v.req + '</code><p>' + v.res + '</p>';
+  }
+  vBtns.forEach(function (b) { b.addEventListener('click', function () { setVerb(b.dataset.v); }); });
+  setVerb('get');
+
+  /* 4 · simulador */
+  var sim = { m: 'GET', e: '/clientes/42', c: 'sim', k: 'ok' };
+  [['sm', 'm'], ['se', 'e'], ['sc', 'c'], ['sk', 'k']].forEach(function (pair) {
+    var bs = document.querySelectorAll('[data-' + pair[0] + ']');
+    bs.forEach(function (b) { b.addEventListener('click', function () { pressGroup(bs, function (x) { return x === b; }); sim[pair[1]] = b.dataset[pair[0]]; }); });
+  });
+  var NAMES = { 200: 'OK', 201: 'Created · criado', 401: 'Unauthorized · sem permissão', 404: 'Not Found · não existe', 405: 'Method Not Allowed · verbo não serve', 429: 'Too Many Requests · devagar', 500: 'Internal Server Error · erro do outro lado' };
+  function answer(burst) {
+    if (burst) return [429, 'Você passou do limite de pedidos. A cozinha pede para esperar. Numa automação que roda em lote, a saída é pôr uma pausa entre os pedidos.', { erro: 'limite de pedidos atingido', tente_de_novo_em_segundos: 60 }];
+    if (sim.k === 'fora') return [500, 'Começa com 5: o problema é do outro lado, não seu. Não mexa no pedido; tente de novo daqui a pouco.', { erro: 'erro interno' }];
+    if (sim.c === 'nao') return [401, 'Faltou o crachá. Não é defeito do pedido nem da cozinha: confira a credencial, ou se ela expirou.', { erro: 'credencial ausente ou inválida' }];
+    if (sim.e === '/clientes/999') return [404, 'O endereço não existe: não há cliente 999. Confira o endereço, letra por letra.', { erro: 'não encontrado' }];
+    if (sim.m === 'GET' && sim.e === '/clientes') return [200, 'Tudo certo: veio a lista de clientes.', [{ id: 41, nome: 'Bruno Lima' }, { id: 42, nome: 'Ana Souza' }]];
+    if (sim.m === 'GET') return [200, 'Tudo certo: veio o cliente pedido.', { id: 42, nome: 'Ana Souza', cidade: 'Recife', situacao: 'novo' }];
+    if (sim.m === 'POST' && sim.e === '/clientes') return [201, 'Criado. O outro lado devolve o número que deu ao cliente novo.', { id: 43, nome: 'Carla Dias', situacao: 'novo' }];
+    if (sim.m === 'DELETE' && sim.e === '/clientes/42') return [200, 'Removido. Em muitos serviços, sem volta.', { removido: true, id: 42 }];
+    return [405, 'Esse verbo não serve nesse endereço: não se cria um cliente em cima de outro, nem se apaga a lista inteira. O cardápio diz qual verbo vai em cada endereço.', { erro: 'método não permitido' }];
+  }
+  var pin = document.getElementById('apPin');
+  function send(burst) {
+    var r = answer(burst), code = r[0];
+    document.getElementById('apReqLine').textContent = (burst ? '50 × ' : '') + sim.m + ' https://api.loja-exemplo.com' + sim.e + (sim.c === 'sim' ? '  ·  Authorization: Bearer sua-chave-aqui' : '  ·  (sem credencial)');
+    var el = document.getElementById('apCode'); el.textContent = code;
+    el.className = 'ap-code' + (code >= 500 ? ' srv' : (code >= 400 ? ' no' : ''));
+    document.getElementById('apCodeName').textContent = NAMES[code];
+    document.getElementById('apWhy').textContent = r[1];
+    var body = document.getElementById('apBody'); body.hidden = false; body.textContent = JSON.stringify(r[2], null, 2);
+    var x = code >= 500 ? 750 : (code >= 400 ? 450 : 150);
+    pin.style.opacity = 1; pin.setAttribute('transform', 'translate(' + x + ',14)');
+    document.getElementById('apPinT').textContent = code;
+  }
+  document.getElementById('apSend').addEventListener('click', function () { send(false); });
+  document.getElementById('apBurst').addEventListener('click', function () { send(true); });
+
+  /* 5 · quiz */
+  var OPTS = ['A credencial', 'O endereço', 'O ritmo', 'Nada: é do outro lado'];
+  var Q = [
+    { s: 'O fluxo rodava de manhã. À tarde começou a voltar <b>401</b>, sem ninguém ter mexido nele.', a: 0, why: '401 é crachá. Credencial que funcionava e parou costuma ter expirado ou sido revogada: reconecte a conta ou gere a chave de novo.' },
+    { s: 'Primeiro teste do pedido novo, e voltou <b>404</b>.', a: 1, why: '404 é endereço que não existe. Quase sempre é uma letra trocada, uma barra a mais, ou o site no lugar do endereço da API.' },
+    { s: 'A planilha de 500 linhas ia bem até a linha 60. Daí em diante, <b>429</b> em todas.', a: 2, why: '429 é "devagar". O serviço aceita um número de pedidos por minuto; ponha uma pausa entre eles.' },
+    { s: 'Voltou <b>500</b>. Ontem, o mesmo pedido funcionou.', a: 3, why: 'Começa com 5, é do outro lado. Não mude o seu pedido: espere e tente de novo, e deixe a automação preparada para quando o serviço cair.' }
+  ];
+  var qz = document.getElementById('apQuiz'), sc = document.getElementById('apScore'), got = {};
+  Q.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'ap-q';
+    d.innerHTML = '<p class="sit">' + q.s + '</p><div class="opts" role="group" aria-label="O que conferir primeiro">' + OPTS.map(function (o, k) { return '<button type="button" data-k="' + k + '" aria-pressed="false">' + o + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.k === q.a; got[i] = ok;
+      fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Confira ' + OPTS[q.a].toLowerCase() + '. ') + '</b>' + q.why;
+      var n = Object.keys(got).length, c = Object.keys(got).filter(function (k) { return got[k]; }).length;
+      sc.textContent = n + ' de 4 respondidas · ' + c + ' certas' + (n === 4 ? ' · a regra: começa com 4, é o seu pedido; com 5, é o outro lado.' : '');
+    }); });
+    qz.appendChild(d);
+  });
+
+  /* 6 · credenciais */
+  var CR = {
+    chave: { t: 'Chave de API', how: 'No site do serviço você gera um código comprido e cola no campo "chave" da sua ferramenta. Ela vai em cada pedido, no cabeçalho.', rec: 'Reconheça assim: o serviço diz "cole a sua chave" ou "gere um token".', c: 'Quase todo serviço mostra a chave <b>uma vez só</b>. Fechou a tela sem copiar, gere outra: a anterior não volta.' },
+    oauth: { t: 'Entrar com a conta (OAuth)', how: 'Em vez de copiar código, abre uma janela do serviço, você entra com a sua conta e autoriza o que a ferramenta pode fazer: ler e-mails, criar eventos, editar planilhas.', rec: 'Reconheça assim: aparece um botão "entrar com" e uma lista do que você está autorizando.', c: 'A autorização pode expirar depois de muito tempo parada. O sintoma é o 401 de repente; a solução é entrar de novo.' },
+    cab: { t: 'Cabeçalho próprio', how: 'A API pede a chave num campo com um nome que ela escolheu, como <code>X-API-Key</code>. Você guarda o nome do campo e o valor, juntos.', rec: 'Reconheça assim: a documentação mostra um exemplo com um nome de campo e <code>sua-chave-aqui</code> ao lado.', c: 'O nome do campo tem que ser exatamente o da documentação, com as mesmas maiúsculas e hífens.' },
+    basic: { t: 'Usuário e senha', how: 'O jeito mais antigo: um usuário e uma senha que vão juntos em cada pedido.', rec: 'Reconheça assim: sistema antigo, interno, ou aviso de outro sistema que pede usuário e senha.', c: 'É o menos seguro dos quatro. Se o serviço oferece outro, prefira o outro.' }
+  };
+  var cBtns = document.querySelectorAll('.ap-cred'), cDet = document.getElementById('apCred');
+  function showCred(k) {
+    pressGroup(cBtns, function (x) { return x.dataset.c === k; });
+    var c = CR[k];
+    cDet.innerHTML = '<span class="eyebrow">' + c.t + '</span><p>' + c.how + '</p><p class="rec">' + c.rec + '</p><p class="hint">' + c.c + '</p>';
+  }
+  cBtns.forEach(function (b) { b.addEventListener('click', function () { showCred(b.dataset.c); }); });
+  showCred('chave');
+
+  var vtBtns = document.querySelectorAll('[data-vt]');
+  function setVault(k) {
+    pressGroup(vtBtns, function (x) { return x.dataset.vt === k; });
+    var f = document.getElementById('apFile'), v = document.getElementById('apVaultV');
+    if (k === 'colada') {
+      f.innerHTML = 'fluxo-pedidos-do-dia (exportado)\n\npasso "Busca pedidos"\n  endereço: https://api.loja-exemplo.com/pedidos\n  cabeçalho: Authorization: Bearer <mark>sua-chave-aqui</mark>';
+      v.className = 'verdict no'; v.innerHTML = '<b>A chave viaja junto.</b> Exportou o fluxo, mandou para um colega, mostrou a tela na reunião: a chave foi junto. E quando ela vencer, você troca em cada fluxo, um por um.';
+    } else {
+      f.innerHTML = 'fluxo-pedidos-do-dia (exportado)\n\npasso "Busca pedidos"\n  endereço: https://api.loja-exemplo.com/pedidos\n  credencial: <mark class="safe">"Chave da loja" (guardada no cofre)</mark>';
+      v.className = 'verdict ok'; v.innerHTML = '<b>O fluxo guarda só o nome da credencial.</b> A chave fica no cofre da ferramenta. Cria uma vez, usa em cinquenta fluxos, e troca num lugar só quando vencer.';
+    }
+  }
+  vtBtns.forEach(function (b) { b.addEventListener('click', function () { setVault(b.dataset.vt); }); });
+  setVault('colada');
+
+  document.getElementById('apCopy').addEventListener('click', function () { copyText(document.getElementById('apPrompt').innerText, this); });
+})();
+</script>
+
+</html>

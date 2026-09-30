@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--ipo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IPO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, método 5.6 da família AI First. Peças: as sete colunas clicáveis, o quiz do passo conferível, a tabela montável, as barras de onde o tempo vaza (ligadas à tabela), os sete nomes, a cadeia de porquês, os dois fluxos contados, a calculadora do valor e a biblioteca de pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict.mid { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.panel { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel.focal { border-color: var(--accent); }
+
+/* 1 · colunas */
+.col-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.col { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; }
+.col .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: var(--text-dim); }
+.col b { font-weight: 600; font-size: .95rem; }
+.col.io b { color: var(--accent); }
+.col.new { border-style: dashed; border-color: var(--accent); }
+.col[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); border-style: solid; }
+.col-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.col-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.col-det dd { margin: 0; }
+.col-det dd.q { color: var(--accent); font-size: 1.05rem; }
+
+/* 2 · passo conferível */
+.pq-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.pq { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; align-content: start; }
+.pq .said { font-family: var(--font-mono); font-size: .92rem; }
+.pq .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.pq .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-size: .9rem; }
+.pq .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pq .fb { font-size: .92rem; border-radius: 6px; padding: 8px 12px; border: 1px solid; }
+.pq .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.pq .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.recipe { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: center; }
+.recipe div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 12px 14px; }
+.recipe div.good { border-color: var(--accent); background: var(--accent-soft); }
+.recipe span { font-family: var(--font-mono); color: var(--text-dim); }
+
+/* 3 · montador */
+.mt { display: grid; gap: 14px; }
+.mt-ends { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mt-f { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 4px; }
+.mt-f label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.mt input, .mt select { font: inherit; font-size: .95rem; color: var(--text); background: transparent; border: 0; border-bottom: 1px dashed var(--border-strong); padding: 4px 0; width: 100%; min-width: 0; }
+.mt-steps { display: grid; gap: 6px; }
+.mt-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) 54px 64px 70px 32px; gap: 8px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; }
+.mt-row .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.mt-row .ie { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 4px; padding: 3px 0; font-family: var(--font-mono); font-size: 12px; }
+.mt-row .ie[aria-pressed="true"] { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.mt-row .tv { display: contents; }
+.mt-row .rm { border: 0; background: transparent; color: var(--text-dim); font-size: 1.1rem; }
+.mt-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.mt-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.mt-sum div { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; background: var(--bg-elev); }
+.mt-sum span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.mt-sum b { font-family: var(--font-mono); font-weight: 500; font-size: 1.2rem; color: var(--accent); }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 4 · barras */
+.vz svg { width: 100%; height: auto; display: block; }
+.vz-lab { font: 500 13px var(--font-body); fill: var(--text); }
+.vz-bar { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+.vz-bar.top { fill: var(--accent); }
+.vz-bar.ex { fill: var(--atencao-soft); stroke: var(--atencao); }
+.vz-bar.ex.top { fill: var(--atencao); }
+.vz-val { font: 600 13px var(--font-mono); fill: var(--text); }
+.vz-val.in { fill: var(--bg-elev); }
+.vz-off { font: 500 12px var(--font-mono); fill: var(--text-dim); }
+
+/* 5 · sete nomes */
+.wn { display: flex; flex-wrap: wrap; gap: 8px; }
+.wn button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 6px 14px; font-size: .95rem; }
+.wn button.main { border-color: var(--accent); }
+.wn button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* 6 · porquês */
+.why { display: grid; gap: 8px; }
+.why-l { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; animation: pop .3s ease both; }
+.why-l .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.why-l.person { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.why-l.root { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); font-weight: 600; }
+.why-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+
+/* 7 · antes e depois */
+.fl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.fl-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.fl-card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.fl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.fl-n { font-family: var(--font-mono); font-size: 1.5rem; color: var(--accent); line-height: 1; }
+.fl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.fl-list li { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 10px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .95rem; transition: opacity .3s ease; }
+.fl-list .t { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.fl-list li.gone { border-style: dashed; opacity: .6; }
+.fl-list li.gone span:last-child { text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.fl.hl .fl-list li:not(.chg) { opacity: .45; }
+.fl.hl .fl-list li.chg { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+
+/* 8 · calculadora */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.inputs { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.result { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.big { font-family: var(--font-mono); font-size: 2.2rem; color: var(--accent); line-height: 1; }
+.mini { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mini div { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+.mini span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.mini b { font-family: var(--font-mono); font-weight: 500; font-size: 1.15rem; }
+.def { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.def div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.def .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.def p { font-size: .94rem; }
+
+/* 9 · biblioteca */
+.lib { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.6fr); gap: 16px; align-items: start; }
+.tabs { display: grid; gap: 6px; }
+.tabs button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 14px; display: grid; gap: 2px; }
+.tabs button b { font-weight: 600; font-size: .95rem; }
+.tabs button span { font-size: .82rem; color: var(--text-dim); }
+.tabs button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.libpane { display: grid; gap: 10px; }
+
+/* 10 · levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@keyframes pop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (max-width: 860px) {
+  .col-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .pq-list, .fl, .calc, .lib, .take, .def, .mt-ends { grid-template-columns: 1fr; }
+  .col-det dl { grid-template-columns: 1fr; }
+  .recipe { grid-template-columns: 1fr; }
+  .recipe span { transform: rotate(90deg); justify-self: center; }
+}
+@media (max-width: 560px) {
+  .col-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mt-row { grid-template-columns: 22px minmax(0, 1fr) 30px; }
+  .mt-row .txt { grid-column: 2 / 4; grid-row: 1; }
+  .mt-row .rm { grid-column: 3; grid-row: 2; }
+  .mt-row .ie { grid-column: 1 / 2; grid-row: 2; font-size: 10px; }
+  .mt-row .tv { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mt-sum, .mini { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .why-l { animation: none; } .fl-list li { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--medicao.html">← 5.5 Medição</a><a href="./ai-first.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html" aria-current="page"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.6 · método</span>
+  <h1>IPO</h1>
+  <p class="sub">Entrada, processo, saída: abrir o trabalho em passos que dá para conferir, cronometrar e defender</p>
+  <p class="lead">Todo processo tem o que chega, o que se faz e o que sai pronto. Escrever os três, <strong>com o tempo de cada passo</strong>, transforma a impressão de “isso demora” num número que se mede, que aponta onde o tempo vaza e que se defende numa reunião.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-colunas">Sete colunas</a><a href="#s-passo">Passo que dá para conferir</a><a href="#s-montar">Monte o seu</a><a href="#s-vaza">Onde o tempo vaza</a><a href="#s-nomes">Sete nomes</a><a href="#s-causa">Da barra para a causa</a><a href="#s-depois">O passo que saiu</a><a href="#s-conta">Quanto vale</a><a href="#s-copiar">Pedidos para copiar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-colunas" aria-labelledby="h-colunas">
+  <span class="eyebrow">Sete colunas</span>
+  <h2 id="h-colunas">Três partes no nome, sete colunas na tabela</h2>
+  <p class="intro">Entrada, processo e saída dão o nome. Em volta deles, mais quatro colunas impedem os erros de sempre. <strong>A última, o tempo, é a que o mapeamento clássico não tem</strong>, e sem ela não dá para achar onde o tempo vaza. Clique em cada coluna; o exemplo é um pedido de orçamento.</p>
+  <div class="col-row" role="group" aria-label="As sete colunas">
+    <button type="button" class="col" data-c="0" aria-pressed="false"><span class="k">01</span><b>Área</b></button>
+    <button type="button" class="col io" data-c="1" aria-pressed="true"><span class="k">02 · I</span><b>Entrada</b></button>
+    <button type="button" class="col io" data-c="2" aria-pressed="false"><span class="k">03 · P</span><b>Processo</b></button>
+    <button type="button" class="col io" data-c="3" aria-pressed="false"><span class="k">04 · O</span><b>Saída</b></button>
+    <button type="button" class="col" data-c="4" aria-pressed="false"><span class="k">05</span><b>Exceção</b></button>
+    <button type="button" class="col" data-c="5" aria-pressed="false"><span class="k">06</span><b>Recursos</b></button>
+    <button type="button" class="col new" data-c="6" aria-pressed="false"><span class="k">07</span><b>Tempo</b></button>
+  </div>
+  <div class="panel focal col-det" id="colDet" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-passo" aria-labelledby="h-passo">
+  <span class="eyebrow">Passo que dá para conferir</span>
+  <h2 id="h-passo">Passo com verbo e com critério, e não um assunto</h2>
+  <p class="intro">A pergunta que separa os dois é uma só: <strong>dá para dizer se o passo aconteceu?</strong> Se a resposta depende de interpretação, ainda é assunto, e assunto não se cronometra nem se delega. Classifique os seis.</p>
+  <div class="recipe" aria-label="A receita que nunca foi escrita">
+    <div><span class="eyebrow">a receita de família</span><p>“Um pouco de farinha, até dar o ponto.”</p></div>
+    <span aria-hidden="true">→</span>
+    <div class="good"><span class="eyebrow">o mesmo passo, com critério</span><p>“Bater até a massa soltar da lateral da tigela.”</p></div>
+  </div>
+  <div class="pq-list" id="pqList"></div>
+  <p class="score" id="pqScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-montar" aria-labelledby="h-montar">
+  <span class="eyebrow">Monte o seu</span>
+  <h2 id="h-montar">A tabela do processo de hoje, com a espera dentro</h2>
+  <p class="intro">Escreva as duas pontas primeiro, e só depois os passos do meio. Marque <b>EX</b> o que depende de outro setor ou sistema. <strong>Descreva o processo de hoje, com defeito e tudo</strong>: sem o de hoje, não existe antes para comparar. O exemplo do orçamento já vem preenchido.</p>
+  <div class="mt">
+    <div class="mt-ends">
+      <div class="mt-f"><label for="mtIn">Entrada · o que chega</label><input id="mtIn"></div>
+      <div class="mt-f"><label for="mtOut">Saída · o que sai pronto, e para quem</label><input id="mtOut"></div>
+    </div>
+    <div class="mt-steps" id="mtSteps" aria-label="Passos do processo"></div>
+    <div class="mt-bar">
+      <button type="button" class="btn" id="mtAdd">+ Passo</button>
+      <button type="button" class="btn" id="mtEx">Exemplo do orçamento</button>
+      <button type="button" class="btn" id="mtClr">Começar do zero</button>
+    </div>
+    <div class="mt-sum">
+      <div><span>passos</span><b id="mtN">0</b></div>
+      <div><span>trabalho de pessoa</span><b id="mtWork">0</b></div>
+      <div><span>até quem recebe</span><b id="mtAll">0</b></div>
+    </div>
+    <div class="verdict" id="mtVer" aria-live="polite"></div>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">O processo em texto, para colar no chat</span><button type="button" class="btn" id="mtCopy">Copiar</button></div><pre id="mtText"></pre></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-vaza" aria-labelledby="h-vaza">
+  <span class="eyebrow">Onde o tempo vaza</span>
+  <h2 id="h-vaza">A mesma tabela, duas perguntas, dois culpados</h2>
+  <p class="intro">As barras abaixo são a sua tabela. <strong>Quanto tempo até quem recebe</strong> é uma pergunta; <strong>quanto do seu dia aquilo come</strong> é outra. Quase sempre o passo que mais demora e o que mais cansa são diferentes, e a pergunta decide qual dos dois você acha.</p>
+  <div class="seg" role="group" aria-label="Pergunta">
+    <button type="button" data-vz="all" aria-pressed="true">Até quem recebe</button>
+    <button type="button" data-vz="in" aria-pressed="false">O seu trabalho</button>
+  </div>
+  <div class="panel vz">
+    <span class="eyebrow" id="vzLab"></span>
+    <svg id="vzSvg" viewBox="0 0 600 200" role="img" aria-labelledby="vz-t" xmlns="http://www.w3.org/2000/svg"><title id="vz-t">Barras de tempo por passo do processo montado acima</title><g id="vzG"></g></svg>
+  </div>
+  <div class="verdict" id="vzVer" aria-live="polite"></div>
+  <p class="hint">Barra grande não é o mesmo que problema: análise de crédito precisa demorar. A pergunta é qual passo é maior do que precisaria ser. E tempo estimado continua estimativa depois de virar barra.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-nomes" aria-labelledby="h-nomes">
+  <span class="eyebrow">Sete nomes</span>
+  <h2 id="h-nomes">Sete nomes para o que vaza, e dois bastam quase sempre</h2>
+  <p class="intro">Desperdício aqui não é julgamento: <strong>é tudo o que consome tempo e não muda o que o cliente recebe.</strong> Dar nome antes de procurar a causa já restringe onde ela pode estar. Numa mesa de escritório, espera e retrabalho costumam responder pela maior parte.</p>
+  <div class="wn" id="wn" role="group" aria-label="Os sete desperdícios"></div>
+  <div class="panel focal" id="wnDet" aria-live="polite"></div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-causa" aria-labelledby="h-causa">
+  <span class="eyebrow">Da barra para a causa</span>
+  <h2 id="h-causa">Pergunte por quê até chegar em algo que se decide</h2>
+  <p class="intro">A primeira explicação chega antes do dado e ocupa o lugar dele. <strong>Cadeia que termina numa pessoa quase sempre parou cedo</strong>: transforma problema de desenho em problema de gente, e a correção vira cobrança. Puxe a cadeia.</p>
+  <div class="seg" role="group" aria-label="O vazamento">
+    <button type="button" data-wh="esp" aria-pressed="true">Espera · passo 3</button>
+    <button type="button" data-wh="ret" aria-pressed="false">Retrabalho · passo 4</button>
+  </div>
+  <div class="why" id="why" aria-live="polite"></div>
+  <div class="why-bar"><span class="eyebrow" id="whyLab"></span><button type="button" class="btn primary" id="whyNext">Por quê? →</button></div>
+  <p class="hint">Quando não se sabe nem por onde começar, percorre-se em largura em vez de fundo: material, mão de obra, máquina, método, medição e meio. Num escritório, método e medição costumam render mais.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-depois" aria-labelledby="h-depois">
+  <span class="eyebrow">O passo que saiu</span>
+  <h2 id="h-depois">A espera não foi acelerada: ela deixou de existir</h2>
+  <p class="intro">O mesmo orçamento, depois de mexer nas duas causas: <strong>a tabela de preços passou a existir escrita</strong>, e o modelo de proposta ganhou os itens que mais se repetem. Destaque o que mudou.</p>
+  <div class="seg" role="group" aria-label="Destacar">
+    <button type="button" data-fl="tudo" aria-pressed="true">Ver os dois</button>
+    <button type="button" data-fl="chg" aria-pressed="false">Destacar o que mudou</button>
+  </div>
+  <div class="fl" id="fl">
+    <div class="fl-card">
+      <div class="fl-head"><span class="eyebrow">Hoje · 5 passos</span><span class="fl-n">2 dias e 1h25</span></div>
+      <ol class="fl-list">
+        <li><span class="t">15 min</span><span>Ler o pedido e listar os itens</span></li>
+        <li class="chg"><span class="t">20 min</span><span>Conferir contra a tabela vigente</span></li>
+        <li class="chg"><span class="t">2 dias</span><span>Esperar o técnico responder preço e prazo</span></li>
+        <li class="chg"><span class="t">40 min</span><span>Montar a proposta do zero</span></li>
+        <li><span class="t">10 min</span><span>Revisar e enviar</span></li>
+      </ol>
+    </div>
+    <div class="fl-card focal">
+      <div class="fl-head"><span class="eyebrow">Com a tabela escrita · 4 passos</span><span class="fl-n">50 min</span></div>
+      <ol class="fl-list">
+        <li><span class="t">15 min</span><span>Ler o pedido e listar os itens</span></li>
+        <li class="chg"><span class="t">10 min</span><span>Consultar preço e prazo na tabela, que agora existe</span></li>
+        <li class="chg gone"><span class="t">—</span><span>Esperar o técnico responder</span></li>
+        <li class="chg"><span class="t">15 min</span><span>Montar com os itens recorrentes já no modelo</span></li>
+        <li><span class="t">10 min</span><span>Revisar e enviar</span></li>
+      </ol>
+    </div>
+  </div>
+  <p class="punch">A coluna da direita exige uma coisa que a da esquerda não exige: <em>alguém escreveu a tabela de preços</em>, e esse alguém talvez não seja você.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-conta" aria-labelledby="h-conta">
+  <span class="eyebrow">Quanto vale</span>
+  <h2 id="h-conta">O número que você mediu contra o número que você chutou</h2>
+  <p class="intro">A conta cabe numa linha: <strong>horas economizadas no mês × custo da hora de quem faz.</strong> Compare o chute de antes de medir com a medida, e depois ponha os seus números.</p>
+  <div class="seg" role="group" aria-label="Premissas">
+    <button type="button" data-cc="chute" aria-pressed="false">O chute</button>
+    <button type="button" data-cc="medida" aria-pressed="true">A medida</button>
+  </div>
+  <div class="calc">
+    <div class="inputs">
+      <div class="field"><label for="ccA">Minutos de trabalho por vez, hoje</label><div class="row"><input type="range" id="ccA" min="5" max="240" step="5" value="85"><output id="ccAo">85</output></div></div>
+      <div class="field"><label for="ccB">Minutos por vez, depois da mudança</label><div class="row"><input type="range" id="ccB" min="0" max="240" step="5" value="50"><output id="ccBo">50</output></div></div>
+      <div class="field"><label for="ccF">Vezes por mês</label><div class="row"><input type="range" id="ccF" min="1" max="60" value="20"><output id="ccFo">20</output></div></div>
+      <div class="field"><label for="ccR">Custo da hora de quem faz (R$)</label><div class="row"><input type="range" id="ccR" min="15" max="200" step="5" value="45"><output id="ccRo">45</output></div></div>
+    </div>
+    <div class="result">
+      <span class="eyebrow">Por mês, em reais</span>
+      <div class="big" id="ccBig">—</div>
+      <div class="mini"><div><span>horas por mês</span><b id="ccH">—</b></div><div><span>em um ano</span><b id="ccY">—</b></div></div>
+      <div class="verdict" id="ccVer" aria-live="polite"></div>
+      <p class="hint">Este número é uma estimativa, não uma promessa. Serve para priorizar e argumentar, não para contrato. O custo da hora é o salário bruto dividido por 160.</p>
+    </div>
+  </div>
+  <span class="eyebrow">A defesa de um minuto, escrita</span>
+  <div class="def">
+    <div><span class="k">Dado</span><p>Medi o atendimento a pedido de orçamento: o cliente espera 2 dias e 1h25, e quase tudo isso é a espera pela resposta de preço do técnico. Acontece 20 vezes por mês.</p></div>
+    <div><span class="k">Hipótese</span><p>Se os itens fora de tabela tivessem preço e prazo escritos, a espera sairia do processo. A conta conservadora dá cerca de R$ 500 por mês, e a proposta sai no mesmo dia.</p></div>
+    <div><span class="k">Próximo passo</span><p>Uma hora com o coordenador técnico para levantar os 20 itens que mais aparecem. O levantamento é meu, a validação é dele. Prazo: duas semanas.</p></div>
+  </div>
+  <p class="hint">O ganho que não vira hora, como a proposta sair no mesmo dia, entra na conversa, e não na conta. Converter à força é o que faz o resto perder credibilidade.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-copiar" aria-labelledby="h-copiar">
+  <span class="eyebrow">Pedidos para copiar</span>
+  <h2 id="h-copiar">Três pedidos, na ordem do método</h2>
+  <p class="intro">O primeiro <strong>entrevista você antes de escrever</strong>: se ele começasse pela tabela, voltaria uma tabela plausível e que não é sua. O segundo puxa a causa sem aceitar a primeira explicação. O terceiro transforma a causa em plano com dono.</p>
+  <div class="lib">
+    <div class="tabs" role="tablist" aria-label="Pedidos" id="libTabs"></div>
+    <div class="libpane" id="libPane" role="tabpanel" aria-live="polite"></div>
+  </div>
+  <p class="hint">A pergunta de bolso: você consegue explicar o seu passo a passo em menos de dois minutos para um colega? Se não consegue, o problema quase nunca é a IA: é que o processo não existe escrito.</p>
+</section>
+
+<!-- 10 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Sem tempo por passo, é só descrição</h3><p>A coluna do tempo é a que separa mapear de melhorar. Chute marcado como chute vale mais que célula vazia.</p></div>
+    <div class="take-card"><h3>O que demora e o que cansa são passos diferentes</h3><p>Some tudo, depois some só o que é trabalho seu. A diferença entre os dois totais tem nome: espera.</p></div>
+    <div class="take-card"><h3>A causa termina em algo que se decide</h3><p>Se a cadeia de porquês acaba numa pessoa, pergunte mais uma vez. Quase sempre falta um passo no desenho.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>IPO</dt><dd>Entrada, processo e saída: o formato de escrever um processo com o que chega, os passos e o que sai pronto.</dd>
+    <dt>IN e EX</dt><dd>O passo que você resolve sentado, com o que tem em mãos, e o que depende de outro setor, sistema ou pessoa.</dd>
+    <dt>Espera</dt><dd>Tempo parado entre etapas. Conta no prazo de quem recebe e não conta no seu esforço.</dd>
+    <dt>Retrabalho</dt><dd>Refazer por erro ou por falta de padrão. Costuma morar no passo que você repete do zero.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O processo do orçamento e os seus tempos são fictícios. Um dia de espera foi contado como um dia de calendário. Os limites de quatro a sete passos e as faixas da calculadora são sinais práticos, não regras.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first--medicao.html"><span>← anterior</span><b>5.5 · Nada começa sem quatro campos</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first.html"><span>volta ao começo ↺</span><b>Visão geral · AI First</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+
+  /* 1 · colunas */
+  var COL = [
+    { n: 'Área', q: 'De que time é esse processo?', e: 'Mapear algo que não é seu e que você não consegue mudar.', x: 'Comercial.' },
+    { n: 'Entrada', q: 'O que chega, e em que formato?', e: 'Começar do meio. Se você não sabe o que dispara o processo, não achou o começo.', x: 'Pedido de orçamento do cliente, por e-mail ou mensagem, às vezes com foto de uma lista escrita à mão.' },
+    { n: 'Processo', q: 'Quais são os quatro a sete passos, em ordem?', e: 'Passo sem verbo e sem critério, que ninguém consegue conferir. Passou de sete? São dois processos juntos.', x: 'Ler e listar · conferir contra a tabela · consultar o técnico · montar a proposta · revisar e enviar.' },
+    { n: 'Saída', q: 'O que sai pronto, e para quem?', e: 'Escrever resultado em vez de entrega. “O cliente atendido” não é saída: a proposta em PDF é.', x: 'Proposta em PDF, com itens, valor total, prazo de entrega e validade, enviada ao cliente.' },
+    { n: 'Exceção', q: 'O que você faz quando foge do padrão?', e: 'Deixar em branco. É a coluna que carrega o que só existe na sua cabeça.', x: 'Item fora da tabela vira consulta ao técnico. Desconto acima do limite precisa do gerente. Cliente novo exige análise de crédito.' },
+    { n: 'Recursos', q: 'O que precisa estar em mãos antes?', e: 'Descobrir no meio que falta um acesso, um arquivo ou uma tabela.', x: 'Tabela de preços vigente, modelo de proposta, histórico do cliente.' },
+    { n: 'Tempo', q: 'Quanto leva cada passo?', e: 'Achar que sabe. Quase sempre o passo mais lento não é o mais chato.', x: '15 min · 20 min · 2 dias · 40 min · 10 min. Sem esta coluna, os dois dias não aparecem.' }
+  ];
+  var colB = document.querySelectorAll('.col');
+  function showCol(i) {
+    pressGroup(colB, function (x) { return +x.dataset.c === i; });
+    var c = COL[i];
+    document.getElementById('colDet').innerHTML = '<span class="eyebrow">' + c.n + (i === 6 ? ' · a coluna que separa mapear de melhorar' : '') + '</span><dl><dt>A pergunta</dt><dd class="q">' + c.q + '</dd><dt>O erro que evita</dt><dd>' + c.e + '</dd><dt>No orçamento</dt><dd>' + c.x + '</dd></dl>';
+  }
+  colB.forEach(function (b) { b.addEventListener('click', function () { showCol(+b.dataset.c); }); });
+  showCol(1);
+
+  /* 2 · passo conferível */
+  var PQ = [
+    { s: 'Analisar a planilha', a: 'ass', w: 'Duas pessoas leem isso e fazem coisas diferentes, e nenhuma está errada.' },
+    { s: 'Verificar a coluna região; se estiver vazia, gerar um alerta', a: 'conf', w: 'Tem verbo, tem objeto e diz o que fazer quando dá errado.' },
+    { s: 'Organizar as informações do pedido', a: 'ass', w: 'Não dá para dizer quando terminou, então não dá para cronometrar nem delegar.' },
+    { s: 'Consultar preço e prazo com o técnico responsável pela linha do item', a: 'conf', w: 'Diz quem e o quê. Qualquer pessoa sabe se aconteceu.' },
+    { s: 'Revisar tudo com cuidado antes de enviar', a: 'ass', w: 'Revisar o quê, contra o quê? Com critério: conferir valor e prazo contra o pedido original.' },
+    { s: 'Conferir cada item contra a tabela vigente e marcar os que não estão nela', a: 'conf', w: 'Não é mais longo que o assunto: é mais específico. E a marca vira a entrada do passo seguinte.' }
+  ];
+  var pqList = document.getElementById('pqList'), pqAns = {};
+  PQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'pq';
+    d.innerHTML = '<p class="said">“' + q.s + '”</p><div class="opts" role="group" aria-label="Classificar"><button type="button" data-v="conf" aria-pressed="false">Confere</button><button type="button" data-v="ass" aria-pressed="false">Ainda é assunto</button></div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; pqAns[i] = ok; fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : (q.a === 'conf' ? 'Confere. ' : 'Ainda é assunto. ')) + '</b>' + q.w;
+      var n = Object.keys(pqAns).length, c = Object.keys(pqAns).filter(function (k) { return pqAns[k]; }).length;
+      document.getElementById('pqScore').textContent = n + ' de 6 respondidas · ' + c + ' certas';
+    }); });
+    pqList.appendChild(d);
+  });
+
+  /* 3 · montador */
+  var EX = {
+    i: 'Pedido de orçamento do cliente, por e-mail ou mensagem, às vezes com foto de lista escrita à mão',
+    o: 'Proposta em PDF com itens, valor total, prazo e validade, enviada ao cliente',
+    s: [
+      { t: 'Ler o pedido e listar os itens; se vier como foto, transcrever antes', ex: false, v: 15, u: 'min' },
+      { t: 'Conferir cada item contra a tabela vigente; marcar os que não estão nela', ex: false, v: 20, u: 'min' },
+      { t: 'Consultar preço e prazo com o técnico da linha, para os itens marcados', ex: true, v: 2, u: 'dias' },
+      { t: 'Montar a proposta no modelo, com validade de 15 dias', ex: false, v: 40, u: 'min' },
+      { t: 'Revisar valor e prazo contra o pedido original, e enviar', ex: false, v: 10, u: 'min' }
+    ]
+  };
+  var U = { min: 1, h: 60, dias: 1440 }, steps = [], mtIn = document.getElementById('mtIn'), mtOut = document.getElementById('mtOut'), mtSteps = document.getElementById('mtSteps');
+  function mins(s) { return (+s.v || 0) * U[s.u]; }
+  function fmt(m) {
+    m = Math.round(m); if (!m) return '0 min';
+    var d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60), r = m % 60, out = [];
+    if (d) out.push(d + (d > 1 ? ' dias' : ' dia'));
+    if (h || r) out.push(h ? h + 'h' + (r ? ('0' + r).slice(-2) : '') : r + ' min');
+    return out.join(' e ');
+  }
+  function renderRows() {
+    mtSteps.innerHTML = steps.map(function (s, i) {
+      return '<div class="mt-row" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><input class="txt" aria-label="Passo ' + (i + 1) + '" value="' + esc(s.t) + '" placeholder="verbo + objeto + critério"><button type="button" class="ie" aria-pressed="' + s.ex + '" aria-label="Depende de outro setor">' + (s.ex ? 'EX' : 'IN') + '</button><span class="tv"><input class="val" type="number" min="0" aria-label="Tempo do passo ' + (i + 1) + '" value="' + s.v + '"><select class="un" aria-label="Unidade"><option' + (s.u === 'min' ? ' selected' : '') + '>min</option><option' + (s.u === 'h' ? ' selected' : '') + '>h</option><option' + (s.u === 'dias' ? ' selected' : '') + '>dias</option></select></span><button type="button" class="rm" aria-label="Tirar o passo ' + (i + 1) + '">×</button></div>';
+    }).join('') || '<p class="hint">Nenhum passo ainda. Comece pelas duas pontas, depois acrescente.</p>';
+    update();
+  }
+  mtSteps.addEventListener('input', function (e) {
+    var row = e.target.closest('.mt-row'); if (!row) return; var s = steps[+row.dataset.i];
+    if (e.target.classList.contains('txt')) s.t = e.target.value;
+    if (e.target.classList.contains('val')) s.v = e.target.value;
+    update();
+  });
+  mtSteps.addEventListener('change', function (e) { var row = e.target.closest('.mt-row'); if (row && e.target.classList.contains('un')) { steps[+row.dataset.i].u = e.target.value; update(); } });
+  mtSteps.addEventListener('click', function (e) {
+    var row = e.target.closest('.mt-row'); if (!row) return; var i = +row.dataset.i;
+    if (e.target.classList.contains('ie')) { steps[i].ex = !steps[i].ex; e.target.setAttribute('aria-pressed', String(steps[i].ex)); e.target.textContent = steps[i].ex ? 'EX' : 'IN'; update(); }
+    if (e.target.classList.contains('rm')) { steps.splice(i, 1); renderRows(); }
+  });
+  [mtIn, mtOut].forEach(function (x) { x.addEventListener('input', update); });
+  document.getElementById('mtAdd').addEventListener('click', function () { steps.push({ t: '', ex: false, v: 10, u: 'min' }); renderRows(); var ins = mtSteps.querySelectorAll('.txt'); if (ins.length) ins[ins.length - 1].focus(); });
+  function loadEx() { mtIn.value = EX.i; mtOut.value = EX.o; steps = EX.s.map(function (s) { return { t: s.t, ex: s.ex, v: s.v, u: s.u }; }); renderRows(); }
+  document.getElementById('mtEx').addEventListener('click', loadEx);
+  document.getElementById('mtClr').addEventListener('click', function () { mtIn.value = ''; mtOut.value = ''; steps = []; renderRows(); });
+  document.getElementById('mtCopy').addEventListener('click', function () { copyText(document.getElementById('mtText').textContent, this); });
+
+  /* 4 · barras (ligadas ao montador) */
+  var vzMode = 'all', vzB = document.querySelectorAll('[data-vz]');
+  vzB.forEach(function (b) { b.addEventListener('click', function () { vzMode = b.dataset.vz; pressGroup(vzB, function (x) { return x === b; }); update(); }); });
+  function svgEl(tag, attrs, txt) { var el = document.createElementNS('http://www.w3.org/2000/svg', tag); for (var k in attrs) el.setAttribute(k, attrs[k]); if (txt != null) el.textContent = txt; return el; }
+  function renderBars(all, work) {
+    var g = document.getElementById('vzG'); g.innerHTML = '';
+    var tot = vzMode === 'all' ? all : work, rows = steps.length, H = Math.max(60, rows * 52 + 8), svg = document.getElementById('vzSvg');
+    var W = Math.max(280, Math.round(svg.parentNode.clientWidth - 40)), BW = W - 150, CH = Math.floor(W / 7.6);
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    document.getElementById('vzLab').textContent = vzMode === 'all' ? 'Até quem recebe · 100% = ' + fmt(all) : 'O seu trabalho · 100% = ' + fmt(work);
+    var maxI = -1, maxV = -1;
+    steps.forEach(function (s, i) { var m = mins(s); if ((vzMode === 'all' || !s.ex) && m > maxV) { maxV = m; maxI = i; } });
+    steps.forEach(function (s, i) {
+      var y = i * 52 + 6, m = mins(s), lab = (i + 1) + ' · ' + (s.t || 'passo sem nome');
+      g.appendChild(svgEl('text', { class: 'vz-lab', x: 0, y: y + 13 }, lab.length > CH ? lab.slice(0, CH - 2) + '…' : lab));
+      if (vzMode === 'in' && s.ex) { g.appendChild(svgEl('text', { class: 'vz-off', x: 0, y: y + 36 }, 'espera de outro setor · fora desta conta')); return; }
+      var pct = tot ? m / tot : 0, w = Math.max(3, pct * (W - 10));
+      g.appendChild(svgEl('rect', { class: 'vz-bar' + (s.ex ? ' ex' : '') + (i === maxI ? ' top' : ''), x: 0, y: y + 20, width: w, height: 22, rx: 3 }));
+      var t = (pct * 100).toFixed(pct < .1 ? 1 : 0).replace('.', ',') + '% · ' + fmt(m);
+      g.appendChild(w > BW ? svgEl('text', { class: 'vz-val in', x: w - 8, y: y + 36, 'text-anchor': 'end' }, t) : svgEl('text', { class: 'vz-val', x: w + 8, y: y + 36 }, t));
+    });
+    return maxI;
+  }
+
+  function update() {
+    var all = 0, work = 0, exN = 0;
+    steps.forEach(function (s) { all += mins(s); if (!s.ex) work += mins(s); else exN++; });
+    var n = steps.length;
+    document.getElementById('mtN').textContent = n; document.getElementById('mtWork').textContent = fmt(work); document.getElementById('mtAll').textContent = fmt(all);
+    var v = document.getElementById('mtVer');
+    if (!n) { v.className = 'verdict mid'; v.innerHTML = '<b>Comece pelas pontas.</b> Quem começa pelos passos costuma escrever sete e descobrir no fim que dois são de outro processo.'; }
+    else if (n < 4) { v.className = 'verdict mid'; v.innerHTML = '<b>' + n + ' passo' + (n > 1 ? 's' : '') + '.</b> Abaixo de quatro, quase sempre um passo esconde vários. Qual deles leva mais tempo? Quebre esse.'; }
+    else if (n > 7) { v.className = 'verdict no'; v.innerHTML = '<b>' + n + ' passos.</b> Acima de sete ninguém segura o processo na cabeça. Corte onde a entrega muda de mão e trate a segunda metade como outro processo.'; }
+    else if (!exN) { v.className = 'verdict mid'; v.innerHTML = '<b>Nenhum passo EX.</b> Confira se não esqueceu uma espera: processo que atravessa outro setor quase sempre tem uma.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>' + n + ' passos, ' + exN + ' dependendo de outro setor.</b> ' + (all > work * 2 ? 'O tempo até quem recebe é bem maior que o seu trabalho: a diferença é espera.' : 'O processo é feito de trabalho: as barras abaixo mostram onde ele pesa.'); }
+    var txt = 'Processo, do começo ao fim.\nEntrada: ' + (mtIn.value.trim() || '[o que chega]') + '\nSaída: ' + (mtOut.value.trim() || '[o que sai pronto]') + '\nPassos:\n' + steps.map(function (s, i) { return (i + 1) + '. (' + (s.ex ? 'EX' : 'IN') + ') ' + (s.t || '[passo]') + '. ' + (+s.v ? s.v + ' ' + s.u : 'sem medida') + '.'; }).join('\n') + '\nTempo até quem recebe: ' + fmt(all) + '.\nTempo que é trabalho de pessoa: ' + fmt(work) + '.';
+    document.getElementById('mtText').textContent = txt;
+    var topAll = -1, topIn = -1, ma = -1, mi = -1;
+    steps.forEach(function (s, i) { var m = mins(s); if (m > ma) { ma = m; topAll = i; } if (!s.ex && m > mi) { mi = m; topIn = i; } });
+    renderBars(all, work);
+    var vz = document.getElementById('vzVer');
+    if (n < 2) { vz.className = 'verdict mid'; vz.innerHTML = 'Monte ao menos dois passos com tempo para as barras dizerem alguma coisa.'; }
+    else if (topAll !== topIn && topIn > -1) { vz.className = 'verdict no'; vz.innerHTML = '<b>Dois culpados diferentes.</b> O prazo mora no passo ' + (topAll + 1) + ' (' + Math.round(ma / all * 100) + '% do total); o seu dia mora no passo ' + (topIn + 1) + ' (' + Math.round(mi / work * 100) + '% do seu trabalho). Quer encurtar o prazo? Mexa no ' + (topAll + 1) + '. Quer a tarde de volta? No ' + (topIn + 1) + '.'; }
+    else { vz.className = 'verdict ok'; vz.innerHTML = '<b>O mesmo passo nas duas contas: o ' + (topAll + 1) + '.</b> Confira se não esqueceu alguma espera; processo que atravessa outro setor quase nunca tem o mesmo campeão nas duas.'; }
+  }
+  loadEx();
+  window.addEventListener('resize', update);
+
+  /* 5 · sete nomes */
+  var WN = [
+    ['Espera', 'tempo parado entre etapas', 'o passo EX com o maior tempo, e quase sempre é o campeão', 1],
+    ['Retrabalho', 'refazer por erro ou por falta de padrão', 'um passo que devolve o trabalho para trás, ou que se refaz do zero toda vez', 1],
+    ['Excesso de produção', 'fazer mais do que foi pedido', 'o relatório com seções que ninguém lê, feito porque sempre foi assim', 0],
+    ['Movimentação', 'ir e voltar entre sistemas e telas', 'copiar de um lugar para outro, abrir quatro abas para responder uma pergunta', 0],
+    ['Transporte', 'passar o trabalho de mão em mão', 'o mesmo arquivo que percorre três pessoas sem que nenhuma decida nada', 0],
+    ['Processamento excessivo', 'etapa mais complexa do que precisa', 'conferir duas vezes a mesma coisa, formatar o que vai ser reformatado depois', 0],
+    ['Estoque', 'trabalho parado esperando a vez', 'a fila de pedidos que cresce na segunda e some na sexta', 0]
+  ];
+  var wn = document.getElementById('wn'), wnB = [];
+  WN.forEach(function (w, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = w[3] ? 'main' : ''; b.textContent = w[0];
+    b.addEventListener('click', function () { showWn(i); }); wn.appendChild(b); wnB.push(b);
+  });
+  function showWn(i) {
+    wnB.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var w = WN[i];
+    document.getElementById('wnDet').innerHTML = '<span class="eyebrow">' + w[0] + (w[3] ? ' · um dos dois que mais aparecem no escritório' : '') + '</span><p><b>O que é:</b> ' + w[1] + '.</p><p><b>Como aparece na tabela:</b> ' + w[2] + '.</p>';
+  }
+  showWn(0);
+
+  /* 6 · porquês */
+  var WH = {
+    esp: [['O técnico responde devagar', 'person'], ['Porque a pergunta chega solta, numa mensagem no celular dele', ''], ['Porque não existe um lugar para pedir preço', ''], ['Porque preço de item fora da tabela nunca foi escrito', ''], ['Porque ninguém é dono da tabela de preços', 'root']],
+    ret: [['A proposta é remontada do zero toda vez', ''], ['Porque o modelo não traz os itens que se repetem', ''], ['Porque ninguém mediu quais itens se repetem', 'root']]
+  };
+  var whK = 'esp', whN = 1, whB = document.querySelectorAll('[data-wh]');
+  function renderWhy() {
+    var c = WH[whK];
+    document.getElementById('why').innerHTML = c.slice(0, whN).map(function (l, i) {
+      var note = l[1] === 'person' && whN === 1 ? ' <span class="hint">· se parar aqui, a culpa é de alguém, e não dá para agir</span>' : '';
+      return '<div class="why-l ' + (l[1] === 'person' && whN > 1 ? '' : l[1]) + '"><span class="n">' + (i ? 'por quê' : '') + '</span><span>' + l[0] + (l[1] === 'root' ? ' · decisão de gestão, e dá para agir' : '') + note + '</span></div>';
+    }).join('');
+    document.getElementById('whyLab').textContent = whN + ' de ' + c.length + (whN === c.length ? ' · a cadeia terminou em algo que alguém decide' : '');
+    document.getElementById('whyNext').textContent = whN === c.length ? 'Recomeçar ↺' : 'Por quê? →';
+  }
+  whB.forEach(function (b) { b.addEventListener('click', function () { whK = b.dataset.wh; whN = 1; pressGroup(whB, function (x) { return x === b; }); renderWhy(); }); });
+  document.getElementById('whyNext').addEventListener('click', function () { whN = whN === WH[whK].length ? 1 : whN + 1; renderWhy(); });
+  renderWhy();
+
+  /* 7 · antes e depois */
+  var flB = document.querySelectorAll('[data-fl]');
+  flB.forEach(function (b) { b.addEventListener('click', function () { pressGroup(flB, function (x) { return x === b; }); document.getElementById('fl').classList.toggle('hl', b.dataset.fl === 'chg'); }); });
+
+  /* 8 · calculadora */
+  var CC = { chute: [40, 15, 4, 45], medida: [85, 50, 20, 45] }, ccIds = ['ccA', 'ccB', 'ccF', 'ccR'], ccIn = ccIds.map(function (x) { return document.getElementById(x); });
+  var ccB = document.querySelectorAll('[data-cc]');
+  function brl(v) { return 'R$ ' + Math.round(v).toLocaleString('pt-BR'); }
+  function calc() {
+    var a = +ccIn[0].value, b = +ccIn[1].value, f = +ccIn[2].value, r = +ccIn[3].value;
+    ccIds.forEach(function (id, i) { document.getElementById(id + 'o').textContent = ccIn[i].value; });
+    var h = Math.max(0, a - b) * f / 60, mes = h * r;
+    document.getElementById('ccBig').textContent = brl(mes);
+    document.getElementById('ccH').textContent = h.toFixed(1).replace('.', ',') + ' h';
+    document.getElementById('ccY').textContent = brl(mes * 12);
+    var v = document.getElementById('ccVer'), preset = null;
+    Object.keys(CC).forEach(function (k) { if (CC[k].every(function (x, i) { return +ccIn[i].value === x; })) preset = k; });
+    pressGroup(ccB, function (x) { return x.dataset.cc === preset; });
+    if (b >= a) { v.className = 'verdict no'; v.innerHTML = '<b>Não há ganho em minutos.</b> Talvez o ganho seja prazo ou erro evitado: leve como argumento separado.'; }
+    else if (preset === 'chute') { v.className = 'verdict no'; v.innerHTML = '<b>O chute olhou só o passo que incomodava,</b> e supôs a frequência de cabeça: uma vez por semana. Não passa em reunião nenhuma.'; }
+    else if (preset === 'medida') { v.className = 'verdict ok'; v.innerHTML = '<b>A medida corrigiu as duas premissas:</b> o processo inteiro, e vinte vezes por mês. Nenhuma das duas contas está errada; mudaram as premissas.'; }
+    else { v.className = 'verdict mid'; v.innerHTML = '<b>A frequência multiplica.</b> Vinte minutos toda semana valem mais que duas horas uma vez por trimestre. Arredonde o ganho para baixo.'; }
+  }
+  ccIn.forEach(function (x) { x.addEventListener('input', calc); });
+  ccB.forEach(function (b) { b.addEventListener('click', function () { CC[b.dataset.cc].forEach(function (v, i) { ccIn[i].value = v; }); calc(); }); });
+  calc();
+
+  /* 9 · biblioteca */
+  var LIB = [
+    { t: 'Abrir o processo', s: 'entrevista antes de escrever', w: 'quando você faz o processo no automático e nunca o escreveu', p: 'Papel: um analista de processos que entrevista antes de escrever, e que trata passo sem critério como passo não escrito.\n\nContexto: eu executo um processo do meu trabalho há tempo suficiente para fazer no automático, e nunca o escrevi. Vou descrevê-lo em texto corrido, do jeito que sai da minha cabeça, com as exceções misturadas no meio.\n\nTarefa: primeiro me faça no máximo cinco perguntas, uma de cada vez, para achar o que eu deixei implícito: o que dispara o processo, o que sai pronto no fim, onde eu espero por outra pessoa, e o que muda quando o caso foge do padrão. Só depois de eu responder, monte a tabela.\n\nFormato: uma tabela com Entrada, Saída, Exceção e Recursos, e uma segunda com os passos: número, o passo com verbo e critério de pronto, a marca IN (resolvo sozinho) ou EX (depende de outro setor ou sistema) e o tempo. Entre 4 e 7 passos. No fim, diga que passos poderiam seguir sozinhos, quais precisam de mim junto e quais devem continuar só comigo.\n\nLimites: não invente passo que eu não disse e não melhore o processo: eu quero o de hoje, com a espera e o retrabalho dentro. Se eu não informar o tempo de um passo, escreva "sem medida" em vez de estimar. Se render mais de sete passos, diga onde cortar em dois processos.\n\nCritério de sucesso: um colega que não conhece o meu trabalho lê a tabela e sabe o que fazer em cada passo, sem me perguntar nada.' },
+    { t: 'Da barra para a causa', s: 'porquês até algo que se decide', w: 'depois de medir, quando você já sabe qual passo pesa', p: 'Papel: um analista de melhoria de processos que procura falha de desenho, e que trata "faltou treinamento" e "a pessoa esqueceu" como sinal de que a investigação parou cedo.\n\nContexto: eu mapeei um processo em passos, com o tempo de cada um, e medi duas coisas: o tempo total até a entrega e o tempo que é trabalho meu. Vou colar a tabela abaixo, com IN para o que faço sozinho e EX para o que depende de outro setor.\n\nTarefa: aponte o passo que mais pesa em cada uma das duas contas. Para cada um, diga qual desperdício ele é (espera, retrabalho, excesso de produção, movimentação, transporte, processamento excessivo ou estoque) e pergunte por quê, elo a elo, até uma causa que processo, sistema ou combinado consigam corrigir.\n\nFormato: uma tabela com o que vaza, o nome do desperdício e a cadeia de porquês com setas entre os elos. A causa final em destaque, com o tipo de solução: processo, sistema, combinado ou comunicação.\n\nLimites: não sugira ferramenta nem automação: isto é diagnóstico. Nenhuma cadeia pode terminar numa pessoa ou numa característica dela; se chegar lá, continue perguntando o que no método permitiu aquilo. Se faltar tempo em algum passo, sinalize em vez de estimar.\n\nCritério de sucesso: para cada causa, eu consigo apontar quem na empresa teria de decidir alguma coisa para ela deixar de existir.' },
+    { t: 'Defender em um minuto', s: 'plano com dono e a defesa', w: 'quando a causa mora em outro setor e você precisa de uma reunião', p: 'Papel: um gerente de projetos que escreve plano de ação para ser executado, e que trata prazo sem responsável nomeado como linha que não vai acontecer.\n\nContexto: eu mapeei um processo, medi o tempo de cada passo e achei a causa do maior desperdício. A solução depende de pelo menos um passo de outro setor. Vou colar a causa, o ganho estimado em reais por mês e as áreas envolvidas.\n\nTarefa: monte o plano de ação respondendo o que será feito, por quê, onde, quando, quem faz, como e quanto custa. Depois escreva a defesa de um minuto para a liderança em três parágrafos: o dado que eu medi, a hipótese com o ganho estimado, e o próximo passo.\n\nFormato: primeiro a tabela do plano, uma linha por ação, com o "como" em passos numerados. Depois a defesa, com no máximo 180 palavras.\n\nLimites: nenhuma linha pode ter "a equipe" ou "o setor" como responsável; se eu não informei, escreva "sem dono definido" e me pergunte. O próximo passo tem de ser do tamanho de uma reunião ou de uma hora de trabalho, nunca o projeto inteiro. Não invente custo: se eu não informei, escreva "a levantar".\n\nCritério de sucesso: eu leio a defesa em voz alta em menos de um minuto, e se alguém discordar, consigo apontar de qual premissa.' }
+  ];
+  var tabs = document.getElementById('libTabs'), pane = document.getElementById('libPane'), tB = [];
+  LIB.forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.innerHTML = '<b>' + (i + 1) + ' · ' + x.t + '</b><span>' + x.s + '</span>';
+    b.addEventListener('click', function () { showLib(i); }); tabs.appendChild(b); tB.push(b);
+  });
+  function showLib(i) {
+    tB.forEach(function (b, k) { b.setAttribute('aria-selected', String(k === i)); });
+    var x = LIB[i];
+    pane.innerHTML = '<p class="hint">Use ' + x.w + '.</p><div class="copy"><div class="copy-head"><span class="eyebrow">' + (i + 1) + ' de 3 · ' + x.t + '</span><button type="button" class="btn" id="libCopy">Copiar</button></div><pre id="libText">' + esc(x.p) + '</pre></div>';
+    document.getElementById('libCopy').addEventListener('click', function () { copyText(document.getElementById('libText').textContent, this); });
+  }
+  showLib(0);
+})();
+</script>
+
+</html>

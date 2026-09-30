@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="assistente--resposta-ancorada">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resposta ancorada nos seus documentos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 4.1. Peças: antes × depois da política, diagrama de origem com toggle, citações clicáveis, não consta com e sem regra, grade de trechos parecidos com slider, filtro de arquivos, quiz de leitura. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · média × você */
+.ra-q { font-family: var(--font-mono); font-size: .95rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.ra-ans { border-radius: 8px; padding: 18px 20px; border: 1px solid var(--border-strong); background: var(--bg-elev); display: grid; gap: 10px; }
+.ra-ans.gen { border-color: var(--atencao); }
+.ra-ans.anc { border-color: var(--ok); }
+.ra-ans .quote { font-size: 1.08rem; }
+.ra-ans mark { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* 2 · origem (svg) */
+.or-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; }
+.or-box.doc rect { fill: var(--accent-soft); stroke: var(--accent); }
+.or-box.mem rect { transition: opacity .3s ease; }
+.or-t { font: 600 13px var(--font-mono); fill: var(--text); text-anchor: middle; letter-spacing: .06em; }
+.or-s { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.or-arr { stroke: var(--accent); stroke-width: 2.4; fill: none; transition: opacity .3s ease; }
+.or-arr.mem { stroke: var(--atencao); stroke-dasharray: 6 5; }
+.or-mk-a { fill: var(--accent); }
+.or-mk-m { fill: var(--atencao); }
+.or-off { opacity: .15; }
+.or-lbl { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+
+/* 3 · citações */
+.ra-cite { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.ra-cite .ans { font-size: 1.05rem; line-height: 1.8; }
+.ra-cite .ans button { border: 1px solid var(--accent); background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 6px; font: 500 12px var(--font-mono); vertical-align: 2px; }
+.ra-cite .ans button[aria-pressed="true"] { background: var(--accent); color: var(--bg-elev); }
+.ra-doc { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; font-size: .92rem; }
+.ra-doc p { color: var(--text-dim); }
+.ra-doc p.hit { color: var(--text); background: var(--accent-soft); border-left: 3px solid var(--accent); padding: 4px 10px; border-radius: 0 4px 4px 0; }
+.ra-doc .h { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+
+/* 5 · trechos parecidos */
+.tp-wrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.tp-grid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 5px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; min-height: 120px; align-content: start; }
+.tp-grid i { display: block; aspect-ratio: 3 / 4; border-radius: 3px; background: var(--border); }
+.tp-grid i.r { background: var(--accent); }
+.tp-grid i.a { background: var(--atencao); }
+.tp-leg { display: flex; flex-wrap: wrap; gap: 14px; font-size: .88rem; color: var(--text-muted); }
+.tp-leg i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; background: var(--border); }
+.tp-leg i.r { background: var(--accent); }
+.tp-leg i.a { background: var(--atencao); }
+.tp-meter { height: 14px; border-radius: 999px; background: var(--border); overflow: hidden; }
+.tp-meter span { display: block; height: 100%; background: var(--atencao); transition: width .3s ease; }
+
+/* 6 · filtro de arquivos */
+.ps-files { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ps-files button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; }
+.ps-files button b { font-family: var(--font-mono); font-size: .85rem; font-weight: 500; }
+.ps-files button span { font-size: .85rem; color: var(--text-muted); }
+.ps-files button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ps-q { display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 10px; align-items: start; }
+.ps-q .l { font-family: var(--font-mono); font-size: 13px; border-radius: 4px; text-align: center; padding: 2px 0; border: 1px solid; }
+.ps-q .l.y { color: var(--ok-texto); border-color: var(--ok); background: var(--ok-soft); }
+.ps-q .l.n { color: var(--atencao-texto); border-color: var(--atencao); background: var(--atencao-soft); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .ra-cite, .tp-wrap { grid-template-columns: 1fr; }
+  .ps-files { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) { .ps-files { grid-template-columns: 1fr; } .tp-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .or-arr, .or-box.mem rect, .tp-meter span { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Assistente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente.html">← Visão geral</a><a href="./assistente--onde-a-regra-mora.html">4.2 Onde a regra mora →</a></span></div>
+    <div class="famhead-chips"><a href="./assistente.html">Visão geral</a><a href="./assistente--resposta-ancorada.html" aria-current="page"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a></div>
+  </nav>
+  <span class="eyebrow">4.1 · 1 de 4</span>
+  <h1>Resposta ancorada nos seus documentos</h1>
+  <p class="sub">Fazer a IA responder a partir do material que você deu, dizer de onde tirou, e admitir quando não está lá</p>
+  <p class="lead">Sem o seu documento, a IA responde pela média do mundo, com a mesma fluência com que responderia por você. <strong>Ancorar é trocar “parece certo” por “está aqui, neste trecho”.</strong> E, do mesmo jeito, é fazer ela escrever “não consta” quando o trecho não existe.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-media">Média ou você</a><a href="#s-origem">De onde vem</a><a href="#s-endereco">A citação</a><a href="#s-naoconsta">Quando não tem</a><a href="#s-parecidos">Material demais</a><a href="#s-escolher">O que sobe</a><a href="#s-leu">Leu ou deduziu</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-media" aria-labelledby="h-media">
+  <span class="eyebrow">Média ou você</span>
+  <h2 id="h-media">A mesma pergunta, com e sem a política da empresa</h2>
+  <p class="intro">Digitada igual nas duas. De um lado, uma conversa comum. Do outro, a política de desconto da empresa carregada. <strong>As duas respostas soam igualmente seguras.</strong></p>
+  <p class="ra-q">Um gerente pode aprovar sozinho um desconto de 15% para um cliente novo? Se não, quem aprova e em quanto tempo?</p>
+  <div class="seg" role="group" aria-label="Com ou sem o documento">
+    <button type="button" data-md="gen" aria-pressed="true">Sem o documento</button>
+    <button type="button" data-md="anc" aria-pressed="false">Com a política carregada</button>
+  </div>
+  <div id="mdOut" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-origem" aria-labelledby="h-origem">
+  <span class="eyebrow">De onde vem</span>
+  <h2 id="h-origem">Duas fontes misturadas, ou uma só</h2>
+  <p class="intro">Com o arquivo anexado a uma conversa comum, a resposta vem do arquivo <strong>e</strong> do que a IA já sabe do assunto, costurados sem aviso. A âncora é fechar a segunda porta. Algumas ferramentas já nascem fechadas; nas outras, <strong>quem fecha é a instrução que você escreve</strong>.</p>
+  <div class="seg" role="group" aria-label="Como a resposta é montada">
+    <button type="button" data-or="mix" aria-pressed="true">Arquivo anexado, sem regra</button>
+    <button type="button" data-or="anc" aria-pressed="false">Base fechada, ou regra escrita</button>
+  </div>
+  <div class="scroll">
+    <svg viewBox="0 0 720 260" role="img" aria-labelledby="or-t" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
+      <title id="or-t">De onde vem a resposta: do seu documento e do conhecimento geral da IA, misturados; ou só do documento, com a porta do conhecimento geral fechada</title>
+      <defs>
+        <marker id="mkora" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="or-mk-a"/></marker>
+        <marker id="mkorm" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="or-mk-m"/></marker>
+      </defs>
+      <g class="or-box doc"><rect x="20" y="30" width="200" height="80" rx="8"/><text class="or-t" x="120" y="64">O SEU DOCUMENTO</text><text class="or-s" x="120" y="86">a política, o contrato, a tabela</text></g>
+      <g class="or-box mem" id="orMem"><rect x="20" y="150" width="200" height="80" rx="8"/><text class="or-t" x="120" y="184">O QUE ELA JÁ SABE</text><text class="or-s" x="120" y="206">“na maioria das empresas…”</text></g>
+      <g class="or-box"><rect x="480" y="90" width="220" height="80" rx="8"/><text class="or-t" x="590" y="124">A RESPOSTA</text><text class="or-s" x="590" y="146" id="orResS">fluente, e sem costura visível</text></g>
+      <path class="or-arr" d="M220,70 C340,70 360,120 474,122" marker-end="url(#mkora)"/>
+      <path class="or-arr mem" id="orArrM" d="M220,190 C340,190 360,140 474,138" marker-end="url(#mkorm)"/>
+      <text class="or-lbl" x="340" y="60">trecho com endereço</text>
+      <text class="or-lbl" id="orLblM" x="340" y="214">completa a lacuna, sem avisar</text>
+    </svg>
+  </div>
+  <div class="verdict" id="orVer" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-endereco" aria-labelledby="h-endereco">
+  <span class="eyebrow">A citação</span>
+  <h2 id="h-endereco">A citação não impede o erro: ela dá endereço a ele</h2>
+  <p class="intro">É o colega que, em vez de responder de cabeça, vira o monitor e diz “está aqui, cláusula 12”. Os dois soam seguros. <strong>Só com o segundo você para de avaliar confiança e passa a ler a fonte.</strong> Clique nos números.</p>
+  <div class="ra-cite">
+    <div class="card">
+      <span class="eyebrow">A resposta, com a política carregada</span>
+      <p class="ans">Não. A alçada de gerente vai até 8% <button type="button" data-ct="0" aria-pressed="true">1</button>. Acima disso, a aprovação é do diretor comercial <button type="button" data-ct="1" aria-pressed="false">1</button>. Para cliente sem histórico, há análise de crédito antes da aprovação <button type="button" data-ct="2" aria-pressed="false">2</button>, e o prazo de resposta é de dois dias úteis <button type="button" data-ct="3" aria-pressed="false">2</button>.</p>
+    </div>
+    <div class="ra-doc" id="raDoc" aria-live="polite"></div>
+  </div>
+  <p class="punch">A citação prova <em>a origem</em>, não a leitura. Ela pode apontar o parágrafo certo e concluir errado a partir dele.</p>
+  <p class="hint">Teste de bolso: antes de usar a resposta, clique nas três citações que carregam número, prazo ou consequência. Não nas três primeiras: nas três que importam.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-naoconsta" aria-labelledby="h-naoconsta">
+  <span class="eyebrow">Quando não tem</span>
+  <h2 id="h-naoconsta">“Não consta” é a resposta que prova que a âncora segura</h2>
+  <p class="intro">Pergunte algo que você sabe que não está no documento. <strong>Se vier uma resposta plausível, a porta da média está aberta</strong>, e tudo o que vier depois volta a ser texto sem endereço.</p>
+  <p class="ra-q">Qual é o desconto máximo para o canal de exportação? <span class="hint">(a política não trata de exportação)</span></p>
+  <div class="seg" role="group" aria-label="Com ou sem a regra">
+    <button type="button" data-nc="sem" aria-pressed="true">Sem a regra de só usar o documento</button>
+    <button type="button" data-nc="com" aria-pressed="false">Com a regra</button>
+  </div>
+  <div id="ncOut" aria-live="polite"></div>
+  <div class="three">
+    <div class="card"><span class="eyebrow">formato</span><h3>Toda afirmação traz o trecho</h3><p>Ao lado de cada ponto, a seção ou a cláusula que o sustenta.</p></div>
+    <div class="card"><span class="eyebrow">limite</span><h3>O que não está é dito, não completado</h3><p>“Não consta nos documentos carregados”, em vez da prática de mercado.</p></div>
+    <div class="card"><span class="eyebrow">limite</span><h3>Número e prazo saem marcados</h3><p>Todo valor, prazo e obrigação legal com “verificar na fonte” e onde conferir.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Pedido ancorado · adapte os colchetes</span><button type="button" class="btn" data-copy="raPrompt">Copiar</button></div>
+<pre id="raPrompt"><b>Papel:</b> um analista que responde exclusivamente a partir dos documentos carregados, e que trata "não consta" como resposta legítima.
+<b>Contexto:</b> carreguei <i>[a política comercial vigente e a ata da reunião em que ela foi revisada]</i>. Preciso saber <i>[o que posso aprovar sozinho antes de responder a um cliente hoje]</i>.
+<b>Tarefa:</b> responda critério por critério. Depois compare os dois documentos e diga o que foi combinado num e não virou regra escrita no outro.
+<b>Formato:</b> uma linha por critério, e ao lado de cada uma a seção do documento que a sustenta. No fim, um bloco curto só com as divergências.
+<b>Limitações:</b> use apenas os documentos carregados. Se algo não estiver neles, escreva "não consta nos documentos carregados". Marque com "verificar na fonte" todo prazo, valor e obrigação legal, e diga onde eu confiro cada um.
+<b>Critério de sucesso:</b> consigo ir a cada trecho citado e responder sem abrir os arquivos inteiros.</pre>
+  </div>
+  <p class="hint">Dois arquivos que se cruzam rendem mais que um: com um só, você recebe um resumo bem citado; com dois, recebe a diferença entre eles, que é onde o problema costuma morar.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-parecidos" aria-labelledby="h-parecidos">
+  <span class="eyebrow">Material demais</span>
+  <h2 id="h-parecidos">O trecho certo disputa com os parecidos</h2>
+  <p class="intro">O instinto é subir o manual inteiro “para ela ter contexto”. Mas ela não lê o arquivo de ponta a ponta: <strong>procura o trecho que parece responder</strong>. O problema não são as páginas que não têm nada a ver. São as parecidas. Arraste.</p>
+  <div class="tp-wrap">
+    <div class="tp-grid" id="tpGrid" role="img" aria-label="Páginas carregadas: a que responde, as parecidas e as que não têm a ver"></div>
+    <div class="card">
+      <div class="field"><label for="tpN">Páginas carregadas</label><div class="row"><input type="range" id="tpN" min="3" max="60" value="3"><output id="tpO">3</output></div></div>
+      <span class="eyebrow">Candidatos que disputam com o certo</span>
+      <div class="tp-meter" aria-hidden="true"><span id="tpBar"></span></div>
+      <p id="tpTxt" aria-live="polite"></p>
+    </div>
+  </div>
+  <div class="tp-leg" aria-hidden="true"><span><i class="r"></i>o trecho que responde</span><span><i class="a"></i>parecido, de outro caso</span><span><i></i>não tem a ver</span></div>
+  <p class="hint">A forma, não a medida: a proporção de páginas parecidas muda de manual para manual. O que não muda é a direção. E quando o material guardado num projeto passa do que cabe de uma vez, a ferramenta passa a procurar trechos sozinha, sem avisar quando virou. Mais sobre o espaço em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-escolher" aria-labelledby="h-escolher">
+  <span class="eyebrow">O que sobe</span>
+  <h2 id="h-escolher">Três perguntas para cada arquivo, e só sobe o que passa nas três</h2>
+  <p class="intro"><strong>P · preciso?</strong> trata de uma etapa do seu trabalho. <strong>S · suficiente?</strong> sozinho, entrega a informação inteira. <strong>N · necessário?</strong> sem ele, a resposta sai errada. A terceira é a que corta. Clique num candidato.</p>
+  <div class="ps-files" role="group" aria-label="Arquivos candidatos" id="psFiles"></div>
+  <div class="panel" id="psPanel" aria-live="polite"></div>
+  <div class="two">
+    <div class="card"><h3>Antes de subir, limpe</h3><p>Tire capa, rodapé repetido e índice com número de página. Uma seção por assunto, com título: é pelo título que ela acha o trecho. Se você não diz o assunto de uma seção em cinco palavras, ela tem dois assuntos dentro.</p></div>
+    <div class="card focal"><h3>Declare o que o arquivo não cobre</h3><p>Uma seção final chamada “o que este documento não responde”. É nela que a IA se apoia para dizer não. Sem ela, o buraco fica invisível também para ela. E ponha a data de vigência na primeira linha: base envelhece sem avisar.</p></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-leu" aria-labelledby="h-leu">
+  <span class="eyebrow">Leu ou deduziu</span>
+  <h2 id="h-leu">Vinte segundos para saber se ela leu de verdade</h2>
+  <p class="intro">Onde não existe citação clicável, peça a transcrição literal do trecho que sustenta a resposta e confira contra o arquivo. <strong>Texto exato é leitura; paráfrase parecida é dedução.</strong> Classifique o que voltou.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O teste da transcrição</span><button type="button" class="btn" data-copy="raLeu">Copiar</button></div>
+<pre id="raLeu">Antes de eu usar a sua resposta: copie, entre aspas e palavra por palavra, o trecho do documento que sustenta cada afirmação que você fez, com o nome da seção de onde ele saiu.
+Não resuma e não reescreva o trecho. Se alguma afirmação não tem trecho que a sustente, diga isso com todas as letras em vez de procurar algo parecido.</pre>
+  </div>
+  <div class="qz" id="leuQuiz"></div>
+  <p class="qz-score" id="leuScore" aria-live="polite"></p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Âncora é endereço</h3><p>A resposta vale o que vale o trecho que ela aponta. Sem trecho, é a média do mundo com a sua cara.</p></div>
+    <div class="take-card"><h3>“Não consta” é o teste</h3><p>Pergunte o que não está no documento. A resposta plausível é o defeito; a recusa é a prova.</p></div>
+    <div class="take-card"><h3>Poucas páginas certas</h3><p>Três páginas escolhidas ganham de quarenta completas, porque o erro mora nas parecidas.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Base fechada</dt><dd>Ferramenta ou configuração em que a IA responde só a partir dos arquivos carregados, e cita o trecho.</dd>
+    <dt>Citação</dt><dd>O endereço do trecho que sustenta cada afirmação. Prova a origem, não a leitura correta.</dd>
+    <dt>Trecho parecido</dt><dd>Parte de outro caso que se parece com a pergunta. É o candidato que mais engana quando o material é grande.</dd>
+    <dt>Não consta</dt><dd>A resposta legítima quando o material não trata do assunto. Precisa ser pedida por escrito onde a ferramenta não nasce fechada.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A política, os percentuais e a grade de páginas são exemplos inventados e mostram a forma, não uma medida. Este verbete é parte da família <a href="./assistente.html">assistente</a>; as irmãs são <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>, <a href="./assistente--skill.html">skill</a> e <a href="./assistente--time.html">time de assistentes</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Assistente: anterior e próxima">
+  <a class="famfoot-prev" href="./assistente.html"><span>← anterior</span><b>Visão geral · Assistente especializado</b></a>
+  <a class="famfoot-fam" href="./assistente.html#mapa">Família 4 · Assistente · o mapa</a>
+  <a class="famfoot-next" href="./assistente--onde-a-regra-mora.html"><span>próxima →</span><b>4.2 · Onde a regra mora</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · média × você */
+  var MD = {
+    gen: '<div class="ra-ans gen"><span class="eyebrow">Conversa comum · sem a política</span><p class="quote">“<mark>Na maioria das empresas</mark>, gerentes comerciais têm alçada para descontos de até 10% a 15%. Acima disso, normalmente é necessária aprovação da diretoria, com prazo médio de 48 horas.”</p><p class="hint">Plausível, bem escrito, e sem nada a ver com a sua empresa. “Na maioria das empresas” é o mecanismo avisando que respondeu pela média; a frase passa despercebida porque parece cuidado.</p></div>',
+    anc: '<div class="ra-ans anc"><span class="eyebrow">Com a política carregada</span><p class="quote">“Não. A alçada de gerente vai até 8% [1]. Acima disso, a aprovação é do diretor comercial [1]. Para cliente sem histórico, há análise de crédito antes [2]. O prazo de resposta é de dois dias úteis [2].”</p><p class="hint">8% contra 10% a 15%. Quem aprovasse 12% confiando na primeira estaria fora da alçada, com uma resposta bem escrita como justificativa. E a análise de crédito, que a pergunta nem mencionou, só existe porque está escrita na regra da casa.</p></div>'
+  };
+  var mdBtns = document.querySelectorAll('[data-md]'), mdOut = document.getElementById('mdOut');
+  function setMd(k) { pressGroup(mdBtns, function (x) { return x.dataset.md === k; }); mdOut.innerHTML = MD[k]; }
+  mdBtns.forEach(function (b) { b.addEventListener('click', function () { setMd(b.dataset.md); }); });
+  setMd('gen');
+
+  /* 2 · origem */
+  var orBtns = document.querySelectorAll('[data-or]');
+  function setOr(k) {
+    pressGroup(orBtns, function (x) { return x.dataset.or === k; });
+    var anc = k === 'anc';
+    document.getElementById('orMem').classList.toggle('or-off', anc);
+    document.getElementById('orArrM').classList.toggle('or-off', anc);
+    document.getElementById('orLblM').textContent = anc ? 'porta fechada: “não consta”' : 'completa a lacuna, sem avisar';
+    document.getElementById('orResS').textContent = anc ? 'cada frase com endereço' : 'fluente, e sem costura visível';
+    var v = document.getElementById('orVer');
+    v.className = 'verdict ' + (anc ? 'ok' : 'no');
+    v.innerHTML = anc ? '<b>Uma fonte só.</b> O que não está no documento aparece como lacuna declarada, e você sabe o que falta antes de assinar.' : '<b>Duas fontes, uma voz.</b> O que veio do arquivo e o que veio da média chegam com a mesma segurança, e nada na resposta separa um do outro.';
+  }
+  orBtns.forEach(function (b) { b.addEventListener('click', function () { setOr(b.dataset.or); }); });
+  setOr('mix');
+
+  /* 3 · citações */
+  var DOC = [
+    { s: '[1] Política comercial · 4. Alçadas', p: ['4.1 Descontos até 8% sobre o preço de tabela podem ser concedidos pelo gerente da conta.', '4.2 Descontos acima de 8% dependem de aprovação do diretor comercial.', '4.3 Desconto não se aplica a serviço sob medida.'], h: 0 },
+    { s: '[1] Política comercial · 4. Alçadas', p: ['4.1 Descontos até 8% sobre o preço de tabela podem ser concedidos pelo gerente da conta.', '4.2 Descontos acima de 8% dependem de aprovação do diretor comercial.', '4.3 Desconto não se aplica a serviço sob medida.'], h: 1 },
+    { s: '[2] Política comercial · 6. Cliente novo', p: ['6.1 Cliente sem histórico de compra passa por análise de crédito antes de qualquer aprovação de desconto.', '6.2 A área de crédito responde em até dois dias úteis.', '6.3 Proposta de cliente novo sai marcada como não enviável até a liberação.'], h: 0 },
+    { s: '[2] Política comercial · 6. Cliente novo', p: ['6.1 Cliente sem histórico de compra passa por análise de crédito antes de qualquer aprovação de desconto.', '6.2 A área de crédito responde em até dois dias úteis.', '6.3 Proposta de cliente novo sai marcada como não enviável até a liberação.'], h: 1 }
+  ];
+  var ctBtns = document.querySelectorAll('[data-ct]'), raDoc = document.getElementById('raDoc');
+  function showCt(i) {
+    pressGroup(ctBtns, function (x) { return +x.dataset.ct === i; });
+    var d = DOC[i];
+    raDoc.innerHTML = '<span class="h">' + d.s + '</span>' + d.p.map(function (t, k) { return '<p' + (k === d.h ? ' class="hit"' : '') + '>' + t + '</p>'; }).join('') + '<p class="hint">Um clique, e a conferência cabe no seu dia. Sem a citação, conferir seria reler o arquivo inteiro.</p>';
+  }
+  ctBtns.forEach(function (b) { b.addEventListener('click', function () { showCt(+b.dataset.ct); }); });
+  showCt(0);
+
+  /* 4 · não consta */
+  var NC = {
+    sem: '<div class="ra-ans gen"><span class="eyebrow">Sem a regra</span><p class="quote">“Para exportação, costuma-se trabalhar com descontos entre 5% e 12%, dependendo do volume e do país de destino.”</p><p class="hint">Nenhuma citação, e nenhum aviso. Uma resposta útil, plausível e inventada, que ninguém tem como perceber olhando.</p></div>',
+    com: '<div class="ra-ans anc"><span class="eyebrow">Com a regra escrita</span><p class="quote">“Não consta nos documentos carregados. A política trata de alçadas e de cliente novo, e não menciona exportação.”</p><p class="hint">Sem citação, porque não há trecho para citar. É chato, verdadeiro, e diz o que você precisa ir buscar.</p></div>'
+  };
+  var ncBtns = document.querySelectorAll('[data-nc]'), ncOut = document.getElementById('ncOut');
+  function setNc(k) { pressGroup(ncBtns, function (x) { return x.dataset.nc === k; }); ncOut.innerHTML = NC[k]; }
+  ncBtns.forEach(function (b) { b.addEventListener('click', function () { setNc(b.dataset.nc); }); });
+  setNc('sem');
+
+  /* 5 · trechos parecidos */
+  var tpN = document.getElementById('tpN');
+  function tp() {
+    var n = +tpN.value, sim = Math.round((n - 1) * 0.2), cells = '';
+    document.getElementById('tpO').textContent = n;
+    var arr = []; for (var i = 0; i < n; i++) arr.push('');
+    var rpos = Math.floor(n / 2); arr[rpos] = 'r';
+    for (var j = 0; j < sim; j++) { var idx = Math.floor((j + 0.5) * n / sim); while (arr[idx] !== '' ) { idx = (idx + 1) % n; } arr[idx] = 'a'; }
+    cells = arr.map(function (c) { return '<i class="' + c + '"></i>'; }).join('');
+    document.getElementById('tpGrid').innerHTML = cells;
+    document.getElementById('tpBar').style.width = Math.min(100, sim * 9) + '%';
+    document.getElementById('tpTxt').innerHTML = sim === 0 ? '<b>Um candidato só, e é o certo.</b> As três páginas escolhidas não deixam a busca errar perto.' : sim < 4 ? '<b>' + sim + (sim === 1 ? ' parecido' : ' parecidos') + ' na disputa.</b> O certo ainda costuma ganhar, mas já pode perder numa pergunta ambígua.' : '<b>' + sim + ' parecidos na disputa.</b> O trecho certo continua lá, e às vezes perde para o vizinho de outro capítulo. Ninguém percebe, porque a resposta errada tem a cara da certa.';
+  }
+  tpN.addEventListener('input', tp);
+  tp();
+
+  /* 6 · P S N */
+  var PS = [
+    { f: 'tabela-de-precos-2026.md', d: 'a tabela vigente, com código e prazo', r: [1, 1, 1], why: 'Sem ela, o preço sai inventado. Passa nas três: sobe.' },
+    { f: 'e-mails-da-diretoria.pdf', d: 'decisões antigas, algumas revistas', r: [1, 0, 0], why: 'Carrega decisão que já caducou, e ela não tem como saber qual. Não sobe.' },
+    { f: 'apresentacao-kickoff.pptx', d: '40 slides feitos para alguém falar por cima', r: [1, 0, 0], why: 'Sozinha, é título sem conteúdo. Meia resposta parece inteira. Não sobe.' },
+    { f: 'guia-de-vendas-mercado.pdf', d: 'modelo genérico baixado da internet', r: [0, 1, 0], why: 'Ela já sabe o que é genérico. Você não ganha nada, e ganha páginas parecidas. Não sobe.' },
+    { f: 'modelo-de-proposta.docx', d: 'as seis partes que toda proposta tem', r: [1, 1, 1], why: 'Sem ele, o formato muda toda semana. Sobe, e a instrução manda seguir o modelo.' },
+    { f: 'por-garantia.zip', d: 'a pasta do setor inteira', r: [0, 0, 0], why: 'Se você não diz em uma frase por que um arquivo está lá, ele atrapalha. É sempre o que ela cita na hora errada.' }
+  ];
+  var psEl = document.getElementById('psFiles'), psPanel = document.getElementById('psPanel'), psBtns = [];
+  var QS = ['P · trata de uma etapa do seu trabalho?', 'S · sozinho, entrega a informação inteira?', 'N · sem ele, a resposta sai errada?'];
+  PS.forEach(function (p, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.innerHTML = '<b>' + p.f + '</b><span>' + p.d + '</span>'; b.addEventListener('click', function () { showPs(i); }); psEl.appendChild(b); psBtns.push(b); });
+  function showPs(i) {
+    psBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var p = PS[i], ok = p.r.every(Boolean);
+    psPanel.innerHTML = '<span class="eyebrow">' + p.f + '</span>' + QS.map(function (q, k) { return '<div class="ps-q"><span class="l ' + (p.r[k] ? 'y' : 'n') + '">' + (p.r[k] ? 'sim' : 'não') + '</span><span>' + q + '</span></div>'; }).join('') + '<div class="verdict ' + (ok ? 'ok' : 'no') + '"><b>' + (ok ? 'Sobe.' : 'Fica de fora.') + '</b> ' + p.why + '</div>';
+  }
+  showPs(0);
+
+  /* 7 · leu ou deduziu */
+  quiz(document.getElementById('leuQuiz'), document.getElementById('leuScore'), [
+    { s: 'Voltou: “4.1 Descontos até 8% sobre o preço de tabela podem ser concedidos pelo gerente da conta.” Você abre o arquivo e a frase está lá, igual.', a: 'leu', why: 'Texto exato, com o número da seção. Ela abriu o trecho.' },
+    { s: 'Voltou: “A política diz que gerentes podem dar descontos moderados, em torno de 8%.” No arquivo não existe a palavra “moderados”.', a: 'deduziu', why: 'Paráfrase com uma palavra que não está lá. É reconstrução, não leitura: confira o número antes de usar.' },
+    { s: 'Voltou: “Não encontrei no documento um trecho que sustente o prazo de 48 horas que citei antes.”', a: 'deduziu', why: 'O prazo veio da média, e ela acabou de admitir. É a resposta mais útil das três: agora você sabe o que tirar.' }
+  ], [['leu', 'Leu'], ['deduziu', 'Deduziu']], 'se voltou paráfrase, trate a resposta como rascunho.');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--captura">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O que não vira registro não existe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: pilar 1 da família AI First. Peças: o que a IA enxerga (alternar), teste dos três tipos (quiz), as três gavetas (cartões + gráfico de linhas), uma regra do corredor ao registro (passo a passo com diagrama), três falhas (cartões), o registro que envelhece (controle deslizante), a régua por fase (barras) e a pergunta das férias (montador com copiar). */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.2rem, 5.4vw, 3.4rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* ---- só desta peça ---- */
+/* 1 · o que ela enxerga */
+.ve-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.ve-tile { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; transition: opacity .3s ease; }
+.ve-tile .ve-src { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.ve-tile.ve-w { border-color: var(--ok); box-shadow: inset 3px 0 0 var(--ok); }
+.ve-grid.ve-ia .ve-tile:not(.ve-w) { opacity: .35; border-style: dashed; }
+.ve-grid.ve-ia .ve-tile:not(.ve-w) .ve-src::after { content: " · invisível"; color: var(--atencao-texto); }
+.ve-count { display: flex; gap: 22px; flex-wrap: wrap; align-items: baseline; }
+.ve-count b { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); font-weight: 500; }
+
+/* 2 · três tipos */
+.tp-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tp-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.tp-card .tp-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--accent); }
+.tp-card b { font-weight: 600; }
+.tp-card p { font-size: .92rem; color: var(--text-muted); }
+.tp-card .tp-how { font-size: .88rem; border-top: 1px solid var(--border); padding-top: 8px; color: var(--text); }
+.tq-list { display: grid; gap: 10px; }
+.tq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.tq-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.tq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.tq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tq-fb { font-size: .93rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.tq-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.tq-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.tq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 3 · gavetas */
+.gv-wrap { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.gv-cab { background: var(--border); border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px; display: grid; gap: 8px; }
+.gv-dr { text-align: left; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 14px 20px; position: relative; }
+.gv-dr::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: 54px; height: 5px; border-radius: 3px; background: var(--border-strong); transform: translateX(-50%); }
+.gv-dr .gv-n { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; }
+.gv-dr b { font-weight: 600; display: block; }
+.gv-dr small { color: var(--text-muted); font-size: .88rem; }
+.gv-dr[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.gv-dr[aria-pressed="true"] .gv-n { background: var(--accent); color: var(--bg-elev); }
+.gv-det { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; min-height: 290px; align-content: start; }
+.gv-det dl { margin: 0; display: grid; grid-template-columns: 1fr; gap: 2px; }
+.gv-det dd + dt { margin-top: 8px; }
+.gv-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.gv-det dd { margin: 0; }
+.gv-det ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.gv-chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.gv-scroll { overflow-x: auto; }
+.gv-chart svg { width: 100%; min-width: 560px; height: auto; display: block; }
+.gc-ax { stroke: var(--border-strong); stroke-width: 1; }
+.gc-l { fill: none; stroke-width: 2.6; stroke-linejoin: round; transition: opacity .35s ease; }
+.gc-1 { stroke: var(--text-muted); }
+.gc-3 { stroke: var(--ok); }
+.gc-2 { stroke: var(--accent); }
+.gc-rep { stroke: var(--atencao); stroke-dasharray: 6 5; }
+.gc-t { font: 500 11.5px var(--font-mono); fill: var(--text-muted); }
+.gc-t.gc-a { fill: var(--accent); }
+.gc-t.gc-w { fill: var(--atencao-texto); }
+.gc-t.gc-o { fill: var(--ok-texto); }
+svg.gc-conv .gc-on, svg.gc-reg .gc-off { opacity: 0; }
+
+/* 4 · caminho de uma regra */
+.cm-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.cm-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.cm-node rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.cm-node .t { font: 600 12.5px var(--font-mono); letter-spacing: .06em; fill: var(--text); text-anchor: middle; }
+.cm-node .s { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.cm-node.done rect { fill: var(--accent-soft); stroke: var(--accent); }
+.cm-node.now rect { stroke: var(--accent); stroke-width: 2.6; }
+.cm-arr { stroke: var(--border-strong); stroke-width: 1.6; fill: none; }
+.cm-arr.done { stroke: var(--accent); }
+.cm-mk { fill: var(--border-strong); }
+.cm-reach { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content; gap: 12px; align-items: center; }
+.cm-track { height: 12px; border-radius: 6px; background: var(--border); overflow: hidden; }
+.cm-fill { height: 100%; width: 10%; background: var(--accent); transition: width .4s ease; }
+.cm-reach output { font-family: var(--font-mono); font-size: .9rem; color: var(--accent); }
+
+/* 5 · falhas */
+.fl-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fl-card { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.fl-card .fl-n { font-family: var(--font-mono); font-size: 12px; color: var(--atencao-texto); letter-spacing: .1em; }
+.fl-card b { font-weight: 600; line-height: 1.3; }
+.fl-card[aria-pressed="true"] { border-color: var(--atencao); background: var(--atencao-soft); }
+.fl-det { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; }
+.fl-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.fl-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.fl-det dd { margin: 0; }
+.fl-det .fl-learn { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--accent); }
+.fl-bars { display: grid; gap: 6px; max-width: 460px; }
+.fl-bar { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; align-items: center; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+.fl-bar span { height: 14px; border-radius: 3px; background: var(--atencao); display: block; }
+.fl-bar.fl-after span { background: var(--ok); }
+
+/* 6 · envelhecer */
+.ev-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px; align-items: start; }
+.ev-ctrl { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.ev-ctrl label { font-size: .95rem; }
+.ev-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.ev-row input { width: 100%; accent-color: var(--accent); }
+.ev-row output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.ev-sw { display: flex; gap: 10px; align-items: center; font-size: .95rem; }
+.ev-sw input { width: 18px; height: 18px; accent-color: var(--accent); }
+.ev-doc { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 6px; }
+.ev-doc .ev-file { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.ev-line { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 4px; font-size: .93rem; }
+.ev-line .ev-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; color: var(--ok-texto); }
+.ev-line.ev-flag { background: var(--atencao-soft); }
+.ev-line.ev-flag .ev-tag { color: var(--atencao-texto); }
+
+/* 7 · régua por fase */
+.rf-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); padding: 12px; }
+.rf-scroll svg { display: block; width: 100%; min-width: 600px; height: auto; }
+.rf-bar { fill: var(--border-strong); transition: fill .25s ease; cursor: pointer; }
+.rf-bar.on { fill: var(--accent); }
+.rf-v { font: 600 13px var(--font-body); fill: var(--text); text-anchor: middle; }
+.rf-x { font: 500 11px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.rf-ax { stroke: var(--border-strong); }
+.rf-note { font: 400 12px var(--font-body); fill: var(--text-dim); }
+.rf-btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.rf-btns button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 4px 12px; font-size: .88rem; color: var(--text-muted); }
+.rf-btns button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); }
+
+/* 8 · férias */
+.fe-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.fe-fields { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.fe-f { display: grid; gap: 6px; }
+.fe-f label { font-size: .93rem; }
+.fe-f label span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: var(--accent); display: block; }
+.fe-f textarea { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; min-height: 58px; resize: vertical; background: var(--bg); color: var(--text); width: 100%; }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .tp-cards, .gv-wrap, .fl-row, .ev-wrap, .fe-wrap, .take { grid-template-columns: 1fr; }
+  .gv-det dl, .fl-det dl { grid-template-columns: 1fr; }
+  .cm-reach { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .ve-tile, .gc-l, .cm-node rect, .cm-fill, .rf-bar { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first.html">← Visão geral</a><a href="./ai-first--contexto.html">5.2 Contexto →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html" aria-current="page"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.1 · pilar 1 de 5</span>
+  <h1>O que não vira registro não existe</h1>
+  <p class="sub">Por que a IA não enxerga o que a sua área sabe, e onde cada coisa escrita vai morar</p>
+  <p class="lead">A IA só trabalha com o que está escrito. <strong>O que vive na conversa, na reunião sem ata e na memória de quem estava lá é invisível para ela</strong>, e para quem começa amanhã também. É o pilar mais barato dos cinco: não se compra nada, não se pede nada a ninguém. Decide-se registrar.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-enxerga">O que ela enxerga</a><a href="#s-tipos">Três tipos de invisível</a><a href="#s-gavetas">As três gavetas</a><a href="#s-caminho">Do corredor ao registro</a><a href="#s-falhas">Registro que não serve</a><a href="#s-velho">O registro envelhece</a><a href="#s-fase">Quanto registrar</a><a href="#s-ferias">A pergunta das férias</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-enxerga" aria-labelledby="h-enxerga">
+  <span class="eyebrow">O que ela enxerga</span>
+  <h2 id="h-enxerga">A sua área sabe muito mais do que escreveu</h2>
+  <p class="intro">Dez coisas que uma área comercial qualquer sabe fazer bem. Troque a visão e veja <strong>o que sobra quando quem olha é a IA</strong>, ou alguém que começou esta semana.</p>
+  <div class="seg" role="group" aria-label="Quem olha">
+    <button type="button" data-ve="area" aria-pressed="true">O que a área sabe</button>
+    <button type="button" data-ve="ia" aria-pressed="false">O que a IA enxerga</button>
+  </div>
+  <div class="ve-grid" id="veGrid"></div>
+  <div class="ve-count" aria-live="polite"><span><b id="veN">10</b> <span class="hint" id="veTxt">coisas que a área sabe</span></span></div>
+  <p class="punch">A etapa que some no orçamento da <a href="./ai-first.html#s-encosta">cabeça desta família</a> só some porque <em>alguém escreveu a tabela de preço e prazo</em>. Sem ela, não há desenho novo.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tipos" aria-labelledby="h-tipos">
+  <span class="eyebrow">Três tipos de invisível</span>
+  <h2 id="h-tipos">O que falta escrever tem três formas, e cada uma se descobre de um jeito</h2>
+  <p class="intro">Não é tudo a mesma coisa. <strong>Cada tipo se revela num momento diferente</strong>, e pede um tipo de registro diferente.</p>
+  <div class="tp-cards">
+    <div class="tp-card"><span class="tp-n">TIPO 1</span><b>O jeito que se aprende observando</b><p>Ninguém ensinou: a pessoa viu alguém fazer e copiou.</p><p class="tp-how">Aparece quando você tenta explicar a quem começou ontem: leva meia hora e ainda falta coisa.</p></div>
+    <div class="tp-card"><span class="tp-n">TIPO 2</span><b>A regra que não está escrita</b><p>Todo mundo da área respeita, e não está em manual nenhum.</p><p class="tp-how">Aparece quando quem chega novo erra uma vez, e alguém diz “aqui não é assim”.</p></div>
+    <div class="tp-card"><span class="tp-n">TIPO 3</span><b>A exceção que só uma pessoa trata</b><p>Quando aparece aquele caso, todo mundo procura a mesma pessoa.</p><p class="tp-how">Aparece quando ela sai de férias, e o caso espera.</p></div>
+  </div>
+  <p class="intro">Agora classifique seis situações. Nenhuma tem pegadinha: o valor está em reconhecer o padrão na sua área depois.</p>
+  <div class="tq-list" id="tqList"></div>
+  <p class="tq-score" id="tqScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-gavetas" aria-labelledby="h-gavetas">
+  <span class="eyebrow">As três gavetas</span>
+  <h2 id="h-gavetas">Saber o que falta é metade. A outra metade é não jogar tudo no mesmo lugar</h2>
+  <p class="intro">O que se registra vai para uma de três gavetas. A divisão vale para qualquer área, com ou sem IA. <strong>Abra cada uma.</strong></p>
+  <div class="gv-wrap">
+    <div class="gv-cab" role="group" aria-label="As três gavetas">
+      <button type="button" class="gv-dr" data-gv="0" aria-pressed="true"><span class="gv-n">1</span><span><b>O que é fato</b><small>como as coisas são e funcionam aqui</small></span></button>
+      <button type="button" class="gv-dr" data-gv="1" aria-pressed="false"><span class="gv-n">2</span><span><b>Como aqui se faz</b><small>o jeito da casa, e o que se corrige sempre</small></span></button>
+      <button type="button" class="gv-dr" data-gv="2" aria-pressed="false"><span class="gv-n">3</span><span><b>O passo a passo</b><small>a rotina de uma tarefa, na ordem</small></span></button>
+    </div>
+    <div class="gv-det" id="gvDet" aria-live="polite"></div>
+  </div>
+  <div class="gv-chart">
+    <span class="eyebrow">Quanto cada gaveta cresce, ao longo de um ano</span>
+    <div class="seg" role="group" aria-label="Para onde vai a correção">
+      <button type="button" data-gc="reg" aria-pressed="true">A correção vai para a gaveta 2</button>
+      <button type="button" data-gc="conv" aria-pressed="false">A correção fica na conversa</button>
+    </div>
+    <div class="gv-scroll" role="region" tabindex="0" aria-label="Gráfico das gavetas. Role para os lados se a tela for estreita.">
+    <svg id="gcSvg" class="gc-reg" viewBox="0 0 720 250" role="img" aria-labelledby="gc-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="gc-t">Linhas de crescimento das três gavetas ao longo de doze meses, e da mesma correção repetida quando ela não é registrada</title>
+      <line class="gc-ax" x1="40" y1="210" x2="540" y2="210"/><line class="gc-ax" x1="40" y1="20" x2="40" y2="210"/>
+      <polyline class="gc-l gc-1" points="40,170 120,166 200,164 280,163 360,162 440,161 520,160"/>
+      <polyline class="gc-l gc-3" points="40,190 120,190 120,178 240,178 240,166 360,166 360,154 520,154"/>
+      <polyline class="gc-l gc-2 gc-on" points="40,200 120,182 200,160 280,136 360,112 440,88 520,62"/>
+      <polyline class="gc-l gc-2 gc-off" points="40,200 520,198"/>
+      <polyline class="gc-l gc-rep gc-off" points="40,205 120,186 200,166 280,146 360,126 440,106 520,84"/>
+      <text class="gc-t" x="526" y="164">1 · fato</text>
+      <text class="gc-t gc-o" x="526" y="150">3 · passo a passo</text>
+      <text class="gc-t gc-a gc-on" x="526" y="58">2 · como aqui se faz</text>
+      <text class="gc-t gc-a gc-off" x="526" y="194">2 · vazia</text>
+      <text class="gc-t gc-w gc-off" x="526" y="80">a mesma correção, de novo</text>
+      <text class="gc-t" x="40" y="232">mês 1</text><text class="gc-t" x="470" y="232">mês 12</text>
+    </svg>
+    </div>
+    <p class="hint" id="gcTxt" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-caminho" aria-labelledby="h-caminho">
+  <span class="eyebrow">Do corredor ao registro</span>
+  <h2 id="h-caminho">Uma regra, da conversa até a hora em que alguém precisa dela</h2>
+  <p class="intro">Siga uma regra de verdade: <strong>“desconto acima de 10% só com o gerente, e nunca na primeira proposta”</strong>. Repare, a cada passo, em quantas pessoas conseguem usá-la sem perguntar a ninguém.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="cmLab">Passo 1 de 5</span>
+    <div class="nav"><button type="button" class="btn" id="cmPrev">← Anterior</button><button type="button" class="btn primary" id="cmNext">Próximo →</button></div>
+  </div>
+  <div class="cm-scroll" role="region" tabindex="0" aria-label="Diagrama do caminho de uma regra. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cm-t">
+      <title id="cm-t">Cinco etapas: dita na conversa, capturada, organizada, guardada onde o trabalho passa e lida na hora de fazer</title>
+      <defs><marker id="cmM" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="cm-mk"/></marker></defs>
+      <g class="cm-node" data-n="1"><rect x="10" y="30" width="150" height="90" rx="8"/><text class="t" x="85" y="64">DITA</text><text class="s" x="85" y="86">na reunião,</text><text class="s" x="85" y="102">em voz alta</text></g>
+      <g class="cm-node" data-n="2"><rect x="192" y="30" width="150" height="90" rx="8"/><text class="t" x="267" y="64">CAPTURADA</text><text class="s" x="267" y="86">alguém escreve</text><text class="s" x="267" y="102">uma frase</text></g>
+      <g class="cm-node" data-n="3"><rect x="374" y="30" width="150" height="90" rx="8"/><text class="t" x="449" y="64">ORGANIZADA</text><text class="s" x="449" y="86">vai para a</text><text class="s" x="449" y="102">gaveta 2</text></g>
+      <g class="cm-node" data-n="4"><rect x="556" y="30" width="150" height="90" rx="8"/><text class="t" x="631" y="64">GUARDADA</text><text class="s" x="631" y="86">onde a proposta</text><text class="s" x="631" y="102">é montada</text></g>
+      <g class="cm-node" data-n="5"><rect x="738" y="30" width="150" height="90" rx="8"/><text class="t" x="813" y="64">LIDA</text><text class="s" x="813" y="86">na hora de fazer,</text><text class="s" x="813" y="102">sem procurar</text></g>
+      <path class="cm-arr" data-a="2" d="M160,75 H188" marker-end="url(#cmM)"/>
+      <path class="cm-arr" data-a="3" d="M342,75 H370" marker-end="url(#cmM)"/>
+      <path class="cm-arr" data-a="4" d="M524,75 H552" marker-end="url(#cmM)"/>
+      <path class="cm-arr" data-a="5" d="M706,75 H734" marker-end="url(#cmM)"/>
+    </svg>
+  </div>
+  <div class="cm-reach"><span class="eyebrow">Quem consegue usar</span><div class="cm-track"><div class="cm-fill" id="cmFill"></div></div><output id="cmOut">1 pessoa</output></div>
+  <div class="caption" id="cmCap" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-falhas" aria-labelledby="h-falhas">
+  <span class="eyebrow">Registro que não serve</span>
+  <h2 id="h-falhas">Escrever não basta: três jeitos de o registro existir e não funcionar</h2>
+  <p class="intro">Uma pessoa que toca doze frentes de trabalho ao mesmo tempo montou um sistema de registro para cada uma. <strong>Errou três vezes antes de ele funcionar</strong>, e as três se parecem com o que acontece em qualquer área. Clique em cada uma.</p>
+  <div class="fl-row" role="group" aria-label="As três falhas">
+    <button type="button" class="fl-card" data-fl="0" aria-pressed="true"><span class="fl-n">FALHA 1</span><b>Ficou tudo especificado, e nada instalado</b></button>
+    <button type="button" class="fl-card" data-fl="1" aria-pressed="false"><span class="fl-n">FALHA 2</span><b>O registro servia à ferramenta, e não a quem voltava</b></button>
+    <button type="button" class="fl-card" data-fl="2" aria-pressed="false"><span class="fl-n">FALHA 3</span><b>Encher também estraga</b></button>
+  </div>
+  <div class="fl-det" id="flDet" aria-live="polite"></div>
+  <p class="punch">As três têm a mesma raiz: o registro existia, mas <em>não no lugar nem no tamanho em que alguém iria lê-lo</em>.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-velho" aria-labelledby="h-velho">
+  <span class="eyebrow">O registro envelhece</span>
+  <h2 id="h-velho">Todo registro que funciona fica velho em silêncio</h2>
+  <p class="intro">Ele não envelhece por ser mal desenhado. <strong>Envelhece porque atualizar depende de alguém lembrar.</strong> Arraste o tempo e veja o “onde paramos” de uma frente de trabalho. Depois ligue o comparador.</p>
+  <div class="ev-wrap">
+    <div class="ev-ctrl">
+      <label for="evW">Semanas desde a última atualização</label>
+      <div class="ev-row"><input type="range" id="evW" min="0" max="12" value="0"><output id="evWo" for="evW">0</output></div>
+      <label class="ev-sw"><input type="checkbox" id="evCmp"> Comparar o que está escrito com o que existe de fato</label>
+      <div class="verdict ok" id="evVer" aria-live="polite"></div>
+    </div>
+    <div class="ev-doc">
+      <span class="ev-file">onde-paramos · frente comercial</span>
+      <div id="evLines"></div>
+    </div>
+  </div>
+  <p class="hint">O comparador não atualiza nada: só torna a defasagem visível. Isso já muda o comportamento, porque o que ninguém vê, ninguém corrige.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-fase" aria-labelledby="h-fase">
+  <span class="eyebrow">Quanto registrar</span>
+  <h2 id="h-fase">A régua acompanha a fase: sobe com o trabalho, e cai quando ele termina</h2>
+  <p class="intro">Item, aqui, é uma coisa que precisa existir escrita: o arquivo que diz como a frente funciona, a linha de onde ela parou, o critério do que conta como pronto. <strong>As barras são de um sistema real</strong>, o mesmo das três falhas. Clique numa fase.</p>
+  <div class="rf-btns" id="rfBtns" role="group" aria-label="Fases do trabalho"></div>
+  <div class="rf-scroll">
+    <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rf-t">
+      <title id="rf-t">Quantos itens escritos cada fase exige: acabou de chegar 3, antes de executar 7, em execução 14, quem pediu validando 15 a 16, entregue 16 a 18, encerrado 2, parado 1</title>
+      <line class="rf-ax" x1="20" y1="200" x2="620" y2="200"/>
+      <g id="rfBars"></g>
+      <text class="rf-note" x="20" y="16">quantos itens a fase exige</text>
+    </svg>
+  </div>
+  <div class="caption" id="rfCap" aria-live="polite"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-ferias" aria-labelledby="h-ferias">
+  <span class="eyebrow">A pergunta das férias</span>
+  <h2 id="h-ferias">Se você saísse por trinta dias, o que quem assume precisaria te perguntar?</h2>
+  <p class="intro">Cada pergunta dessa lista é uma linha que deveria estar escrita e não está. <strong>Escreva um item de cada tipo</strong>, e veja a lista montada, com a gaveta de cada um.</p>
+  <div class="fe-wrap">
+    <div class="fe-fields" id="feFields"></div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">A sua lista, ao vivo</span><button type="button" class="btn" id="feCopy">Copiar</button></div>
+      <pre id="feOut"></pre>
+    </div>
+  </div>
+  <p class="intro">Quando o material já existe, mas solto, este pedido faz a primeira triagem. <strong>Tire nome de pessoa e o que foi dito em confiança antes de colar.</strong></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Organizar o que já está solto</span><button type="button" class="btn" id="orgCopy">Copiar</button></div>
+    <pre id="orgText"># PAPEL
+Você organiza conhecimento operacional de equipes. O seu trabalho não é resumir o que está escrito: é achar o que a equipe sabe fazer e nunca registrou, e propor onde cada coisa deveria ficar guardada.
+
+# CONTEXTO
+Vou colar anotações soltas das últimas <i>quatro semanas</i> da <i>minha equipe</i>: caderno, recado de aplicativo de mensagens, ata parcial e e-mail. É material bruto, misturado, e boa parte do que importa está implícito.
+
+# TAREFA
+Devolva três blocos, nesta ordem:
+01 REGRAS QUE NINGUÉM ESCREVEU
+Toda regra que a equipe segue e que não aparece escrita em lugar nenhum. Para cada uma: a regra em uma frase, o trecho que a revela, e o que acontece quando alguém que não sabe dela assume a tarefa.
+02 O QUE SÓ EXISTE NA CABEÇA DE UMA PESSOA
+Cada ponto que depende de uma pessoa específica, e o risco concreto se ela sair de férias na semana errada.
+03 EM QUAL GAVETA CADA COISA VAI
+Para cada item: fato (como as coisas são aqui), como aqui se faz (o jeito da casa), ou passo a passo (a rotina de uma tarefa). E onde ele deveria morar para ser lido na hora em que o trabalho é feito.
+
+# REGRAS
+Não invente informação que não está no material. Quando algo estiver ambíguo, diga que está ambíguo em vez de escolher por mim. Cite o trecho que sustenta cada achado.
+
+# ANTES DE COMEÇAR
+Responda em três linhas: quantas regras não escritas você encontrou, qual delas é a mais cara de perder, e o que ficou ambíguo. Espere o meu OK e só depois gere os três blocos.</pre>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Escrito, ou não existe</h3><p>Para a IA e para quem chega, o que ficou na conversa simplesmente não aconteceu.</p></div>
+    <div class="take-card"><h3>A gaveta 2 é a que falta</h3><p>Fato quase todo mundo tem. O jeito da casa, e a correção de ontem, quase ninguém escreveu.</p></div>
+    <div class="take-card"><h3>Escreva para quem lê</h3><p>No lugar onde o trabalho passa, curto, e com alguém olhando se envelheceu.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Registro</dt><dd>Qualquer coisa escrita que a próxima pessoa, ou a IA, consegue achar e usar sem perguntar a ninguém.</dd>
+    <dt>Conhecimento invisível</dt><dd>O que a área sabe e ninguém escreveu: o jeito que se aprende vendo, a regra não escrita, a exceção de uma pessoa só.</dd>
+    <dt>Como aqui se faz</dt><dd>A gaveta do jeito da casa. É para onde vai toda correção, e por isso é a que mais cresce.</dd>
+    <dt>Onde paramos</dt><dd>O estado de uma frente em uma frase, e o próximo passo. É o que devolve a primeira hora de quem volta.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As linhas do gráfico das gavetas e o preenchimento de “quem consegue usar” mostram a forma, não a medida. As barras da régua por fase são de um sistema real de uma pessoa; a régua da sua área terá outros números.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first.html"><span>← anterior</span><b>Visão geral · AI First</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--contexto.html"><span>próxima →</span><b>5.2 · Resultado ruim é falta de contexto, não de capacidade</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · o que ela enxerga */
+  var VE = [
+    { t: 'A tabela de preços do ano', s: 'planilha', w: 1 },
+    { t: 'O desconto que o gerente sempre aprova, e o que ele nunca aprova', s: 'conversa' },
+    { t: 'Por que o fornecedor antigo foi trocado', s: 'reunião sem ata' },
+    { t: 'O calendário de fechamento do mês', s: 'documento', w: 1 },
+    { t: 'Como a pessoa mais antiga acalma cliente irritado', s: 'se aprende vendo' },
+    { t: 'Nunca prometer prazo sem confirmar com o técnico', s: 'todo mundo sabe' },
+    { t: 'O modelo de proposta que a diretoria já aprovou', s: 'arquivo', w: 1 },
+    { t: 'O cliente grande que só aceita nota até o dia 5', s: 'uma pessoa sabe' },
+    { t: 'O que foi decidido na reunião de segunda', s: 'memória de quem estava' },
+    { t: 'O atalho no sistema para corrigir pedido duplicado', s: 'se aprende vendo' }
+  ];
+  var veGrid = document.getElementById('veGrid');
+  VE.forEach(function (v) {
+    var d = document.createElement('div'); d.className = 've-tile' + (v.w ? ' ve-w' : '');
+    d.innerHTML = '<span class="ve-src">' + v.s + '</span><span>' + v.t + '</span>';
+    veGrid.appendChild(d);
+  });
+  var veBtns = document.querySelectorAll('[data-ve]');
+  veBtns.forEach(function (b) { b.addEventListener('click', function () {
+    pressGroup(veBtns, function (x) { return x === b; });
+    var ia = b.dataset.ve === 'ia';
+    veGrid.classList.toggle('ve-ia', ia);
+    document.getElementById('veN').textContent = ia ? '3' : '10';
+    document.getElementById('veTxt').textContent = ia ? 'de 10 estão escritas. As outras 7 só existem enquanto quem sabe estiver por perto.' : 'coisas que a área sabe';
+  }); });
+
+  /* 2 · três tipos */
+  var TQ = [
+    { s: 'Na hora de montar a escala, a supervisora olha primeiro quem trabalhou no último feriado. Ninguém ensinou; quem assumiu aprendeu vendo.', a: 1, why: 'Registro certo: escrever enquanto faz. Vai para a gaveta 3, o passo a passo da escala.' },
+    { s: 'Em qualquer material para a diretoria, valor vai sempre em reais, nunca só em percentual. Não está em manual nenhum.', a: 2, why: 'Vira uma linha da gaveta 2, “como aqui se faz”, no lugar onde o material é montado.' },
+    { s: 'Quando chega pedido de devolução acima de um valor alto, todo mundo encaminha para a mesma pessoa do financeiro.', a: 3, why: 'A exceção vira caso escrito: quando aparece, o que se faz, e quem decide quando ela não está.' },
+    { s: 'Reclamação de “logística” na pesquisa de satisfação quase sempre é sobre a sala do evento, não sobre o conteúdo. Quem chega novo lê errado uma vez.', a: 2, why: 'É a regra que todo mundo aplica e ninguém escreveu. Sem ela, qualquer leitura, humana ou da IA, junta as duas coisas.' },
+    { s: 'O fechamento do mês tem um jeito de conferir o total que só se aprende sentando ao lado de quem faz.', a: 1, why: 'Da próxima vez que fechar, escreva o que está fazendo enquanto faz. No mês seguinte, é só seguir e corrigir o que faltou.' },
+    { s: 'O cliente mais antigo tem uma condição especial de prazo. Só uma pessoa sabe qual é, e quando ela falta, o pedido dele espera.', a: 3, why: 'O teste é o das férias: se o caso espera, a exceção precisa estar escrita com quem decide na ausência dela.' }
+  ];
+  var TN = { 1: 'Observando', 2: 'Regra não escrita', 3: 'Exceção de uma pessoa' };
+  var tqList = document.getElementById('tqList'), tqScore = document.getElementById('tqScore'), tqAns = {};
+  TQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'tq-item';
+    d.innerHTML = '<p>' + q.s + '</p><div class="tq-opts" role="group" aria-label="Qual tipo"><button type="button" data-v="1" aria-pressed="false">1 · Observando</button><button type="button" data-v="2" aria-pressed="false">2 · Regra não escrita</button><button type="button" data-v="3" aria-pressed="false">3 · Exceção de uma pessoa</button></div><div class="tq-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.tq-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.v === q.a; tqAns[i] = ok;
+      fb.hidden = false; fb.className = 'tq-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É o tipo ' + q.a + ', ' + TN[q.a].toLowerCase() + '. ') + '</b>' + q.why;
+      var n = Object.keys(tqAns).length, c = Object.keys(tqAns).filter(function (k) { return tqAns[k]; }).length;
+      tqScore.textContent = n + ' de 6 respondidas · ' + c + ' certas' + (n === 6 ? ' · agora faça o mesmo com três casos da sua área, um de cada tipo.' : '');
+    }); });
+    tqList.appendChild(d);
+  });
+
+  /* 3 · gavetas */
+  var GV = [
+    { t: 'Gaveta 1 · O que é fato', o: 'Como as coisas são e funcionam aqui: estrutura, números, prazos, nomes das etapas.', m: 'Muda pouco.', q: 'Quem chega, no primeiro dia.', ex: ['a lista das áreas e de quem responde por cada uma', 'o calendário do ano', 'os prazos que não se movem'] },
+    { t: 'Gaveta 2 · Como aqui se faz', o: 'O jeito da casa, incluindo o que se corrige sempre. É para cá que vai toda correção.', m: 'Cresce toda semana. É a que mais cresce.', q: 'Quem faz a tarefa, e a IA, antes de cada pedido.', ex: ['nunca prometer prazo sem confirmar com o técnico', 'valor sempre em reais', 'comunicado sempre diz o que a pessoa faz agora'] },
+    { t: 'Gaveta 3 · O passo a passo', o: 'A rotina de uma tarefa que se repete, escrita na ordem em que acontece. É longa de propósito.', m: 'Muda quando a tarefa muda.', q: 'Quem executa aquela tarefa, e só ela.', ex: ['como se fecha o relatório do mês, do primeiro filtro à última seção', 'como se monta a escala do feriado', 'como se abre o cadastro de um cliente novo'] }
+  ];
+  var gvBtns = document.querySelectorAll('.gv-dr'), gvDet = document.getElementById('gvDet');
+  function showGv(i) {
+    pressGroup(gvBtns, function (x) { return +x.dataset.gv === i; });
+    var g = GV[i];
+    gvDet.innerHTML = '<span class="eyebrow">' + g.t + '</span><dl><dt>O que vai aqui</dt><dd>' + g.o + '</dd><dt>Com que frequência muda</dt><dd>' + g.m + '</dd><dt>Quem lê, e quando</dt><dd>' + g.q + '</dd><dt>Na prática</dt><dd><ul>' + g.ex.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul></dd></dl>' + (i === 1 ? '<p class="hint">O teste: pegue três registros que você já tem e diga a gaveta de cada um. Se os três caem na primeira, a gaveta 2 ainda está vazia.</p>' : '');
+  }
+  gvBtns.forEach(function (b) { b.addEventListener('click', function () { showGv(+b.dataset.gv); }); });
+  showGv(1);
+  var gcBtns = document.querySelectorAll('[data-gc]'), gcSvg = document.getElementById('gcSvg');
+  function setGc(k) {
+    pressGroup(gcBtns, function (x) { return x.dataset.gc === k; });
+    gcSvg.setAttribute('class', 'gc-' + k);
+    document.getElementById('gcTxt').textContent = k === 'reg'
+      ? 'Cada correção vira uma linha nova na gaveta 2, e a mesma correção não precisa ser feita de novo. A gaveta que cresce é a do jeito da casa.'
+      : 'A gaveta 2 fica vazia, e o que cresce é outra coisa: a mesma correção, feita de novo, toda semana. Parece acompanhar de perto; é corrigir duas vezes.';
+  }
+  gcBtns.forEach(function (b) { b.addEventListener('click', function () { setGc(b.dataset.gc); }); });
+  setGc('reg');
+
+  /* 4 · caminho de uma regra */
+  var CM = [
+    { t: 'Dita na conversa', r: 8, o: '1 pessoa', d: 'O gerente explica a regra numa reunião. Quem estava lá sabe. Quem não estava, e a IA, não sabem, e vão descobrir errando.', x: 'Se parar aqui: a regra vive na memória de quem ouviu, e some quando essa pessoa muda de área.' },
+    { t: 'Capturada', r: 22, o: 'quem anotou', d: 'Alguém escreve a regra em uma frase, no mesmo dia. Ainda está no caderno, no e-mail ou na ata de uma pessoa só.', x: 'Se parar aqui: existe escrita, mas só quem anotou sabe onde. É registro que ninguém acha.' },
+    { t: 'Organizada', r: 45, o: 'quem procurar', d: 'A frase vai para a gaveta 2, “como aqui se faz”, ao lado das outras regras comerciais. Ganha um lugar, e um nome que dá para procurar.', x: 'Se parar aqui: está no lugar certo, e depende de alguém lembrar de abrir na hora de montar a proposta.' },
+    { t: 'Guardada onde o trabalho passa', r: 75, o: 'quem faz a tarefa', d: 'A regra entra no modelo da proposta e no material que a IA lê antes de montar qualquer proposta. Não num manual à parte.', x: 'É aqui que o registro começa a funcionar: ele aparece sem ninguém ir buscar.' },
+    { t: 'Lida na hora de fazer', r: 100, o: 'toda a equipe e a IA', d: 'Quem monta a próxima proposta, pessoa ou IA, encontra a regra no caminho. Ninguém precisa lembrar dela, e ela vale no dia corrido também.', x: 'O ciclo da cabeça da família é este mesmo caminho, visto de longe. Aqui ele é uma frase só.' }
+  ];
+  var cmCur = 1, cmN = CM.length;
+  var cmNodes = document.querySelectorAll('.cm-node'), cmArrs = document.querySelectorAll('.cm-arr');
+  function cmGo(n) {
+    cmCur = Math.max(1, Math.min(cmN, n)); var s = CM[cmCur - 1];
+    cmNodes.forEach(function (g) { var k = +g.dataset.n; g.classList.toggle('done', k <= cmCur); g.classList.toggle('now', k === cmCur); });
+    cmArrs.forEach(function (p) { p.classList.toggle('done', +p.dataset.a <= cmCur); });
+    document.getElementById('cmFill').style.width = s.r + '%';
+    document.getElementById('cmOut').textContent = s.o;
+    document.getElementById('cmCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p><p class="hint">' + s.x + '</p>';
+    document.getElementById('cmLab').textContent = 'Passo ' + cmCur + ' de ' + cmN;
+    document.getElementById('cmPrev').disabled = cmCur === 1;
+    document.getElementById('cmNext').textContent = cmCur === cmN ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('cmPrev').addEventListener('click', function () { cmGo(cmCur - 1); });
+  document.getElementById('cmNext').addEventListener('click', function () { cmGo(cmCur === cmN ? 1 : cmCur + 1); });
+  cmGo(1);
+
+  /* 5 · falhas */
+  var FL = [
+    { s: 'Um mês inteiro com o diagnóstico pronto: onze decisões escritas, dezenove pendências catalogadas. E o problema número um parado no mesmo lugar.', c: 'O arquivo que faria o sistema funcionar existia na especificação, e não dentro da pasta onde o trabalho acontece.', f: 'Instalar o arquivo numa frente só, e usar. O resto veio depois, porque o primeiro funcionou.', l: 'Registrar não é organizar, e organizar não é instalar. Enquanto estiver numa pasta de especificação, é intenção.' },
+    { s: 'A primeira hora de cada retomada continuava indo embora, relembrando onde tinha parado.', c: 'O que a ferramenta cobrava na hora de executar ficava sempre atualizado. O “onde paramos” e as pendências, que a pessoa lia ao voltar, ficavam semanas parados.', f: 'Escrever para quem lê, e não para quem escreve. O “onde paramos” passou a ser atualizado no mesmo dia, junto com o trabalho.', l: 'Registro que não é lido na hora certa não resolve. Sistema mantido por quem escreve, e não por quem lê, é o erro mais comum de todos.' },
+    { s: 'Um arquivo de contexto com cerca de trinta mil palavras, que ninguém abria, e que duas vezes quebrou por um caractere errado no meio.', c: 'Mais da metade era ficha técnica, e não conteúdo. O arquivo virou depósito de tudo o que já se soube.', f: 'Cortar de 253 linhas para 83, e mandar o detalhe para onde ele só é lido quando é preciso.', l: 'O arquivo de contexto não é depósito. É o que precisa ser verdade em toda leitura.', bars: true }
+  ];
+  var flBtns = document.querySelectorAll('.fl-card'), flDet = document.getElementById('flDet');
+  function showFl(i) {
+    pressGroup(flBtns, function (x) { return +x.dataset.fl === i; });
+    var f = FL[i];
+    flDet.innerHTML = '<dl><dt>O sintoma</dt><dd>' + f.s + '</dd><dt>A causa</dt><dd>' + f.c + '</dd><dt>O conserto</dt><dd>' + f.f + '</dd></dl>' +
+      (f.bars ? '<div class="fl-bars" role="img" aria-label="Linhas do arquivo de contexto: 253 antes, 83 depois"><div class="fl-bar"><b>antes</b><span style="width:100%"></span></div><div class="fl-bar fl-after"><b>depois</b><span style="width:33%"></span></div></div>' : '') +
+      '<p class="fl-learn">' + f.l + '</p>';
+  }
+  flBtns.forEach(function (b) { b.addEventListener('click', function () { showFl(+b.dataset.fl); }); });
+  showFl(0);
+
+  /* 6 · envelhecer */
+  var EV = [
+    { t: 'Onde paramos: proposta enviada, esperando resposta do cliente', u: 2 },
+    { t: 'Próximo passo: ligar na quinta para saber do retorno', u: 1 },
+    { t: 'Pendência: aprovar o fornecedor novo · decide o gerente', u: 4 },
+    { t: 'Quem responde pelas entregas desta frente', u: 7 },
+    { t: 'Contexto: como esta frente funciona, e o que nunca se faz nela', u: 11 },
+    { t: 'Decidido em 03/09: desconto máximo de 10% nesta conta', u: 99 }
+  ];
+  var evW = document.getElementById('evW'), evCmp = document.getElementById('evCmp'), evLines = document.getElementById('evLines'), evVer = document.getElementById('evVer');
+  function renderEv() {
+    var w = +evW.value, cmp = evCmp.checked, stale = 0;
+    document.getElementById('evWo').textContent = w;
+    evLines.innerHTML = EV.map(function (l) {
+      var old = w > l.u; if (old) stale++;
+      var tag = cmp ? (old ? 'já não é verdade' : (l.u === 99 ? 'histórico: só se acrescenta' : 'confere')) : 'em dia';
+      return '<div class="ev-line' + (cmp && old ? ' ev-flag' : '') + '"><span>' + l.t + '</span><span class="ev-tag">' + tag + '</span></div>';
+    }).join('');
+    if (!cmp) { evVer.className = 'verdict ' + (stale ? 'no' : 'ok'); evVer.innerHTML = stale ? '<b>O documento parece em dia.</b> Repare que as linhas não mudaram de cor. Você só descobre quando alguém decidir em cima de uma delas.' : '<b>Recém-atualizado.</b> Tudo o que está escrito é verdade hoje.'; }
+    else { evVer.className = 'verdict ' + (stale ? 'no' : 'ok'); evVer.innerHTML = '<b>' + (EV.length - stale) + ' de ' + EV.length + ' linhas ainda verdadeiras.</b> ' + (stale ? 'O comparador mostra quais. Agora dá para corrigir antes de alguém usar.' : 'Nada envelheceu ainda.'); }
+  }
+  evW.addEventListener('input', renderEv); evCmp.addEventListener('change', renderEv); renderEv();
+
+  /* 7 · régua por fase */
+  var RF = [
+    { n: 'Acabou de chegar', v: 3, l: '3', d: 'Três coisas bastam: onde o material vai morar, o que o trabalho é em uma frase, e quem decide sobre ele.' },
+    { n: 'Antes de executar', v: 7, l: '7', d: 'Entra o critério do que conta como pronto, o que já foi combinado e o que ainda não foi.' },
+    { n: 'Em execução', v: 14, l: '14', d: 'O trabalho cresceu: o calendário, o que já foi entregue, o que falta, onde as dúvidas ficam, o que se decidiu no caminho.' },
+    { n: 'Quem pediu validando', v: 15.5, l: '15–16', d: 'Soma-se o que quem pediu apontou, e o que muda por causa disso.' },
+    { n: 'Entregue, negociando a continuação', v: 17, l: '16–18', d: 'O pico: tudo o que foi feito, e a base para decidir se continua.' },
+    { n: 'Encerrado', v: 2, l: '2', d: 'Cai para quase nada: o que foi entregue e o que se aprendeu. O resto vira arquivo.' },
+    { n: 'Parado', v: 1, l: '1', d: 'Uma linha: por que parou, e o que faria voltar.' }
+  ];
+  var rfBars = document.getElementById('rfBars'), rfBtns = document.getElementById('rfBtns'), rfCur = 2;
+  var ns = 'http://www.w3.org/2000/svg';
+  RF.forEach(function (r, i) {
+    var h = r.v / 18 * 160, x = 40 + i * 82;
+    var rect = document.createElementNS(ns, 'rect'); rect.setAttribute('class', 'rf-bar'); rect.setAttribute('x', x); rect.setAttribute('width', 56); rect.setAttribute('y', 200 - h); rect.setAttribute('height', h); rect.setAttribute('rx', 3);
+    rect.addEventListener('click', function () { showRf(i); });
+    var tv = document.createElementNS(ns, 'text'); tv.setAttribute('class', 'rf-v'); tv.setAttribute('x', x + 28); tv.setAttribute('y', 192 - h); tv.textContent = r.l;
+    var tx = document.createElementNS(ns, 'text'); tx.setAttribute('class', 'rf-x'); tx.setAttribute('x', x + 28); tx.setAttribute('y', 220); tx.textContent = 'fase ' + (i + 1);
+    rfBars.appendChild(rect); rfBars.appendChild(tv); rfBars.appendChild(tx);
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = (i + 1) + ' · ' + r.n; b.addEventListener('click', function () { showRf(i); }); rfBtns.appendChild(b);
+  });
+  function showRf(i) {
+    rfCur = i;
+    rfBars.querySelectorAll('.rf-bar').forEach(function (r, k) { r.classList.toggle('on', k === i); });
+    pressGroup(rfBtns.querySelectorAll('button'), function (x) { return x === rfBtns.children[i]; });
+    var r = RF[i];
+    document.getElementById('rfCap').innerHTML = '<h3>' + r.n + ' · ' + r.l + ' ' + (r.v === 1 ? 'item' : 'itens') + '</h3><p>' + r.d + '</p><p class="hint">A pergunta de quem confere não é “tem tudo?”. É “tem o que esta fase exige?”. Cobrar os dezoito desde o primeiro dia faz a pessoa criar arquivo vazio só para passar, e o registro vira formulário.</p>';
+  }
+  showRf(2);
+
+  /* 8 · férias */
+  var FE = [
+    { k: 'a', l: 'Tipo 1 · o que alguém só aprendeu vendo você fazer', p: 'como eu confiro o total antes de fechar o mês' },
+    { k: 'b', l: 'Tipo 2 · a regra que você segue e ninguém escreveu', p: 'proposta acima de 10% de desconto passa pelo gerente' },
+    { k: 'c', l: 'Tipo 3 · o caso que só você resolve', p: 'a condição especial de prazo do cliente mais antigo' },
+    { k: 'd', l: 'Hoje, quando você não está, o que acontece?', p: 'o caso espera dois dias, ou sai errado e alguém corrige depois' }
+  ];
+  var feFields = document.getElementById('feFields'), feOut = document.getElementById('feOut'), feVals = {};
+  FE.forEach(function (f) {
+    var d = document.createElement('div'); d.className = 'fe-f';
+    d.innerHTML = '<label for="fe-' + f.k + '"><span>' + f.l.split(' · ')[0].toUpperCase() + '</span>' + (f.l.split(' · ')[1] || f.l) + '</label><textarea id="fe-' + f.k + '" placeholder="ex.: ' + f.p + '"></textarea>';
+    feFields.appendChild(d);
+    d.querySelector('textarea').addEventListener('input', function (e) { feVals[f.k] = e.target.value.trim(); renderFe(); });
+  });
+  function val(k) { return feVals[k] ? esc(feVals[k]) : '<i>escreva ao lado</i>'; }
+  function renderFe() {
+    feOut.innerHTML = 'O que precisa estar escrito antes das minhas férias\n\n' +
+      '1. O jeito que se aprende observando\n   ' + val('a') + '\n   → gaveta 3, o passo a passo. Escrevo enquanto faço, na próxima vez.\n\n' +
+      '2. A regra que não está escrita\n   ' + val('b') + '\n   → gaveta 2, como aqui se faz. No lugar onde o trabalho passa.\n\n' +
+      '3. A exceção que só eu trato\n   ' + val('c') + '\n   → caso escrito: quando aparece, o que se faz, e quem decide sem mim.\n\n' +
+      'Hoje, sem mim: ' + val('d');
+  }
+  renderFe();
+  document.getElementById('feCopy').addEventListener('click', function () { copyText(feOut.innerText, this); });
+  document.getElementById('orgCopy').addEventListener('click', function () { copyText(document.getElementById('orgText').innerText, this); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="agente">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, cabeça da família 6. Peças: simulador liga-desliga, laço em passos com diagrama, degraus clicáveis, quiz, cartões com entrada e saída, calculadora com barras, pergunta de bolso para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.svgbox { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.svgbox svg { display: block; width: 100%; height: auto; }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+
+/* ---- só desta peça ---- */
+a { color: var(--accent); }
+/* 1 · simulador */
+.sim { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.sim-ctrl { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; }
+.sim-sw { display: grid; gap: 8px; }
+.sim-sw button { text-align: left; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 12px; align-items: center; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 10px 12px; }
+.sim-sw .knob { width: 36px; height: 20px; border-radius: 999px; background: var(--border-strong); position: relative; transition: background .2s ease; }
+.sim-sw .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg-elev); transition: left .2s ease; }
+.sim-sw button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.sim-sw button[aria-pressed="true"] .knob { background: var(--accent); }
+.sim-sw button[aria-pressed="true"] .knob::after { left: 19px; }
+.sim-sw b { font-weight: 600; display: block; }
+.sim-sw small { color: var(--text-muted); font-size: .86rem; }
+.sim-asks { display: grid; gap: 6px; }
+.sim-asks button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 8px 12px; font-size: .94rem; }
+.sim-asks button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.sim-out { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; min-height: 360px; }
+.sim-msg { border-radius: 6px; padding: 10px 14px; font-size: .96rem; }
+.sim-msg.you { background: var(--bg); border: 1px solid var(--border); justify-self: end; max-width: 90%; }
+.sim-msg.ai { background: var(--accent-soft); border: 1px solid var(--accent); max-width: 95%; }
+.sim-trace { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-family: var(--font-mono); font-size: .8rem; color: var(--text-muted); }
+.sim-trace li { border-left: 2px solid var(--border-strong); padding-left: 10px; }
+.sim-trace li.t { border-color: var(--accent); color: var(--accent); }
+
+/* 2 · laço */
+.lp-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.lp-box .t { font: 600 14px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.lp-box .s { font: 400 12.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.lp-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.lp-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke .25s ease; }
+.lp-arr.on { stroke: var(--accent); stroke-width: 2.6; }
+.lp-lbl { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.lp-count { font-family: var(--font-mono); font-size: .95rem; color: var(--accent); }
+
+/* 3 · degraus */
+.lad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.lad button { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px 8px 0 0; border-bottom: 3px solid var(--text); padding: 14px; display: grid; gap: 6px; align-content: start; }
+.lad button:nth-child(1) { min-height: 140px; }
+.lad button:nth-child(2) { min-height: 190px; }
+.lad button:nth-child(3) { min-height: 240px; }
+.lad .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+.lad b { font-weight: 600; font-size: 1.05rem; }
+.lad small { color: var(--text-muted); font-size: .88rem; }
+.lad button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); border-bottom-color: var(--accent); }
+.lad-d { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+.lad-d dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.lad-d dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.lad-d dd { margin: 0; }
+
+/* 4 · quiz agente ou não */
+.aq { display: grid; gap: 10px; }
+.aq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.aq-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.aq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 16px; font-size: .95rem; }
+.aq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.aq-fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.aq-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.aq-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.aq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 5 · trabalhos sem agente */
+.jobs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.jobs button { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.jobs .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); }
+.jobs small { color: var(--text-muted); font-size: .86rem; }
+.jobs button.act { border-style: dashed; }
+.jobs button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); border-style: solid; }
+.job-d { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.job-d .arrow { display: grid; place-items: center; font-family: var(--font-mono); color: var(--accent); font-size: 1.3rem; }
+.job-io { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.job-io.out { border-color: var(--accent); }
+.job-io pre { margin: 0; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); }
+.job-note { font-size: .95rem; color: var(--text-muted); }
+.job-note b { color: var(--atencao-texto); font-weight: 600; }
+
+/* 6 · custo */
+.cost { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; }
+.cost-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; align-content: start; }
+.cost-f { display: grid; gap: 6px; }
+.cost-f .row { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.cost-f input[type=range] { width: 100%; accent-color: var(--accent); }
+.cost-f output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.cost-ch { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.cost-ch svg { width: 100%; height: auto; display: block; }
+.cb-ax { stroke: var(--border-strong); }
+.cb-a { fill: var(--text-muted); }
+.cb-b { fill: var(--accent); }
+.cb-bar { transition: width .4s ease; }
+.cb-lab { font: 500 12px var(--font-mono); fill: var(--text-muted); letter-spacing: .04em; }
+.cb-val { font: 600 14px var(--font-body); fill: var(--text); }
+code { font-family: var(--font-mono); font-size: .88em; }
+/* 11 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .sim, .cost, .take, .job-d { grid-template-columns: 1fr; }
+  .job-d .arrow { transform: rotate(90deg); }
+  .jobs { grid-template-columns: 1fr 1fr; }
+  .lad { grid-template-columns: 1fr; }
+  .lad button:nth-child(n) { min-height: 0; }
+  .lad-d dl { grid-template-columns: 1fr; }
+  .sim-out { min-height: 0; }
+}
+@media (max-width: 520px) { .jobs { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .sim-sw .knob, .sim-sw .knob::after, .lp-box rect, .lp-arr, .cb-bar { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Agente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente--anatomia.html">6.1 Anatomia →</a></span></div>
+    <div class="famhead-chips"><a href="./agente.html" aria-current="page">Visão geral</a><a href="./agente--anatomia.html"><b>6.1</b>Anatomia</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>Agente</h1>
+  <p class="sub">O que muda quando o modelo ganha ferramentas, memória e um objetivo</p>
+  <p class="lead">Uma LLM recebe texto e devolve texto. <strong>Um agente é a mesma LLM com três coisas a mais: ferramentas para agir, memória para lembrar e um objetivo para saber quando terminou.</strong> Ele não segue um roteiro fixo: decide o próximo passo, faz, olha o resultado e decide de novo. E a maior parte do trabalho com IA não precisa dele.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-maos">Responder ou agir</a><a href="#s-laco">O laço</a><a href="#s-degraus">Chat, assistente, agente</a><a href="#s-precisa">Precisa de agente?</a><a href="#s-sem">IA sem agente</a><a href="#s-volta">O custo da volta</a><a href="#s-bolso">Antes de montar</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">O agente por dentro, numa página própria</h2>
+  <p class="intro">Esta página é a visão geral: o que muda quando o modelo ganha ferramentas, memória e um objetivo, e quando isso vale a pena. <strong>A página abaixo abre o agente em quatro peças</strong>, para achar em qual delas ele falha.</p>
+  <div class="fmap c1">
+    <div class="fmap-card"><span class="fmap-n">6.1 · Anatomia · 1 de 1</span><h3>Anatomia do agente</h3><p>Quatro peças: o modelo, a instrução, a memória e as ferramentas. Todo agente que falha, falha em uma delas.</p><span class="fmap-lab">Lá você encontra</span><ul><li>onde está o defeito</li><li>a memória</li><li>as ferramentas</li></ul><a class="fmap-go" href="./agente--anatomia.html">abrir 6.1 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<!-- 1 -->
+<section class="sec" id="s-maos" aria-labelledby="h-maos">
+  <span class="eyebrow">Responder ou agir</span>
+  <h2 id="h-maos">O mesmo pedido, com e sem as mãos</h2>
+  <p class="intro">O modelo é sempre o mesmo. Ligue e desligue as três coisas que fazem dele um agente e mande o mesmo pedido de novo. <strong>Repare no que acontece quando ele não tem ferramenta: ele escreve a frase de quem fez, e não faz.</strong></p>
+  <div class="sim">
+    <div class="sim-ctrl">
+      <div class="sim-sw" role="group" aria-label="O que o modelo tem">
+        <button type="button" data-sw="tools" aria-pressed="false"><span class="knob" aria-hidden="true"></span><span><b>Ferramentas</b><small>agenda, planilha de clientes, e-mail</small></span></button>
+        <button type="button" data-sw="mem" aria-pressed="false"><span class="knob" aria-hidden="true"></span><span><b>Memória</b><small>lembra o que foi dito antes na conversa</small></span></button>
+        <button type="button" data-sw="goal" aria-pressed="false"><span class="knob" aria-hidden="true"></span><span><b>Objetivo e regras</b><small>o que é tarefa cumprida, e o que conferir antes</small></span></button>
+      </div>
+      <span class="eyebrow">Mande um pedido</span>
+      <div class="sim-asks" role="group" aria-label="Pedidos">
+        <button type="button" data-ask="0" aria-pressed="true">“Marca uma reunião com a Carla amanhã às 15h.”</button>
+        <button type="button" data-ask="1" aria-pressed="false">“Qual o orçamento do cliente Souza?”</button>
+        <button type="button" data-ask="2" aria-pressed="false">“E o prazo de entrega dele?” (logo depois)</button>
+      </div>
+    </div>
+    <div class="sim-out" id="simOut" aria-live="polite"></div>
+  </div>
+  <p class="punch">Sem ferramenta ela <em>promete</em>. Com ferramenta ela <em>faz</em>. Com objetivo ela sabe <em>o que conferir antes</em>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-laco" aria-labelledby="h-laco">
+  <span class="eyebrow">O laço</span>
+  <h2 id="h-laco">Pensar, agir, observar, e de novo</h2>
+  <p class="intro">Um fluxo comum segue os passos que alguém desenhou. O agente <strong>decide quantas voltas dar</strong>: pensa, pede uma ferramenta, lê o que voltou e decide se já dá para responder. Siga o pedido “o cliente Souza já recebeu a proposta? Se não, mande hoje”.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="lpLab">Passo 1 de 7</span>
+    <span class="lp-count" id="lpCount">chamadas ao modelo: 0</span>
+    <div class="nav"><button type="button" class="btn" id="lpPrev">← Anterior</button><button type="button" class="btn primary" id="lpNext">Próximo →</button></div>
+  </div>
+  <div class="svgbox" role="region" tabindex="0" aria-label="Diagrama do laço do agente. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 300" style="min-width:720px" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="lp-t">
+      <title id="lp-t">O laço do agente: pedido, pensar, agir, observar e volta a pensar, até sair a resposta</title>
+      <defs>
+        <marker id="lpm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker>
+        <marker id="lpa" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-a"/></marker>
+      </defs>
+      <g class="lp-box" data-b="1"><rect x="10" y="110" width="140" height="80" rx="8"/><text class="t" x="80" y="144">PEDIDO</text><text class="s" x="80" y="166">o que você quer</text></g>
+      <g class="lp-box" data-b="2"><rect x="210" y="110" width="160" height="80" rx="8"/><text class="t" x="290" y="144">PENSAR</text><text class="s" x="290" y="166">o modelo decide</text></g>
+      <g class="lp-box" data-b="3"><rect x="450" y="16" width="180" height="80" rx="8"/><text class="t" x="540" y="50">AGIR</text><text class="s" x="540" y="72">a ferramenta roda</text></g>
+      <g class="lp-box" data-b="4"><rect x="450" y="204" width="180" height="80" rx="8"/><text class="t" x="540" y="238">OBSERVAR</text><text class="s" x="540" y="260">o resultado volta</text></g>
+      <g class="lp-box" data-b="5"><rect x="720" y="110" width="170" height="80" rx="8"/><text class="t" x="805" y="144">RESPOSTA</text><text class="s" x="805" y="166">objetivo cumprido</text></g>
+      <path class="lp-arr" data-a="1" d="M150,150 H206" marker-end="url(#lpm)"/>
+      <path class="lp-arr" data-a="2" d="M330,110 C340,70 390,56 446,56" marker-end="url(#lpm)"/>
+      <path class="lp-arr" data-a="3" d="M540,96 V200" marker-end="url(#lpm)"/>
+      <path class="lp-arr" data-a="4" d="M450,244 C390,244 340,230 330,194" marker-end="url(#lpm)"/>
+      <path class="lp-arr" data-a="5" d="M370,150 H716" marker-end="url(#lpm)"/>
+      <text class="lp-lbl" x="372" y="50">pede a ferramenta</text>
+      <text class="lp-lbl" x="372" y="266">e decide de novo</text>
+      <text class="lp-lbl" x="630" y="140">já dá para responder</text>
+    </svg>
+  </div>
+  <div class="caption" id="lpCap" aria-live="polite"></div>
+  <p class="hint">Quem executa a ferramenta não é o modelo: é o sistema em volta dele. O modelo só escreve o pedido. Isso está desenhado em <a href="./llm-e-harness.html">LLM e harness</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-degraus" aria-labelledby="h-degraus">
+  <span class="eyebrow">Chat, assistente, agente</span>
+  <h2 id="h-degraus">Três jeitos de usar o mesmo modelo</h2>
+  <p class="intro">Entre o chat solto e o agente existe um degrau que quase todo mundo já usa: <strong>a conversa preparada</strong>, com papel e material salvos, onde o pedido vira uma frase. Ela ainda não age fora da conversa. Clique em cada degrau.</p>
+  <div class="lad" role="group" aria-label="Os três degraus">
+    <button type="button" data-l="0" aria-pressed="false"><span class="et">DEGRAU 1</span><b>Chat solto</b><small>você explica tudo, toda vez</small></button>
+    <button type="button" data-l="1" aria-pressed="false"><span class="et">DEGRAU 2</span><b>Assistente preparado</b><small>papel e material salvos</small></button>
+    <button type="button" data-l="2" aria-pressed="true"><span class="et">DEGRAU 3</span><b>Agente</b><small>ferramentas, memória e objetivo</small></button>
+  </div>
+  <div class="lad-d" id="ladD" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-precisa" aria-labelledby="h-precisa">
+  <span class="eyebrow">Precisa de agente?</span>
+  <h2 id="h-precisa">A pergunta que decide: ela precisa agir em algum lugar?</h2>
+  <p class="intro">Se a tarefa é <strong>transformar um texto que já chegou</strong> (tirar dados, pôr num balde, encurtar, ler o tom), um passo simples de IA resolve, mais barato e mais previsível. Agente é para quando é preciso buscar, mexer em sistema ou conversar lembrando. Classifique as seis.</p>
+  <div class="aq" id="aq"></div>
+  <p class="aq-score" id="aqScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-sem" aria-labelledby="h-sem">
+  <span class="eyebrow">IA sem agente</span>
+  <h2 id="h-sem">Quatro trabalhos que só transformam o que já chegou</h2>
+  <p class="intro">Cada um faz uma coisa só, sempre do mesmo jeito, sem laço e sem inventar ação. Clique para ver o que entra, o que sai e onde cada um tropeça. O quinto é o único que pede agente.</p>
+  <div class="jobs" role="group" aria-label="Os cinco trabalhos">
+    <button type="button" data-j="0" aria-pressed="true"><span class="et">EXTRAIR</span><b>Tirar campos</b><small>texto bagunçado vira dado</small></button>
+    <button type="button" data-j="1" aria-pressed="false"><span class="et">CLASSIFICAR</span><b>Pôr num balde</b><small>uma das categorias que você deu</small></button>
+    <button type="button" data-j="2" aria-pressed="false"><span class="et">RESUMIR</span><b>Encolher</b><small>sem perder o essencial</small></button>
+    <button type="button" data-j="3" aria-pressed="false"><span class="et">LER O TOM</span><b>Positivo ou negativo</b><small>o termômetro do texto</small></button>
+    <button type="button" class="act" data-j="4" aria-pressed="false"><span class="et">AGIR</span><b>Fazer algo fora</b><small>aqui, sim, agente</small></button>
+  </div>
+  <div class="job-d" id="jobD" aria-live="polite"></div>
+  <p class="job-note" id="jobN"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-volta" aria-labelledby="h-volta">
+  <span class="eyebrow">O custo da volta</span>
+  <h2 id="h-volta">Cada volta do laço é mais uma chamada ao modelo</h2>
+  <p class="intro">Um passo simples chama o modelo uma vez. O agente chama uma vez para decidir e <strong>mais uma a cada ferramenta que resolve usar</strong>. Em teste, ninguém sente. Em volume, aparece na conta e no tempo de espera.</p>
+  <div class="cost">
+    <div class="cost-in">
+      <div class="cost-f"><label for="cTools">Ferramentas que o agente usa por pedido</label><div class="row"><input type="range" id="cTools" min="0" max="5" value="3"><output id="oTools">3</output></div></div>
+      <div class="cost-f"><label for="cVol">Pedidos por dia</label><div class="row"><input type="range" id="cVol" min="10" max="1000" step="10" value="200"><output id="oVol">200</output></div></div>
+      <div class="verdict" id="cVer"></div>
+    </div>
+    <div class="cost-ch">
+      <span class="eyebrow">Chamadas ao modelo por dia</span>
+      <svg viewBox="0 0 440 170" role="img" aria-labelledby="cb-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="cb-t">Barras comparando as chamadas ao modelo de um passo simples e de um agente</title>
+        <line class="cb-ax" x1="10" y1="10" x2="10" y2="160"/>
+        <text class="cb-lab" x="18" y="34">UM PASSO SIMPLES</text>
+        <rect class="cb-a cb-bar" id="barA" x="18" y="42" width="40" height="28" rx="4"/>
+        <text class="cb-val" id="valA" x="66" y="61">200</text>
+        <text class="cb-lab" x="18" y="108">AGENTE</text>
+        <rect class="cb-b cb-bar" id="barB" x="18" y="116" width="160" height="28" rx="4"/>
+        <text class="cb-val" id="valB" x="186" y="135">800</text>
+      </svg>
+      <p class="hint">A conta mostra a forma, não a medida: cada chamada tem preço e tempo diferentes conforme o modelo e o tamanho do texto.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-bolso" aria-labelledby="h-bolso">
+  <span class="eyebrow">Antes de montar</span>
+  <h2 id="h-bolso">Três perguntas, e só uma precisa ser sim</h2>
+  <p class="intro">Agente é o certo quando pelo menos uma destas é sim. Se as três são não, use um passo simples de IA. Leve a lista para a próxima vez que alguém disser “vamos colocar um agente”.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Pergunta de bolso</span><button type="button" class="btn" id="bolsoCopy">Copiar</button></div>
+    <pre id="bolsoTxt"><b>Isto precisa de agente?</b>
+
+1. Ela precisa AGIR em algum sistema fora da conversa?
+   (buscar na planilha, criar evento, mandar e-mail, consultar o pedido)
+2. É uma CONVERSA de várias mensagens, em que ela precisa lembrar o que foi dito?
+3. Os passos MUDAM a cada caso, sem dar para prever quantos nem em que ordem?
+
+Três "não": um passo simples de IA resolve (extrair, classificar, resumir, ler o tom).
+Algum "sim": agente. Comece com uma ferramenta, teste, e só depois some a próxima.</pre>
+  </div>
+  <p class="hint">Quer ver as quatro peças por dentro, e o que quebra quando falta cada uma? Está em <a href="./agente--anatomia.html">Anatomia do agente</a>. O agente também costuma morar dentro de uma automação maior: <a href="./automacao.html">Pensar como automação</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Agente é LLM com mãos</h3><p>Ferramentas para agir, memória para lembrar e um objetivo para saber quando parar. Sem ferramenta, ele só promete.</p></div>
+    <div class="take-card"><h3>Ele decide as voltas</h3><p>Pensa, age, observa e decide de novo. Por isso resolve o imprevisto, e por isso custa mais.</p></div>
+    <div class="take-card"><h3>Quase tudo cabe sem agente</h3><p>Extrair, classificar, resumir e ler o tom transformam o texto que já chegou. Um passo simples faz melhor.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Agente</dt><dd>Modelo de linguagem com ferramentas, memória e objetivo, que decide sozinho o próximo passo até cumprir a tarefa.</dd>
+    <dt>Ferramenta</dt><dd>Algo que o agente pode pedir para executar: ler uma planilha, criar um evento, mandar um e-mail.</dd>
+    <dt>Laço</dt><dd>O ciclo pensar, agir, observar, que se repete até o agente decidir que já dá para responder.</dd>
+    <dt>Passo simples</dt><dd>Uma única chamada ao modelo que transforma um texto: extrai, classifica, resume ou lê o tom.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Cada ferramenta de automação e cada aplicativo chama estas peças por um nome diferente; os nomes de ferramenta nos exemplos são ilustrativos. As barras de chamadas mostram a forma, não a medida.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Agente: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./agente.html#mapa">Família 6 · Agente · o mapa</a>
+  <a class="famfoot-next" href="./agente--anatomia.html"><span>próxima →</span><b>6.1 · Anatomia do agente</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · simulador */
+  var st = { tools: false, mem: false, goal: false, ask: 0 };
+  var sw = document.querySelectorAll('[data-sw]'), asks = document.querySelectorAll('[data-ask]'), out = document.getElementById('simOut');
+  var ASK = ['Marca uma reunião com a Carla amanhã às 15h.', 'Qual o orçamento do cliente Souza?', 'E o prazo de entrega dele?'];
+  function run() {
+    var r = { trace: [], ai: '', v: '', ok: false };
+    if (st.ask === 0) {
+      if (!st.tools) { r.ai = 'Claro! Reunião com a Carla marcada para amanhã às 15h. Qualquer coisa, é só avisar.'; r.v = '<b>Nada foi marcado.</b> Sem ferramenta, ela só escreve a frase de quem marcou. É o engano mais comum: parece feito, e não está.'; }
+      else if (!st.goal) { r.trace = ['pensa: preciso criar um evento', 't:age: cria_evento(Carla, amanhã 15h)', 'observa: evento criado']; r.ai = 'Pronto, reunião com a Carla criada para amanhã às 15h.'; r.v = '<b>Marcou por cima de outra reunião.</b> Ninguém disse que conferir a agenda fazia parte do trabalho. Ligue o objetivo e as regras.'; }
+      else { r.trace = ['pensa: a regra manda conferir a agenda antes', 't:age: consulta_agenda(amanhã 15h)', 'observa: ocupado, livre às 16h', 'pensa: não crio com conflito; aviso e proponho']; r.ai = 'Amanhã às 15h você já tem a reunião de metas. Às 16h está livre. Quer que eu marque com a Carla às 16h?'; r.v = '<b>Agiu, conferiu e parou onde devia.</b> O objetivo diz o que é tarefa cumprida e o que nunca fazer.'; r.ok = true; }
+    } else if (st.ask === 1) {
+      if (!st.tools) { r.ai = 'Não consigo ver a sua planilha de clientes. Se você colar os dados aqui, eu ajudo a encontrar o orçamento.'; r.v = '<b>Você virou a ferramenta:</b> abrir, procurar, copiar e colar continua sendo trabalho seu.'; }
+      else { r.trace = ['pensa: o dado está na planilha de clientes', 't:age: busca_cliente("Souza")', 'observa: orçamento R$ 18.400 · prazo 30 dias']; r.ai = 'O orçamento do cliente Souza é de R$ 18.400.'; r.v = '<b>Buscou onde o dado mora.</b> A resposta veio da planilha, não da imaginação.'; r.ok = true; }
+    } else {
+      if (!st.mem) { r.ai = 'Dele quem? Não sei de qual cliente você está falando. Pode me dizer o nome?'; r.v = '<b>Sem memória, cada mensagem é a primeira.</b> A pergunta anterior não existe para ela.'; }
+      else if (!st.tools) { r.trace = ['lembra: a conversa era sobre o cliente Souza']; r.ai = 'Do cliente Souza? Não consigo ver a planilha para conferir o prazo. Cole os dados aqui.'; r.v = '<b>Lembrou de quem era, mas não tem como buscar.</b> Memória sem ferramenta sabe do que se fala, e não alcança o dado.'; }
+      else { r.trace = ['lembra: a conversa era sobre o cliente Souza', 't:age: busca_cliente("Souza")', 'observa: prazo 30 dias']; r.ai = 'O prazo de entrega do cliente Souza é de 30 dias.'; r.v = '<b>Memória e ferramenta juntas:</b> sabe de quem se fala e vai buscar o dado.'; r.ok = true; }
+    }
+    var tr = r.trace.length ? '<ol class="sim-trace">' + r.trace.map(function (t) { return t.indexOf('t:') === 0 ? '<li class="t">' + t.slice(2) + '</li>' : '<li>' + t + '</li>'; }).join('') + '</ol>' : '';
+    out.innerHTML = '<span class="eyebrow">A conversa</span><div class="sim-msg you">' + ASK[st.ask] + '</div>' + tr + '<div class="sim-msg ai">' + r.ai + '</div><div class="verdict ' + (r.ok ? 'ok' : 'no') + '">' + r.v + '</div>';
+  }
+  sw.forEach(function (b) { b.addEventListener('click', function () { st[b.dataset.sw] = !st[b.dataset.sw]; b.setAttribute('aria-pressed', String(st[b.dataset.sw])); run(); }); });
+  asks.forEach(function (b) { b.addEventListener('click', function () { st.ask = +b.dataset.ask; pressGroup(asks, function (x) { return x === b; }); run(); }); });
+  run();
+
+  /* 2 · laço */
+  var LP = [
+    { b: [1], a: [], n: 0, t: 'Chega o pedido', d: '“O cliente Souza já recebeu a proposta? Se não, mande hoje.” Repare que o pedido não diz quantos passos são. Quem descobre é o agente.' },
+    { b: [2], a: [1], n: 1, t: 'Pensar', d: 'O modelo lê o pedido, o objetivo e a lista de ferramentas, e decide: “preciso saber se a proposta saiu. Tenho uma ferramenta que consulta a planilha de clientes.”' },
+    { b: [3], a: [2], n: 1, t: 'Agir', d: 'Ele escreve o pedido da ferramenta: <code>busca_cliente("Souza")</code>. O sistema em volta executa a busca. O modelo não abre planilha nenhuma.' },
+    { b: [4], a: [3], n: 1, t: 'Observar', d: 'O resultado volta como texto: “proposta: não enviada · e-mail: compras@souza…”. Agora o modelo sabe algo que não sabia.' },
+    { b: [2], a: [4], n: 2, t: 'Pensar de novo', d: 'Segunda volta: “não foi enviada, e o objetivo manda enviar hoje. Uso a ferramenta de e-mail.” Um fluxo fixo teria parado na primeira resposta.' },
+    { b: [3, 4], a: [2, 3], n: 2, t: 'Agir e observar outra vez', d: '<code>envia_email(...)</code> roda, e volta: “enviado às 10h12”.' },
+    { b: [2, 5], a: [4, 5], n: 3, t: 'Objetivo cumprido, resposta', d: 'Terceira chamada ao modelo: ele vê que não falta nada e responde. “A proposta não tinha saído. Mandei agora, às 10h12.” Duas ferramentas, três chamadas.' }
+  ];
+  var lpCur = 1, lpBoxes = document.querySelectorAll('.lp-box'), lpArrs = document.querySelectorAll('.lp-arr');
+  function lpGo(n) {
+    lpCur = Math.max(1, Math.min(LP.length, n)); var s = LP[lpCur - 1];
+    lpBoxes.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.b) > -1); });
+    lpArrs.forEach(function (p) { var on = s.a.indexOf(+p.dataset.a) > -1; p.classList.toggle('on', on); p.setAttribute('marker-end', on ? 'url(#lpa)' : 'url(#lpm)'); });
+    document.getElementById('lpCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('lpLab').textContent = 'Passo ' + lpCur + ' de ' + LP.length;
+    document.getElementById('lpCount').textContent = 'chamadas ao modelo: ' + s.n;
+    document.getElementById('lpPrev').disabled = lpCur === 1;
+    document.getElementById('lpNext').textContent = lpCur === LP.length ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('lpPrev').addEventListener('click', function () { lpGo(lpCur - 1); });
+  document.getElementById('lpNext').addEventListener('click', function () { lpGo(lpCur === LP.length ? 1 : lpCur + 1); });
+  lpGo(1);
+
+  /* 3 · degraus */
+  var LD = [
+    { v: 'Você abre uma conversa, cola a planilha e escreve “faz um resumo pra mim”.', f: 'Explicar quem ela é, o que você quer e em que formato, toda vez.', r: 'Resumo genérico, e num formato diferente a cada semana.', q: 'Serve para a pergunta de uma vez só.' },
+    { v: 'Uma conversa já preparada: o papel e o material de referência ficam salvos. O pedido vira uma frase: “segue a planilha, gera o relatório”. <a href="./assistente.html">Veja a página do assistente →</a>', f: 'Trocar só o dado da vez. O que não muda fica no papel e no material; o que muda vai na frase.', r: 'O mesmo formato toda semana. Mas quem busca o dado, cola e envia ainda é você.', q: 'Serve para a tarefa que se repete com o mesmo formato.' },
+    { v: 'O assistente preparado, com ferramentas para buscar e mexer em sistemas, memória da conversa e um objetivo que diz quando terminou.', f: 'Dizer o que quer. Ele busca a planilha, monta, envia, e para para perguntar só no que o objetivo mandou perguntar.', r: 'Trabalho feito fora da conversa. E um custo maior por pedido, porque cada ferramenta é uma volta a mais.', q: 'Serve quando é preciso agir, lembrar, ou quando os passos mudam a cada caso.' }
+  ];
+  var ldBtns = document.querySelectorAll('.lad button'), ldD = document.getElementById('ladD');
+  function showLd(i) {
+    pressGroup(ldBtns, function (x) { return +x.dataset.l === i; });
+    var d = LD[i];
+    ldD.innerHTML = '<dl><dt>Como é</dt><dd>' + d.v + '</dd><dt>O que você faz</dt><dd>' + d.f + '</dd><dt>O que volta</dt><dd>' + d.r + '</dd><dt>Serve para</dt><dd>' + d.q.replace('Serve para ', '') + '</dd></dl>';
+  }
+  ldBtns.forEach(function (b) { b.addEventListener('click', function () { showLd(+b.dataset.l); }); });
+  showLd(2);
+
+  /* 4 · quiz */
+  var AQ = [
+    { s: 'Separar os e-mails que chegam em suporte, vendas, financeiro ou spam.', a: 'sem', w: 'É classificar: o texto já chegou, e a saída é uma das categorias que você deu.' },
+    { s: 'Um atendente que responde o cliente, consulta o status do pedido no sistema e lembra o que ele disse duas mensagens antes.', a: 'agente', w: 'Precisa agir (consultar o sistema) e lembrar (conversa de várias mensagens). Duas perguntas com sim.' },
+    { s: 'Tirar nome, data, valor e número de 200 notas fiscais em texto e montar uma tabela.', a: 'sem', w: 'É extrair: texto bagunçado vira campos. Um passo por nota, sem laço.' },
+    { s: 'Resumir a transcrição da reunião de ontem em três tópicos e os próximos passos.', a: 'sem', w: 'É resumir. A transcrição já está na mão; não há nada para buscar nem fazer fora.' },
+    { s: 'Um assistente que recebe “marca com o fornecedor semana que vem”, olha a agenda, acha um horário livre e manda o convite.', a: 'agente', w: 'Precisa agir em dois sistemas, e os passos mudam conforme a agenda: conflito, horário alternativo, confirmação.' },
+    { s: 'Descobrir quais respostas abertas da pesquisa de satisfação são negativas, para ligar antes que o cliente desista.', a: 'sem', w: 'É ler o tom. Cuidado só com a ironia: “adorei esperar três horas” pode passar como positivo.' }
+  ];
+  var aq = document.getElementById('aq'), aqScore = document.getElementById('aqScore'), aqAns = {};
+  AQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'aq-item';
+    d.innerHTML = '<p>' + q.s + '</p><div class="aq-opts" role="group" aria-label="Classificar"><button type="button" data-v="sem" aria-pressed="false">Passo simples</button><button type="button" data-v="agente" aria-pressed="false">Agente</button></div><div class="aq-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.aq-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; aqAns[i] = ok;
+      fb.hidden = false; fb.className = 'aq-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : (q.a === 'sem' ? 'Passo simples. ' : 'Agente. ')) + '</b>' + q.w;
+      var n = Object.keys(aqAns).length, c = Object.keys(aqAns).filter(function (k) { return aqAns[k]; }).length;
+      aqScore.textContent = n + ' de ' + AQ.length + ' respondidas · ' + c + ' certas' + (n === AQ.length ? ' · quatro das seis não precisavam de agente.' : '');
+    }); });
+    aq.appendChild(d);
+  });
+
+  /* 5 · trabalhos */
+  var JB = [
+    { i: 'Reunião do projeto de sistema em 15/03.\nParticipantes: Carlos, Beatriz e o fornecedor.\nDecidimos adiar a entrada no ar para junho.\nPróximo passo: Beatriz envia o plano revisado até 22/03.', o: '{\n  "data": "15/03",\n  "participantes": ["Carlos", "Beatriz", "fornecedor"],\n  "decisao": "adiar para junho",\n  "proximo_passo": "Beatriz envia plano até 22/03"\n}', n: '<b>Onde tropeça:</b> se você pede um campo que não está no texto, ela pode inventar. Escreva na descrição do campo: “deixe vazio se não estiver presente”.' },
+    { i: '“Bom dia, a nota do pedido 4412 veio com o valor errado, preciso de uma nova até sexta.”', o: 'Financeiro\n\n(entre: Suporte · Vendas · Financeiro · Spam)', n: '<b>Onde tropeça:</b> categorias com nomes parecidos, como “suporte técnico” e “suporte ao cliente”. Ela não inventa categoria nova, mas sorteia entre as vizinhas.' },
+    { i: 'Relatório de vendas de 20 páginas, com a tabela de cada loja, os comentários do mês e a comparação com o ano passado.', o: '• Vendas 8% acima da meta, puxadas por duas lojas\n• Uma loja caiu pelo segundo mês\n• Próximo passo: revisar o estoque dessa loja', n: '<b>Onde tropeça:</b> resumo sem dizer para quem é e para que serve sai genérico. Diga quem vai ler.' },
+    { i: '“Adorei esperar três horas pelo atendimento.”', o: 'positivo  ← leitura literal\nnegativo  ← o que a pessoa quis dizer', n: '<b>Onde tropeça:</b> ironia. Para decisão que importa, olhe a amostra antes de confiar no número.' },
+    { i: '“Esse cliente já recebeu a proposta? Se não, manda hoje.”', o: 'busca_cliente → não enviada\nenvia_email → enviado às 10h12\n“Não tinha saído. Mandei agora.”', n: '<b>Aqui não tem atalho:</b> é preciso buscar e fazer algo fora da conversa. É o trabalho do agente, e o único dos cinco que precisa de ferramenta.' }
+  ];
+  var jBtns = document.querySelectorAll('[data-j]'), jobD = document.getElementById('jobD'), jobN = document.getElementById('jobN');
+  function showJ(i) {
+    pressGroup(jBtns, function (x) { return +x.dataset.j === i; });
+    var j = JB[i];
+    jobD.innerHTML = '<div class="job-io"><span class="eyebrow">O que entra</span><pre></pre></div><div class="arrow" aria-hidden="true">→</div><div class="job-io out"><span class="eyebrow">O que sai</span><pre></pre></div>';
+    var pres = jobD.querySelectorAll('pre'); pres[0].textContent = j.i; pres[1].textContent = j.o;
+    jobN.innerHTML = j.n;
+  }
+  jBtns.forEach(function (b) { b.addEventListener('click', function () { showJ(+b.dataset.j); }); });
+  showJ(0);
+
+  /* 6 · custo */
+  var cT = document.getElementById('cTools'), cV = document.getElementById('cVol');
+  function fmt(n) { return n.toLocaleString('pt-BR'); }
+  function cost() {
+    var t = +cT.value, v = +cV.value, a = v, b = v * (1 + t), max = 1000 * 6;
+    document.getElementById('oTools').textContent = t; document.getElementById('oVol').textContent = v;
+    var wa = Math.max(4, a / max * 300), wb = Math.max(4, b / max * 300);
+    document.getElementById('barA').setAttribute('width', wa); document.getElementById('barB').setAttribute('width', wb);
+    var va = document.getElementById('valA'), vb = document.getElementById('valB');
+    va.setAttribute('x', 26 + wa); va.textContent = fmt(a);
+    vb.setAttribute('x', 26 + wb); vb.textContent = fmt(b) + (t ? '  (' + (1 + t) + '×)' : '');
+    var ver = document.getElementById('cVer');
+    if (t === 0) { ver.className = 'verdict no'; ver.innerHTML = '<b>Agente sem ferramenta</b> custa igual a um passo simples e faz menos: vira um chat que promete ações. Aqui, use o passo simples.'; }
+    else { ver.className = 'verdict ok'; ver.innerHTML = '<b>' + (1 + t) + ' chamadas por pedido.</b> Vale quando a ferramenta é necessária. Se o pedido só transforma texto, são ' + fmt(b - a) + ' chamadas por dia sem motivo.'; }
+  }
+  [cT, cV].forEach(function (i) { i.addEventListener('input', cost); });
+  cost();
+
+  document.getElementById('bolsoCopy').addEventListener('click', function () { copyText(document.getElementById('bolsoTxt').innerText, this); });
+})();
+</script>
+
+</html>

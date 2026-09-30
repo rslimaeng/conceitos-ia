@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="limites-da-ia--alucinacao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alucinação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito em coluna única. Peças: a frase nascendo com o número sem base, o gráfico do chute na prova, o que entrou × o que voltou, a caça ao erro contra a planilha, as quatro camadas, os quatro jeitos de errar, a mesma pergunta com e sem a instrução, o validador de trinta segundos e o loop do caso fechado. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.mid { background: var(--bg-elev); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+.bar-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+/* ---- só desta peça ---- */
+/* 1 · a frase nascendo */
+.fn-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 20px; display: grid; gap: 16px; }
+.fn-sent { font-size: clamp(1.15rem, 2.6vw, 1.5rem); line-height: 1.4; }
+.fn-sent .num { color: var(--atencao-texto); font-weight: 600; background: var(--atencao-soft); border-radius: 3px; padding: 0 4px; box-shadow: 0 0 0 1px var(--atencao); }
+.fn-sent .cur { display: inline-block; width: 2px; height: 1.1em; background: var(--accent); vertical-align: -3px; margin-left: 3px; }
+.fn-cands { display: grid; gap: 8px; }
+.fn-cand { display: grid; grid-template-columns: 80px minmax(0, 1fr) 48px; gap: 12px; align-items: center; text-align: left; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 8px 12px; }
+.fn-cand:hover { border-color: var(--accent); }
+.fn-cand b { font-weight: 600; }
+.fn-track { height: 10px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.fn-fill { height: 100%; background: var(--accent); }
+.fn-cand .pct { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); text-align: right; }
+.fn-note { border-radius: 6px; padding: 12px 16px; background: var(--atencao-soft); border: 1px solid var(--atencao); color: var(--atencao-texto); }
+.al-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.al-fact { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.al-fact .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.al-fact.is { border-color: var(--accent); background: var(--accent-soft); }
+.al-fact.is .tag { color: var(--accent); }
+.al-fact.not h3 { text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.al-fact h3 { font-size: 1.1rem; font-weight: 500; }
+.al-fact p { font-size: .95rem; color: var(--text-muted); }
+
+/* 2 · a prova */
+.pv-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: center; }
+.pv-chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; }
+.pv-chart svg { width: 100%; height: auto; display: block; }
+.pv-ax { stroke: var(--border-strong); stroke-width: 1; }
+.pv-guess { fill: var(--atencao); transition: y .4s ease, height .4s ease; }
+.pv-blank { fill: var(--accent); }
+.pv-zero { stroke: var(--accent); stroke-width: 3; }
+.pv-lx { font: 500 12px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.pv-lv { font: 600 15px var(--font-body); fill: var(--text); text-anchor: middle; transition: y .4s ease; }
+
+/* 3 · entrou × voltou */
+.ev-grid { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.ev-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.ev-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ev-col li { border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .95rem; transition: background .2s ease, border-color .2s ease; }
+.ev-col li.inv.show { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.ev-col li.ok.show { background: var(--ok-soft); border-color: var(--ok); }
+.ev-arrow { display: grid; place-items: center; font-family: var(--font-mono); font-size: 1.5rem; color: var(--text-dim); }
+.wh { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.wh div { border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; background: var(--bg-elev); display: grid; gap: 4px; }
+.wh .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--atencao-texto); }
+.wh p { font-size: .92rem; color: var(--text-muted); }
+
+/* 4 · caça ao erro */
+.ce-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
+.ce-sheet { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 8px; overflow-x: auto; }
+.ce-sheet table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: .82rem; }
+.ce-sheet th, .ce-sheet td { border: 1px solid var(--border); padding: 5px 8px; text-align: right; }
+.ce-sheet th:first-child, .ce-sheet td:first-child { text-align: left; }
+.ce-sheet th { color: var(--text-dim); font-weight: 500; background: var(--bg); }
+.ce-sheet tr.tot td { font-weight: 600; background: var(--bg); }
+.ce-lines { display: grid; gap: 10px; }
+.ce-line { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; }
+.ce-line .q { font-size: 1rem; }
+.ce-line .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.ce-line .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 5px 12px; font-size: .88rem; }
+.ce-line .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.ce-fb { font-size: .92rem; border-radius: 6px; padding: 8px 12px; border: 1px solid; }
+.ce-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.ce-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.ce-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 5 · camadas */
+.cm-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.cm-stack { display: grid; gap: 6px; }
+.cm-layer { text-align: left; display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; align-items: center; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 12px 14px; }
+.cm-layer .ln { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.cm-layer b { font-weight: 600; }
+.cm-layer .who { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; border-radius: 4px; padding: 2px 8px; border: 1px solid; white-space: nowrap; }
+.cm-layer .who.ia { border-color: var(--accent); color: var(--accent); }
+.cm-layer .who.voce { border-color: var(--atencao); color: var(--atencao-texto); }
+.cm-layer[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.cm-cost { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); border-top: 2px solid var(--border-strong); padding-top: 4px; }
+.cm-detail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; min-height: 220px; align-content: start; }
+.cm-detail h3 { font-size: 1.3rem; }
+.cm-detail .ex { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--text-muted); }
+
+/* 6 · quatro jeitos */
+.jm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.jm-card { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.jm-card .n { width: 26px; height: 26px; border-radius: 50%; background: var(--atencao); color: var(--bg-elev); font-family: var(--font-mono); font-size: 13px; display: grid; place-items: center; }
+.jm-card b { font-weight: 600; line-height: 1.3; }
+.jm-card[aria-pressed="true"] { border-color: var(--atencao); background: var(--atencao-soft); }
+.jm-detail { background: var(--bg-elev); border: 1px solid var(--atencao); border-radius: 8px; padding: 18px 20px; }
+.jm-detail dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.jm-detail dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.jm-detail dd { margin: 0; }
+
+/* 7 · a instrução */
+.in-out { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.in-out.good { border-color: var(--ok); }
+.in-out .quote { font-size: 1.05rem; border-left: 3px solid var(--border-strong); padding-left: 12px; }
+.in-out ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.in-out .src { font-family: var(--font-mono); font-size: .8rem; color: var(--accent); }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .86rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 8 · validador */
+.vl-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 20px; align-items: start; }
+.vl-steps { display: grid; gap: 10px; }
+.vl-step { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; }
+.vl-step .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.vl-step .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.vl-step .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 5px 12px; font-size: .88rem; }
+.vl-step .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.vl-risk { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; }
+.vl-risk input[type=range] { width: 100%; accent-color: var(--accent); }
+.vl-scale { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); gap: 8px; }
+.vl-res { position: sticky; top: 12px; display: grid; gap: 10px; }
+
+/* 9 · caso fechado */
+.lp { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.lp-node { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; position: relative; min-height: 130px; }
+.lp-node .num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--bg-elev); font-family: var(--font-mono); font-size: 13px; display: grid; place-items: center; }
+.lp-node .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.lp-node b { font-weight: 600; }
+.lp-node.skip { box-shadow: inset 0 -3px 0 var(--atencao); }
+.lp-node[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.lp-node:not(:last-child)::after { content: "→"; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); color: var(--text-dim); }
+.lp-back { display: flex; align-items: center; gap: 12px; border: 1.5px dashed var(--accent); border-radius: 8px; padding: 12px 16px; color: var(--accent); background: var(--accent-soft); }
+.lp-back .arr { font-family: var(--font-mono); font-size: 1.4rem; }
+.lp-detail { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .al-facts { grid-template-columns: 1fr 1fr; }
+  .pv-wrap, .ce-grid, .cm-wrap, .vl-wrap, .take, .wh { grid-template-columns: 1fr; }
+  .ev-grid { grid-template-columns: 1fr; }
+  .ev-arrow { transform: rotate(90deg); }
+  .jm-grid { grid-template-columns: 1fr 1fr; }
+  .jm-detail dl { grid-template-columns: 1fr; }
+  .lp { grid-template-columns: 1fr; gap: 26px; }
+  .lp-node { min-height: 0; }
+  .lp-node:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -24px; transform: translateX(-50%); }
+  .vl-res { position: static; }
+}
+@media (max-width: 520px) { .al-facts, .jm-grid { grid-template-columns: 1fr; } .fn-cand { grid-template-columns: 70px minmax(0, 1fr) 44px; } .cm-layer { grid-template-columns: 30px minmax(0, 1fr); } .cm-layer .who { grid-column: 2; width: fit-content; } }
+@media (prefers-reduced-motion: reduce) { .pv-guess, .pv-lv, .ev-col li { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Limites da IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./limites-da-ia.html">Família 3 · Limites da IA</a></span><span class="famhead-pn"><a href="./limites-da-ia--janela-de-contexto.html">← 3.1 Janela de contexto</a><a href="./limites-da-ia--o-que-pode-subir.html">3.3 O que pode subir →</a></span></div>
+    <div class="famhead-chips"><a href="./limites-da-ia.html">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html" aria-current="page"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html"><b>3.3</b>O que pode subir</a></div>
+  </nav>
+  <span class="eyebrow">3.2 · 2 de 3</span>
+  <h1>Alucinação</h1>
+  <p class="sub">Por que a IA inventa com a mesma segurança de quando acerta, e como conferir</p>
+  <p class="lead">Quando a informação está no que ela enxerga, o pedaço de texto mais provável é o certo. Quando não está, ela não para nem avisa: <strong>continua escolhendo o mais provável, que agora é só o mais comum no mundo.</strong> O texto sai igualmente fluente, porque fluência e verdade são coisas diferentes.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-sem-base">Sem base</a><a href="#s-prova">O chute</a><a href="#s-voltou">O que voltou a mais</a><a href="#s-caca">Caça ao erro</a><a href="#s-camadas">Quatro camadas</a><a href="#s-jeitos">Quatro jeitos de errar</a><a href="#s-instrucao">A instrução</a><a href="#s-trinta">Trinta segundos</a><a href="#s-fechado">O caso fechado</a>
+  </nav>
+</header>
+
+<section class="sec" id="s-sem-base" aria-labelledby="h-sem-base">
+  <span class="eyebrow">Sem base</span>
+  <h2 id="h-sem-base">Faltando base, ela preenche, e preenche com o mesmo tom</h2>
+  <p class="intro">A planilha tinha as vendas por loja. Não tinha nada sobre o setor. A frase já está escrita até a vírgula. <strong>Escolha o próximo pedaço</strong>, ou deixe o sorteio escolher, do jeito que ela faz.</p>
+  <div class="fn-box">
+    <p class="fn-sent" id="fnSent" aria-live="polite"></p>
+    <div class="fn-cands" id="fnCands"></div>
+    <div class="bar-row"><button type="button" class="btn primary" id="fnAuto">Deixar a IA escolher</button><button type="button" class="btn" id="fnReset">Recomeçar</button></div>
+    <p class="fn-note" id="fnNote" hidden></p>
+  </div>
+  <div class="al-facts">
+    <div class="al-fact is"><span class="tag">É</span><h3>Preenchimento onde faltou base</h3><p>O buraco é fechado com o que costuma aparecer nesse tipo de texto.</p></div>
+    <div class="al-fact is"><span class="tag">É</span><h3>Mais provável em número e nome</h3><p>Valor, data, artigo de lei e nome próprio são onde a invenção mais aparece.</p></div>
+    <div class="al-fact not"><span class="tag">Não é</span><h3>Mentira</h3><p>Não há intenção do outro lado. Tratar como má-fé leva a cobrar em vez de conferir.</p></div>
+    <div class="al-fact not"><span class="tag">Não é</span><h3>Defeito que some com modelo melhor</h3><p>Modelo melhor inventa menos e continua inventando. Cai a frequência, não o sinal.</p></div>
+  </div>
+  <p class="punch">É como o colega que nunca diz "não sei": ele te dá o ramal errado <em>no mesmo tom firme</em> com que te deu o certo na semana passada.</p>
+  <p class="hint">O jogo completo da próxima palavra está na página <a href="./prompt.html">Prompt</a>. E o número inventado que aparece quando o combinado sai da mesa está em <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>.</p>
+</section>
+
+<section class="sec" id="s-prova" aria-labelledby="h-prova">
+  <span class="eyebrow">O chute</span>
+  <h2 id="h-prova">Por que ela não diz "não sei"</h2>
+  <p class="intro">Pense numa prova de múltipla escolha com quatro alternativas. Se só o acerto conta, chutar rende em média um quarto do ponto, e deixar em branco rende zero. <strong>Quem é treinado nessa prova aprende a chutar com confiança.</strong> Troque a regra da prova.</p>
+  <div class="seg" role="group" aria-label="Regra da prova"><button type="button" data-pv="so" aria-pressed="true">Só o acerto conta</button><button type="button" data-pv="desconta" aria-pressed="false">O erro desconta</button></div>
+  <div class="pv-wrap">
+    <div class="pv-chart">
+      <svg viewBox="0 0 360 230" role="img" aria-labelledby="pv-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="pv-t">Pontos esperados por questão: chutar contra deixar em branco, em duas regras de prova</title>
+        <line class="pv-ax" x1="30" y1="190" x2="340" y2="190"/>
+        <rect class="pv-guess" id="pvG" x="70" width="90" y="90" height="100" rx="4"/>
+        <line class="pv-zero" x1="200" y1="190" x2="290" y2="190"/>
+        <text class="pv-lv" id="pvGv" x="115" y="80">0,25</text>
+        <text class="pv-lv" x="245" y="180">0</text>
+        <text class="pv-lx" x="115" y="212">CHUTAR</text>
+        <text class="pv-lx" x="245" y="212">EM BRANCO</text>
+      </svg>
+    </div>
+    <div class="verdict no" id="pvVer" aria-live="polite"></div>
+  </div>
+  <p class="hint">A conta é aritmética: um quarto de chance de acerto; na segunda regra, cada erro tira um terço de ponto. A forma de treino dos modelos é mais complicada que uma prova; o desenho mostra só a direção do incentivo.</p>
+</section>
+
+<section class="sec" id="s-voltou" aria-labelledby="h-voltou">
+  <span class="eyebrow">O que voltou a mais</span>
+  <h2 id="h-voltou">Tudo o que aparece do lado direito precisa ter origem no esquerdo</h2>
+  <p class="intro">Compare a matéria-prima com o produto. <strong>Marque o que não tem origem</strong> e repare onde isso acontece: no ponto em que o texto passa de relatar para explicar.</p>
+  <div class="seg" role="group" aria-label="Destaque"><button type="button" data-ev="nada" aria-pressed="true">Ler como chegou</button><button type="button" data-ev="origem" aria-pressed="false">Marcar o que não tem origem</button></div>
+  <div class="ev-grid">
+    <div class="ev-col"><span class="eyebrow">O que você deu · a base</span><ul><li>Uma planilha com vendas por loja</li><li>Quatro semanas de dados</li><li>O pedido: "resuma o desempenho"</li><li>e mais nada</li></ul></div>
+    <div class="ev-arrow" aria-hidden="true">→</div>
+    <div class="ev-col"><span class="eyebrow">O que voltou · com o mesmo tom</span><ul id="evOut"><li class="ok">O desempenho por loja</li><li class="ok">A comparação entre as semanas</li><li class="inv">"queda puxada pela sazonalidade de julho"</li><li class="inv">"abaixo da média do setor, de 4,2%"</li></ul></div>
+  </div>
+  <div class="wh">
+    <div><span class="k">número</span><p>"…abaixo da média do setor, de" pede um número com uma casa decimal. É o que aparece em milhões de textos de análise.</p></div>
+    <div><span class="k">nome próprio</span><p>Pessoa, empresa, norma, artigo de lei. O nome mais provável é o que mais aparece, não o que existe.</p></div>
+    <div><span class="k">causa</span><p>"Puxado por", "devido a" pedem um complemento. Para uma queda em julho, o mais provável é sazonalidade.</p></div>
+  </div>
+</section>
+
+<section class="sec" id="s-caca" aria-labelledby="h-caca">
+  <span class="eyebrow">Caça ao erro</span>
+  <h2 id="h-caca">Conferir contra um trabalho fechado, linha por linha</h2>
+  <p class="intro">Ler procurando erro só pega o erro que se denuncia sozinho. O que funciona é ter do lado uma versão que você já sabe que está certa. <strong>Classifique cada linha da resposta contra a planilha.</strong></p>
+  <div class="ce-grid">
+    <div class="ce-sheet"><span class="eyebrow">A planilha · cupons por semana</span>
+      <table><thead><tr><th>Loja</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Total</th></tr></thead>
+      <tbody><tr><td>Centro</td><td>1.050</td><td>1.020</td><td>1.000</td><td>920</td><td>3.990</td></tr><tr><td>Norte</td><td>1.030</td><td>1.040</td><td>1.020</td><td>1.040</td><td>4.130</td></tr><tr><td>Sul</td><td>1.100</td><td>1.090</td><td>1.080</td><td>1.090</td><td>4.360</td></tr><tr class="tot"><td>Rede</td><td>3.180</td><td>3.150</td><td>3.100</td><td>3.050</td><td>12.480</td></tr></tbody></table>
+    </div>
+    <div class="ce-lines" id="ceLines"></div>
+  </div>
+  <p class="ce-score" id="ceScore" aria-live="polite"></p>
+</section>
+
+<section class="sec" id="s-camadas" aria-labelledby="h-camadas">
+  <span class="eyebrow">Quatro camadas</span>
+  <h2 id="h-camadas">Conferir tem ordem, da camada mais barata para a mais cara</h2>
+  <p class="intro">A conferência que a maioria faz para na primeira camada, porque é a que se enxerga rápido. <strong>É também a única que a ferramenta já faria sozinha.</strong> Clique em cada uma.</p>
+  <div class="cm-wrap">
+    <div><div class="cm-stack" id="cmStack" role="group" aria-label="As quatro camadas"></div><div class="cm-cost" aria-hidden="true"><span>mais barata</span><span>mais cara</span></div></div>
+    <div class="cm-detail" id="cmDetail" aria-live="polite"></div>
+  </div>
+</section>
+
+<section class="sec" id="s-jeitos" aria-labelledby="h-jeitos">
+  <span class="eyebrow">Quatro jeitos de errar</span>
+  <h2 id="h-jeitos">Nenhum é erro de conta, e todos saem plausíveis na tela</h2>
+  <p class="intro">São erros de leitura do material. Por isso reler a resposta procurando coisa estranha não pega nenhum deles. <strong>Clique em cada um</strong> para ver o sintoma, a causa e o conserto.</p>
+  <div class="jm-grid" id="jmGrid" role="group" aria-label="Quatro jeitos de errar"></div>
+  <div class="jm-detail" id="jmDetail" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
+  <span class="eyebrow">A instrução</span>
+  <h2 id="h-instrucao">A mesma pergunta, antes e depois de duas linhas no fim do pedido</h2>
+  <p class="intro">Mesma planilha, mesma pergunta: <strong>"Qual loja vendeu mais no trimestre, e quanto isso representa do total?"</strong> A única diferença é o parágrafo que manda declarar o que não foi encontrado.</p>
+  <div class="seg" role="group" aria-label="Pedido"><button type="button" data-in="sem" aria-pressed="true">Sem a instrução</button><button type="button" data-in="com" aria-pressed="false">Com a instrução</button></div>
+  <div class="in-out" id="inOut" aria-live="polite"></div>
+  <div class="copy"><div class="copy-head"><span class="eyebrow">O trecho de conferência · cole no fim de qualquer pedido</span><button type="button" class="btn" data-copy="cpTrecho">Copiar</button></div>
+<pre id="cpTrecho">Antes de me dar a resposta final, faça a conferência abaixo e me mostre o resultado dela.
+O que eu preciso: para cada número que aparecer, de onde ele saiu, com a aba, a coluna e quantas linhas foram somadas. E a lista do que você procurou e não encontrou no material.
+Restrições: não complete dado que estiver faltando, e não arredonde diferença. Se dois registros parecem a mesma coisa escrita de jeitos diferentes, mostre os dois como estão e não junte.
+Na dúvida: pergunte antes de decidir por mim. Deixar um item em aberto é o resultado certo quando a informação não está no material.</pre></div>
+  <p class="hint">A instrução não deixa a resposta perfeita, e nenhuma frase garante que a base seja respeitada. Ela transforma erro invisível em pendência visível, e pendência visível se resolve em um minuto.</p>
+</section>
+
+<section class="sec" id="s-trinta" aria-labelledby="h-trinta">
+  <span class="eyebrow">Trinta segundos</span>
+  <h2 id="h-trinta">Fonte, número, consistência, e o peso do erro</h2>
+  <p class="intro">Antes de colar, enviar ou assinar, três perguntas. <strong>O rigor é proporcional ao risco:</strong> quanto mais irreversível a decisão, mais devagar você lê. Pense numa resposta que você recebeu hoje.</p>
+  <div class="vl-wrap">
+    <div class="vl-steps" id="vlSteps">
+      <div class="vl-risk"><label for="vlRisk"><b>Se estiver errada, o que acontece?</b></label><input type="range" id="vlRisk" min="0" max="2" step="1" value="1"><div class="vl-scale" aria-hidden="true"><span>rascunho interno</span><span>vai para outra área</span><span>sai assinado ou para fora</span></div></div>
+    </div>
+    <div class="vl-res"><div class="verdict ok" id="vlVer" aria-live="polite"></div><p class="hint">E se você não pode conferir, não use. Para rascunho e estrutura, use à vontade. Para fato que você não domina, a IA não é fonte: fonte é a norma, o sistema, o registro.</p></div>
+  </div>
+  <p class="hint">Não é hipótese. Advogados já entregaram à Justiça decisões que não existiam, e uma companhia aérea foi condenada a honrar uma tarifa que o próprio atendente automático inventou. Nos dois casos, quem respondeu foi quem assinou.</p>
+</section>
+
+<section class="sec" id="s-fechado" aria-labelledby="h-fechado">
+  <span class="eyebrow">O caso fechado</span>
+  <h2 id="h-fechado">Não estreie o pedido num caso novo</h2>
+  <p class="intro">Num trabalho novo você não tem contra o que comparar: se a resposta vier errada, ela vai parecer certa. <strong>Estreie num trabalho que você já entregou.</strong> Os dois passos marcados são os que quase todo mundo pula.</p>
+  <div class="lp" id="lp" role="group" aria-label="Os quatro passos"></div>
+  <div class="lp-back"><span class="arr" aria-hidden="true">↶</span><span><b>E roda de novo, no mesmo caso fechado, até a diferença sumir.</b> Só então o pedido vai para um trabalho que você ainda não fez.</span></div>
+  <div class="lp-detail" id="lpDetail" aria-live="polite"></div>
+  <div class="copy"><div class="copy-head"><span class="eyebrow">A pergunta de bolso</span><button type="button" class="btn" data-copy="cpBolso">Copiar</button></div>
+<pre id="cpBolso">De onde saiu esta linha?
+Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja verdade no mundo.</pre></div>
+</section>
+
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Fluência não é evidência</h3><p>A parte inventada tem a mesma cara da parte certa. Nenhum aviso separa uma da outra.</p></div>
+    <div class="take-card"><h3>Confira contra alguma coisa</h3><p>Número, nome próprio e causa primeiro. Sem referência do lado, não há conferência acontecendo.</p></div>
+    <div class="take-card"><h3>Peça a lacuna declarada</h3><p>"Não localizado" é um resultado certo. Resposta redonda costuma ter as mesmas pendências, só que caladas.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Alucinação</dt><dd>Texto afirmado com segurança que não tem apoio no material nem no mundo. Nasce do mesmo mecanismo que escreve o texto certo.</dd>
+    <dt>Base</dt><dd>O que a IA tem à vista para responder: o pedido, os anexos, a conversa. O que não está ali é preenchido.</dd>
+    <dt>Caso fechado</dt><dd>Um trabalho que você já entregou e cujo resultado você conhece. É o gabarito para testar um pedido.</dd>
+    <dt>Pendência declarada</dt><dd>O item que a resposta diz não ter encontrado, em vez de completar por estimativa.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As porcentagens do sorteio, os números da planilha e as respostas dos exemplos são ilustrativos; a planilha e as lojas são fictícias. A prova de múltipla escolha é uma analogia para a direção do incentivo, não a descrição de como os modelos são treinados. Veja também <a href="./limites-da-ia--o-que-pode-subir.html">O que pode subir para a IA</a>, a outra ponta da mesma conferência.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Limites da IA: anterior e próxima">
+  <a class="famfoot-prev" href="./limites-da-ia--janela-de-contexto.html"><span>← anterior</span><b>3.1 · Janela de contexto</b></a>
+  <a class="famfoot-fam" href="./limites-da-ia.html#mapa">Família 3 · Limites da IA · o mapa</a>
+  <a class="famfoot-next" href="./limites-da-ia--o-que-pode-subir.html"><span>próxima →</span><b>3.3 · O que pode subir para a IA</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* a frase nascendo */
+  var START = 'O resultado ficou abaixo da média do setor, de';
+  var CANDS = [['4,2%', 38], ['3,8%', 27], ['5,1%', 21], ['2,9%', 14]];
+  var fnSent = document.getElementById('fnSent'), fnCands = document.getElementById('fnCands'), fnNote = document.getElementById('fnNote');
+  function fnRender(pick) {
+    fnSent.innerHTML = START + ' ' + (pick ? '<span class="num">' + pick + '</span>.' : '<span class="cur" aria-hidden="true"></span>');
+    fnCands.innerHTML = '';
+    document.getElementById('fnAuto').disabled = !!pick;
+    if (pick) {
+      fnNote.hidden = false;
+      fnNote.innerHTML = '<b>Nenhuma das quatro opções veio da planilha.</b> Elas estavam ali porque é assim que frases desse tipo costumam terminar. O ' + pick + ' foi escolhido pelo mesmo mecanismo que escolheu "resultado" e "abaixo", e sai com a mesma segurança. Recomece: de outro sorteio sai outro número, igualmente firme.';
+      return;
+    }
+    fnNote.hidden = true;
+    CANDS.forEach(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'fn-cand';
+      b.innerHTML = '<b>' + c[0] + '</b><span class="fn-track"><span class="fn-fill" style="display:block;width:' + c[1] + '%"></span></span><span class="pct">' + c[1] + '%</span>';
+      b.addEventListener('click', function () { fnRender(c[0]); });
+      fnCands.appendChild(b);
+    });
+  }
+  document.getElementById('fnAuto').addEventListener('click', function () {
+    var r = Math.random() * 100, acc = 0, ch = CANDS[CANDS.length - 1][0];
+    for (var i = 0; i < CANDS.length; i++) { acc += CANDS[i][1]; if (r < acc) { ch = CANDS[i][0]; break; } }
+    fnRender(ch);
+  });
+  document.getElementById('fnReset').addEventListener('click', function () { fnRender(null); });
+  fnRender(null);
+
+  /* a prova */
+  var pvBtns = document.querySelectorAll('[data-pv]');
+  function setPv(k) {
+    press(pvBtns, function (b) { return b.dataset.pv === k; });
+    var v = k === 'so' ? 0.25 : 0, h = v * 400, g = document.getElementById('pvG');
+    g.setAttribute('y', 190 - h); g.setAttribute('height', Math.max(h, 3));
+    var t = document.getElementById('pvGv'); t.setAttribute('y', 180 - h); t.textContent = String(v).replace('.', ',');
+    document.getElementById('pvVer').className = 'verdict ' + (k === 'so' ? 'no' : 'ok');
+    document.getElementById('pvVer').innerHTML = k === 'so'
+      ? '<b>Chutar vale mais que admitir.</b> Quem aprende nesta regra nunca deixa em branco, e escreve o chute com a mesma letra da resposta certa.'
+      : '<b>Chutar deixa de compensar.</b> Com o erro descontando, dizer "não sei" empata com o chute. É o que a instrução "se não estiver no material, escreva não localizado" faz dentro do seu pedido: muda a regra da prova.';
+  }
+  pvBtns.forEach(function (b) { b.addEventListener('click', function () { setPv(b.dataset.pv); }); });
+  setPv('so');
+
+  /* entrou × voltou */
+  var evBtns = document.querySelectorAll('[data-ev]');
+  evBtns.forEach(function (b) { b.addEventListener('click', function () {
+    press(evBtns, function (x) { return x === b; });
+    document.querySelectorAll('#evOut li').forEach(function (li) { li.classList.toggle('show', b.dataset.ev === 'origem'); });
+  }); });
+
+  /* caça ao erro */
+  var CE = [
+    { s: 'A rede fechou as quatro semanas com 12.480 cupons.', a: 'bateu', w: 'O total da rede na planilha é 12.480. Esta linha você aprova sem medo.' },
+    { s: 'A loja Centro caiu 8% contra a semana anterior.', a: 'bateu', w: 'Da semana 3 para a 4, de 1.000 para 920: queda de 8%. Repare que duas linhas certas em sequência baixam a sua guarda para as próximas.' },
+    { s: 'A loja Sul liderou o mês, com 4.630 cupons.', a: 'nao', w: 'A Sul liderou, mas com 4.360. Os dígitos trocados passam numa leitura corrida, e só a planilha do lado pega.' },
+    { s: 'A queda foi puxada pela sazonalidade de julho.', a: 'nada', w: 'Nada na planilha fala de julho nem de sazonalidade. É afirmação de causa, a categoria que mais engana porque parece análise.' },
+    { s: 'O resultado ficou abaixo da média do setor, de 4,2%.', a: 'nada', w: 'Nem a média do setor nem o 4,2% entraram na conversa. Um número de referência externa que ninguém pediu e ninguém tem como conferir.' }
+  ];
+  var CEL = { bateu: 'Bateu', nao: 'Não bateu', nada: 'Apareceu do nada' };
+  var ceLines = document.getElementById('ceLines'), ceAns = {};
+  CE.forEach(function (c, i) {
+    var d = document.createElement('div'); d.className = 'ce-line';
+    d.innerHTML = '<p class="q">' + c.s + '</p><div class="opts" role="group" aria-label="Classificar a linha"><button type="button" data-v="bateu" aria-pressed="false">Bateu</button><button type="button" data-v="nao" aria-pressed="false">Não bateu</button><button type="button" data-v="nada" aria-pressed="false">Apareceu do nada</button></div><div class="ce-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.ce-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      press(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === c.a; ceAns[i] = ok;
+      fb.hidden = false; fb.className = 'ce-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É "' + CEL[c.a] + '". ') + '</b>' + c.w;
+      var n = Object.keys(ceAns).length, k = Object.keys(ceAns).filter(function (x) { return ceAns[x]; }).length;
+      document.getElementById('ceScore').textContent = n + ' de 5 conferidas · ' + k + ' certas' + (n === 5 ? ' · três de cinco não se sustentam, e as inventadas estão onde o texto passa de relatar para explicar.' : '');
+    }); });
+    ceLines.appendChild(d);
+  });
+
+  /* camadas */
+  var CM = [
+    { t: 'Está preenchido', q: 'Tem data, tem assinatura, tem valor, tem o campo obrigatório?', w: 'A IA resolve sozinha, e resolve bem.', c: 'ia', l: 'IA sozinha', ex: 'Quatro pedidos de compra sem a data de aprovação. A conferência aponta sem precisar de mais nada.' },
+    { t: 'O número fecha', q: 'A soma bate com o total declarado? As duas abas dizem a mesma coisa?', w: 'A IA resolve, se o pedido mandar conferir.', c: 'ia', l: 'IA, se pedida', ex: 'Uma loja com mais cupons na aba de vendas do que na aba de caixa. Aparece porque o pedido mandou comparar as duas.' },
+    { t: 'É o documento certo', q: 'Este comprovante é deste período, deste centro de custo, deste contrato?', w: 'Só você. Ela não sabe o que foi combinado.', c: 'voce', l: 'Só você', ex: 'Duas lojas com nomes parecidos. Só quem conhece a rede sabe se são a mesma loja ou duas de verdade.' },
+    { t: 'A conclusão se sustenta', q: 'Dá para assinar com isto? O que falta é irrelevante ou é o essencial?', w: 'Só você, e é o que ninguém delega.', c: 'voce', l: 'Só você', ex: 'O relatório está completo e mesmo assim não responde à pergunta que a diretoria fez. Nenhuma ferramenta decide isso.' }
+  ];
+  var cmStack = document.getElementById('cmStack'), cmBtns = [];
+  CM.forEach(function (c, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'cm-layer';
+    b.innerHTML = '<span class="ln">0' + (i + 1) + '</span><b>' + c.t + '</b><span class="who ' + c.c + '">' + c.l + '</span>';
+    b.addEventListener('click', function () { showCm(i); }); cmStack.appendChild(b); cmBtns.push(b);
+  });
+  function showCm(i) {
+    cmBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var c = CM[i];
+    document.getElementById('cmDetail').innerHTML = '<span class="eyebrow">Camada 0' + (i + 1) + ' de 04</span><h3>' + c.q + '</h3><p><b>Quem resolve:</b> ' + c.w + '</p><p class="ex">' + c.ex + '</p>' + (i > 1 ? '<p class="hint">É nesta camada que o problema costuma estar, e é a que vai precisar de você para sempre.</p>' : '');
+  }
+  showCm(0);
+
+  /* quatro jeitos */
+  var JM = [
+    { t: 'O número que não existe em lugar nenhum', s: 'Um valor com centavos, redondo demais para ser chute, que não aparece em nenhuma célula.', c: 'A célula estava vazia, e o buraco foi preenchido com o que combinava com as outras linhas.', k: 'Pedir a origem de cada número: de qual aba, de qual coluna, de quantas linhas somadas. O que não tiver origem cai.' },
+    { t: 'A soma fecha, e o total está errado', s: 'Todas as contas batem entre si, e o total saiu maior do que deveria.', c: 'Uma linha duplicada entra duas vezes na soma, e a aritmética continua correta em cima do dado errado.', k: 'Conferir a soma contra o total que a própria planilha declara, e tratar a diferença como pendência, nunca como arredondamento.' },
+    { t: 'A mesma loja contada como duas', s: 'Uma loja aparece com venda baixa, e a resposta sugere investigar a queda.', c: 'O nome está escrito de dois jeitos, e cada grafia virou uma loja diferente na hora de agrupar.', k: 'Pedir a lista de nomes exatamente como estão no arquivo, antes de agrupar. Quem decide o que é a mesma loja é você.' },
+    { t: 'O que ela não achou, e não disse', s: 'A resposta cobre onze lojas e passa por cima da décima segunda, sem uma linha sobre a ausência.', c: 'Silêncio custa menos que ressalva. Nada no pedido dizia que faltar é informação, e não defeito.', k: 'Exigir a lista do que não foi encontrado como parte da entrega. Sem esse campo, ausência não aparece.' }
+  ];
+  var jmGrid = document.getElementById('jmGrid'), jmBtns = [];
+  JM.forEach(function (j, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'jm-card';
+    b.innerHTML = '<span class="n">' + (i + 1) + '</span><b>' + j.t + '</b>';
+    b.addEventListener('click', function () { showJm(i); }); jmGrid.appendChild(b); jmBtns.push(b);
+  });
+  function showJm(i) {
+    jmBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var j = JM[i];
+    document.getElementById('jmDetail').innerHTML = '<dl><dt>O sintoma</dt><dd>' + j.s + '</dd><dt>A causa</dt><dd>' + j.c + '</dd><dt>O conserto</dt><dd>' + j.k + '</dd></dl>';
+  }
+  showJm(0);
+
+  /* a instrução */
+  var IN = {
+    sem: { c: '', h: '<span class="eyebrow">O que volta</span><p class="quote">"A loja Sul teve o melhor desempenho do trimestre, com 13.420 cupons, o que representa 36% do total da rede. É um resultado que merece atenção."</p><p>Três números, nenhuma ressalva, e uma leitura pronta. <b>O que está escondido:</b> um valor de março estava vazio e foi completado; a Norte entrou duas vezes, com duas grafias; e o total inclui uma linha duplicada.</p>' },
+    com: { c: 'good', h: '<span class="eyebrow">O que volta</span><p class="quote">"A loja Sul somou 13.080 cupons <span class="src">[aba Vendas · coluna E · 12 linhas]</span>. Antes de calcular a participação no total, há quatro pendências:"</p><ol><li>A célula de março da loja Sul está vazia. Não completei.</li><li>"Loja Norte" e "Lj. Norte" aparecem separadas. São a mesma loja?</li><li>A soma das lojas dá 36.910; o total declarado na planilha é 36.480. A diferença é uma linha duplicada na semana 9.</li><li>Não encontrei dados da loja Leste no trimestre.</li></ol><p>A segunda resposta é mais longa e menos elegante. <b>É a que dá para assinar.</b></p>' }
+  };
+  var inBtns = document.querySelectorAll('[data-in]');
+  function setIn(k) { press(inBtns, function (b) { return b.dataset.in === k; }); var o = document.getElementById('inOut'); o.className = 'in-out ' + IN[k].c; o.innerHTML = IN[k].h; }
+  inBtns.forEach(function (b) { b.addEventListener('click', function () { setIn(b.dataset.in); }); });
+  setIn('sem');
+
+  /* validador */
+  var VL = [
+    { k: 'fonte', t: '01 · Fonte', q: 'Cada fato da resposta veio do que você enviou, ou apareceu do nada?' },
+    { k: 'numero', t: '02 · Número', q: 'Todo número, data, norma e nome citado: você sabe de onde vem?' },
+    { k: 'consist', t: '03 · Consistência', q: 'Bate com o que você sabe da sua área? Estranhou, checou.' }
+  ];
+  var vlSteps = document.getElementById('vlSteps'), vlA = {}, risk = document.getElementById('vlRisk');
+  VL.forEach(function (v) {
+    var d = document.createElement('div'); d.className = 'vl-step';
+    d.innerHTML = '<span class="k">' + v.t + '</span><p>' + v.q + '</p><div class="opts" role="group" aria-label="' + v.t + '"><button type="button" data-v="s" aria-pressed="false">Sim, tudo</button><button type="button" data-v="p" aria-pressed="false">Um ponto em dúvida</button><button type="button" data-v="n" aria-pressed="false">Não</button></div>';
+    var bs = d.querySelectorAll('button');
+    bs.forEach(function (b) { b.addEventListener('click', function () { press(bs, function (x) { return x === b; }); vlA[v.k] = b.dataset.v; renderVl(); }); });
+    vlSteps.insertBefore(d, vlSteps.lastElementChild);
+  });
+  function renderVl() {
+    var vs = VL.map(function (v) { return vlA[v.k]; }), r = +risk.value, el = document.getElementById('vlVer');
+    var n = vs.filter(function (x) { return x; }).length;
+    if (n < 3) { el.className = 'verdict mid'; el.innerHTML = '<b>Responda as três.</b> Leva menos tempo que refazer um documento que já saiu.'; return; }
+    if (vs.indexOf('n') > -1) { el.className = 'verdict no'; el.innerHTML = '<b>Não use sem verificar cada ponto.</b> Um "não" é sinal de preenchimento. Ache a linha, procure na fonte original e ponha no pedido a frase que manda declarar o que falta.'; return; }
+    if (vs.indexOf('p') > -1) {
+      if (r === 2) { el.className = 'verdict no'; el.innerHTML = '<b>Não sai assim.</b> Um ponto em dúvida num documento que sai assinado é o ponto que alguém vai perguntar. Confira na fonte antes, ou tire a linha.'; return; }
+      el.className = 'verdict mid'; el.innerHTML = '<b>Revise antes.</b> Volte ao ponto em dúvida e peça, na mesma conversa, de onde saiu aquele dado.' + (r === 0 ? ' Num rascunho interno, uma nota de "a conferir" basta.' : ''); return;
+    }
+    el.className = 'verdict ok';
+    el.innerHTML = '<b>Pode usar.</b> ' + (r === 2 ? 'E mesmo assim leia números e nomes uma última vez: é documento que sai com o seu nome.' : 'Com a sua última leitura, no seu tom.');
+  }
+  risk.addEventListener('input', renderVl); renderVl();
+
+  /* o caso fechado */
+  var LP = [
+    { et: 'escolha', t: 'Um trabalho já entregue', d: 'Um fechamento que já foi apresentado, um relatório já aprovado. Você já sabe a resposta, e é isso que faz dele gabarito.', s: false },
+    { et: 'rode', t: 'O pedido, do zero', d: 'Sem contar o que deu na época. Contar o resultado antes transforma conferência em concordância, e uma resposta que concorda com você não prova nada sobre as próximas.', s: true },
+    { et: 'compare', t: 'Contra o que você entregou', d: 'Procure diferença, não erro. Cada linha cai em uma de três colunas: bateu, não bateu, apareceu do nada. A terceira vazia quase sempre quer dizer conferência rápida demais.', s: false },
+    { et: 'ajuste', t: 'O pedido, não a resposta', d: 'Consertar a resposta na mão resolve aquele caso e deixa o próximo igual. Cada diferença tem um dos quatro jeitos de errar por trás, e o conserto é uma linha nova no pedido.', s: true }
+  ];
+  var lp = document.getElementById('lp'), lpBtns = [];
+  LP.forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'lp-node' + (x.s ? ' skip' : '');
+    b.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="et">' + x.et + '</span><b>' + x.t + '</b>' + (x.s ? '<span class="hint">o que se pula</span>' : '');
+    b.addEventListener('click', function () { showLp(i); }); lp.appendChild(b); lpBtns.push(b);
+  });
+  function showLp(i) { lpBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); }); document.getElementById('lpDetail').innerHTML = '<span class="eyebrow">Passo ' + (i + 1) + ' · ' + LP[i].et + '</span><p>' + LP[i].d + '</p>'; }
+  showLp(1);
+
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+})();
+</script>
+
+</html>

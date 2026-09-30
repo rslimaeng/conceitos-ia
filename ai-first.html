@@ -1,0 +1,776 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI First</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito longa, cabeça de família. Cada seção tem a sua peça: fluxos comparados, barras de tempo, quiz, loop, camadas, ciclo, história em passos, caixas em volta do centro, escada e calculadora. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+/* 1 · fluxos */
+.flows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.flowcard { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.flowcard.focal { border-color: var(--accent); background: var(--accent-soft); }
+.flowcard .head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.count { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); line-height: 1; }
+.flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.flow li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .96rem; transition: opacity .3s ease; }
+.flow .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.flow li.ia { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.flow li.gone { opacity: .5; border-style: dashed; }
+.flow li.gone span:last-child { text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.flowcard.dim .flow li:not(.ia) { opacity: .55; }
+
+/* 2 · tempo */
+.tempo { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 20px; align-items: stretch; }
+.roles { display: grid; gap: 10px; }
+.role { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 14px 16px; display: grid; gap: 4px; }
+.role.mid { border-color: var(--accent); background: var(--accent-soft); }
+.role .who { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.role b { font-weight: 600; letter-spacing: .06em; }
+.role p { font-size: .92rem; color: var(--text-muted); }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.ax { stroke: var(--border-strong); stroke-width: 1; }
+.bar-d { fill: var(--text-muted); }
+.bar-p { fill: var(--accent); }
+.bar-c { fill: var(--ok); }
+.bar-t { transition: y .45s ease, height .45s ease; }
+.lab-x { font: 500 12px var(--font-mono); fill: var(--text-muted); text-anchor: middle; letter-spacing: .06em; }
+.lab-v { font: 600 14px var(--font-body); fill: var(--text); text-anchor: middle; transition: y .45s ease; }
+
+/* 3 · quiz */
+.quiz { display: grid; gap: 12px; }
+.q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.q p.sit { font-size: 1.02rem; }
+.q .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 16px; font-size: .95rem; }
+.q .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.q .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.q .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.q .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 4 · loop dos pilares */
+.loop { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; position: relative; }
+.pnode { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; position: relative; min-height: 150px; }
+.pnode .num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--bg-elev); font-family: var(--font-mono); font-size: 13px; display: grid; place-items: center; }
+.pnode .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.pnode b { font-weight: 600; font-size: .98rem; line-height: 1.3; }
+.pnode[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+.pnode:not(:last-child)::after { content: "→"; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); color: var(--text-dim); }
+.back { display: flex; align-items: center; gap: 12px; border: 1.5px dashed var(--accent); border-radius: 8px; padding: 12px 16px; color: var(--accent); background: var(--accent-soft); transition: opacity .3s ease; }
+.back .arr { font-family: var(--font-mono); font-size: 1.4rem; }
+.back.open { opacity: 1; border-color: var(--atencao); color: var(--atencao-texto); background: var(--atencao-soft); }
+.pdetail { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; }
+.pdetail dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.pdetail dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.pdetail dd { margin: 0; }
+.pdetail dd.perg { color: var(--accent); font-size: 1.05rem; }
+.soon { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; border: 1px solid var(--accent); border-radius: 4px; padding: 2px 8px; color: var(--accent); width: fit-content; text-decoration: none; }
+
+/* 5 · camadas */
+.layers { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.stackwrap { display: grid; grid-template-columns: minmax(0, 1fr) 40px; }
+.stack { display: grid; gap: 6px; }
+.layer { text-align: left; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: center; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 12px 14px; }
+.layer .ln { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.layer b { font-weight: 600; }
+.layer small { display: block; color: var(--text-muted); font-size: .88rem; }
+.layer[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.layer:nth-child(5) { border-color: var(--accent); }
+.return { border: 2px solid var(--accent); border-left: 0; border-radius: 0 10px 10px 0; margin: 22px 0 22px 0; position: relative; }
+.return::before { content: ""; position: absolute; top: -7px; left: -2px; border: 6px solid transparent; border-right: 8px solid var(--accent); border-left: 0; }
+.return span { position: absolute; right: -2px; top: 50%; transform: translate(50%, -50%) rotate(90deg); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; color: var(--accent); background: var(--bg); padding: 0 4px; white-space: nowrap; }
+.ldetail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; min-height: 250px; align-content: start; }
+.ldetail h3 { font-size: 1.3rem; }
+.ldetail .ex { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--text-muted); }
+.ldetail .ex b { color: var(--text); font-weight: 600; }
+
+/* 6 · ciclo do contexto */
+.cyc-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.cyc-scroll svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.cy-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.cy-box .t { font: 600 14px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.cy-box .s { font: 400 12.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.cy-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.cy-box.res rect { stroke-dasharray: 5 4; }
+.cy-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke .25s ease, stroke-width .25s ease; }
+.cy-arr.on { stroke: var(--accent); stroke-width: 2.6; }
+.cy-lbl { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; letter-spacing: .04em; }
+.cy-lbl.on { fill: var(--accent); }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.caption ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; }
+
+/* 7 · história */
+.story { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.chap { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; transition: opacity .25s ease; }
+.chap .who { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--border-strong); border-radius: 4px; padding: 2px 8px; color: var(--text-muted); width: fit-content; }
+.chap.ai .who { border-color: var(--accent); color: var(--accent); }
+.chap b { font-weight: 600; }
+.chap p { font-size: .92rem; color: var(--text-muted); }
+.chap.future { opacity: .3; }
+.chap.now { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* 8 · caixas em volta do centro */
+.hub { display: grid; grid-template-columns: 1fr minmax(180px, .8fr) 1fr; grid-template-rows: auto auto auto; gap: 12px; align-items: stretch; }
+.hbox { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.hbox .et { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--accent); }
+.hbox p { font-size: .9rem; color: var(--text-muted); }
+.hbox[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.hbox.o { grid-column: 2; grid-row: 1; }
+.hbox.h { grid-column: 1; grid-row: 2; align-self: center; }
+.hbox.f { grid-column: 3; grid-row: 2; align-self: center; }
+.hbox.c { grid-column: 2; grid-row: 3; }
+.core { grid-column: 2; grid-row: 2; border: 2px solid var(--text); border-radius: 50%; aspect-ratio: 1; display: grid; place-items: center; text-align: center; padding: 16px; background: var(--bg-elev); }
+.core b { font-weight: 600; display: block; }
+.core span { font-size: .85rem; color: var(--text-muted); }
+.hdetail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+.hdetail ul { margin: 0; padding-left: 18px; }
+.hdetail .link { font-size: .92rem; color: var(--accent); }
+
+/* 9 · escada */
+.stairs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.stair { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px 8px 0 0; padding: 14px; display: grid; gap: 6px; align-content: start; border-bottom: 3px solid var(--text); }
+.stair:nth-child(1) { min-height: 150px; }
+.stair:nth-child(2) { min-height: 200px; }
+.stair:nth-child(3) { min-height: 250px; }
+.stair:nth-child(4) { min-height: 300px; }
+.stair .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+.stair b { font-weight: 600; font-size: 1.05rem; line-height: 1.25; }
+.stair .cost { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-top: auto; }
+.stair[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); border-bottom-color: var(--accent); }
+.stair.start { box-shadow: inset 0 3px 0 var(--ok); }
+.sdetail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+
+/* 10 · calculadora */
+.calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.inputs { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.result { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.big { font-family: var(--font-mono); font-size: 2.2rem; color: var(--accent); line-height: 1; }
+.mini { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mini div { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+.mini span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.mini b { font-family: var(--font-mono); font-weight: 500; font-size: 1.15rem; }
+
+/* 11 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .flows, .tempo, .layers, .calc, .take { grid-template-columns: 1fr; }
+  .loop { grid-template-columns: 1fr; gap: 26px; }
+  .pnode { min-height: 0; }
+  .pnode:not(:last-child)::after { content: "↓"; right: auto; left: 50%; top: auto; bottom: -24px; transform: translateX(-50%); }
+  .story { grid-template-columns: 1fr 1fr; }
+  .stairs { grid-template-columns: 1fr 1fr; }
+  .stair:nth-child(n) { min-height: 0; }
+  .hub { grid-template-columns: 1fr 1fr; }
+  .core { grid-column: 1 / -1; grid-row: 1; aspect-ratio: auto; border-radius: 8px; }
+  .hbox.o, .hbox.h, .hbox.f, .hbox.c { grid-column: auto; grid-row: auto; }
+  .pdetail dl { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .story, .stairs, .hub, .mini { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .bar-t, .lab-v, .flow li, .chap, .cy-box rect, .cy-arr, .back { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--captura.html">5.1 Captura →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html" aria-current="page">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>AI First</h1>
+  <p class="sub">A diferença entre usar IA no fim do trabalho e colocá-la no desenho desde o começo</p>
+  <p class="lead">Quase todo mundo já usou IA para acelerar uma tarefa: um e-mail mais rápido, um resumo, uma imagem. Isso funciona, e não é AI First. <strong>AI First começa quando você desenha o processo inteiro e marca onde a IA encosta.</strong> O ganho deixa de morar numa pessoa e passa a morar no processo.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-encosta">Onde a IA encosta</a><a href="#s-tempo">O seu tempo</a><a href="#s-quiz">Ilha ou trilho</a><a href="#s-loop">O loop</a><a href="#s-camadas">Do que um loop é feito</a><a href="#s-ciclo">O ciclo do contexto</a><a href="#s-historia">Um loop fechado</a><a href="#s-sozinha">Trabalhar sozinha</a><a href="#s-escada">Por onde começar</a><a href="#s-conta">Quando paga</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">Cinco pilares e um método, cada um com página própria</h2>
+  <p class="intro">Esta página é a visão geral: o que muda quando a IA entra no desenho. <strong>Cada pilar abaixo é uma peça do desenho, e tem a sua página.</strong> Os cinco formam um ciclo: o que a medição ensina volta para o registro. O IPO é o método para abrir um processo em passos antes de redesenhar.</p>
+  <div class="fmap c3">
+    <div class="fmap-card"><span class="fmap-n">5.1 · Captura · pilar 1 de 5</span><h3>O que não vira registro não existe</h3><p>A IA só trabalha com o que está escrito. O que vive na conversa é invisível para ela, e para quem começa amanhã.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três gavetas</li><li>do corredor ao registro</li><li>a pergunta das férias</li></ul><a class="fmap-go" href="./ai-first--captura.html">abrir 5.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">5.2 · Contexto · pilar 2 de 5</span><h3>Resultado ruim é falta de contexto</h3><p>Quando a resposta volta genérica, quase sempre faltou o que só quem trabalha aqui sabe.</p><span class="fmap-lab">Lá você encontra</span><ul><li>o mesmo comunicado, sem e com contexto</li><li>os quatro campos da casa</li><li>antes de culpar a ferramenta</li></ul><a class="fmap-go" href="./ai-first--contexto.html">abrir 5.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">5.3 · Execução · pilar 3 de 5</span><h3>Quebrar em fases e conferir entre elas</h3><p>Em fases, com alguém conferindo entre elas, o erro aparece cedo e sai barato.</p><span class="fmap-lab">Lá você encontra</span><ul><li>onde o erro aparece</li><li>quem executa, quem confere</li><li>o plano antes de gerar</li></ul><a class="fmap-go" href="./ai-first--execucao.html">abrir 5.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">5.4 · Memória · pilar 4 de 5</span><h3>Toda correção vira regra</h3><p>A correção precisa morar onde é lida na hora de fazer. Quase nunca é o manual.</p><span class="fmap-lab">Lá você encontra</span><ul><li>o erro que volta toda semana</li><li>a linha de correção</li><li>onde a correção mora</li></ul><a class="fmap-go" href="./ai-first--memoria.html">abrir 5.4 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">5.5 · Medição · pilar 5 de 5</span><h3>Nada começa sem quatro campos</h3><p>Em que ajuda, qual é o número, quanto é hoje, quanto em sessenta dias. Sem os quatro, é vontade, não projeto.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a ficha preenchida ao vivo</li><li>um de cada destino</li><li>os sessenta dias</li></ul><a class="fmap-go" href="./ai-first--medicao.html">abrir 5.5 →</a></div>
+    <div class="fmap-card metodo"><span class="fmap-n">5.6 · IPO · método</span><h3>Entrada, processo, saída</h3><p>Escrever o que chega, o que se faz e o que sai, com o tempo de cada passo, vira número que se defende.</p><span class="fmap-lab">Lá você encontra</span><ul><li>monte o seu</li><li>onde o tempo vaza</li><li>quanto vale</li></ul><a class="fmap-go" href="./ai-first--ipo.html">abrir 5.6 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<!-- 1 -->
+<section class="sec" id="s-encosta" aria-labelledby="h-encosta">
+  <span class="eyebrow">Onde a IA encosta</span>
+  <h2 id="h-encosta">O mesmo orçamento, desenhado de dois jeitos</h2>
+  <p class="intro">Mesmo cliente, mesmo técnico, mesma proposta no fim. À esquerda a IA entra no fim e acelera uma etapa. À direita ela entra no desenho. <strong>Conte os passos.</strong></p>
+  <div class="seg" role="group" aria-label="Destacar">
+    <button type="button" data-hl="tudo" aria-pressed="true">Ver os dois</button>
+    <button type="button" data-hl="ia" aria-pressed="false">Destacar onde a IA está</button>
+  </div>
+  <div class="flows">
+    <div class="flowcard" id="fc1">
+      <div class="head"><span class="eyebrow">A IA no fim</span><span class="count">5</span></div>
+      <ol class="flow">
+        <li><span class="n">01</span><span>Chega o pedido de orçamento</span></li>
+        <li><span class="n">02</span><span>Você lê e entende o que o cliente quer</span></li>
+        <li><span class="n">03</span><span>Pergunta preço e prazo ao técnico, e espera</span></li>
+        <li class="ia"><span class="n">04</span><span>Escreve a proposta com ajuda da IA</span></li>
+        <li><span class="n">05</span><span>Revisa e envia</span></li>
+      </ol>
+      <p class="hint">A etapa 4 ficou mais rápida. As outras quatro continuam iguais, e o processo continua esperando o técnico.</p>
+    </div>
+    <div class="flowcard focal" id="fc2">
+      <div class="head"><span class="eyebrow">A IA no desenho</span><span class="count">3</span></div>
+      <ol class="flow">
+        <li><span class="n">01</span><span>Chega o pedido de orçamento</span></li>
+        <li class="gone"><span class="n">—</span><span>Você lê e entende o que o cliente quer</span></li>
+        <li class="gone"><span class="n">—</span><span>Pergunta preço e prazo ao técnico, e espera</span></li>
+        <li class="ia"><span class="n">02</span><span>Cai onde preço e prazo já estão escritos, e sai a proposta pronta</span></li>
+        <li><span class="n">03</span><span>Uma pessoa confere só o que fugiu do padrão</span></li>
+      </ol>
+      <p class="hint">A espera não foi acelerada: deixou de ser necessária, porque a informação passou a existir escrita.</p>
+    </div>
+  </div>
+  <p class="punch">O que mudou não foi a velocidade de escrever. Foi <em>ter a resposta escrita em algum lugar</em>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tempo" aria-labelledby="h-tempo">
+  <span class="eyebrow">O seu tempo</span>
+  <h2 id="h-tempo">Todo trabalho tem três partes, e só a do meio fica barata</h2>
+  <p class="intro">Com a IA no desenho, o total de horas não é o que muda. <strong>Muda qual das três partes come o seu dia.</strong> Troque a visão e veja as barras.</p>
+  <div class="seg" role="group" aria-label="Momento">
+    <button type="button" data-tempo="antes" aria-pressed="true">Como era</button>
+    <button type="button" data-tempo="depois" aria-pressed="false">Com a IA no desenho</button>
+  </div>
+  <div class="tempo">
+    <div class="roles">
+      <div class="role"><span class="who">quem decide é você</span><b>DIRIGIR</b><p>o que pedir, e para quê · com que critério · o que vale a pena fazer · o que fica de fora</p></div>
+      <div class="role mid"><span class="who">é esta parte que muda</span><b>PRODUZIR</b><p>procurar a informação · rascunhar · montar e formatar · refazer para outro público</p></div>
+      <div class="role"><span class="who">quem responde é você</span><b>CONFERIR</b><p>isto está bom o bastante? · faz sentido para quem lê? · o que precisa mudar? · pode sair assim?</p></div>
+    </div>
+    <div class="chart">
+      <span class="eyebrow" id="tempoLab">Tempo no dia · como era</span>
+      <svg viewBox="0 0 420 260" role="img" aria-labelledby="tempo-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="tempo-t">Barras de tempo entre dirigir, produzir e conferir</title>
+        <line class="ax" x1="30" y1="220" x2="400" y2="220"/>
+        <rect class="bar-d bar-t" id="bD" x="55" width="80" y="190" height="30" rx="4"/>
+        <rect class="bar-p bar-t" id="bP" x="170" width="80" y="60" height="160" rx="4"/>
+        <rect class="bar-c bar-t" id="bC" x="285" width="80" y="190" height="30" rx="4"/>
+        <text class="lab-v" id="vD" x="95" y="182">15%</text>
+        <text class="lab-v" id="vP" x="210" y="52">70%</text>
+        <text class="lab-v" id="vC" x="325" y="182">15%</text>
+        <text class="lab-x" x="95" y="242">DIRIGIR</text>
+        <text class="lab-x" x="210" y="242">PRODUZIR</text>
+        <text class="lab-x" x="325" y="242">CONFERIR</text>
+      </svg>
+      <p class="hint">As alturas mostram a forma, não uma medida. A sua, você mede cronometrando uma rotina de verdade.</p>
+    </div>
+  </div>
+  <p class="punch">Todo mundo vira <em>gestor de alguma coisa</em>. E o ganho só aparece se as pontas recebem o tempo que o meio devolveu.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-quiz" aria-labelledby="h-quiz">
+  <span class="eyebrow">Ilha ou trilho</span>
+  <h2 id="h-quiz">O ganho continua existindo com você fora?</h2>
+  <p class="intro"><strong>Ilha</strong> é um ponto isolado que funciona sozinho e não leva a lugar nenhum. <strong>Trilho</strong> liga uma etapa na seguinte. Classifique as quatro situações.</p>
+  <div class="quiz" id="quiz"></div>
+  <p class="score" id="score" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-loop" aria-labelledby="h-loop">
+  <span class="eyebrow">O loop</span>
+  <h2 id="h-loop">Cinco pilares, e a volta que quase todo mundo esquece</h2>
+  <p class="intro">O que faz o trilho funcionar não é a ferramenta: é <strong>onde a informação fica</strong>. Cada pilar é um verbete desta família. Clique em cada um, e depois abra o loop para ver o que acontece sem a volta.</p>
+  <div class="seg" role="group" aria-label="Estado do loop">
+    <button type="button" data-loop="fechado" aria-pressed="true">Loop fechado</button>
+    <button type="button" data-loop="aberto" aria-pressed="false">Loop aberto</button>
+  </div>
+  <div class="loop" id="loop" role="group" aria-label="Os cinco pilares"></div>
+  <div class="back" id="back"><span class="arr" aria-hidden="true">↶</span><span id="backTxt"></span></div>
+  <div class="pdetail" id="pdetail" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-camadas" aria-labelledby="h-camadas">
+  <span class="eyebrow">Do que um loop é feito</span>
+  <h2 id="h-camadas">Cinco camadas, e a última devolve para a primeira</h2>
+  <p class="intro">Olhe por dentro de qualquer rotina que melhora sozinha e você acha as mesmas cinco camadas. O exemplo é o mais comum que existe: <strong>responder dúvidas de cliente</strong>.</p>
+  <div class="layers">
+    <div class="stackwrap">
+      <div class="stack" id="stack" role="group" aria-label="As cinco camadas"></div>
+      <div class="return" aria-hidden="true"><span>volta ao começo</span></div>
+    </div>
+    <div class="ldetail" id="ldetail" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-ciclo" aria-labelledby="h-ciclo">
+  <span class="eyebrow">O ciclo do contexto</span>
+  <h2 id="h-ciclo">O caminho que a informação faz num dia de trabalho</h2>
+  <p class="intro">As quatro primeiras caixas quase toda empresa já tem. <strong>O que quase nenhuma tem são as duas setas de baixo</strong>, e é nelas que mora o que se aprendeu fazendo. Siga o ciclo.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="cyLab">Passo 1 de 7</span>
+    <div class="nav"><button type="button" class="btn" id="cyPrev">← Anterior</button><button type="button" class="btn primary" id="cyNext">Próximo →</button></div>
+  </div>
+  <div class="cyc-scroll" role="region" tabindex="0" aria-label="Diagrama do ciclo do contexto. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cy-t">
+      <title id="cy-t">Ciclo do contexto: capturar, organizar, guardar, executar e resposta, com duas setas de volta</title>
+      <defs>
+        <marker id="am" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker>
+        <marker id="aa" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-a"/></marker>
+      </defs>
+      <g class="cy-box" data-c="1"><rect x="10" y="40" width="150" height="96" rx="8"/><text class="t" x="85" y="72">CAPTURAR</text><text class="s" x="85" y="94">trazer o contexto</text><text class="s" x="85" y="112">para dentro</text></g>
+      <g class="cy-box" data-c="2"><rect x="190" y="40" width="150" height="96" rx="8"/><text class="t" x="265" y="72">ORGANIZAR</text><text class="s" x="265" y="94">dar um lugar</text><text class="s" x="265" y="112">a cada coisa</text></g>
+      <g class="cy-box" data-c="3"><rect x="370" y="40" width="150" height="96" rx="8"/><text class="t" x="445" y="72">GUARDAR</text><text class="s" x="445" y="94">deixar o contexto</text><text class="s" x="445" y="112">legível</text></g>
+      <g class="cy-box" data-c="4"><rect x="550" y="40" width="150" height="96" rx="8"/><text class="t" x="625" y="72">EXECUTAR</text><text class="s" x="625" y="94">pessoas e IA</text><text class="s" x="625" y="112">usando o contexto</text></g>
+      <g class="cy-box res" data-c="5"><rect x="730" y="40" width="160" height="96" rx="8"/><text class="t" x="810" y="72">RESPOSTA</text><text class="s" x="810" y="94">quem usa reage,</text><text class="s" x="810" y="112">volta ou não volta</text></g>
+      <path class="cy-arr" data-a="1" d="M160,88 H186" marker-end="url(#am)"/>
+      <path class="cy-arr" data-a="2" d="M340,88 H366" marker-end="url(#am)"/>
+      <path class="cy-arr" data-a="3" d="M520,88 H546" marker-end="url(#am)"/>
+      <path class="cy-arr" data-a="4" d="M700,88 H726" marker-end="url(#am)"/>
+      <path class="cy-arr" data-a="6" d="M625,136 V200 H265 V140" marker-end="url(#am)"/>
+      <text class="cy-lbl" data-l="6" x="445" y="222">o rastro do trabalho: como a decisão foi tomada, e o que sobrou pronto</text>
+      <path class="cy-arr" data-a="7" d="M810,136 V290 H85 V140" marker-end="url(#am)"/>
+      <text class="cy-lbl" data-l="7" x="445" y="312">o sinal de quem usou: quem abriu, quem respondeu, quem voltou</text>
+    </svg>
+  </div>
+  <div class="caption" id="cyCap" aria-live="polite"></div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-historia" aria-labelledby="h-historia">
+  <span class="eyebrow">Um loop fechado</span>
+  <h2 id="h-historia">A correção que veio de quem não mexe em tecnologia</h2>
+  <p class="intro">Uma empresa de dois sócios passou a usar um assistente para responder clientes. Ele começou a errar um tipo de resposta, sempre do mesmo jeito. <strong>Quem percebeu foi o sócio que não é da área técnica.</strong> Avance a história.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="stLab">Capítulo 1 de 4</span>
+    <div class="nav"><button type="button" class="btn" id="stPrev">← Anterior</button><button type="button" class="btn primary" id="stNext">Próximo →</button></div>
+  </div>
+  <div class="story" id="story">
+    <div class="chap"><span class="who">o sócio</span><b>01 · Percebe</b><p>Um tipo de resposta está saindo errado, sempre igual. Não é um erro isolado: é uma classe de erro.</p></div>
+    <div class="chap"><span class="who">o sócio</span><b>02 · Diz o que está errado</b><p>Escreve para o assistente qual é o erro e o que era para ter sido feito. Sem abrir chamado, sem esperar reunião.</p></div>
+    <div class="chap ai"><span class="who">o assistente</span><b>03 · Atualiza a própria instrução</b><p>A correção entra no arquivo que ele lê antes de toda tarefa. A regra passa a existir fora da cabeça de alguém.</p></div>
+    <div class="chap ai"><span class="who">o assistente</span><b>04 · Aquele erro para</b><p>Não só naquele caso: a categoria inteira de engano deixa de acontecer.</p></div>
+  </div>
+  <p class="punch">Este é o pilar 4 inteiro, e quem o executou não era da área técnica. <em>A correção é feita por quem enxerga o erro.</em></p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-sozinha" aria-labelledby="h-sozinha">
+  <span class="eyebrow">Trabalhar sozinha</span>
+  <h2 id="h-sozinha">Quatro coisas alimentam o trabalho que sai pronto</h2>
+  <p class="intro">Para a IA entregar sem alguém do lado o tempo todo, quatro coisas precisam existir escritas. Cada uma é um pilar visto de outro ângulo. Clique em cada caixa.</p>
+  <div class="hub" role="group" aria-label="As quatro caixas">
+    <button type="button" class="hbox o" data-h="o" aria-pressed="true"><span class="et">OBJETIVO</span><p>o pedido, escrito de outro jeito</p></button>
+    <button type="button" class="hbox h" data-h="h" aria-pressed="false"><span class="et">HABILIDADE</span><p>o passo a passo que a casa já usa</p></button>
+    <div class="core"><div><b>Trabalho que sai pronto o bastante</b><span>sem alguém do lado o tempo todo</span></div></div>
+    <button type="button" class="hbox f" data-h="f" aria-pressed="false"><span class="et">FERRAMENTA</span><p>as mãos: onde ela pode mexer</p></button>
+    <button type="button" class="hbox c" data-h="c" aria-pressed="false"><span class="et">CONTEXTO</span><p>a memória que não depende de quem lembra</p></button>
+  </div>
+  <div class="hdetail" id="hdetail" aria-live="polite"></div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-escada" aria-labelledby="h-escada">
+  <span class="eyebrow">Por onde começar</span>
+  <h2 id="h-escada">A mesma arquitetura, em quatro alturas</h2>
+  <p class="intro">Muda o tamanho do problema e o custo de montar. O princípio é o mesmo. <strong>Os dois primeiros degraus cabem numa tarde, no chat que você já usa.</strong></p>
+  <div class="stairs" role="group" aria-label="Os quatro degraus">
+    <button type="button" class="stair start" data-s="0" aria-pressed="true"><span class="et">DEGRAU 1</span><b>Um assistente com papel</b><span class="cost">uma tarde</span></button>
+    <button type="button" class="stair start" data-s="1" aria-pressed="false"><span class="et">DEGRAU 2</span><b>Um time com quem distribui</b><span class="cost">uma tarde</span></button>
+    <button type="button" class="stair" data-s="2" aria-pressed="false"><span class="et">DEGRAU 3</span><b>Um método com fases e portões</b><span class="cost">semanas</span></button>
+    <button type="button" class="stair" data-s="3" aria-pressed="false"><span class="et">DEGRAU 4</span><b>Uma empresa que confere a si mesma</b><span class="cost">meses, e nunca termina</span></button>
+  </div>
+  <div class="sdetail" id="sdetail" aria-live="polite"></div>
+</section>
+
+<!-- 10 -->
+<section class="sec" id="s-conta" aria-labelledby="h-conta">
+  <span class="eyebrow">Quando paga</span>
+  <h2 id="h-conta">Trilho não é sempre melhor que ilha</h2>
+  <p class="intro">A coluna do desenho não é de graça: <strong>alguém precisa escrever, uma vez, o que hoje está na cabeça de alguém.</strong> Quem decide se vale é a frequência. Ponha os números de uma rotina sua.</p>
+  <div class="calc">
+    <div class="inputs">
+      <div class="field"><label for="cFreq">Quantas vezes por mês a rotina roda</label><div class="row"><input type="range" id="cFreq" min="1" max="60" value="20"><output id="oFreq">20</output></div></div>
+      <div class="field"><label for="cMin">Minutos que o desenho economiza a cada vez</label><div class="row"><input type="range" id="cMin" min="5" max="120" step="5" value="30"><output id="oMin">30</output></div></div>
+      <div class="field"><label for="cHoras">Horas para escrever e organizar, uma vez só</label><div class="row"><input type="range" id="cHoras" min="1" max="80" value="12"><output id="oHoras">12</output></div></div>
+    </div>
+    <div class="result">
+      <span class="eyebrow">O desenho se paga em</span>
+      <div class="big" id="cBig">—</div>
+      <div class="mini">
+        <div><span>economia por mês</span><b id="cMes">—</b></div>
+        <div><span>economia em um ano</span><b id="cAno">—</b></div>
+      </div>
+      <div class="verdict" id="cVer"></div>
+    </div>
+  </div>
+  <p class="hint">A conta não inclui o ganho que não aparece em minutos: o processo que sobrevive às férias de quem sabia, e o erro que para de se repetir.</p>
+</section>
+
+<!-- 11 -->
+<section class="sec" id="levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>No fim acelera; no desenho muda</h3><p>A IA no fim deixa uma etapa mais rápida. No desenho, etapas deixam de existir.</p></div>
+    <div class="take-card"><h3>O que não está escrito não existe</h3><p>O ganho do desenho quase sempre vem de escrever o que estava na cabeça de alguém.</p></div>
+    <div class="take-card"><h3>Feche o loop num pedaço</h3><p>Uma rotina, uma área, um relatório. Só depois leve o desenho para o lado.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>AI First</dt><dd>Colocar a IA no desenho do processo desde o começo, em vez de usá-la no fim para acelerar uma tarefa.</dd>
+    <dt>Ilha</dt><dd>Uso de IA que acelera um ponto isolado e depende de quem o descobriu.</dd>
+    <dt>Trilho</dt><dd>Uso de IA que liga uma etapa na seguinte e muda o processo, independente de quem executa.</dd>
+    <dt>Loop fechado</dt><dd>Rotina em que o que se aprende no fim volta para o começo, por escrito.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O ciclo dos cinco pilares é uma forma de organizar o assunto; outros materiais usam outras divisões para a mesma ideia. Os percentuais das barras mostram a forma, não uma medida.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--captura.html"><span>próxima →</span><b>5.1 · O que não vira registro não existe</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+
+  /* 1 · destacar a IA */
+  var hlBtns = document.querySelectorAll('[data-hl]');
+  hlBtns.forEach(function (b) { b.addEventListener('click', function () {
+    pressGroup(hlBtns, function (x) { return x === b; });
+    var on = b.dataset.hl === 'ia';
+    document.getElementById('fc1').classList.toggle('dim', on);
+    document.getElementById('fc2').classList.toggle('dim', on);
+  }); });
+
+  /* 2 · tempo */
+  var T = { antes: [15, 70, 15], depois: [35, 25, 40] };
+  var tBtns = document.querySelectorAll('[data-tempo]');
+  function setTempo(k) {
+    pressGroup(tBtns, function (x) { return x.dataset.tempo === k; });
+    var ids = [['bD', 'vD'], ['bP', 'vP'], ['bC', 'vC']];
+    T[k].forEach(function (v, i) {
+      var h = v / 100 * 228, y = 220 - h;
+      var r = document.getElementById(ids[i][0]); r.setAttribute('y', y); r.setAttribute('height', h);
+      var t = document.getElementById(ids[i][1]); t.setAttribute('y', y - 8); t.textContent = v + '%';
+    });
+    document.getElementById('tempoLab').textContent = k === 'antes' ? 'Tempo no dia · como era' : 'Tempo no dia · com a IA no desenho';
+  }
+  tBtns.forEach(function (b) { b.addEventListener('click', function () { setTempo(b.dataset.tempo); }); });
+  setTempo('antes');
+
+  /* 3 · quiz */
+  var Q = [
+    { s: 'A analista usa IA para escrever o relatório mensal em metade do tempo. Quando ela sai de férias, o relatório volta a demorar.', a: 'ilha', why: 'O ganho mora nela: no jeito de pedir e no arquivo do computador dela. Some quando ela sai.' },
+    { s: 'As respostas às dúvidas mais comuns foram escritas numa base. O assistente responde a partir dela, e uma pessoa confere só as exceções.', a: 'trilho', why: 'A informação existe escrita, e qualquer pessoa que assumir a rotina usa o mesmo desenho.' },
+    { s: 'Cada vendedor tem o seu próprio prompt salvo no celular para montar proposta, e cada um escreve de um jeito.', a: 'ilha', why: 'São dez ilhas. O ganho é de quem descobriu o atalho, e não aparece em indicador nenhum.' },
+    { s: 'A regra de desconto está escrita. A proposta sai com preço e prazo da tabela, e o gerente aprova só o que fugiu dela.', a: 'trilho', why: 'A espera pelo gerente deixou de ser a regra e virou a exceção. O processo mudou de forma.' }
+  ];
+  var quiz = document.getElementById('quiz'), score = document.getElementById('score');
+  var answers = {};
+  Q.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'q';
+    d.innerHTML = '<p class="sit">' + q.s + '</p><div class="opts" role="group" aria-label="Classificar"><button type="button" data-v="ilha" aria-pressed="false">Ilha</button><button type="button" data-v="trilho" aria-pressed="false">Trilho</button></div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; answers[i] = ok;
+      fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + q.a + '. ') + '</b>' + q.why;
+      var n = Object.keys(answers).length, c = Object.keys(answers).filter(function (k) { return answers[k]; }).length;
+      score.textContent = n + ' de 4 respondidas · ' + c + ' certas' + (n === 4 ? ' · o teste de bolso: o ganho continua existindo com você fora?' : '');
+    }); });
+    quiz.appendChild(d);
+  });
+
+  /* 4 · loop */
+  var P = [
+    { et: 'captura', t: 'O que não vira registro não existe', c: 'A IA só enxerga o que está escrito. O que vive na conversa, na reunião sem ata e na memória de quem participou é invisível para ela.', f: 'Transformar em registro consultável o que hoje só existe em conversa, e deixá-lo onde o trabalho acontece.', q: 'Se eu saísse de férias por trinta dias, o que a pessoa que assume precisaria me perguntar?' },
+    { et: 'contexto', t: 'Resultado ruim é falta de contexto, não de capacidade', c: 'Resposta genérica quase nunca vem de ferramenta fraca. Vem de pedido sem o contexto do negócio, das regras e do que já foi decidido.', f: 'Escrever quem lê, o que está acontecendo, a regra da casa e o limite, como para alguém que começou esta semana.', q: 'Uma pessoa competente, nova na função, faria isto só com o que eu escrevi?' },
+    { et: 'execução', t: 'Quebrar em fases e conferir entre elas', c: 'Trabalho pedido inteiro de uma vez volta inteiro errado, e sem que se saiba onde errou. Em etapas, o erro aparece cedo e sai barato.', f: 'Dividir em etapas, conferir ao fim de cada uma, e marcar onde uma pessoa revisa antes de o resultado sair.', q: 'Se o resultado vier errado, eu consigo dizer em que etapa errou?' },
+    { et: 'memória', t: 'Toda correção vira regra', c: 'Correção que fica na cabeça de quem corrigiu se repete para sempre. E correção escrita onde ninguém abre na hora certa também.', f: 'Registrar cada correção onde ela é lida no momento de fazer: campo obrigatório, item da lista de conferência, linha do modelo.', q: 'Essa correção depende de alguém lembrar dela?' },
+    { et: 'medição', t: 'Nada começa sem quatro campos preenchidos', c: 'Sem número definido antes, não há como saber depois se o ciclo melhorou alguma coisa.', f: 'Antes de iniciar: em que isso ajuda, qual é o número, quanto é hoje e quanto em sessenta dias.', q: 'Qual dos quatro campos eu não consigo preencher? Esse é o meu próximo passo.' }
+  ];
+  var loop = document.getElementById('loop'), pdetail = document.getElementById('pdetail');
+  var pBtns = [];
+  P.forEach(function (p, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'pnode';
+    b.innerHTML = '<span class="num">' + (i + 1) + '</span><span class="et">' + p.et + '</span><b>' + p.t + '</b>';
+    b.addEventListener('click', function () { showP(i); });
+    loop.appendChild(b); pBtns.push(b);
+  });
+  function showP(i) {
+    pBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var p = P[i];
+    pdetail.innerHTML = '<a class="soon" href="./' + ['ai-first--captura','ai-first--contexto','ai-first--execucao','ai-first--memoria','ai-first--medicao'][i] + '.html">verbete 5.' + (i + 1) + ' · abrir →</a><dl><dt>O conceito</dt><dd>' + p.c + '</dd><dt>O que fazer</dt><dd>' + p.f + '</dd><dt>A pergunta</dt><dd class="perg">' + p.q + '</dd></dl>';
+  }
+  showP(0);
+  var lBtns = document.querySelectorAll('[data-loop]'), back = document.getElementById('back'), backTxt = document.getElementById('backTxt');
+  function setLoop(k) {
+    pressGroup(lBtns, function (x) { return x.dataset.loop === k; });
+    var open = k === 'aberto';
+    back.classList.toggle('open', open);
+    back.querySelector('.arr').textContent = open ? '✕' : '↶';
+    backTxt.innerHTML = open
+      ? '<b>Sem a volta, a área recomeça do zero a cada projeto.</b> É assim que uma empresa esquece todo dia o que aprendeu na véspera.'
+      : '<b>E aqui o ciclo fecha:</b> o que a medição mostrar no passo 5 é o que precisa virar registro no passo 1.';
+  }
+  lBtns.forEach(function (b) { b.addEventListener('click', function () { setLoop(b.dataset.loop); }); });
+  setLoop('fechado');
+
+  /* 5 · camadas */
+  var L = [
+    { t: 'O que entra', s: 'de onde vem a informação, e em que formato', ex: 'A dúvida chega por e-mail, formulário e WhatsApp. <b>Todas caem no mesmo lugar</b>, com o mesmo formato.' },
+    { t: 'A regra', s: 'o que segue sozinho, e o que volta para uma pessoa', ex: 'Dúvida sobre prazo e preço segue sozinha. <b>Reclamação e pedido de exceção sempre voltam</b> para alguém.' },
+    { t: 'As ferramentas', s: 'o que de fato dá para abrir, ler e escrever', ex: 'O assistente lê a base de respostas e escreve o rascunho. <b>Ele não envia nada sozinho.</b>' },
+    { t: 'Os portões', s: 'onde se confere antes de passar para a fase seguinte', ex: 'Uma pessoa confere o rascunho antes do envio. <b>Resposta com valor nunca sai sem essa conferência.</b>' },
+    { t: 'O aprendizado', s: 'o que a correção de hoje vira, para não voltar amanhã', ex: 'Toda resposta corrigida vira uma linha nova na base. <b>Na semana seguinte, aquele erro não aparece mais</b>, e o loop volta ao topo.' }
+  ];
+  var stack = document.getElementById('stack'), ld = document.getElementById('ldetail'), lBtnsL = [];
+  L.forEach(function (l, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'layer';
+    b.innerHTML = '<span class="ln">0' + (i + 1) + '</span><span><b>' + l.t + '</b><small>' + l.s + '</small></span>';
+    b.addEventListener('click', function () { showL(i); });
+    stack.appendChild(b); lBtnsL.push(b);
+  });
+  function showL(i) {
+    lBtnsL.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var l = L[i];
+    ld.innerHTML = '<span class="eyebrow">Camada 0' + (i + 1) + ' de 05</span><h3>' + l.t + '</h3><p>' + l.s.charAt(0).toUpperCase() + l.s.slice(1) + '.</p><p class="ex">' + l.ex + '</p>' + (i === 4 ? '<p class="hint">É a camada que ninguém cobra, e é ela que separa um processo que melhora de um que só repete.</p>' : '');
+  }
+  showL(0);
+
+  /* 6 · ciclo */
+  var CY = [
+    { t: 'Capturar', b: [1], a: [], l: [], d: 'Trazer o contexto para dentro: reunião, e-mail, mensagem, planilha, conversa de corredor. É rotina de todo dia.' },
+    { t: 'Organizar', b: [2], a: [1], l: [], d: 'Dar um lugar a cada coisa: ler, limpar, arquivar, descartar o que não serve, agir no que pede ação.' },
+    { t: 'Guardar', b: [3], a: [2], l: [], d: 'O cérebro da empresa. Três gavetas: o que é fato, como aqui se faz, e o passo a passo de cada tarefa. A do meio é a que mais cresce.' },
+    { t: 'Executar', b: [4], a: [3], l: [], d: 'Pessoas e IA, juntas, usando o contexto: definir o objetivo, produzir, conferir entre as fases, entregar.' },
+    { t: 'Resposta', b: [5], a: [4], l: [], d: 'O contexto vira valor para quem usa: cliente, paciente, aluno. Ele usa, reage, comenta. Volta, ou não volta.' },
+    { t: 'A primeira volta: o rastro do trabalho', b: [4, 2], a: [6], l: [6], d: 'Como a decisão foi tomada e o que sobrou pronto voltam para organizar. Sem essa seta, a próxima pessoa refaz o raciocínio do zero.' },
+    { t: 'A segunda volta: o sinal de quem usou', b: [5, 1], a: [7], l: [7], d: 'Quem abriu, quem respondeu, quem voltou. Esse sinal vira captura de novo, e é ele que diz se o ciclo melhorou alguma coisa.' }
+  ];
+  var cyN = CY.length, cyCur = 1;
+  var cyBoxes = document.querySelectorAll('.cy-box'), cyArrs = document.querySelectorAll('.cy-arr'), cyLbls = document.querySelectorAll('.cy-lbl');
+  function cyGo(n) {
+    cyCur = Math.max(1, Math.min(cyN, n)); var s = CY[cyCur - 1];
+    cyBoxes.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.c) > -1); });
+    cyArrs.forEach(function (p) { var on = s.a.indexOf(+p.dataset.a) > -1; p.classList.toggle('on', on); p.setAttribute('marker-end', on ? 'url(#aa)' : 'url(#am)'); });
+    cyLbls.forEach(function (t) { t.classList.toggle('on', s.l.indexOf(+t.dataset.l) > -1); });
+    document.getElementById('cyCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('cyLab').textContent = 'Passo ' + cyCur + ' de ' + cyN;
+    document.getElementById('cyPrev').disabled = cyCur === 1;
+    document.getElementById('cyNext').textContent = cyCur === cyN ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('cyPrev').addEventListener('click', function () { cyGo(cyCur - 1); });
+  document.getElementById('cyNext').addEventListener('click', function () { cyGo(cyCur === cyN ? 1 : cyCur + 1); });
+  cyGo(1);
+
+  /* 7 · história */
+  var chaps = document.querySelectorAll('.chap'), stCur = 1;
+  function stGo(n) {
+    stCur = Math.max(1, Math.min(4, n));
+    chaps.forEach(function (c, i) { c.classList.toggle('future', i + 1 > stCur); c.classList.toggle('now', i + 1 === stCur); });
+    document.getElementById('stLab').textContent = 'Capítulo ' + stCur + ' de 4';
+    document.getElementById('stPrev').disabled = stCur === 1;
+    document.getElementById('stNext').textContent = stCur === 4 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('stPrev').addEventListener('click', function () { stGo(stCur - 1); });
+  document.getElementById('stNext').addEventListener('click', function () { stGo(stCur === 4 ? 1 : stCur + 1); });
+  stGo(1);
+
+  /* 8 · caixas */
+  var H = {
+    o: { t: 'Objetivo', items: ['o que exatamente tem que sair', 'como se mede se ficou bom', 'para quem é, e para quando'], p: 'É o pilar 5, dentro de um pedido.' },
+    h: { t: 'Habilidade', items: ['o roteiro escrito da tarefa', 'o modelo que já foi aprovado', 'o que serve para a próxima vez'], p: 'É a gaveta “como aqui se faz” do pilar 1.' },
+    f: { t: 'Ferramenta', items: ['o que ela pode abrir e ler', 'o que ela pode escrever', 'o que ela nunca envia sozinha'], p: 'É onde moram os portões do pilar 3.' },
+    c: { t: 'Contexto', items: ['o que já foi decidido, e por quê', 'o que deu errado da outra vez', 'o jeito da casa de dizer as coisas'], p: 'É o pilar 2, inteiro.' }
+  };
+  var hBtns = document.querySelectorAll('.hbox'), hd = document.getElementById('hdetail');
+  function showH(k) {
+    pressGroup(hBtns, function (x) { return x.dataset.h === k; });
+    var h = H[k];
+    hd.innerHTML = '<span class="eyebrow">' + h.t + '</span><ul>' + h.items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul><p class="link">' + h.p + '</p>';
+  }
+  hBtns.forEach(function (b) { b.addEventListener('click', function () { showH(b.dataset.h); }); });
+  showH('o');
+
+  /* 9 · escada */
+  var S = [
+    { f: 'Uma tarefa que se repete.', w: 'No chat que você já usa, um assistente com papel, instrução e o material da tarefa.', c: 'Uma tarde de trabalho.' },
+    { f: 'Uma pergunta que atravessa especialidades.', w: 'No mesmo lugar, vários papéis que discordam de propósito e alguém que distribui o trabalho entre eles.', c: 'Uma tarde de trabalho.' },
+    { f: 'Um trabalho que passa por etapas.', w: 'Um método com fases, e um portão de conferência entre elas. Nada passa para a fase seguinte sem alguém ter olhado.', c: 'Semanas.' },
+    { f: 'Muitas frentes ao mesmo tempo.', w: 'O loop fechado em escala: tudo registrado, auxiliares separados entre quem executa e quem confere, e a correção virando regra.', c: 'Meses, e nunca termina.' }
+  ];
+  var sBtns = document.querySelectorAll('.stair'), sd = document.getElementById('sdetail');
+  function showS(i) {
+    pressGroup(sBtns, function (x) { return +x.dataset.s === i; });
+    var s = S[i];
+    sd.innerHTML = '<span class="eyebrow">Degrau ' + (i + 1) + (i < 2 ? ' · é onde se começa' : '') + '</span><p><b>Serve para:</b> ' + s.f + '</p><p><b>Como é:</b> ' + s.w + '</p><p><b>Custo de montar:</b> ' + s.c + '</p>';
+  }
+  sBtns.forEach(function (b) { b.addEventListener('click', function () { showS(+b.dataset.s); }); });
+  showS(0);
+
+  /* 10 · calculadora */
+  var cF = document.getElementById('cFreq'), cM = document.getElementById('cMin'), cH = document.getElementById('cHoras');
+  function fmtH(h) { return h < 10 ? h.toFixed(1).replace('.', ',') + ' h' : Math.round(h) + ' h'; }
+  function calc() {
+    var f = +cF.value, m = +cM.value, h = +cH.value;
+    document.getElementById('oFreq').textContent = f; document.getElementById('oMin').textContent = m; document.getElementById('oHoras').textContent = h;
+    var mes = f * m / 60, meses = h / mes;
+    document.getElementById('cMes').textContent = fmtH(mes);
+    document.getElementById('cAno').textContent = fmtH(mes * 12);
+    var big = meses < 1 ? 'menos de 1 mês' : (meses > 24 ? 'mais de 2 anos' : (Math.round(meses * 10) / 10).toString().replace('.', ',') + ' meses');
+    document.getElementById('cBig').textContent = big;
+    var v = document.getElementById('cVer');
+    if (meses <= 3) { v.className = 'verdict ok'; v.innerHTML = '<b>Trilho.</b> A frequência paga o custo de escrever, e rápido.'; }
+    else if (meses <= 9) { v.className = 'verdict ok'; v.innerHTML = '<b>Provavelmente trilho.</b> Paga em menos de nove meses. Comece pela parte que mais se repete.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Provavelmente ilha.</b> A rotina roda pouco para pagar o desenho. A IA no fim é a resposta certa aqui.'; }
+  }
+  [cF, cM, cH].forEach(function (i) { i.addEventListener('input', calc); });
+  calc();
+})();
+</script>
+
+</html>

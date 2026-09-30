@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--memoria">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toda correção vira regra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, pilar 4 da família AI First. Peças: semanas do mesmo erro, desvio ou insatisfação, galeria de desvios, montador da linha de correção, onde a correção mora, a instrução com correções penduradas, dois caminhos contados em passos, o manual que acompanha, a régua pessoal e o prompt para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict.mid { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 36ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.panel { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel.focal { border-color: var(--accent); }
+
+/* 1 · semanas */
+.sw { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.sw-chart svg { width: 100%; height: auto; display: block; }
+.sw-ax { stroke: var(--border-strong); stroke-width: 1; }
+.sw-bar { fill: var(--atencao); transition: y .4s ease, height .4s ease; }
+.sw-bar.zero { fill: var(--ok); }
+.sw-v { font: 600 13px var(--font-body); fill: var(--text); text-anchor: middle; transition: y .4s ease; }
+.sw-x { font: 500 11px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.sw-mark { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; transition: opacity .3s ease; }
+.sw-mt { font: 500 11px var(--font-mono); fill: var(--accent); transition: opacity .3s ease; }
+.sw-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sw-stats div { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; background: var(--bg-elev); }
+.sw-stats span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.sw-stats b { font-family: var(--font-mono); font-weight: 500; font-size: 1.5rem; color: var(--accent); }
+
+/* 2 · desvio ou insatisfação */
+.dq-list { display: grid; gap: 10px; }
+.dq { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.dq .said { font-size: 1.02rem; }
+.dq .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.dq .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 16px; font-size: .95rem; }
+.dq .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.dq .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.dq .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.dq .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 3 · galeria */
+.dv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dv { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.dv b { font-weight: 600; }
+.dv span { font-size: .9rem; color: var(--text-muted); }
+.dv .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--atencao-texto); }
+.dv[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.dv-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.dv-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.dv-det dd { margin: 0; }
+.dv-det dd.line { font-family: var(--font-mono); font-size: .9rem; color: var(--accent); }
+
+/* 4 · montador da linha */
+.lm { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.lm-fields { display: grid; gap: 10px; }
+.lm-f { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 4px; }
+.lm-f label { display: flex; justify-content: space-between; gap: 8px; }
+.lm-f label b { font-weight: 600; font-size: .95rem; }
+.lm-f label span { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+.lm-f input { width: 100%; border: 0; border-bottom: 1px dashed var(--border-strong); font: inherit; font-size: .95rem; color: var(--text); background: transparent; padding: 4px 0; }
+.lm-out { display: grid; gap: 12px; position: sticky; top: 12px; }
+.lm-count { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--text-muted); }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 5 · onde mora */
+.dist-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.dist-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.ds-ax { stroke: var(--text-muted); stroke-width: 1.5; }
+.ds-zone { fill: var(--ok-soft); }
+.ds-zone.far { fill: var(--atencao-soft); }
+.ds-dot { fill: var(--ok); }
+.ds-dot.far { fill: var(--atencao); }
+.ds-t { font: 500 12.5px var(--font-body); fill: var(--text); text-anchor: middle; }
+.ds-h { font: 600 12px var(--font-mono); letter-spacing: .08em; fill: var(--ok-texto); }
+.ds-h.far { fill: var(--atencao-texto); }
+.mo-list { display: grid; gap: 10px; }
+.mo { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.mo .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.mo .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-size: .9rem; }
+.mo .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.mo .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.mo .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.mo .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+
+/* 6 · instrução com penduradas */
+.ins { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ins-stack { display: grid; gap: 6px; }
+.ins-b { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 14px; }
+.ins-b .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.ins-b b { font-weight: 600; }
+.ins-b small { display: block; color: var(--text-muted); font-size: .86rem; }
+.ins-b.fix { border-color: var(--atencao); background: var(--atencao-soft); }
+.ins-b.fix.calm { border-color: var(--accent); background: var(--accent-soft); }
+.ins-lines { display: grid; gap: 3px; margin-top: 6px; }
+.ins-lines i { display: block; height: 6px; border-radius: 3px; background: var(--atencao); animation: grow .3s ease both; }
+.ins-b.calm .ins-lines i { background: var(--accent); }
+.ins-ctrl { display: grid; gap: 14px; }
+.ins-row { display: grid; grid-template-columns: minmax(0, 1fr) 40px; gap: 12px; align-items: center; }
+.ins-row input { width: 100%; accent-color: var(--accent); }
+.ins-row output { font-family: var(--font-mono); font-size: 1.2rem; text-align: right; }
+
+/* 7 · dois caminhos */
+.cf { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.cf-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.cf-card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.cf-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.cf-n { font-family: var(--font-mono); font-size: 2rem; color: var(--accent); line-height: 1; }
+.cf-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cf-list li { display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .95rem; transition: opacity .3s ease; }
+.cf-list .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.cf.show-wait .cf-list li.wait { border-color: var(--atencao); box-shadow: inset 3px 0 0 var(--atencao); }
+.cf.show-wait .cf-list li:not(.wait) { opacity: .55; }
+.cf-time { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--text-muted); }
+
+/* 8 · manual que acompanha */
+.mn-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.mn-scroll svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.mn-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.mn-box .t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.mn-box .s { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.mn-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.mn-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke .25s ease; }
+.mn-arr.on { stroke: var(--accent); stroke-width: 2.6; }
+.mn-lbl { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.mn-lbl.on { fill: var(--accent); }
+.mk-m { fill: var(--text-muted); }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.caption .pil { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+
+/* 9 · régua */
+.rg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rg button { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 4px; }
+.rg .lv { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+.rg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.bolso { border-left: 3px solid var(--accent); padding: 6px 0 6px 14px; font-size: 1.15rem; color: var(--accent); max-width: 50ch; }
+
+/* 10 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@keyframes grow { from { transform: scaleX(0); transform-origin: left; } to { transform: none; } }
+@media (max-width: 860px) {
+  .sw, .lm, .ins, .cf, .take { grid-template-columns: 1fr; }
+  .dv-grid { grid-template-columns: 1fr 1fr; }
+  .rg { grid-template-columns: 1fr; }
+  .lm-out { position: static; }
+  .dv-det dl { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .dv-grid, .sw-stats { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .sw-bar, .sw-v, .sw-mark, .sw-mt, .cf-list li, .mn-box rect, .mn-arr { transition: none; } .ins-lines i { animation: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--execucao.html">← 5.3 Execução</a><a href="./ai-first--medicao.html">5.5 Medição →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html" aria-current="page"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.4 · pilar 4 de 5</span>
+  <h1>Toda correção vira regra</h1>
+  <p class="sub">Por que o mesmo erro volta toda semana, e onde a correção precisa morar para parar de voltar</p>
+  <p class="lead">Corrigir resolve o caso de hoje. <strong>Registrar a correção onde ela é lida no momento de fazer</strong> resolve todos os casos iguais que ainda vão chegar. Esse lugar quase nunca é o manual: é o campo obrigatório, o item da lista de conferência, a linha do modelo, a instrução que o assistente lê antes de começar.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-semanas">O erro que volta</a><a href="#s-desvio">Desvio ou insatisfação</a><a href="#s-desvios">Seis desvios</a><a href="#s-linha">A linha de correção</a><a href="#s-onde">Onde a correção mora</a><a href="#s-fim">A instrução por dentro</a><a href="#s-caminhos">Quem corrige</a><a href="#s-manual">O manual que acompanha</a><a href="#s-regua">Onde você está</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-semanas" aria-labelledby="h-semanas">
+  <span class="eyebrow">O erro que volta</span>
+  <h2 id="h-semanas">O mesmo erro, oito semanas, três lugares para a correção</h2>
+  <p class="intro">Um assistente monta propostas e, de vez em quando, escreve no rodapé uma condição de pagamento que não existe em arquivo nenhum. Toda vez alguém percebe e corrige. <strong>Escolha onde essa correção vai parar</strong> e veja as semanas passarem.</p>
+  <div class="seg" role="group" aria-label="Onde a correção vai parar">
+    <button type="button" data-sw="conversa" aria-pressed="true">Corrigir na conversa</button>
+    <button type="button" data-sw="manual" aria-pressed="false">Anotar no manual</button>
+    <button type="button" data-sw="regra" aria-pressed="false">Virar linha da instrução</button>
+  </div>
+  <div class="sw">
+    <div class="panel sw-chart">
+      <span class="eyebrow">Propostas com a condição inventada, por semana</span>
+      <svg viewBox="0 0 560 250" role="img" aria-labelledby="sw-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="sw-t">Barras de erros por semana ao longo de oito semanas, conforme o lugar onde a correção foi registrada</title>
+        <line class="sw-ax" x1="20" y1="210" x2="545" y2="210"/>
+        <g id="swBars"></g>
+        <line class="sw-mark" id="swMark" x1="102" y1="30" x2="102" y2="210"/>
+        <text class="sw-mt" id="swMt" x="108" y="42">a correção foi registrada aqui</text>
+      </svg>
+      <p class="hint">As alturas mostram a forma, não a medida.</p>
+    </div>
+    <div style="display:grid;gap:12px">
+      <div class="sw-stats">
+        <div><span>vezes que alguém corrigiu</span><b id="swN">0</b></div>
+        <div><span>minutos corrigindo</span><b id="swMin">0</b></div>
+      </div>
+      <div class="verdict" id="swVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="punch">A correção que fica na conversa <em>morre com a conversa</em>. A que fica no manual morre na estante.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-desvio" aria-labelledby="h-desvio">
+  <span class="eyebrow">Desvio ou insatisfação</span>
+  <h2 id="h-desvio">Antes da regra, o nome do que ele fez</h2>
+  <p class="intro">Toda regra boa começa lendo a saída torta e escrevendo <strong>o que ele fez</strong>, não o que você queria. Se só sai o que você queria, ainda não existe desvio: existe insatisfação. E insatisfação não vira linha, porque ninguém consegue conferir se foi corrigida. Classifique as cinco reações.</p>
+  <div class="dq-list" id="dqList"></div>
+  <p class="score" id="dqScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-desvios" aria-labelledby="h-desvios">
+  <span class="eyebrow">Seis desvios</span>
+  <h2 id="h-desvios">Seis desvios com nome, e três deles são graves porque parecem certos</h2>
+  <p class="intro">Dar nome ao desvio já restringe onde está a correção. A galeria funciona como plantão: você acha o sintoma, confirma o nome, e a linha já vem escrita. <strong>Repare que nenhuma das linhas diz "seja preciso"</strong>: todas descrevem comportamento.</p>
+  <div class="dv-grid" id="dvGrid" role="group" aria-label="Os seis desvios"></div>
+  <div class="panel focal dv-det" id="dvDet" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-linha" aria-labelledby="h-linha">
+  <span class="eyebrow">A linha de correção</span>
+  <h2 id="h-linha">Uma linha que descreve comportamento, e que dá para apagar amanhã</h2>
+  <p class="intro">A correção entra como uma linha a mais no fim da instrução, com rótulo e data. <strong>Nenhuma linha antiga é tocada</strong>, e é isso que deixa desfazer se não resolver. Preencha com um caso seu, ou ajuste o exemplo.</p>
+  <div class="lm">
+    <div class="lm-fields">
+      <div class="lm-f"><label for="lmRot"><b>Rótulo curto</b><span>para achar depois</span></label><input id="lmRot" value="anti-invenção"></div>
+      <div class="lm-f"><label for="lmSit"><b>Em que situação vale</b><span>estreita a linha</span></label><input id="lmSit" value="ao montar a proposta"></div>
+      <div class="lm-f"><label for="lmFez"><b>O que ele fez, virado proibição</b><span>verbo no início</span></label><input id="lmFez" value="escreva condição de pagamento que não esteja nos arquivos"></div>
+      <div class="lm-f"><label for="lmFaz"><b>O que fazer no lugar</b><span>comportamento, não adjetivo</span></label><input id="lmFaz" value="escreva &quot;não localizado nos arquivos&quot; naquela linha"></div>
+    </div>
+    <div class="lm-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">Vai no fim da instrução</span><button type="button" class="btn" id="lmCopy">Copiar</button></div>
+        <pre id="lmText"></pre>
+      </div>
+      <span class="lm-count">1 linha acrescentada · 0 linha alterada · 0 bloco reescrito</span>
+      <div class="verdict" id="lmVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">Depois de colar, mande o mesmo pedido de antes, palavra por palavra, e compare as duas respostas. Se nada mudou, apague a linha em vez de acrescentar uma segunda.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-onde" aria-labelledby="h-onde">
+  <span class="eyebrow">Onde a correção mora</span>
+  <h2 id="h-onde">Perto da mão, e não na estante</h2>
+  <p class="intro">Uma correção escrita onde ninguém abre na hora certa se repete tanto quanto a que não foi escrita. <strong>O que decide não é onde ela fica guardada: é onde ela é lida.</strong></p>
+  <div class="dist-scroll" role="region" tabindex="0" aria-label="Régua da distância entre a correção e o momento de fazer. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 190" role="img" aria-labelledby="ds-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="ds-t">Régua: à esquerda, lugares lidos no momento de fazer; à direita, lugares longe dele</title>
+      <rect class="ds-zone" x="10" y="20" width="440" height="150" rx="8"/>
+      <rect class="ds-zone far" x="450" y="20" width="440" height="150" rx="8"/>
+      <text class="ds-h" x="26" y="44">LIDO NO MOMENTO DE FAZER</text>
+      <text class="ds-h far" x="466" y="44">LONGE DO MOMENTO DE FAZER</text>
+      <line class="ds-ax" x1="40" y1="100" x2="860" y2="100"/>
+      <circle class="ds-dot" cx="90" cy="100" r="8"/><text class="ds-t" x="90" y="132">campo</text><text class="ds-t" x="90" y="148">obrigatório</text>
+      <circle class="ds-dot" cx="195" cy="100" r="8"/><text class="ds-t" x="195" y="132">lista de</text><text class="ds-t" x="195" y="148">conferência</text>
+      <circle class="ds-dot" cx="300" cy="100" r="8"/><text class="ds-t" x="300" y="132">linha do</text><text class="ds-t" x="300" y="148">modelo</text>
+      <circle class="ds-dot" cx="400" cy="100" r="8"/><text class="ds-t" x="400" y="132">instrução do</text><text class="ds-t" x="400" y="148">assistente</text>
+      <circle class="ds-dot far" cx="510" cy="100" r="8"/><text class="ds-t" x="510" y="132">manual</text>
+      <circle class="ds-dot far" cx="620" cy="100" r="8"/><text class="ds-t" x="620" y="132">pasta de</text><text class="ds-t" x="620" y="148">procedimentos</text>
+      <circle class="ds-dot far" cx="730" cy="100" r="8"/><text class="ds-t" x="730" y="132">cabeça de</text><text class="ds-t" x="730" y="148">quem corrigiu</text>
+      <circle class="ds-dot far" cx="830" cy="100" r="8"/><text class="ds-t" x="830" y="132">a conversa</text><text class="ds-t" x="830" y="148">de hoje</text>
+    </svg>
+  </div>
+  <p class="intro">Agora escolha o lugar para quatro correções reais. Cada uma tem um lugar melhor que as outras, e nenhuma é o manual.</p>
+  <div class="mo-list" id="moList"></div>
+  <p class="score" id="moScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-fim" aria-labelledby="h-fim">
+  <span class="eyebrow">A instrução por dentro</span>
+  <h2 id="h-fim">A correção entra no fim, e cinco penduradas são um diagnóstico</h2>
+  <p class="intro">A instrução é lida em ordem, e o que vem depois refina o que veio antes. Por isso a correção de teste fica no fim. <strong>A que virou padrão sobe para as diretrizes, de vez.</strong> Pendure correções e veja o que a pilha diz.</p>
+  <div class="ins">
+    <div class="ins-stack" aria-label="Os blocos da instrução, na ordem de leitura">
+      <div class="ins-b"><span class="n">01</span><span><b>Identidade</b><small>quem ele é e o que nunca faz</small></span></div>
+      <div class="ins-b"><span class="n">02</span><span><b>Processo</b><small>a ordem dos passos</small></span></div>
+      <div class="ins-b"><span class="n">03</span><span><b>Diretrizes</b><small id="insDir">o que ele sempre faz, e quando</small><span class="ins-lines" id="insDirL"></span></span></div>
+      <div class="ins-b"><span class="n">04</span><span><b>Exemplos</b><small>casos comuns e um fora do padrão</small></span></div>
+      <div class="ins-b fix calm" id="insFix"><span class="n">05</span><span><b>Correções</b><small id="insFixT">uma linha por desvio, com rótulo e data</small><span class="ins-lines" id="insFixL"></span></span></div>
+      <div class="ins-b"><span class="n">06</span><span><b>Execução</b><small>o comando curto do dia a dia</small></span></div>
+    </div>
+    <div class="ins-ctrl">
+      <div class="panel">
+        <label for="insN">Correções penduradas no fim</label>
+        <div class="ins-row"><input type="range" id="insN" min="0" max="8" value="2"><output id="insNo" for="insN">2</output></div>
+        <button type="button" class="btn" id="insUp">Promover uma que virou padrão ↑</button>
+        <p class="hint">Promover: a linha sai do fim e entra nas diretrizes, sem rótulo de teste.</p>
+      </div>
+      <div class="verdict" id="insVer" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-caminhos" aria-labelledby="h-caminhos">
+  <span class="eyebrow">Quem corrige</span>
+  <h2 id="h-caminhos">O caminho de uma correção, contado em passos</h2>
+  <p class="intro">Mesmo erro, percebido pela mesma pessoa. À esquerda, corrigir é pedir a outra área. À direita, <strong>quem enxerga o erro escreve a regra</strong>. Conte os passos, e depois destaque os que ficam esperando alguém.</p>
+  <div class="seg" role="group" aria-label="Destacar">
+    <button type="button" data-cf="tudo" aria-pressed="true">Ver os dois</button>
+    <button type="button" data-cf="wait" aria-pressed="false">Destacar os passos que esperam alguém</button>
+  </div>
+  <div class="cf" id="cf">
+    <div class="cf-card">
+      <div class="cf-head"><span class="eyebrow">Corrigir é pedir a outra área</span><span class="cf-n">8</span></div>
+      <ol class="cf-list">
+        <li><span class="n">01</span><span>Alguém percebe o erro</span></li>
+        <li class="wait"><span class="n">02</span><span>Avisa quem cuida da ferramenta</span></li>
+        <li class="wait"><span class="n">03</span><span>Alguém abre um chamado</span></li>
+        <li class="wait"><span class="n">04</span><span>O chamado entra na fila</span></li>
+        <li class="wait"><span class="n">05</span><span>Disputa espaço no planejamento</span></li>
+        <li class="wait"><span class="n">06</span><span>Alguém separa tempo para ele</span></li>
+        <li><span class="n">07</span><span>Corrige</span></li>
+        <li class="wait"><span class="n">08</span><span>Revisa e publica</span></li>
+      </ol>
+      <span class="cf-time">semanas · e o erro pequeno quase nunca chega ao fim da fila</span>
+    </div>
+    <div class="cf-card focal">
+      <div class="cf-head"><span class="eyebrow">Quem enxerga escreve a regra</span><span class="cf-n">4</span></div>
+      <ol class="cf-list">
+        <li><span class="n">01</span><span>Alguém percebe o erro</span></li>
+        <li><span class="n">02</span><span>Escreve qual é o erro e o que era para ter sido feito</span></li>
+        <li><span class="n">03</span><span>A linha entra no texto lido antes de toda tarefa</span></li>
+        <li><span class="n">04</span><span>A classe inteira de erro para</span></li>
+      </ol>
+      <span class="cf-time">minutos · sem chamado, sem fila, sem precisar ser da área técnica</span>
+    </div>
+  </div>
+  <p class="punch">A melhoria passa a andar na velocidade <em>de uma mensagem</em>, e qualquer pessoa da equipe consegue mandá-la.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-manual" aria-labelledby="h-manual">
+  <span class="eyebrow">O manual que acompanha</span>
+  <h2 id="h-manual">Quando o documento deixa de envelhecer</h2>
+  <p class="intro">Uma organização tinha um manual de orientação escrito anos antes, e desatualizado. Enquanto isso, o mesmo conselho era dado dezenas de vezes em reuniões e não ficava em lugar nenhum. <strong>O pilar 4, aplicado ao documento inteiro.</strong> Siga.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="mnLab">Passo 1 de 5</span>
+    <div class="nav"><button type="button" class="btn" id="mnPrev">← Anterior</button><button type="button" class="btn primary" id="mnNext">Próximo →</button></div>
+  </div>
+  <div class="mn-scroll" role="region" tabindex="0" aria-label="Diagrama do manual que se atualiza. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 310" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mn-t">
+      <title id="mn-t">Gravar, organizar, escrever e manual em sequência; todo conselho novo passa por comparar e, se acrescenta, entra no manual</title>
+      <defs><marker id="mnm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker></defs>
+      <g class="mn-box" data-m="1"><rect x="20" y="30" width="160" height="90" rx="8"/><text class="t" x="100" y="64">GRAVAR</text><text class="s" x="100" y="86">o conselho passa</text><text class="s" x="100" y="102">a existir escrito</text></g>
+      <g class="mn-box" data-m="2"><rect x="240" y="30" width="160" height="90" rx="8"/><text class="t" x="320" y="64">ORGANIZAR</text><text class="s" x="320" y="86">separar por assunto</text><text class="s" x="320" y="102">antes de pedir</text></g>
+      <g class="mn-box" data-m="3"><rect x="460" y="30" width="160" height="90" rx="8"/><text class="t" x="540" y="64">ESCREVER</text><text class="s" x="540" y="86">a versão nova,</text><text class="s" x="540" y="102">a partir do material</text></g>
+      <g class="mn-box" data-m="4"><rect x="680" y="30" width="200" height="90" rx="8"/><text class="t" x="780" y="64">MANUAL</text><text class="s" x="780" y="86">o que se aconselha,</text><text class="s" x="780" y="102">hoje</text></g>
+      <g class="mn-box" data-m="5"><rect x="460" y="200" width="160" height="90" rx="8"/><text class="t" x="540" y="232">COMPARAR</text><text class="s" x="540" y="254">acrescenta? entra</text><text class="s" x="540" y="270">repete? descarta</text></g>
+      <path class="mn-arr" data-a="2" d="M180,75 H236" marker-end="url(#mnm)"/>
+      <path class="mn-arr" data-a="3" d="M400,75 H456" marker-end="url(#mnm)"/>
+      <path class="mn-arr" data-a="4" d="M620,75 H676" marker-end="url(#mnm)"/>
+      <path class="mn-arr" data-a="5" d="M100,120 V245 H456" marker-end="url(#mnm)"/>
+      <text class="mn-lbl" data-l="5" x="280" y="236">conselho novo, toda semana</text>
+      <path class="mn-arr" data-a="6" d="M620,245 H780 V124" marker-end="url(#mnm)"/>
+      <text class="mn-lbl" data-l="6" x="720" y="236">o que acrescenta</text>
+    </svg>
+  </div>
+  <div class="caption" id="mnCap" aria-live="polite"></div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-regua" aria-labelledby="h-regua">
+  <span class="eyebrow">Onde você está</span>
+  <h2 id="h-regua">Quando você corrige um erro, o que acontece com a correção?</h2>
+  <p class="intro">Marque o que é verdade hoje, e não o que seria bonito responder. Cada degrau tem um próximo passo que cabe numa segunda-feira.</p>
+  <div class="rg" role="group" aria-label="Três degraus">
+    <button type="button" data-rg="0" aria-pressed="false"><span class="lv">DEGRAU 1</span><b>Corrijo e sigo em frente</b></button>
+    <button type="button" data-rg="1" aria-pressed="false"><span class="lv">DEGRAU 2</span><b>Corrijo e às vezes anoto num canto</b></button>
+    <button type="button" data-rg="2" aria-pressed="false"><span class="lv">DEGRAU 3</span><b>A correção vira regra, lida na próxima vez</b></button>
+  </div>
+  <div class="panel" id="rgDet" aria-live="polite"><p class="hint">Escolha um degrau.</p></div>
+  <p class="bolso">A pergunta de bolso: essa correção depende de alguém lembrar dela?</p>
+  <p class="intro">Se o nome do desvio não sair, peça ao chat para ler a saída torta. <strong>Ele não conserta nada</strong>: nomeia, escreve a linha, e você decide se cola.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Da saída torta para a linha de correção</span><button type="button" class="btn" id="pCopy">Copiar</button></div>
+<pre id="pText">Papel: um revisor de instruções que descreve comportamento observado, e que trata adjetivo de qualidade como diagnóstico não feito.
+
+Contexto: eu uso um assistente com uma instrução escrita e arquivos de referência. Rodei um caso real e a saída veio torta em um ponto. Vou colar abaixo três coisas: a instrução, o pedido que eu mandei, e o trecho exato da resposta que ficou errado.
+
+Tarefa: diga qual é o desvio, e só um: alucinação, formato quebrado, fonte fantasma, tom inconsistente, verboso ou fonte genérica. Depois escreva uma linha de correção para eu acrescentar no fim da instrução, e diga em qual bloco da instrução o desvio deveria ter sido evitado.
+
+Formato: três partes curtas, nesta ordem: o nome do desvio, a linha de correção pronta para copiar (com rótulo), e uma frase dizendo qual bloco falhou. No máximo 120 palavras.
+
+Limites: escreva a correção como comportamento observável, nunca como adjetivo: nada de "seja preciso" ou "seja objetivo". Não reescreva nenhum trecho da minha instrução e não proponha mais de uma correção. Se o trecho que eu colei mostrar uma preferência minha de estilo, e não um desvio, diga que não há desvio em vez de escrever uma linha.
+
+Critério de sucesso: eu leio a linha e consigo olhar a próxima resposta e dizer se ela foi cumprida ou não, sem discutir com ninguém.</pre>
+  </div>
+  <p class="hint">A última limitação é a que faz o trabalho. Sem ela, o modelo sempre acha um desvio, porque foi o que você pediu. Deixar ele dizer que não há é o que faz o "há" valer alguma coisa.</p>
+</section>
+
+<!-- 10 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Corrigir resolve o caso; registrar resolve a classe</h3><p>O erro que se repete é uma categoria. Só a regra escrita para a categoria inteira.</p></div>
+    <div class="take-card"><h3>Vale onde é lida, não onde é guardada</h3><p>Campo, lista de conferência, linha do modelo, instrução do assistente. O manual só serve se for aberto na hora.</p></div>
+    <div class="take-card"><h3>Cinco penduradas são um diagnóstico</h3><p>Quando as correções se acumulam, um bloco inteiro está errado. Aí, e só aí, reescrever é a resposta.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Desvio</dt><dd>O que a saída fez de errado, descrito de um jeito que dá para procurar na próxima resposta.</dd>
+    <dt>Insatisfação</dt><dd>O que você queria e não veio, sem dizer o que veio. Ainda não dá para corrigir.</dd>
+    <dt>Linha de correção</dt><dd>Uma regra curta, com rótulo e data, acrescentada no fim da instrução sem mexer no resto.</dd>
+    <dt>Classe de erro</dt><dd>Todos os casos que erram do mesmo jeito. É o alvo da regra, e não o caso de hoje.</dd>
+    <dt>Promover</dt><dd>Tirar do fim a correção que já provou que serve e escrevê-la nas diretrizes, de vez.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As alturas das barras e os contadores das semanas mostram a forma, não a medida. A regra das cinco correções é um sinal prático, não um limite exato. Os seis nomes de desvio cobrem os casos mais comuns, não todos.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first--execucao.html"><span>← anterior</span><b>5.3 · Quebrar em fases e conferir entre elas</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--medicao.html"><span>próxima →</span><b>5.5 · Nada começa sem quatro campos</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · semanas */
+  var SW = {
+    conversa: { v: [3, 3, 4, 3, 3, 4, 3, 3], mark: false, cls: 'no', t: '<b>A correção vale para aquela conversa.</b> Na semana seguinte a conversa é nova, o assistente começa sem ela, e o erro volta igual. Isso costuma ser chamado de acompanhar de perto.' },
+    manual: { v: [3, 1, 2, 3, 3, 3, 4, 3], mark: true, cls: 'no', t: '<b>Anotar no manual ajuda na semana em que todo mundo lembra.</b> Depois ele fica numa pasta que ninguém abre na hora de montar a proposta, e o erro volta ao ritmo de antes.' },
+    regra: { v: [3, 0, 0, 0, 0, 0, 0, 0], mark: true, cls: 'ok', t: '<b>A linha entrou no texto que o assistente lê antes de toda tarefa.</b> Não parou só aquele caso: parou a classe inteira de erro, e ninguém precisa lembrar de nada.' }
+  };
+  var swG = document.getElementById('swBars'), swB = [], swV = [];
+  for (var i = 0; i < 8; i++) {
+    var x = 40 + i * 64;
+    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('x', x); r.setAttribute('width', 40); r.setAttribute('rx', 4); r.setAttribute('class', 'sw-bar'); swG.appendChild(r); swB.push(r);
+    var t = document.createElementNS('http://www.w3.org/2000/svg', 'text'); t.setAttribute('x', x + 20); t.setAttribute('class', 'sw-v'); swG.appendChild(t); swV.push(t);
+    var l = document.createElementNS('http://www.w3.org/2000/svg', 'text'); l.setAttribute('x', x + 20); l.setAttribute('y', 230); l.setAttribute('class', 'sw-x'); l.textContent = 'S' + (i + 1); swG.appendChild(l);
+  }
+  var swBtns = document.querySelectorAll('[data-sw]');
+  function setSw(k) {
+    pressGroup(swBtns, function (b) { return b.dataset.sw === k; });
+    var d = SW[k], tot = 0;
+    d.v.forEach(function (v, j) {
+      var h = Math.max(3, v * 40), y = 210 - h; tot += v;
+      swB[j].setAttribute('y', y); swB[j].setAttribute('height', h); swB[j].classList.toggle('zero', v === 0);
+      swV[j].setAttribute('y', y - 8); swV[j].textContent = v;
+    });
+    document.getElementById('swMark').style.opacity = d.mark ? 1 : 0;
+    document.getElementById('swMt').style.opacity = d.mark ? 1 : 0;
+    document.getElementById('swN').textContent = tot;
+    document.getElementById('swMin').textContent = tot * 10;
+    var ver = document.getElementById('swVer'); ver.className = 'verdict ' + d.cls; ver.innerHTML = d.t;
+  }
+  swBtns.forEach(function (b) { b.addEventListener('click', function () { setSw(b.dataset.sw); }); });
+  setSw('conversa');
+
+  /* 2 · desvio ou insatisfação */
+  var DQ = [
+    { s: '“Ficou ruim, não era isso que eu queria.”', a: 'ins', w: 'Não diz o que ele fez. Não há o que corrigir, nem como saber depois se a correção funcionou.' },
+    { s: '“O rodapé da proposta trouxe condição de 30 dias, e isso não está em arquivo nenhum.”', a: 'des', w: 'Um trecho literal, que dá para procurar na próxima resposta. Tem nome: é invenção.' },
+    { s: '“Precisava ser mais profissional.”', a: 'ins', w: 'Profissional para quem? Volte à saída e aponte o trecho que soou fora do tom. Ali aparece o desvio.' },
+    { s: '“Começou formal e terminou com ‘basicamente’ e ‘tipo’.”', a: 'des', w: 'O comportamento está descrito, com as palavras dele. Vira linha: mantenha o registro formal, sem essas expressões.' },
+    { s: '“Duzentas palavras para uma consulta que cabia numa linha.”', a: 'des', w: 'Dá para medir. Vira linha com número: consulta direta, no máximo cinquenta palavras.' }
+  ];
+  var dqList = document.getElementById('dqList'), dqAns = {};
+  DQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'dq';
+    d.innerHTML = '<p class="said">' + q.s + '</p><div class="opts" role="group" aria-label="Classificar"><button type="button" data-v="des" aria-pressed="false">Desvio</button><button type="button" data-v="ins" aria-pressed="false">Insatisfação</button></div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; dqAns[i] = ok;
+      fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : (q.a === 'des' ? 'É desvio. ' : 'É insatisfação. ')) + '</b>' + q.w;
+      var n = Object.keys(dqAns).length, c = Object.keys(dqAns).filter(function (k) { return dqAns[k]; }).length;
+      document.getElementById('dqScore').textContent = n + ' de 5 respondidas · ' + c + ' certas' + (n === 5 ? ' · o teste: dá para procurar isso na próxima resposta?' : '');
+    }); });
+    dqList.appendChild(d);
+  });
+
+  /* 3 · galeria */
+  var DV = [
+    { n: 'Alucinação', c: true, s: 'inventa regra, prazo ou valor que não está na base', l: '"Se a informação não existir nos arquivos, responda que não localizou. Nunca invente prazo, valor ou procedimento."' },
+    { n: 'Formato quebrado', c: true, s: 'ignora o modelo e responde em texto corrido', l: '"Use sempre as partes do modelo, na ordem. Nunca responda consulta de regra em parágrafo corrido."' },
+    { n: 'Fonte fantasma', c: true, s: 'cita um arquivo que não existe na base', l: '"Cite apenas arquivos que existem nos anexos. Se não souber a fonte exata, omita a linha da fonte."' },
+    { n: 'Tom inconsistente', c: false, s: 'começa formal e termina em conversa de balcão', l: '"Mantenha linguagem formal. Evite expressões como olha, basicamente e tipo."' },
+    { n: 'Verboso', c: false, s: 'duzentas palavras para uma consulta de uma linha', l: '"Consulta direta: no máximo 50 palavras. Explicação de processo: no máximo 150."' },
+    { n: 'Fonte genérica', c: false, s: 'diz "conforme a política da empresa"', l: '"Cite o nome do arquivo. Evite referência genérica como conforme a política."' }
+  ];
+  var dvGrid = document.getElementById('dvGrid'), dvDet = document.getElementById('dvDet'), dvB = [];
+  DV.forEach(function (d, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'dv';
+    b.innerHTML = (d.c ? '<span class="tag">crítico</span>' : '<span class="tag" aria-hidden="true">&nbsp;</span>') + '<b>' + d.n + '</b><span>' + d.s + '</span>';
+    b.addEventListener('click', function () { showDv(i); }); dvGrid.appendChild(b); dvB.push(b);
+  });
+  function showDv(i) {
+    dvB.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
+    var d = DV[i];
+    dvDet.innerHTML = '<span class="eyebrow">' + d.n + (d.c ? ' · crítico' : '') + '</span><dl><dt>O sintoma</dt><dd>' + d.s.charAt(0).toUpperCase() + d.s.slice(1) + '.</dd><dt>A linha</dt><dd class="line">' + d.l + '</dd><dt>Por quê</dt><dd>' + (d.c ? 'Produz resposta que parece certa. Só aparece para quem confere linha por linha, e é por isso que vem primeiro.' : 'Incomoda e custa tempo, mas aparece para qualquer um que lê. Se dois nomes servirem, corrija antes o crítico.') + '</dd></dl>';
+  }
+  showDv(0);
+
+  /* 4 · montador da linha */
+  var lmIds = ['lmRot', 'lmSit', 'lmFez', 'lmFaz'], lmIn = lmIds.map(function (id) { return document.getElementById(id); });
+  var today = new Date(), dt = ('0' + today.getDate()).slice(-2) + '/' + ('0' + (today.getMonth() + 1)).slice(-2);
+  var VAGO = /\b(seja|sejam|cuidado|adequad\w*|clar[oa]|concis\w*|objetiv\w*|caprich\w*|melhor|bom|boa|direito)\b/i;
+  function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  function buildLm() {
+    var rot = lmIn[0].value.trim() || 'sem rótulo', sit = lmIn[1].value.trim(), fez = lmIn[2].value.trim(), faz = lmIn[3].value.trim();
+    var line = '- ' + (sit ? cap(sit) + ', ' + (faz || '[o que fazer no lugar]') : cap(faz || '[o que fazer no lugar]')) + '.' + (fez ? ' Nunca ' + fez.replace(/\.$/, '') + '.' : '');
+    document.getElementById('lmText').textContent = '## CORREÇÕES\nCorreção, ' + rot + ', desde ' + dt + ':\n' + line;
+    var v = document.getElementById('lmVer'), m = (faz + ' ' + fez).match(VAGO);
+    if (!fez) { v.className = 'verdict no'; v.innerHTML = '<b>Falta o que ele fez.</b> Sem o sintoma copiado da tela, a linha vira desejo, e desejo não corrige comportamento.'; }
+    else if (m) { v.className = 'verdict no'; v.innerHTML = '<b>Palavra de qualidade: “' + m[0] + '”.</b> Dá para olhar a próxima resposta e dizer sim ou não? Se não dá, é torcida, não regra.'; }
+    else if (!sit) { v.className = 'verdict mid'; v.innerHTML = '<b>Sem situação, a linha vale para tudo.</b> Se ela resolver este caso e quebrar outro, estreite: “ao montar a proposta”.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Linha conferível.</b> Descreve comportamento, diz quando vale e dá para apagar amanhã sem deixar rastro.'; }
+  }
+  lmIn.forEach(function (x) { x.addEventListener('input', buildLm); });
+  document.getElementById('lmCopy').addEventListener('click', function () { copyText(document.getElementById('lmText').textContent, this); });
+  buildLm();
+
+  /* 5 · onde mora */
+  var OPTS = [['campo', 'Campo obrigatório'], ['lista', 'Item da lista de conferência'], ['modelo', 'Linha do modelo'], ['instr', 'Instrução do assistente'], ['manual', 'Manual']];
+  var MO = [
+    { s: 'A matrícula volta porque falta o comprovante de endereço. Acontece em toda turma.', a: 'campo', w: 'O formulário não deixa enviar sem o anexo. Ninguém precisa lembrar: o próprio caminho impede.' },
+    { s: 'O relatório mensal sai com valor em ponto decimal, e a diretoria reclama todo mês.', a: 'modelo', w: 'O modelo já vem com a célula formatada. A correção mora no arquivo de onde todo relatório nasce.' },
+    { s: 'Proposta sai com desconto acima do limite sem o gerente ter visto.', a: 'lista', w: 'Um item na conferência antes do envio: desconto acima do limite? O gerente viu? É lido exatamente na hora em que importa.' },
+    { s: 'O assistente escreve “conforme a política” em vez do nome do arquivo.', a: 'instr', w: 'Uma linha no fim da instrução que ele lê antes de toda tarefa. É o campo obrigatório do assistente.' }
+  ];
+  var moList = document.getElementById('moList'), moAns = {};
+  MO.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'mo';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Onde registrar">' + OPTS.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; moAns[i] = ok; fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      var right = OPTS.filter(function (o) { return o[0] === q.a; })[0][1];
+      fb.innerHTML = b.dataset.v === 'manual' ? '<b>O manual guarda, mas não é lido na hora.</b> Ninguém abre o manual no meio da tarefa. O melhor lugar aqui: ' + right.toLowerCase() + '. ' + q.w
+        : '<b>' + (ok ? 'Isso. ' : 'Aqui funciona melhor: ' + right.toLowerCase() + '. ') + '</b>' + q.w;
+      var n = Object.keys(moAns).length, c = Object.keys(moAns).filter(function (k) { return moAns[k]; }).length;
+      document.getElementById('moScore').textContent = n + ' de 4 respondidas · ' + c + ' certas';
+    }); });
+    moList.appendChild(d);
+  });
+
+  /* 6 · instrução com penduradas */
+  var insN = document.getElementById('insN'), promoted = 0;
+  function lines(n) { var h = ''; for (var k = 0; k < n; k++) h += '<i></i>'; return h; }
+  function renderIns() {
+    var n = +insN.value; document.getElementById('insNo').textContent = n;
+    document.getElementById('insFixL').innerHTML = lines(n);
+    document.getElementById('insDirL').innerHTML = lines(promoted);
+    document.getElementById('insDir').textContent = 'o que ele sempre faz, e quando' + (promoted ? ' · +' + promoted + ' promovida' + (promoted > 1 ? 's' : '') : '');
+    document.getElementById('insFix').classList.toggle('calm', n < 5);
+    document.getElementById('insUp').disabled = n === 0;
+    var v = document.getElementById('insVer');
+    if (n === 0) { v.className = 'verdict mid'; v.innerHTML = '<b>Nenhuma correção pendurada.</b> Ou a instrução está ótima, ou ninguém está lendo as saídas com atenção.'; }
+    else if (n <= 2) { v.className = 'verdict ok'; v.innerHTML = '<b>Saudável.</b> Cada linha tem rótulo e data. Se uma não resolver, sai sem deixar rastro.'; }
+    else if (n <= 4) { v.className = 'verdict mid'; v.innerHTML = '<b>Hora de reler as ' + n + ' juntas.</b> A que já provou que serve sobe para as diretrizes. A que não mudou nada, sai.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Pare de acrescentar.</b> ' + n + ' correções quase sempre apontam para o mesmo bloco. Reescreva aquele bloco e apague as ' + n + ' de uma vez: é o único momento em que reescrever é a resposta certa.'; }
+  }
+  insN.addEventListener('input', renderIns);
+  document.getElementById('insUp').addEventListener('click', function () { if (+insN.value > 0) { insN.value = +insN.value - 1; promoted = Math.min(promoted + 1, 8); renderIns(); } });
+  renderIns();
+
+  /* 7 · caminhos */
+  var cfBtns = document.querySelectorAll('[data-cf]');
+  cfBtns.forEach(function (b) { b.addEventListener('click', function () {
+    pressGroup(cfBtns, function (x) { return x === b; });
+    document.getElementById('cf').classList.toggle('show-wait', b.dataset.cf === 'wait');
+  }); });
+
+  /* 8 · manual */
+  var MN = [
+    { t: 'O conselho passa a existir escrito', p: 'pilar 1 · registro', b: [1], a: [], d: 'As reuniões de orientação passam a ser gravadas e transcritas. Antes disso, o mesmo conselho era dado dezenas de vezes e evaporava com quem estava na sala.' },
+    { t: 'Organizar por assunto antes de pedir', p: 'pilar 3 · fases', b: [2], a: [2], d: 'O material é separado em temas antes de qualquer pedido. Jogar tudo de uma vez não funciona: primeiro se organiza, depois se escreve.' },
+    { t: 'Pedir a versão nova', p: 'o ganho não veio da ferramenta', b: [3], a: [3], d: 'Num fim de semana sai uma versão muito melhor que a antiga. O que fez a diferença foi existir material organizado para ela ler.' },
+    { t: 'O manual novo', p: 'o documento de referência', b: [4], a: [4], d: 'Até aqui, é um manual reescrito. Ainda envelheceria em silêncio, como o anterior, se a história parasse neste passo.' },
+    { t: 'Todo conselho novo é comparado', p: 'pilar 4 · a correção vira regra', b: [5, 4], a: [5, 6], d: 'Cada conselho dado depois é comparado com o manual. Se acrescenta, entra; se repete, é descartado. O documento deixou de envelhecer e passou a acompanhar.' }
+  ];
+  var mnCur = 1, mnBox = document.querySelectorAll('.mn-box'), mnArr = document.querySelectorAll('.mn-arr'), mnLbl = document.querySelectorAll('.mn-lbl');
+  function mnGo(n) {
+    mnCur = Math.max(1, Math.min(5, n)); var s = MN[mnCur - 1];
+    mnBox.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.m) > -1); });
+    mnArr.forEach(function (p) { p.classList.toggle('on', s.a.indexOf(+p.dataset.a) > -1); });
+    mnLbl.forEach(function (t) { t.classList.toggle('on', s.a.indexOf(+t.dataset.l) > -1); });
+    document.getElementById('mnCap').innerHTML = '<span class="pil">' + s.p + '</span><h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('mnLab').textContent = 'Passo ' + mnCur + ' de 5';
+    document.getElementById('mnPrev').disabled = mnCur === 1;
+    document.getElementById('mnNext').textContent = mnCur === 5 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('mnPrev').addEventListener('click', function () { mnGo(mnCur - 1); });
+  document.getElementById('mnNext').addEventListener('click', function () { mnGo(mnCur === 5 ? 1 : mnCur + 1); });
+  mnGo(1);
+
+  /* 9 · régua */
+  var RG = [
+    '<b>O próximo passo: a regra do 2×.</b> Na próxima vez que corrigir a mesma coisa pela segunda vez, pare e escreva uma linha. Só isso. Não existe modelo melhor que esse critério, porque ninguém conhece as suas correções melhor que você.',
+    '<b>O próximo passo: tirar do canto.</b> A anotação existe, mas mora onde ninguém abre na hora de fazer. Escolha uma e mude de endereço: para o modelo, para a lista de conferência, ou para a instrução do assistente.',
+    '<b>O próximo passo: cuidar da pilha.</b> Releia as correções do fim a cada poucas semanas. Promova as que viraram padrão, apague as que não mudaram nada, e desconfie quando passarem de cinco.'
+  ];
+  var rgB = document.querySelectorAll('[data-rg]');
+  rgB.forEach(function (b) { b.addEventListener('click', function () {
+    pressGroup(rgB, function (x) { return x === b; });
+    document.getElementById('rgDet').innerHTML = '<p>' + RG[+b.dataset.rg] + '</p>';
+  }); });
+  document.getElementById('pCopy').addEventListener('click', function () { copyText(document.getElementById('pText').innerText, this); });
+})();
+</script>
+
+</html>

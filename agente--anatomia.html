@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="agente--anatomia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anatomia do agente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 6. Peças: caixas em volta do centro clicáveis, diagnóstico em quiz, passos com diagrama, montador de instrução com copiar, rodadas de teste, janela de memória com controle deslizante, etiqueta de conversa em alternância, ferramenta com e sem. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.svgbox { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.svgbox svg { display: block; width: 100%; height: auto; }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+
+/* ---- só desta peça ---- */
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; }
+/* 1 · corpo */
+.body4 { display: grid; grid-template-columns: 1fr minmax(170px, .8fr) 1fr; gap: 12px; }
+.pc { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+.pc .et { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--accent); }
+.pc small { color: var(--text-muted); font-size: .88rem; }
+.pc[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.pc.m { grid-column: 2; grid-row: 1; }
+.pc.i { grid-column: 1; grid-row: 2; align-self: center; }
+.pc.f { grid-column: 3; grid-row: 2; align-self: center; }
+.pc.c { grid-column: 2; grid-row: 3; }
+.pc-core { grid-column: 2; grid-row: 2; border: 2px solid var(--text); border-radius: 50%; aspect-ratio: 1; display: grid; place-items: center; text-align: center; padding: 14px; background: var(--bg-elev); }
+.pc-core b { font-weight: 600; display: block; }
+.pc-core span { font-size: .85rem; color: var(--text-muted); }
+.pc-d { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 12px; }
+.pc-d dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.pc-d dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.pc-d dd { margin: 0; }
+
+/* 2 · diagnóstico */
+.dg { display: grid; gap: 10px; }
+.dg-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.dg-item p.sy { font-size: 1.02rem; }
+.dg-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.dg-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .93rem; }
+.dg-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.dg-fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.dg-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.dg-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.dg-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 3 · dentro de uma mensagem */
+.in-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.in-box .t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.in-box .s { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.in-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.in-box.core rect { stroke: var(--text); stroke-width: 1.8; }
+.in-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; transition: stroke .25s ease; }
+.in-arr.on { stroke: var(--accent); stroke-width: 2.6; }
+.in-lbl { font: 500 11px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+
+/* 4 · montador */
+.sp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.sp-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.sp-f { display: grid; gap: 4px; }
+.sp-f label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); }
+.sp-f label span { color: var(--text-dim); letter-spacing: 0; font-family: var(--font-body); font-size: .85rem; }
+.sp-f textarea { font: inherit; font-size: .92rem; color: var(--text); background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; resize: vertical; min-height: 44px; width: 100%; }
+.sp-out { position: sticky; top: 12px; display: grid; gap: 12px; }
+.sp-miss { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sp-miss li { background: var(--atencao-soft); border: 1px solid var(--atencao); color: var(--atencao-texto); border-radius: 6px; padding: 8px 12px; font-size: .9rem; }
+.sp-miss li.done { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+
+/* 5 · uma linha por vez */
+.ol { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.ol-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; min-height: 170px; }
+.ol-card.res { border-color: var(--accent); }
+.ol-card pre { margin: 0; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ol-card pre mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 2px; }
+
+/* 6 · memória */
+.mem { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.mem-kind { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.mem-kind ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; }
+.win { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.win .row { display: grid; grid-template-columns: minmax(0, 1fr) 48px; gap: 12px; align-items: center; }
+.win input[type=range] { width: 100%; accent-color: var(--accent); }
+.win output { font-family: var(--font-mono); text-align: right; }
+.win-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.win-list li { font-size: .86rem; border: 1px solid var(--border); border-radius: 5px; padding: 4px 10px; transition: opacity .25s ease; }
+.win-list li.in { border-color: var(--accent); }
+.win-list li.out { opacity: .35; border-style: dashed; }
+.ses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ses-p { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.ses-tag { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--border-strong); border-radius: 4px; padding: 2px 8px; width: fit-content; color: var(--text-muted); }
+.ses-msg { font-size: .93rem; border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border); }
+.ses-msg.ai { background: var(--accent-soft); border-color: var(--accent); }
+.ses-msg.bad { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+
+/* 7 · ferramentas */
+.tl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.tl-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+.tl-card pre { margin: 0; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+.tl-fields { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: .92rem; }
+.tl-fields dt { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); padding-top: 2px; }
+.tl-fields dd { margin: 0; }
+.tl-fields dd span { font-family: var(--font-mono); font-size: 11px; color: var(--accent); margin-left: 6px; }
+/* 11 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .sp, .ol, .mem, .tl, .take { grid-template-columns: 1fr; }
+  .sp-out { position: static; }
+  .body4 { grid-template-columns: 1fr 1fr; }
+  .pc-core { grid-column: 1 / -1; grid-row: 1; aspect-ratio: auto; border-radius: 8px; }
+  .pc.m, .pc.i, .pc.f, .pc.c { grid-column: auto; grid-row: auto; }
+  .pc-d dl { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .body4, .ses { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .in-box rect, .in-arr, .win-list li { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Agente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente.html">← Visão geral</a><a href="./agente.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./agente.html">Visão geral</a><a href="./agente--anatomia.html" aria-current="page"><b>6.1</b>Anatomia</a></div>
+  </nav>
+  <span class="eyebrow">6.1 · 1 de 1</span>
+  <h1>Anatomia do agente</h1>
+  <p class="sub">Quatro peças: o modelo, a instrução, a memória e as ferramentas</p>
+  <p class="lead">Por fora, um agente parece uma coisa só. <strong>Por dentro são quatro peças, e todo agente que falha falha em uma delas.</strong> Saber qual é a peça transforma tentativa e erro em conserto: você lê o sintoma e mexe no lugar certo.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-pecas">As quatro peças</a><a href="#s-defeito">Onde está o defeito</a><a href="#s-dentro">Dentro de uma mensagem</a><a href="#s-instrucao">A instrução</a><a href="#s-linha">Uma linha por vez</a><a href="#s-memoria">A memória</a><a href="#s-ferramentas">As ferramentas</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-pecas" aria-labelledby="h-pecas">
+  <span class="eyebrow">As quatro peças</span>
+  <h2 id="h-pecas">Um funcionário novo não chega sozinho</h2>
+  <p class="intro">Pense no agente como alguém que você contratou. <strong>Ele traz a cabeça; o resto você entrega:</strong> o manual do primeiro dia, um caderno para anotar e o acesso aos sistemas. Clique em cada peça e veja o que acontece quando ela falta.</p>
+  <div class="body4" role="group" aria-label="As quatro peças do agente">
+    <button type="button" class="pc m" data-p="m" aria-pressed="true"><span class="et">MODELO</span><b>A cabeça</b><small>lê, raciocina e decide</small></button>
+    <button type="button" class="pc i" data-p="i" aria-pressed="false"><span class="et">INSTRUÇÃO</span><b>O manual do primeiro dia</b><small>quem é, o que faz, o que nunca faz</small></button>
+    <div class="pc-core"><div><b>Agente</b><span>as quatro juntas</span></div></div>
+    <button type="button" class="pc f" data-p="f" aria-pressed="false"><span class="et">FERRAMENTAS</span><b>As mãos</b><small>o que ele pode fazer fora da conversa</small></button>
+    <button type="button" class="pc c" data-p="c" aria-pressed="false"><span class="et">MEMÓRIA</span><b>O caderno</b><small>o que foi dito antes, nesta conversa</small></button>
+  </div>
+  <div class="pc-d" id="pcD" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-defeito" aria-labelledby="h-defeito">
+  <span class="eyebrow">Onde está o defeito</span>
+  <h2 id="h-defeito">Leia o sintoma, mexa na peça certa</h2>
+  <p class="intro">Seis queixas de quem usa um agente no dia a dia. Para cada uma, aponte a peça que você abriria primeiro.</p>
+  <div class="dg" id="dg"></div>
+  <p class="dg-score" id="dgScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-dentro" aria-labelledby="h-dentro">
+  <span class="eyebrow">Dentro de uma mensagem</span>
+  <h2 id="h-dentro">O que cada peça faz entre a pergunta e a resposta</h2>
+  <p class="intro">Uma mensagem chega: “qual o orçamento do cliente Souza?”. Siga as seis coisas que acontecem por dentro, e repare em qual peça acende a cada passo. O laço completo, com as voltas, está em <a href="./agente.html">Agente</a>.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="inLab">Passo 1 de 6</span>
+    <div class="nav"><button type="button" class="btn" id="inPrev">← Anterior</button><button type="button" class="btn primary" id="inNext">Próximo →</button></div>
+  </div>
+  <div class="svgbox" role="region" tabindex="0" aria-label="Diagrama das quatro peças em ação. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 830 334" style="min-width:680px" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="in-t">
+      <title id="in-t">Mensagem entra no modelo, que lê a instrução e a memória, pode chamar ferramentas, e devolve a resposta, que volta para a memória</title>
+      <defs>
+        <marker id="inm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker>
+        <marker id="ina" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-a"/></marker>
+      </defs>
+      <g class="in-box" data-b="1"><rect x="10" y="120" width="130" height="60" rx="8"/><text class="t" x="75" y="146">MENSAGEM</text><text class="s" x="75" y="166">o pedido da vez</text></g>
+      <g class="in-box" data-b="2"><rect x="200" y="10" width="170" height="64" rx="8"/><text class="t" x="285" y="38">INSTRUÇÃO</text><text class="s" x="285" y="58">lida antes de tudo</text></g>
+      <g class="in-box" data-b="3"><rect x="200" y="226" width="170" height="64" rx="8"/><text class="t" x="285" y="254">MEMÓRIA</text><text class="s" x="285" y="274">as últimas mensagens</text></g>
+      <g class="in-box core" data-b="4"><rect x="420" y="110" width="160" height="80" rx="8"/><text class="t" x="500" y="144">MODELO</text><text class="s" x="500" y="166">lê e decide</text></g>
+      <g class="in-box" data-b="5"><rect x="640" y="10" width="180" height="64" rx="8"/><text class="t" x="730" y="38">FERRAMENTAS</text><text class="s" x="730" y="58">o sistema executa</text></g>
+      <g class="in-box" data-b="6"><rect x="640" y="226" width="180" height="64" rx="8"/><text class="t" x="730" y="254">RESPOSTA</text><text class="s" x="730" y="274">o que você recebe</text></g>
+      <path class="in-arr" data-a="1" d="M140,150 H416" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="2" d="M370,50 C410,58 440,80 456,106" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="3" d="M370,250 C410,242 440,220 456,194" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="4" d="M540,110 C560,70 590,46 636,42" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="5" d="M690,74 C680,110 630,130 584,140" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="6" d="M540,190 C560,230 590,254 636,258" marker-end="url(#inm)"/>
+      <path class="in-arr" data-a="7" d="M730,290 V310 H285 V294" marker-end="url(#inm)"/>
+      <text class="in-lbl" x="505" y="326">a troca vai para o caderno</text>
+    </svg>
+  </div>
+  <div class="caption" id="inCap" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
+  <span class="eyebrow">A instrução</span>
+  <h2 id="h-instrucao">Seis gavetas para o que não muda</h2>
+  <p class="intro">A instrução (o <em>system prompt</em>) é lida antes de qualquer mensagem e pesa mais do que tudo. <strong>O que não muda a cada uso vai aqui; o que muda vai na mensagem.</strong> Quando ela passa de cinco ou seis linhas, organize em seis partes. Escolha um exemplo ou escreva o seu.</p>
+  <div class="seg" role="group" aria-label="Exemplo">
+    <button type="button" data-pre="agenda" aria-pressed="true">Agente de reuniões</button>
+    <button type="button" data-pre="clientes" aria-pressed="false">Consulta de clientes</button>
+    <button type="button" data-pre="vazio" aria-pressed="false">Em branco</button>
+  </div>
+  <div class="sp">
+    <div class="sp-in" id="spIn"></div>
+    <div class="sp-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">A instrução, ao vivo</span><button type="button" class="btn" id="spCopy">Copiar</button></div>
+        <pre id="spTxt"></pre>
+      </div>
+      <ul class="sp-miss" id="spMiss" aria-live="polite"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-linha" aria-labelledby="h-linha">
+  <span class="eyebrow">Uma linha por vez</span>
+  <h2 id="h-linha">Comece vazio e corrija só o que o teste mostrou</h2>
+  <p class="intro">Ninguém escreve o manual inteiro antes de ver o funcionário trabalhar. <strong>Teste com a instrução vazia, veja o que sai errado, acrescente uma linha, e teste de novo com a mesma entrada.</strong> Nunca mude duas coisas ao mesmo tempo, ou você não sabe o que consertou. O exemplo é um agente que qualifica contatos comerciais.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="olLab">Rodada 1 de 4</span>
+    <div class="nav"><button type="button" class="btn" id="olPrev">← Anterior</button><button type="button" class="btn primary" id="olNext">Próximo →</button></div>
+  </div>
+  <div class="ol">
+    <div class="ol-card"><span class="eyebrow">A instrução até aqui</span><pre id="olIns"></pre></div>
+    <div class="ol-card res"><span class="eyebrow">O que voltou no teste</span><pre id="olOut"></pre><p class="hint" id="olWhy"></p></div>
+  </div>
+  <p class="hint">As saídas são ilustrativas: o tropeço de cada rodada muda de modelo para modelo. O que não muda é o método.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-memoria" aria-labelledby="h-memoria">
+  <span class="eyebrow">A memória</span>
+  <h2 id="h-memoria">Curta, longa, e a etiqueta que separa as conversas</h2>
+  <p class="intro">Sem memória, cada mensagem é a primeira: você diz o seu nome e, na seguinte, ele pergunta de novo. Existem dois tipos, e quase todo agente começa só com o primeiro.</p>
+  <div class="seg" role="group" aria-label="Tipo de memória">
+    <button type="button" data-mk="curta" aria-pressed="true">Memória curta</button>
+    <button type="button" data-mk="longa" aria-pressed="false">Memória longa</button>
+  </div>
+  <div class="mem">
+    <div class="mem-kind" id="memKind" aria-live="polite"></div>
+    <div class="win">
+      <label for="winN">Quantas mensagens anteriores o agente recebe</label>
+      <div class="row"><input type="range" id="winN" min="1" max="9" value="5"><output id="winO">5</output></div>
+      <ul class="win-list" id="winList"></ul>
+      <div class="verdict" id="winVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="intro"><strong>A etiqueta da conversa.</strong> O agente guarda a memória por uma etiqueta: o número de quem escreve, o e-mail, a linha da planilha. Se a etiqueta é a mesma para todo mundo, todo mundo vira uma conversa só. Troque e veja duas pessoas escrevendo com trinta segundos de diferença.</p>
+  <div class="seg" role="group" aria-label="Etiqueta">
+    <button type="button" data-tag="fixa" aria-pressed="true">Etiqueta fixa</button>
+    <button type="button" data-tag="pessoa" aria-pressed="false">Uma etiqueta por pessoa</button>
+  </div>
+  <div class="ses" id="ses" aria-live="polite"></div>
+  <p class="hint">Por que o agente esquece quando a conversa fica longa, mesmo com memória: <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-ferramentas" aria-labelledby="h-ferramentas">
+  <span class="eyebrow">As ferramentas</span>
+  <h2 id="h-ferramentas">A mesma pergunta, com e sem a ferramenta</h2>
+  <p class="intro">Ferramenta é o que transforma o agente de quem responde em quem faz. <strong>Ele não recebe um roteiro dizendo quando usá-la: lê o nome e a descrição, e decide.</strong> Por isso a descrição é, ela mesma, uma instrução.</p>
+  <div class="tl">
+    <div class="tl-card">
+      <div class="seg" role="group" aria-label="Ferramenta">
+        <button type="button" data-tool="sem" aria-pressed="true">Sem a ferramenta</button>
+        <button type="button" data-tool="com" aria-pressed="false">Com busca_cliente</button>
+      </div>
+      <p><b>“Qual o orçamento do cliente Souza?”</b></p>
+      <div id="toolOut" aria-live="polite"></div>
+    </div>
+    <div class="tl-card">
+      <div class="seg" role="group" aria-label="Descrição">
+        <button type="button" data-desc="vaga" aria-pressed="true">Descrição vaga</button>
+        <button type="button" data-desc="clara" aria-pressed="false">Descrição clara</button>
+      </div>
+      <pre id="descTxt"></pre>
+      <div class="verdict" id="descVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="tl-card">
+    <span class="eyebrow">Quem preenche os campos</span>
+    <p>Numa ferramenta de e-mail, você não escreve o destinatário: marca os campos que <strong>o modelo preenche na hora</strong>, a partir da conversa. Pedido: “manda a confirmação para a Beatriz, reunião quinta às 10h”.</p>
+    <dl class="tl-fields">
+      <dt>Para</dt><dd>beatriz@empresa.com<span>o modelo preencheu</span></dd>
+      <dt>Assunto</dt><dd>Confirmação: reunião quinta às 10h<span>o modelo preencheu</span></dd>
+      <dt>Remetente</dt><dd>agenda@suaempresa.com<span>fixo, você definiu</span></dd>
+    </dl>
+    <p class="hint">Campo que deveria variar e ficou fixo manda tudo para o mesmo lugar. E quem executa o envio é o sistema em volta do modelo, não ele: <a href="./llm-e-harness.html">LLM e harness</a>. Comece com uma ferramenta, teste, e só então some a próxima.</p>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Quatro peças, quatro defeitos</h3><p>Modelo, instrução, memória e ferramentas. O sintoma diz qual abrir antes de mexer em tudo.</p></div>
+    <div class="take-card"><h3>A instrução cresce com o teste</h3><p>Comece vazio, corrija uma linha por vez, com a mesma entrada. Ela nunca fica pronta.</p></div>
+    <div class="take-card"><h3>Descrição de ferramenta é instrução</h3><p>O agente decide usar uma ferramenta lendo o que você escreveu sobre ela. Vaga, ele não usa.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Instrução</dt><dd>O texto permanente que o agente lê antes de toda mensagem: papel, objetivo, ferramentas, regras, notas e formato. Também chamada de system prompt.</dd>
+    <dt>Memória curta</dt><dd>As últimas mensagens da conversa, entregues de novo ao modelo a cada pergunta.</dd>
+    <dt>Memória longa</dt><dd>O que fica guardado fora da conversa e sobrevive a ela: um banco, um arquivo, uma base de busca.</dd>
+    <dt>Etiqueta da conversa</dt><dd>O identificador que separa a memória de cada pessoa. Fixa, mistura todo mundo.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Cada ferramenta de automação dá nomes diferentes a estas peças, e a divisão da instrução em seis partes é uma das formas de organizá-la. As saídas dos exemplos são ilustrativas. Voltar para <a href="./agente.html">Agente</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Agente: anterior e próxima">
+  <a class="famfoot-prev" href="./agente.html"><span>← anterior</span><b>Visão geral · Agente</b></a>
+  <a class="famfoot-fam" href="./agente.html#mapa">Família 6 · Agente · o mapa</a>
+  <span></span>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · peças */
+  var PC = {
+    m: { t: 'Modelo', o: 'O modelo de linguagem que lê tudo o que chega e decide o que fazer: responder, ou pedir uma ferramenta.', a: 'A cabeça. Um modelo mais barato é um analista júnior competente: suficiente para quase tudo.', s: 'Não existe agente. As outras três peças são o que se entrega a ele.', y: 'Raciocínio fraco em tarefa longa e cheia de condições, mesmo com a instrução boa.', c: 'Troque o modelo por um mais capaz só depois de conferir as outras três.' },
+    i: { t: 'Instrução', o: 'O texto permanente lido antes de qualquer mensagem: quem ele é, o que precisa entregar, que ferramentas tem, o que sempre e nunca faz.', a: 'O manual do primeiro dia: “leia isto antes de atender qualquer cliente”.', s: 'Funcionário sem treinamento: tecnicamente capaz, na prática imprevisível. Cada resposta sai num formato.', y: 'Formato inventado, tom que muda, ferramenta esquecida, data errada.', c: 'Acrescente uma linha que corrija o que o teste mostrou.' },
+    f: { t: 'Ferramentas', o: 'As ações que ele pode pedir: ler a planilha, mandar e-mail, criar evento, consultar um sistema. Ele escolhe qual usar lendo nome e descrição.', a: 'As mãos, e as chaves das salas onde ele pode entrar.', s: 'Promete e não cumpre. Diz “vou agendar para você” e nada é agendado.', y: 'Resposta de quem fez, sem nada feito; ou ferramenta que existe e nunca é chamada.', c: 'Confira se a ferramenta está ligada, citada na instrução e com descrição clara.' },
+    c: { t: 'Memória', o: 'O registro do que já foi dito nesta conversa, com esta pessoa, entregue de novo a cada mensagem.', a: 'O caderno de anotações de quem atende.', s: 'Cada mensagem é a primeira. A pessoa diz o nome, e na mensagem seguinte ele pergunta de novo.', y: 'Esquece o que foi dito duas mensagens antes; ou pior, responde com o dado de outra pessoa.', c: 'Confira se a memória está ligada e se a etiqueta da conversa é uma por pessoa.' }
+  };
+  var pcBtns = document.querySelectorAll('.pc'), pcD = document.getElementById('pcD');
+  function showPc(k) {
+    pressGroup(pcBtns, function (x) { return x.dataset.p === k; });
+    var p = PC[k];
+    pcD.innerHTML = '<span class="eyebrow">' + p.t + '</span><dl><dt>O que é</dt><dd>' + p.o + '</dd><dt>Parece com</dt><dd>' + p.a + '</dd><dt>Onde se conserta</dt><dd>' + p.c + '</dd></dl><div class="verdict no"><b>Sem ela: </b>' + p.s + ' <br><b>Sintoma: </b>' + p.y + '</div>';
+  }
+  pcBtns.forEach(function (b) { b.addEventListener('click', function () { showPc(b.dataset.p); }); });
+  showPc('m');
+
+  /* 2 · diagnóstico */
+  var NM = { m: 'Modelo', i: 'Instrução', c: 'Memória', f: 'Ferramentas' };
+  var DG = [
+    { s: '“O cliente perguntou o preço e recebeu a quantidade que outro cliente tinha pedido meio minuto antes.”', a: 'c', w: 'Etiqueta da conversa fixa: as duas pessoas viraram uma conversa só. É o defeito mais caro, porque vaza dado.' },
+    { s: '“Ele disse que agendou a visita. Não tem nada na agenda.”', a: 'f', w: 'Sem ferramenta de agenda (ou sem permissão nela), ele escreve a frase de quem agendou.' },
+    { s: '“Cada vez o relatório vem de um jeito: um dia lista, outro dia tabela, outro texto corrido.”', a: 'i', w: 'Falta a gaveta do formato na instrução. Sem ela, ele inventa o formato a cada vez.' },
+    { s: '“Eu disse o meu nome no começo e duas mensagens depois ele perguntou de novo.”', a: 'c', w: 'Memória desligada ou não conectada. Sem ela, cada mensagem é a primeira.' },
+    { s: '“A ferramenta de busca está lá, ligada, e ele nunca usa. Responde que não sabe.”', a: 'f', w: 'Quase sempre é a descrição da ferramenta: vaga demais, ou a ferramenta não é citada na instrução. Descrição de ferramenta é instrução.' },
+    { s: '“Marcou a reunião para o dia errado: achou que hoje era outro dia.”', a: 'i', w: 'O modelo não sabe que dia é hoje nem o seu fuso. Isso vai na gaveta das notas da instrução.' }
+  ];
+  var dg = document.getElementById('dg'), dgScore = document.getElementById('dgScore'), dgAns = {};
+  DG.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'dg-item';
+    d.innerHTML = '<p class="sy">' + q.s + '</p><div class="dg-opts" role="group" aria-label="Peça">' + ['m', 'i', 'c', 'f'].map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="false">' + NM[k] + '</button>'; }).join('') + '</div><div class="dg-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.dg-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; dgAns[i] = ok;
+      fb.hidden = false; fb.className = 'dg-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Abra primeiro: ' + NM[q.a] + '. ') + '</b>' + q.w;
+      var n = Object.keys(dgAns).length, c = Object.keys(dgAns).filter(function (k) { return dgAns[k]; }).length;
+      dgScore.textContent = n + ' de 6 respondidas · ' + c + ' certas' + (n === 6 ? ' · nenhuma das seis pedia um modelo melhor.' : '');
+    }); });
+    dg.appendChild(d);
+  });
+
+  /* 3 · dentro */
+  var IN = [
+    { b: [1], a: [], t: 'A mensagem chega', d: '“Qual o orçamento do cliente Souza?” Sozinha, ela é só uma frase. O resto das peças é que dá sentido a ela.' },
+    { b: [3], a: [3], t: 'A memória entrega o caderno', d: 'As últimas mensagens desta conversa, desta pessoa, entram junto. É assim que “e o prazo dele?” vai fazer sentido daqui a pouco.' },
+    { b: [2], a: [2], t: 'A instrução é lida antes de tudo', d: 'Papel, objetivo, ferramentas disponíveis, regras. É aqui que está escrito “sempre busque o cliente antes de responder sobre ele”.' },
+    { b: [4], a: [1, 2, 3], t: 'O modelo decide', d: 'Com as três coisas na mesa, ele pergunta a si mesmo: preciso de uma ferramenta? Aqui, sim: o dado mora na planilha.' },
+    { b: [5], a: [4, 5], t: 'A ferramenta roda e devolve', d: 'O modelo escreve o pedido; o sistema em volta executa a busca e devolve a linha da planilha. Se precisar, ele pede outra.' },
+    { b: [6, 3], a: [6, 7], t: 'Responde, e anota', d: '“O orçamento é de R$ 18.400.” E a troca inteira vai para o caderno, para a próxima mensagem desta mesma pessoa.' }
+  ];
+  var inCur = 1, inBoxes = document.querySelectorAll('.in-box'), inArrs = document.querySelectorAll('.in-arr');
+  function inGo(n) {
+    inCur = Math.max(1, Math.min(IN.length, n)); var s = IN[inCur - 1];
+    inBoxes.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.b) > -1); });
+    inArrs.forEach(function (p) { var on = s.a.indexOf(+p.dataset.a) > -1; p.classList.toggle('on', on); p.setAttribute('marker-end', on ? 'url(#ina)' : 'url(#inm)'); });
+    document.getElementById('inCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('inLab').textContent = 'Passo ' + inCur + ' de ' + IN.length;
+    document.getElementById('inPrev').disabled = inCur === 1;
+    document.getElementById('inNext').textContent = inCur === IN.length ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('inPrev').addEventListener('click', function () { inGo(inCur - 1); });
+  document.getElementById('inNext').addEventListener('click', function () { inGo(inCur === IN.length ? 1 : inCur + 1); });
+  inGo(1);
+
+  /* 4 · montador */
+  var SP = [
+    { k: 'PAPEL', h: 'quem você é', miss: 'Sem papel: agente genérico, que responde de tudo um pouco.' },
+    { k: 'OBJETIVO', h: 'o que é tarefa cumprida', miss: 'Sem objetivo: ele não sabe quando terminou.' },
+    { k: 'FERRAMENTAS', h: 'o que pode usar, e quando', miss: 'Sem ferramentas listadas: ele esquece que elas existem.' },
+    { k: 'REGRAS', h: 'o que sempre e nunca fazer', miss: 'Sem regras: os erros que você já viu nos testes voltam.' },
+    { k: 'NOTAS', h: 'data, fuso, padrões da casa', miss: 'Sem notas: ele não sabe que dia é hoje.' },
+    { k: 'FORMATO', h: 'como a resposta deve sair', miss: 'Sem formato: ele inventa um a cada vez.' }
+  ];
+  var PRE = {
+    agenda: ['Você é um assistente que agenda reuniões na agenda da equipe.', 'Receber pedidos de agendamento em linguagem comum e criar o evento. A tarefa termina quando o evento existe e a pessoa confirmou.', 'consulta_agenda: vê se um horário está livre.\ncria_evento: cria o evento. Use só depois de consultar.', '1. SEMPRE consulte a agenda antes de criar.\n2. Se houver conflito, NUNCA crie: avise e proponha outro horário.\n3. Confirme com a pessoa antes de criar.', 'Hoje é {data de hoje}. Fuso de Brasília.\nReunião sem duração dita tem 30 minutos.', 'Resposta curta. Ao confirmar: “Reunião com [nome] marcada para [dia] às [hora].”'],
+    clientes: ['Você é um assistente de consulta da carteira de clientes.', 'Responder perguntas sobre um cliente específico com o dado da planilha.', 'busca_cliente: busca um cliente pelo nome. Use sempre que perguntarem sobre um cliente específico. Não use para listar todos.', '1. SEMPRE busque antes de responder sobre um cliente.\n2. NUNCA invente dado. Se não encontrar, diga “cliente não encontrado”.', 'Valores em reais. A planilha é atualizada toda segunda.', 'Uma ou duas frases, com o número e a data da última atualização.'],
+    vazio: ['', '', '', '', '', '']
+  };
+  var spIn = document.getElementById('spIn'), spTxt = document.getElementById('spTxt'), spMiss = document.getElementById('spMiss'), tas = [];
+  SP.forEach(function (s, i) {
+    var f = document.createElement('div'); f.className = 'sp-f';
+    f.innerHTML = '<label for="sp' + i + '">' + s.k + ' <span>· ' + s.h + '</span></label><textarea id="sp' + i + '" rows="3"></textarea>';
+    spIn.appendChild(f); var ta = f.querySelector('textarea'); ta.addEventListener('input', spBuild); tas.push(ta);
+  });
+  function spBuild() {
+    var txt = [], miss = [];
+    tas.forEach(function (ta, i) { var v = ta.value.trim(); if (v) txt.push(SP[i].k + '\n' + v); else miss.push(SP[i].miss); });
+    spTxt.textContent = txt.length ? txt.join('\n\n') : '(vazio: é assim que se começa. Teste, e acrescente o que faltar.)';
+    spMiss.innerHTML = miss.length ? miss.map(function (m) { return '<li>' + m + '</li>'; }).join('') : '<li class="done">As seis gavetas têm conteúdo. Agora é testar e corrigir uma linha por vez.</li>';
+  }
+  var preBtns = document.querySelectorAll('[data-pre]');
+  function setPre(k) { pressGroup(preBtns, function (x) { return x.dataset.pre === k; }); PRE[k].forEach(function (v, i) { tas[i].value = v; }); spBuild(); }
+  preBtns.forEach(function (b) { b.addEventListener('click', function () { setPre(b.dataset.pre); }); });
+  setPre('agenda');
+  document.getElementById('spCopy').addEventListener('click', function () { copyText(spTxt.textContent, this); });
+
+  /* 5 · uma linha por vez */
+  var OL = [
+    { ins: '(vazia)', out: 'Olá! O contato parece interessante. Ele trabalha numa empresa média e demonstrou interesse no produto. Recomendo entrar em contato em breve para entender melhor as necessidades...', w: 'Texto corrido, sem nota, impossível de pôr numa planilha. Primeiro conserto: o formato.' },
+    { ins: '<mark>Retorne APENAS um JSON com os campos: nome, nota, recomendacao.</mark>', out: '```json\n{ "nome": "Paulo", "nota": 7, "recomendacao": "ligar" }\n```', w: 'Veio o JSON, mas embrulhado em marcação. Quem lê a saída depois vai quebrar. Uma linha a mais.' },
+    { ins: 'Retorne APENAS um JSON com os campos: nome, nota, recomendacao.\n<mark>Não use blocos de marcação. Apenas o JSON puro.</mark>', out: '{ "nome": "Paulo", "nota": 7, "recomendacao": "ligar" }', w: 'Formato certo. Mas o contato não disse orçamento nenhum, e a nota 7 veio de onde?' },
+    { ins: 'Retorne APENAS um JSON com os campos: nome, nota, recomendacao.\nNão use blocos de marcação. Apenas o JSON puro.\n<mark>Se uma informação não estiver no texto, nota = 0 e\nrecomendacao = "informação não fornecida". Nunca invente.</mark>', out: '{ "nome": "Paulo", "nota": 0, "recomendacao": "informação não fornecida" }', w: 'Pronto para esta entrada. Continue até ele responder igual em cinco testes seguidos, e volte a acrescentar quando aparecer um erro real.' }
+  ];
+  var olCur = 1;
+  function olGo(n) {
+    olCur = Math.max(1, Math.min(OL.length, n)); var s = OL[olCur - 1];
+    document.getElementById('olIns').innerHTML = s.ins;
+    document.getElementById('olOut').textContent = s.out;
+    document.getElementById('olWhy').textContent = s.w;
+    document.getElementById('olLab').textContent = 'Rodada ' + olCur + ' de ' + OL.length;
+    document.getElementById('olPrev').disabled = olCur === 1;
+    document.getElementById('olNext').textContent = olCur === OL.length ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('olPrev').addEventListener('click', function () { olGo(olCur - 1); });
+  document.getElementById('olNext').addEventListener('click', function () { olGo(olCur === OL.length ? 1 : olCur + 1); });
+  olGo(1);
+
+  /* 6 · memória */
+  var MK = {
+    curta: '<span class="eyebrow">Memória curta</span><p>As últimas mensagens <strong>desta conversa</strong>, entregues de novo ao modelo a cada pergunta. É o caderno aberto na mesa.</p><ul><li>guarda um número fixo de mensagens: as mais antigas saem</li><li>costuma sumir quando o sistema reinicia ou a conversa para</li><li>é por onde quase todo agente começa</li></ul>',
+    longa: '<span class="eyebrow">Memória longa</span><p>O que fica guardado <strong>fora da conversa</strong> e sobrevive a ela: um banco de dados, um arquivo, uma base onde se busca pelo sentido.</p><ul><li>lembra do cliente na semana seguinte, em outra conversa</li><li>pede um lugar para guardar e uma regra do que guardar</li><li>é o passo seguinte, quando a curta não basta</li></ul>'
+  };
+  var mkBtns = document.querySelectorAll('[data-mk]');
+  function setMk(k) { pressGroup(mkBtns, function (x) { return x.dataset.mk === k; }); document.getElementById('memKind').innerHTML = MK[k]; }
+  mkBtns.forEach(function (b) { b.addEventListener('click', function () { setMk(b.dataset.mk); }); });
+  setMk('curta');
+  var MSG = ['você: meu nome é Rita, falo da loja do centro', 'agente: Oi, Rita! Como posso ajudar?', 'você: quero o relatório de vendas de março', 'agente: Aqui está o relatório de março…', 'você: agora compara com fevereiro', 'agente: Março ficou acima de fevereiro…', 'você: e a meta do trimestre?', 'agente: A meta do trimestre é…', 'você: manda isso para o gerente'];
+  var winN = document.getElementById('winN'), winList = document.getElementById('winList');
+  function win() {
+    var n = +winN.value; document.getElementById('winO').textContent = n;
+    var start = MSG.length - n;
+    winList.innerHTML = MSG.map(function (m, i) { return '<li class="' + (i >= start ? 'in' : 'out') + '">' + m + '</li>'; }).join('') + '<li class="in"><b>você: e qual é o meu nome mesmo?</b></li>';
+    var v = document.getElementById('winVer');
+    if (start <= 0) { v.className = 'verdict ok'; v.innerHTML = '<b>“Rita.”</b> A primeira mensagem ainda está no caderno.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>“Não sei o seu nome.”</b> A mensagem com o nome saiu da janela. Janela maior lembra mais, e custa mais a cada pergunta.'; }
+  }
+  winN.addEventListener('input', win); win();
+  var tagBtns = document.querySelectorAll('[data-tag]'), ses = document.getElementById('ses');
+  function setTag(k) {
+    pressGroup(tagBtns, function (x) { return x.dataset.tag === k; });
+    var fixa = k === 'fixa';
+    ses.innerHTML = '<div class="ses-p"><span class="eyebrow">Pessoa A · 10h00</span><span class="ses-tag">etiqueta: ' + (fixa ? 'conversa1' : 'cliente-5521') + '</span><div class="ses-msg">“Quero comprar 10 unidades.”</div><div class="ses-msg ai">“Anotado: 10 unidades. Posso fechar o pedido?”</div></div>'
+      + '<div class="ses-p"><span class="eyebrow">Pessoa B · 10h00 e 30 segundos</span><span class="ses-tag">etiqueta: ' + (fixa ? 'conversa1' : 'cliente-8830') + '</span><div class="ses-msg">“Qual o preço?”</div><div class="ses-msg ' + (fixa ? 'bad' : 'ai') + '">' + (fixa ? '“As 10 unidades saem por R$ 5.000.” <br><b>A pessoa B nunca falou em 10 unidades.</b> Recebeu o pedido de outra pessoa.' : '“Depende da quantidade. Quantas unidades você quer?”') + '</div></div>';
+  }
+  tagBtns.forEach(function (b) { b.addEventListener('click', function () { setTag(b.dataset.tag); }); });
+  setTag('fixa');
+
+  /* 7 · ferramentas */
+  var toolBtns = document.querySelectorAll('[data-tool]'), toolOut = document.getElementById('toolOut');
+  function setTool(k) {
+    pressGroup(toolBtns, function (x) { return x.dataset.tool === k; });
+    toolOut.innerHTML = k === 'sem'
+      ? '<div class="verdict no"><b>“Não tenho acesso a essa informação.”</b> Ou pior: um número que parece plausível e foi inventado.</div>'
+      : '<pre>pensa: o dado está na planilha\npede:  busca_cliente("Souza")\nvolta: orçamento R$ 18.400</pre><div class="verdict ok"><b>“O orçamento do cliente Souza é de R$ 18.400.”</b> A resposta veio de onde o dado mora.</div>';
+  }
+  toolBtns.forEach(function (b) { b.addEventListener('click', function () { setTool(b.dataset.tool); }); });
+  setTool('sem');
+  var descBtns = document.querySelectorAll('[data-desc]');
+  function setDesc(k) {
+    pressGroup(descBtns, function (x) { return x.dataset.desc === k; });
+    var v = document.getElementById('descVer');
+    if (k === 'vaga') { document.getElementById('descTxt').textContent = 'nome:      ferramenta1\ndescrição: faz coisas'; v.className = 'verdict no'; v.innerHTML = '<b>Ele não chama.</b> Nada no nome nem na descrição liga esta ferramenta à pergunta sobre um cliente.'; }
+    else { document.getElementById('descTxt').textContent = 'nome:      busca_cliente\ndescrição: Busca um cliente na planilha pelo nome.\n           USE sempre que perguntarem dado de um cliente específico.\n           NÃO USE para listar todos os clientes.'; v.className = 'verdict ok'; v.innerHTML = '<b>Ele chama na hora certa.</b> A descrição diz o que faz, quando usar e quando não usar.'; }
+  }
+  descBtns.forEach(function (b) { b.addEventListener('click', function () { setDesc(b.dataset.desc); }); });
+  setDesc('vaga');
+})();
+</script>
+
+</html>

@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="assistente">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Assistente especializado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, cabeça da família 4. Peças: pedido antes × depois, três partes em SVG, montador ao vivo, quiz, cartões de comportamento, bateria de quatro perguntas, ciclo de correção com stepper, calculadora. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · mesmo pedido */
+.as-cmd { font-family: var(--font-mono); font-size: .95rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.as-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.as-lines li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; align-items: start; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; transition: border-color .25s ease, background .25s ease; }
+.as-lines li .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); padding-top: 3px; }
+.as-lines.on li { border-color: var(--ok); background: var(--ok-soft); }
+.as-lines.off li { border-color: var(--atencao); background: var(--atencao-soft); }
+
+/* 2 · três partes (svg) */
+.as-parts { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.ap-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.ap-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.ap-t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); }
+.ap-s { font: 400 12.5px var(--font-body); fill: var(--text-muted); }
+.ap-bar { fill: var(--accent); }
+.ap-bar.soft { fill: var(--text-muted); }
+.ap-ax { stroke: var(--border-strong); }
+.ap-lab { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .06em; }
+
+/* 3 · montador */
+.as-build { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.as-form { display: grid; gap: 12px; }
+.as-form label { display: grid; gap: 4px; font-size: .92rem; }
+.as-form label span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.as-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); resize: vertical; min-height: 58px; width: 100%; }
+.as-out { display: grid; gap: 10px; position: sticky; top: 12px; }
+.as-warn { font-size: .9rem; border-radius: 6px; padding: 8px 12px; border: 1px solid var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.as-okline { font-size: .9rem; border-radius: 6px; padding: 8px 12px; border: 1px solid var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.as-where { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.as-where div { border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; background: var(--bg-elev); font-size: .9rem; }
+.as-where b { display: block; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+
+/* 5 · adjetivo → comportamento */
+.as-adj { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.as-adj button { text-align: left; border: 1px dashed var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 12px 14px; color: var(--text-muted); font-size: .95rem; }
+.as-adj button[aria-pressed="true"] { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+
+/* 6 · bateria */
+.as-bat { display: grid; gap: 8px; }
+.as-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 12px 14px; }
+.as-row .t { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.as-row .t b { display: block; color: var(--text); font-family: var(--font-body); font-size: .95rem; font-weight: 600; }
+.as-row .a { font-size: .95rem; }
+.as-row.crit { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.as-row .a.bad { color: var(--atencao-texto); }
+.as-row .a.good { color: var(--ok-texto); }
+
+/* 7 · ciclo do desvio */
+.dv-node circle { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.5; transition: fill .25s ease, stroke .25s ease; }
+.dv-node.on circle { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.5; }
+.dv-t { font: 600 12px var(--font-mono); fill: var(--text); text-anchor: middle; letter-spacing: .06em; }
+.dv-s { font: 400 11.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.dv-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.dv-mk { fill: var(--text-muted); }
+.dv-count { font: 500 30px var(--font-mono); fill: var(--accent); text-anchor: middle; }
+.dv-count.full { fill: var(--atencao); }
+.as-dev { display: flex; flex-wrap: wrap; gap: 8px; }
+.as-dev button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 5px 14px; font-size: .9rem; }
+.as-dev button.crit { border-color: var(--atencao); }
+.as-dev button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* 8 · calculadora */
+.as-calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.as-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; }
+.as-res { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.as-dots { display: flex; flex-wrap: wrap; gap: 5px; }
+.as-dots i { width: 16px; height: 16px; border-radius: 3px; background: var(--border); display: block; }
+.as-dots i.pay { background: var(--atencao); }
+.as-dots i.gain { background: var(--ok); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .as-parts, .as-build, .as-calc { grid-template-columns: 1fr; }
+  .as-out { position: static; }
+  .as-adj { grid-template-columns: 1fr 1fr; }
+  .as-row { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (max-width: 520px) { .as-adj, .as-where { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .as-lines li, .ap-box rect, .dv-node circle { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Assistente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente--resposta-ancorada.html">4.1 Resposta ancorada →</a></span></div>
+    <div class="famhead-chips"><a href="./assistente.html" aria-current="page">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>Assistente especializado</h1>
+  <p class="sub">A mesma IA de sempre, com três coisas guardadas: como trabalhar, o que consultar, e a prova de que consulta</p>
+  <p class="lead">Um assistente é um texto que a IA lê sozinha no começo de toda conversa de um trabalho, mais o material que ela abre quando a pergunta pede. <strong>Você escreve uma vez e para de reexplicar.</strong> O que você continua digitando é uma frase curta com o dado da vez.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-pedido">O mesmo pedido</a><a href="#s-partes">As três partes</a><a href="#s-montar">Montar o seu</a><a href="#s-lugar">Onde cada frase vai</a><a href="#s-nunca">A linha que dá para conferir</a><a href="#s-prova">A prova</a><a href="#s-desvio">Quando ele erra</a><a href="#s-conta">Vale a pena?</a><a href="#s-familia">A família</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">Quatro partes do assistente, cada uma com página própria</h2>
+  <p class="intro">Esta página é a visão geral: o que um assistente é, e quando vale montar um. <strong>As quatro páginas abaixo abrem cada parte dele</strong>: de onde vem a resposta, onde cada regra fica guardada, o procedimento que só abre quando precisa, e o que fazer quando um assistente só não basta.</p>
+  <div class="fmap c2">
+    <div class="fmap-card"><span class="fmap-n">4.1 · Resposta ancorada · 1 de 4</span><h3>Resposta ancorada nos seus documentos</h3><p>Ancorar é trocar “parece certo” por “está aqui, neste trecho”, e fazer ela escrever “não consta” quando o trecho não existe.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a citação</li><li>quando não tem</li><li>leu ou deduziu</li></ul><a class="fmap-go" href="./assistente--resposta-ancorada.html">abrir 4.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.2 · Onde a regra mora · 2 de 4</span><h3>Onde a regra mora</h3><p>Cada coisa que a IA precisa saber tem um lugar, e o lugar decide quando ela lê: sempre, às vezes, ou só quando busca.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro acessos</li><li>o mapa</li><li>regra, fato e lembrança</li></ul><a class="fmap-go" href="./assistente--onde-a-regra-mora.html">abrir 4.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.3 · Skill · 3 de 4</span><h3>Skill</h3><p>Um procedimento guardado e fechado, que ela só abre quando a tarefa bate com a etiqueta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>quando ela abre</li><li>a etiqueta</li><li>como nasce</li></ul><a class="fmap-go" href="./assistente--skill.html">abrir 4.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.4 · Time de assistentes · 4 de 4</span><h3>Time de assistentes</h3><p>Quando a pergunta cruza várias áreas, um assistente só devolve o meio-termo. Um time dá a cada olhar o seu escopo.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os papéis</li><li>o caminho da pergunta</li><li>vale montar?</li></ul><a class="fmap-go" href="./assistente--time.html">abrir 4.4 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<!-- 1 -->
+<section class="sec" id="s-pedido" aria-labelledby="h-pedido">
+  <span class="eyebrow">O mesmo pedido</span>
+  <h2 id="h-pedido">A mesma frase, no chat solto e no assistente</h2>
+  <p class="intro">O pedido é idêntico, letra por letra, e chega com o mesmo anexo. <strong>A única diferença é haver ou não um texto guardado antes dele.</strong> Troque o lado e compare linha com linha.</p>
+  <p class="as-cmd">Segue o pedido do cliente. Monte a proposta.</p>
+  <div class="seg" role="group" aria-label="Onde o pedido roda">
+    <button type="button" data-ped="solto" aria-pressed="true">Chat solto</button>
+    <button type="button" data-ped="assist" aria-pressed="false">Assistente montado</button>
+  </div>
+  <ol class="as-lines off" id="asLines" aria-live="polite"></ol>
+  <p class="punch">Nenhuma linha do assistente montado é a IA ficando mais esperta. <em>As cinco são coisas que alguém escreveu.</em></p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-partes" aria-labelledby="h-partes">
+  <span class="eyebrow">As três partes</span>
+  <h2 id="h-partes">O que separa as partes é a frequência, não a importância</h2>
+  <p class="intro">Um assistente não é um texto só. São três, e cada um muda num ritmo diferente. <strong>A confusão mais cara é misturar a instrução com o material de consulta.</strong> Clique em cada parte.</p>
+  <div class="as-parts">
+    <div class="scroll">
+      <svg viewBox="0 0 560 300" role="img" aria-labelledby="ap-t" xmlns="http://www.w3.org/2000/svg" style="min-width:460px">
+        <title id="ap-t">As três partes de um assistente e com que frequência cada uma muda: a instrução é escrita uma vez, a base muda quando a tabela muda, o comando muda a cada uso</title>
+        <line class="ap-ax" x1="300" y1="270" x2="540" y2="270"/>
+        <text class="ap-lab" x="300" y="290">quantas vezes você mexe</text>
+        <g class="ap-box on" data-ap="0"><rect x="16" y="20" width="260" height="70" rx="8"/><text class="ap-t" x="32" y="48">INSTRUÇÃO</text><text class="ap-s" x="32" y="70">quem é, como trabalha, onde para</text></g>
+        <g class="ap-box" data-ap="1"><rect x="16" y="110" width="260" height="70" rx="8"/><text class="ap-t" x="32" y="138">BASE DE CONSULTA</text><text class="ap-s" x="32" y="160">tabela, norma, modelo, glossário</text></g>
+        <g class="ap-box" data-ap="2"><rect x="16" y="200" width="260" height="70" rx="8"/><text class="ap-t" x="32" y="228">COMANDO DE USO</text><text class="ap-s" x="32" y="250">a frase curta com o dado da vez</text></g>
+        <rect class="ap-bar" x="300" y="44" width="14" height="22" rx="3"/><text class="ap-lab" x="322" y="60">uma vez</text>
+        <rect class="ap-bar" x="300" y="134" width="70" height="22" rx="3"/><text class="ap-lab" x="378" y="150">quando a tabela muda</text>
+        <rect class="ap-bar soft" x="300" y="224" width="236" height="22" rx="3"/><text class="ap-lab" x="310" y="262">toda semana</text>
+      </svg>
+    </div>
+    <div class="panel" id="apPanel" aria-live="polite"></div>
+  </div>
+  <p class="hint">A régua que decide: se não muda a cada uso, fica guardado. Se muda a cada uso, vai no comando. As barras mostram a forma, não uma medida.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-montar" aria-labelledby="h-montar">
+  <span class="eyebrow">Montar o seu</span>
+  <h2 id="h-montar">A instrução nasce de um trabalho que você já sabe fazer</h2>
+  <p class="intro">Ninguém inventa uma instrução do zero: ela é o seu processo, escrito para quem vai executar. Preencha os campos com um trabalho seu, ou carregue o exemplo da proposta comercial. <strong>O texto se monta ao lado, pronto para colar no campo de instruções.</strong></p>
+  <div class="nav"><button type="button" class="btn" id="asEx">Carregar exemplo</button><button type="button" class="btn" id="asClr">Limpar</button></div>
+  <div class="as-build">
+    <div class="as-form" id="asForm">
+      <label><span>Papel</span>Quem ele é, e o que ele decide<textarea data-k="papel" rows="2"></textarea></label>
+      <label><span>Como trabalha</span>Os passos, na ordem, um por linha<textarea data-k="passos" rows="3"></textarea></label>
+      <label><span>Quando foge do padrão</span>Condição → o que fazer, um por linha<textarea data-k="quando" rows="3"></textarea></label>
+      <label><span>Nunca</span>Comportamentos que você já viu dar errado<textarea data-k="nunca" rows="3"></textarea></label>
+      <label><span>Onde não decide</span>O que ele organiza mas não escolhe<textarea data-k="fronteira" rows="2"></textarea></label>
+      <label><span>Base de consulta</span>Os arquivos que ele abre, um por linha<textarea data-k="base" rows="2"></textarea></label>
+      <label><span>Comando de uso</span>A frase que você vai digitar toda vez<textarea data-k="cmd" rows="1"></textarea></label>
+    </div>
+    <div class="as-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">Campo de instruções · ao vivo</span><button type="button" class="btn" data-copy="asBuilt">Copiar</button></div>
+        <pre id="asBuilt"></pre>
+      </div>
+      <div class="as-where"><div><b>Campo de arquivos</b><span id="asBase">nada ainda</span></div><div><b>No chat, toda vez</b><span id="asCmd">nada ainda</span></div></div>
+      <div id="asCheck" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">O bloco “onde não decide” quase nunca nasce sozinho. Sem ele, um assistente feito para organizar passa a recomendar coisa com consequência para alguém.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-lugar" aria-labelledby="h-lugar">
+  <span class="eyebrow">Onde cada frase vai</span>
+  <h2 id="h-lugar">Instrução, base ou comando?</h2>
+  <p class="intro">Seis frases do mesmo assistente de proposta. <strong>Pergunte de cada uma: com que frequência isso muda?</strong></p>
+  <div class="qz" id="asQuiz"></div>
+  <p class="qz-score" id="asScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-nunca" aria-labelledby="h-nunca">
+  <span class="eyebrow">A linha que dá para conferir</span>
+  <h2 id="h-nunca">Adjetivo vira decoração; comportamento vira regra</h2>
+  <p class="intro">O assistente concorda com “seja preciso” e continua igual. <strong>Uma linha só funciona se você consegue olhar a resposta e dizer se ela foi cumprida.</strong> Clique numa preferência para ver a versão que dá para conferir.</p>
+  <div class="as-adj" role="group" aria-label="Preferências vagas">
+    <button type="button" data-adj="0" aria-pressed="true">“Seja preciso com os números”</button>
+    <button type="button" data-adj="1" aria-pressed="false">“Seja mais objetivo”</button>
+    <button type="button" data-adj="2" aria-pressed="false">“Tome cuidado com dado faltando”</button>
+    <button type="button" data-adj="3" aria-pressed="false">“Cite as fontes”</button>
+  </div>
+  <div class="panel" id="adjPanel" aria-live="polite"></div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-prova" aria-labelledby="h-prova">
+  <span class="eyebrow">A prova</span>
+  <h2 id="h-prova">Quatro perguntas separam o assistente que consulta do que inventa</h2>
+  <p class="intro">Mesma instrução nos dois lados. A diferença é um arquivo: a tabela de preços, com uma seção final dizendo o que ela não cobre. <strong>Repare na pergunta 3.</strong></p>
+  <div class="seg" role="group" aria-label="Com ou sem o arquivo">
+    <button type="button" data-bat="sem" aria-pressed="true">Sem o arquivo</button>
+    <button type="button" data-bat="com" aria-pressed="false">Com o arquivo</button>
+  </div>
+  <div class="as-bat" id="asBat" aria-live="polite"></div>
+  <p class="hint">As três primeiras quase sempre passam, e por isso enganam. A terceira é a única que importa: quem responde bonito sobre o que não tem é pior que nenhum assistente, porque você para de conferir. Mais sobre isso em <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-desvio" aria-labelledby="h-desvio">
+  <span class="eyebrow">Quando ele erra</span>
+  <h2 id="h-desvio">Ele vai errar, e o conserto é uma linha no fim</h2>
+  <p class="intro">O reflexo é reescrever a instrução inteira, e isso quebra o que já funcionava. <strong>O conserto é nomear o que ele fez e acrescentar uma linha reversível no fim.</strong> Siga o ciclo.</p>
+  <div class="stepbar"><span class="eyebrow" id="dvLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="dvPrev">← Anterior</button><button type="button" class="btn primary" id="dvNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 640 300" role="img" aria-labelledby="dv-t" xmlns="http://www.w3.org/2000/svg" style="min-width:560px">
+      <title id="dv-t">Ciclo de correção: copiar o sintoma, dar nome ao desvio, acrescentar uma linha no fim, repetir o mesmo pedido, e voltar ao começo; no centro, o número de linhas de correção acumuladas</title>
+      <defs><marker id="mkdv" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="dv-mk"/></marker></defs>
+      <path class="dv-arr" d="M225,70 H410" marker-end="url(#mkdv)"/>
+      <path class="dv-arr" d="M500,110 V190" marker-end="url(#mkdv)"/>
+      <path class="dv-arr" d="M410,230 H225" marker-end="url(#mkdv)"/>
+      <path class="dv-arr" d="M140,190 V110" marker-end="url(#mkdv)"/>
+      <g class="dv-node" data-dv="1"><circle cx="140" cy="70" r="46"/><text class="dv-t" x="140" y="66">SINTOMA</text><text class="dv-s" x="140" y="84">copiado da tela</text></g>
+      <g class="dv-node" data-dv="2"><circle cx="500" cy="70" r="46"/><text class="dv-t" x="500" y="66">NOME</text><text class="dv-s" x="500" y="84">qual desvio é</text></g>
+      <g class="dv-node" data-dv="3"><circle cx="500" cy="230" r="46"/><text class="dv-t" x="500" y="226">UMA LINHA</text><text class="dv-s" x="500" y="244">no fim, com data</text></g>
+      <g class="dv-node" data-dv="4"><circle cx="140" cy="230" r="46"/><text class="dv-t" x="140" y="226">RETESTE</text><text class="dv-s" x="140" y="244">o mesmo pedido</text></g>
+      <text class="dv-count" id="dvCount" x="320" y="160">1</text>
+      <text class="dv-s" x="320" y="182">linha de correção no fim</text>
+    </svg>
+  </div>
+  <div class="caption" id="dvCap" aria-live="polite"></div>
+  <span class="eyebrow">Seis desvios com nome · os três primeiros produzem resposta que parece certa</span>
+  <div class="as-dev" role="group" aria-label="Desvios" id="asDev"></div>
+  <div class="panel" id="devPanel" aria-live="polite"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-conta" aria-labelledby="h-conta">
+  <span class="eyebrow">Vale a pena?</span>
+  <h2 id="h-conta">A pergunta não é “é importante?”, é “quantas vezes volta?”</h2>
+  <p class="intro">Montar custa antes e devolve depois, cada vez que a tarefa volta. <strong>A tarefa chata que volta toda semana paga rápido; a importantíssima que acontece uma vez por ano não paga nunca.</strong> Ponha os números de uma tarefa sua.</p>
+  <div class="as-calc">
+    <div class="as-in">
+      <div class="field"><label for="cVol">Quantas vezes a tarefa volta por ano</label><div class="row"><input type="range" id="cVol" min="1" max="200" value="48"><output id="oVol">48</output></div></div>
+      <div class="field"><label for="cGan">Minutos que ele poupa a cada vez</label><div class="row"><input type="range" id="cGan" min="5" max="90" step="5" value="20"><output id="oGan">20</output></div></div>
+      <div class="field"><label for="cCus">Minutos para montar e testar, uma vez</label><div class="row"><input type="range" id="cCus" min="20" max="240" step="10" value="60"><output id="oCus">60</output></div></div>
+      <div class="field"><span>O critério é sempre o mesmo?</span><div class="seg" role="group" aria-label="Critério"><button type="button" data-crit="sim" aria-pressed="true">Sim, igual toda vez</button><button type="button" data-crit="nao" aria-pressed="false">Não, muda a cada vez</button></div></div>
+    </div>
+    <div class="as-res" aria-live="polite">
+      <span class="eyebrow">Ele se paga na</span>
+      <div class="big" id="cBig">—</div>
+      <div class="as-dots" id="cDots" aria-hidden="true"></div>
+      <p class="hint" id="cWhen"></p>
+      <div class="verdict" id="cVer"></div>
+    </div>
+  </div>
+  <p class="hint">Dois fatores juntos: frequência e critério estável. Volta sempre mas cada vez é uma situação nova? Aí é pedido bem escrito, não assistente. E as primeiras semanas empatam: quem mede na segunda semana conclui que não valeu.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-familia" aria-labelledby="h-familia">
+  <span class="eyebrow">A família</span>
+  <h2 id="h-familia">Quatro verbetes abrem cada parte do assistente</h2>
+  <p class="intro">Esta página é a porta. Cada peça do assistente tem um verbete próprio, com mais detalhe e mais para mexer.</p>
+  <div class="fam">
+    <a href="./assistente--resposta-ancorada.html"><span>4.1 · a base</span><b>Resposta ancorada</b><small>fazer a IA responder só pelo seu material, e por que material demais atrapalha</small></a>
+    <a href="./assistente--onde-a-regra-mora.html"><span>4.2 · o lugar</span><b>Onde a regra mora</b><small>instrução, memória, skill, conector: em qual campo cada coisa fica</small></a>
+    <a href="./assistente--skill.html"><span>4.3 · o procedimento</span><b>Skill</b><small>o passo a passo que a IA só abre quando a tarefa aparece</small></a>
+    <a href="./assistente--time.html"><span>4.4 · o próximo degrau</span><b>Time de assistentes</b><small>quando a pergunta cruza áreas e um assistente só devolve o meio-termo</small></a>
+  </div>
+  <p class="hint">Antes de montar: o pedido bem escrito continua sendo a base (<a href="./prompt.html">prompt</a>), e o assistente é o primeiro degrau da escada de <a href="./ai-first.html">AI First</a>.</p>
+</section>
+
+<!-- 10 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>O que se repete vira instrução</h3><p>O que muda a cada vez continua no comando. A régua é a frequência, não o tamanho nem a importância.</p></div>
+    <div class="take-card"><h3>Prove antes de confiar</h3><p>Pergunte algo que não está em arquivo nenhum. Se ele responder com segurança, a base está montada errada.</p></div>
+    <div class="take-card"><h3>Corrija com uma linha</h3><p>Nomeie o que ele fez e acrescente uma linha no fim. Cinco linhas penduradas pedem reescrever um bloco.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Assistente</dt><dd>Uma forma de guardar contexto: instrução lida sempre, base consultada quando precisa, e um comando curto. Existe com nomes diferentes em quase toda ferramenta de IA.</dd>
+    <dt>Instrução</dt><dd>O texto lido sozinho no começo de toda conversa daquele trabalho. Também chamado de prompt de sistema.</dd>
+    <dt>Base de consulta</dt><dd>Os arquivos que ele abre quando a pergunta pede, e de onde ele deve citar.</dd>
+    <dt>Desvio</dt><dd>Um comportamento torto observado na saída, com nome, que se corrige com uma linha no fim da instrução.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os nomes dos campos mudam de ferramenta para ferramenta e de versão para versão; as três partes continuam as mesmas. As barras e a calculadora mostram a forma da conta, não uma medida.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Assistente: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./assistente.html#mapa">Família 4 · Assistente · o mapa</a>
+  <a class="famfoot-next" href="./assistente--resposta-ancorada.html"><span>próxima →</span><b>4.1 · Resposta ancorada nos seus documentos</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · mesmo pedido */
+  var PED = {
+    solto: ['Pergunta de volta o que é a proposta, ou inventa um formato', 'Devolve texto corrido, e na semana seguinte devolve uma tabela', 'Põe um preço aproximado no item que não está na tabela', 'Não menciona validade nem prazo, porque ninguém pediu', 'Entrega e para: a conferência é toda sua'],
+    assist: ['Começa listando os itens, porque o passo 1 está escrito', 'Devolve as seis partes fixas, na mesma ordem, toda semana', 'Manda o item sem preço para “aguardando preço”, com a pergunta pronta', 'Escreve validade de 15 dias e o maior prazo entre os itens', 'Confirma três linhas e espera o seu OK antes de fechar']
+  };
+  var pedBtns = document.querySelectorAll('[data-ped]'), asLines = document.getElementById('asLines');
+  function setPed(k) {
+    pressGroup(pedBtns, function (x) { return x.dataset.ped === k; });
+    asLines.className = 'as-lines ' + (k === 'assist' ? 'on' : 'off');
+    asLines.innerHTML = PED[k].map(function (t, i) { return '<li><span class="n">0' + (i + 1) + '</span><span>' + t + '</span></li>'; }).join('');
+  }
+  pedBtns.forEach(function (b) { b.addEventListener('click', function () { setPed(b.dataset.ped); }); });
+  setPed('solto');
+
+  /* 2 · três partes */
+  var AP = [
+    { t: 'Instrução', q: 'Escrita uma vez, lida em toda conversa.', d: 'Quem ele é, a ordem dos passos, o que fazer quando foge do padrão, o que nunca faz e onde não decide. Não muda de uma conversa para a outra.', ex: '“Você é analista comercial responsável por transformar pedido de cliente em proposta enviada.”', w: 'no campo de instruções' },
+    { t: 'Base de consulta', q: 'Atualizada quando a tabela muda.', d: 'O material que ele abre quando a pergunta pede: tabela vigente, regra escrita, modelo, glossário. Ele procura o trecho, não decora o arquivo.', ex: '“B-215 · Perfil de alumínio, 6 m · barra · R$ 246,00 · 5 dias úteis”', w: 'no campo de arquivos' },
+    { t: 'Comando de uso', q: 'Digitado toda vez, e só ele.', d: 'A frase curta com o dado da vez. Se você se pega repetindo uma explicação no comando, aquilo deveria estar na instrução.', ex: '“Segue o pedido do cliente. Monte a proposta.”', w: 'no chat, com o anexo do dia' }
+  ];
+  var apBoxes = document.querySelectorAll('.ap-box'), apPanel = document.getElementById('apPanel');
+  function showAp(i) {
+    apBoxes.forEach(function (g) { g.classList.toggle('on', +g.dataset.ap === i); });
+    var a = AP[i];
+    apPanel.innerHTML = '<span class="eyebrow">' + a.w + '</span><h3>' + a.t + '</h3><p><b>' + a.q + '</b> ' + a.d + '</p><p class="hint">' + a.ex + '</p>';
+  }
+  apBoxes.forEach(function (g) { g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.addEventListener('click', function () { showAp(+g.dataset.ap); }); g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showAp(+g.dataset.ap); } }); });
+  showAp(0);
+
+  /* 3 · montador */
+  var EX = {
+    papel: 'Você é analista comercial responsável por transformar pedido de cliente em proposta enviada. Escreve para o cliente decidir em dois minutos.',
+    passos: 'Ler o pedido e listar os itens; se vier como foto, transcrever e me mostrar\nConferir cada item contra a tabela de preços vigente\nMontar a proposta no modelo, com validade de 15 dias\nRevisar valor e prazo contra o pedido original, item por item',
+    quando: 'Item fora da tabela → não estimar; listar em “aguardando preço” com a pergunta pronta para o técnico\nDesconto acima de 10% → montar com preço de tabela e avisar que depende do gerente\nQuantidade ausente → perguntar, nunca assumir',
+    nunca: 'Nunca escrever preço, prazo ou condição que não esteja na tabela ou no pedido\nNunca completar quantidade ilegível por dedução\nNunca prometer prazo para item aguardando preço',
+    fronteira: 'Você não decide desconto, crédito nem prazo que depende de terceiro. Nesses casos, diga o que falta, para quem perguntar, e pare.',
+    base: 'tabela-de-precos-vigente.md\nmodelo-de-proposta.md',
+    cmd: 'Segue o pedido do cliente. Monte a proposta.'
+  };
+  var tas = document.querySelectorAll('#asForm textarea'), built = document.getElementById('asBuilt');
+  var VAGUE = /\b(seja|capriche|cuidado|cuidadoso|claro|objetiv|preciso|adequad|bem feito|organizad)/i;
+  function val(k) { return document.querySelector('#asForm [data-k="' + k + '"]').value.trim(); }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function lines(t) { return t.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function build() {
+    var p = [], out = '';
+    if (val('papel')) p.push('<b>## PAPEL</b>\n' + esc(val('papel')));
+    if (val('passos')) p.push('<b>## COMO VOCÊ TRABALHA</b>\n' + lines(esc(val('passos'))).map(function (l, i) { return (i + 1) + '. ' + l; }).join('\n'));
+    if (val('quando')) p.push('<b>## QUANDO FOGE DO PADRÃO</b>\n' + lines(esc(val('quando'))).map(function (l) { return '- ' + l; }).join('\n'));
+    if (val('nunca')) p.push('<b>## O QUE VOCÊ NUNCA FAZ</b>\n' + lines(esc(val('nunca'))).map(function (l) { return '- ' + l; }).join('\n'));
+    if (val('fronteira')) p.push('<b>## ONDE VOCÊ NÃO DECIDE</b>\n' + esc(val('fronteira')));
+    out = p.length ? p.join('\n\n') : '<i>Comece pelo papel: quem ele é, e o que ele decide.</i>';
+    built.innerHTML = out;
+    document.getElementById('asBase').textContent = val('base') ? lines(val('base')).join(' · ') : 'nada ainda';
+    document.getElementById('asCmd').textContent = val('cmd') || 'nada ainda';
+    var chk = document.getElementById('asCheck'), msg = [];
+    var vag = lines(val('nunca')).filter(function (l) { return VAGUE.test(l); });
+    if (vag.length) msg.push('<p class="as-warn"><b>Adjetivo no NUNCA:</b> “' + esc(vag[0]) + '”. Dá para olhar a resposta e dizer se foi cumprido? Se não, reescreva como comportamento.</p>');
+    if (val('papel') && !val('fronteira')) msg.push('<p class="as-warn"><b>Falta a fronteira.</b> O que ele organiza mas não escolhe? Valor, aprovação, diagnóstico.</p>');
+    if (val('cmd').split(/\s+/).length > 25) msg.push('<p class="as-warn"><b>Comando longo.</b> O que você repete toda vez ali provavelmente é instrução.</p>');
+    if (!msg.length && val('papel') && val('fronteira')) msg.push('<p class="as-okline">Tem papel, fronteira e um comando curto. Agora é testar com um trabalho que você já entregou.</p>');
+    chk.innerHTML = msg.join('');
+  }
+  tas.forEach(function (t) { t.addEventListener('input', build); });
+  document.getElementById('asEx').addEventListener('click', function () { tas.forEach(function (t) { t.value = EX[t.dataset.k]; }); build(); });
+  document.getElementById('asClr').addEventListener('click', function () { tas.forEach(function (t) { t.value = ''; }); build(); });
+  build();
+
+  /* 4 · quiz */
+  quiz(document.getElementById('asQuiz'), document.getElementById('asScore'), [
+    { s: '“Você monta e organiza. Não decide desconto nem crédito.”', a: 'ins', why: 'Não muda de uma conversa para a outra: é o jeito de trabalhar. Fica na instrução.' },
+    { s: 'A tabela de preços vigente, com código, unidade e prazo de cada item.', a: 'base', why: 'É material de consulta e muda quando a tabela muda. Colada na instrução, ela ocupa lugar em toda conversa e compete com o processo.' },
+    { s: '“Segue o pedido do cliente. Monte a proposta.”', a: 'cmd', why: 'É o dado da vez. É a única coisa que você continua digitando.' },
+    { s: '“Nunca somar peça e caixa na mesma linha sem converter e dizer que converteu.”', a: 'ins', why: 'É um comportamento que vale em toda proposta. Instrução, no bloco do NUNCA.' },
+    { s: 'O pedido que chegou hoje, com a foto da lista escrita à mão.', a: 'cmd', why: 'Serve hoje e não serve na semana que vem. Vai anexado no chat, junto com o comando.' },
+    { s: 'O modelo de proposta em seis partes, que o comercial usa há dois anos.', a: 'base', why: 'É um documento de referência que ele copia para produzir. Sobe como arquivo, e a instrução manda seguir o modelo.' }
+  ], [['ins', 'Instrução'], ['base', 'Base'], ['cmd', 'Comando']], 'a pergunta de bolso: isso muda a cada uso?');
+
+  /* 5 · adjetivo → comportamento */
+  var ADJ = [
+    ['Nunca afirmar um total sem mostrar a conta que chegou nele.', 'Você abre a resposta e vê, em dez segundos, se a conta está lá.'],
+    ['Consulta direta: no máximo 50 palavras. Explicação de processo: no máximo 150.', '“Objetivo” não tem régua. Número de palavras tem.'],
+    ['Nunca estimar valor em branco: escrever que está em branco e seguir.', 'O cuidado vira uma ação que aparece ou não aparece na tela.'],
+    ['Ao citar uma regra, escrever o nome do arquivo e da seção. Nunca “conforme a política”.', 'A fonte genérica some, e a conferência passa a ser um clique.']
+  ];
+  var adjBtns = document.querySelectorAll('[data-adj]'), adjPanel = document.getElementById('adjPanel');
+  function showAdj(i) { pressGroup(adjBtns, function (x) { return +x.dataset.adj === i; }); adjPanel.innerHTML = '<span class="eyebrow">A mesma intenção, escrita como comportamento</span><h3>' + ADJ[i][0] + '</h3><p class="hint">' + ADJ[i][1] + '</p>'; }
+  adjBtns.forEach(function (b) { b.addEventListener('click', function () { showAdj(+b.dataset.adj); }); });
+  showAdj(0);
+
+  /* 6 · bateria */
+  var BAT = [
+    { t: 'Consulta direta', q: 'Qual o valor do perfil de 6 metros?', sem: '“Em torno de R$ 180 a R$ 220 a barra, dependendo da espessura.”', com: '“R$ 246,00 por barra, código B-215, prazo de 5 dias úteis. Fonte: tabela vigente.”' },
+    { t: 'Juntar duas partes', q: 'O que confiro antes de enviar para cliente novo?', sem: '“Verifique dados cadastrais, limite de crédito e condições comerciais.”', com: '“Análise de crédito antes do envio. A proposta sai marcada como não enviável, e a liberação é do financeiro.”' },
+    { t: 'Fora da base', q: 'Qual é o prazo de pagamento?', sem: '“O padrão do mercado é 30 dias, podendo chegar a 30/60/90.”', com: '“Não localizado. A seção final do documento diz que condição de pagamento está em outro arquivo, que não foi anexado.”', crit: 1 },
+    { t: 'De onde veio', q: 'De onde veio a regra dos 10%?', sem: '“É uma prática comum de alçada comercial.”', com: '“Da tabela de preços e regras de proposta, seção Regras de desconto.”' }
+  ];
+  var batBtns = document.querySelectorAll('[data-bat]'), batEl = document.getElementById('asBat');
+  function setBat(k) {
+    pressGroup(batBtns, function (x) { return x.dataset.bat === k; });
+    batEl.innerHTML = BAT.map(function (b, i) { return '<div class="as-row' + (b.crit ? ' crit' : '') + '"><span class="t">teste ' + (i + 1) + '<b>' + b.t + '</b></span><div><p class="hint">' + b.q + '</p><p class="a ' + (k === 'com' ? 'good' : 'bad') + '">' + b[k] + '</p></div></div>'; }).join('');
+  }
+  batBtns.forEach(function (b) { b.addEventListener('click', function () { setBat(b.dataset.bat); }); });
+  setBat('sem');
+
+  /* 7 · ciclo do desvio */
+  var DV = [
+    { n: [1], c: 1, t: 'Copie o sintoma, com as palavras dele', d: 'O rodapé da proposta trouxe “condição: 30 dias”, e isso não existe em arquivo nenhum. Copie o trecho literal. “Ficou ruim” é insatisfação, não desvio: não dá para conferir se foi corrigido.' },
+    { n: [2], c: 1, t: 'Dê nome ao desvio', d: 'É alucinação: ele inventou um dado que não está na base. Nomear antes de escrever a linha evita escrever um desejo, e desejo não corrige comportamento.' },
+    { n: [3], c: 2, t: 'Uma linha no fim, com rótulo e data', d: '“Correção anti-invenção, desde hoje: se o dado não estiver nos arquivos, escreva que não localizou.” No fim, porque o que vem depois refina o que veio antes. Nada do que já funcionava foi tocado.' },
+    { n: [4], c: 2, t: 'O mesmo pedido, palavra por palavra', d: 'O rodapé passou a dizer “condição de pagamento: não localizada nos arquivos”. Chato e verdadeiro, que é o que dá para enviar. Se não mudou, apague a linha em vez de acrescentar uma segunda.' },
+    { n: [1, 2, 3, 4], c: 5, t: 'Quando o fim acumula cinco linhas', d: 'Cinco correções penduradas quase sempre apontam para o mesmo bloco. Aí, e só aí, reescrever é a resposta: reescreva aquele bloco e apague as cinco. O que vira padrão sobe do fim para o meio da instrução.' }
+  ];
+  var dvNodes = document.querySelectorAll('.dv-node'), dvCount = document.getElementById('dvCount');
+  stepper(DV.length, document.getElementById('dvPrev'), document.getElementById('dvNext'), document.getElementById('dvLab'), 'Passo', function (k) {
+    var s = DV[k - 1];
+    dvNodes.forEach(function (g) { g.classList.toggle('on', s.n.indexOf(+g.dataset.dv) > -1); });
+    dvCount.textContent = s.c; dvCount.setAttribute('class', 'dv-count' + (s.c >= 5 ? ' full' : ''));
+    document.getElementById('dvCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+  var DEV = [
+    ['Alucinação', 1, 'inventa regra, prazo ou valor que não está na base', 'Se a informação não existir nos arquivos, responda que não localizou. Nunca invente prazo, valor ou procedimento.'],
+    ['Formato quebrado', 1, 'ignora o modelo e responde em texto corrido', 'Use sempre as partes do modelo, na ordem. Nunca responda consulta de regra em parágrafo corrido.'],
+    ['Fonte fantasma', 1, 'cita um arquivo que não existe na base', 'Cite apenas arquivos que existem nos anexos. Se não souber a fonte exata, omita a linha da fonte.'],
+    ['Tom inconsistente', 0, 'começa formal e termina em conversa de balcão', 'Mantenha linguagem formal. Evite expressões como “olha”, “basicamente” e “tipo”.'],
+    ['Verboso', 0, 'duzentas palavras para uma consulta de uma linha', 'Consulta direta: no máximo 50 palavras. Explicação de processo: no máximo 150.'],
+    ['Fonte genérica', 0, 'diz “conforme a política da empresa”', 'Cite o nome do arquivo. Evite referência genérica como “conforme a política”.']
+  ];
+  var devEl = document.getElementById('asDev'), devPanel = document.getElementById('devPanel'), devBtns = [];
+  DEV.forEach(function (d, i) { var b = document.createElement('button'); b.type = 'button'; b.className = d[1] ? 'crit' : ''; b.textContent = d[0]; b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { showDev(i); }); devEl.appendChild(b); devBtns.push(b); });
+  function showDev(i) { devBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); }); var d = DEV[i]; devPanel.innerHTML = '<span class="eyebrow">' + (d[1] ? 'crítico · parece certo' : 'incômodo · aparece na hora') + '</span><p><b>Na tela:</b> ' + d[2] + '.</p><p><b>A linha que corrige:</b> “' + d[3] + '”</p>'; }
+  showDev(0);
+
+  /* 8 · calculadora */
+  var cV = document.getElementById('cVol'), cG = document.getElementById('cGan'), cC = document.getElementById('cCus'), crit = 'sim';
+  var critBtns = document.querySelectorAll('[data-crit]');
+  critBtns.forEach(function (b) { b.addEventListener('click', function () { crit = b.dataset.crit; pressGroup(critBtns, function (x) { return x === b; }); calc(); }); });
+  function calc() {
+    var v = +cV.value, g = +cG.value, c = +cC.value;
+    document.getElementById('oVol').textContent = v; document.getElementById('oGan').textContent = g; document.getElementById('oCus').textContent = c;
+    var n = Math.ceil(c / g), dias = n / v * 365, ver = document.getElementById('cVer');
+    document.getElementById('cBig').textContent = crit === 'nao' ? 'nunca' : n + 'ª volta';
+    var dots = '', show = Math.min(40, Math.max(v, n + 4));
+    for (var i = 1; i <= show; i++) { dots += '<i class="' + (crit === 'nao' ? '' : (i <= n ? 'pay' : 'gain')) + '"></i>'; }
+    document.getElementById('cDots').innerHTML = dots;
+    var quando = dias < 14 ? 'em menos de duas semanas' : dias < 60 ? 'em cerca de ' + Math.round(dias / 7) + ' semanas' : dias < 730 ? 'em cerca de ' + Math.round(dias / 30) + ' meses' : 'em mais de dois anos';
+    document.getElementById('cWhen').textContent = crit === 'nao' ? 'Com o critério mudando, a instrução de hoje não serve na próxima vez.' : 'Cada quadrado é uma volta da tarefa: laranja paga a montagem, verde é lucro. No seu ritmo, isso acontece ' + quando + '.';
+    if (crit === 'nao') { ver.className = 'verdict no'; ver.innerHTML = '<b>Não monte.</b> Volta sempre, mas cada vez é outra situação. Aqui rende mais um pedido bem escrito do que um assistente.'; }
+    else if (v < n) { ver.className = 'verdict no'; ver.innerHTML = '<b>Provavelmente não.</b> A tarefa volta menos vezes por ano do que o necessário para pagar a montagem. Use o chat, com o pedido bem feito.'; }
+    else if (dias <= 90) { ver.className = 'verdict ok'; ver.innerHTML = '<b>Monte.</b> Volta muito e o critério é o mesmo: é a tarefa chata que mais rende, mesmo não sendo a mais nobre da lista.'; }
+    else { ver.className = 'verdict ok'; ver.innerHTML = '<b>Paga, mas devagar.</b> Vale montar sabendo que o retorno leva meses, para não concluir no meio que não funcionou.'; }
+  }
+  [cV, cG, cC].forEach(function (i) { i.addEventListener('input', calc); });
+  calc();
+})();
+</script>
+</body>
+</html>

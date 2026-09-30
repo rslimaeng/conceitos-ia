@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pensar como automação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, cabeça da família 7. Peças: construtor gatilho, execução e entrega com diagrama montado ao vivo e copiar, verificador de sinais, dois quizzes, gatilhos clicáveis com um dia em gráfico, mapa da sua tarefa com conferência e copiar, troca de entrega, escolha entre fluxo e agente. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.svgbox { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.svgbox svg { display: block; width: 100%; height: auto; }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+
+/* ---- só desta peça ---- */
+a { color: var(--accent); }
+/* 1 · construtor */
+.bd-pre { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.bd { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.bd-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 8px; align-content: start; }
+.bd-col .et { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--accent); }
+.bd-col .bd-q { font-size: .9rem; color: var(--text-muted); }
+.bd-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.bd-chips button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 999px; padding: 4px 12px; font-size: .88rem; }
+.bd-chips button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); }
+.fl-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; }
+.fl-box.g rect, .fl-box.e rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.fl-box .t { font: 600 11px var(--font-mono); letter-spacing: .1em; fill: var(--accent); text-anchor: middle; }
+.fl-box .s { font: 400 12.5px var(--font-body); fill: var(--text); text-anchor: middle; }
+.fl-box.x .t { fill: var(--text-dim); }
+.fl-box.same rect { stroke-dasharray: 5 4; fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; }
+.fl-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.fl-empty { font: 400 13px var(--font-body); fill: var(--text-dim); text-anchor: middle; }
+
+/* 2 · sinais */
+.sg { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.sg-sw { display: grid; gap: 8px; }
+.sg-sw button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 14px; display: grid; gap: 2px; }
+.sg-sw button b { font-weight: 600; }
+.sg-sw button small { color: var(--text-muted); font-size: .88rem; }
+.sg-sw button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.sg-sw button.exc[aria-pressed="true"] { border-color: var(--atencao); background: var(--atencao-soft); box-shadow: inset 3px 0 0 var(--atencao); }
+.sg-res { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.sg-dots { display: flex; gap: 8px; }
+.sg-dots span { flex: 1; height: 10px; border-radius: 999px; background: var(--border); }
+.sg-dots span.on { background: var(--accent); }
+.tq { display: grid; gap: 10px; }
+.tq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.tq-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.tq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .93rem; }
+.tq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tq-fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.tq-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.tq-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.tq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 3 · gatilhos */
+.gt { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.gt button { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+.gt .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); }
+.gt small { color: var(--text-muted); font-size: .86rem; }
+.gt button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.dy-row { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .06em; }
+.dy-row.on { fill: var(--accent); }
+.dy-line { stroke: var(--border); stroke-width: 1; }
+.dy-line.on { stroke: var(--accent); stroke-width: 1.5; }
+.dy-mk { fill: var(--border-strong); transition: fill .25s ease; }
+.dy-mk.on { fill: var(--accent); }
+.dy-ax { stroke: var(--border-strong); }
+.dy-h { font: 400 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.gt-d { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 10px; }
+.gt-d dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.gt-d dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.gt-d dd { margin: 0; }
+
+/* 4 · mapa */
+.mp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.mp-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.mp-f { display: grid; gap: 4px; }
+.mp-f label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); }
+.mp-f textarea { font: inherit; font-size: .94rem; color: var(--text); background: var(--bg); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; resize: vertical; width: 100%; }
+.mp-chk { font-size: .88rem; border-radius: 5px; padding: 5px 10px; border: 1px solid var(--border); color: var(--text-dim); }
+.mp-chk.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.mp-chk.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.mp-out { position: sticky; top: 12px; display: grid; gap: 12px; }
+
+/* 5 · trocar a entrega */
+.sw3 { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1.4fr) 28px minmax(0, 1fr); gap: 6px; align-items: stretch; }
+.sw3 .bx { background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; }
+.sw3 .bx .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--text-dim); }
+.sw3 .bx.chg { border: 2px solid var(--accent); background: var(--accent-soft); }
+.sw3 .bx.chg .et { color: var(--accent); }
+.sw3 .ar { display: grid; place-items: center; font-family: var(--font-mono); color: var(--text-dim); }
+.pit { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.pit div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; font-size: .93rem; color: var(--text-muted); }
+.pit b { color: var(--text); font-weight: 600; display: block; }
+
+/* 6 · fluxo ou agente */
+.ch { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 20px; align-items: start; }
+.ch-list { display: grid; gap: 8px; }
+.ch-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.ch-q .seg button { padding: 6px 12px; }
+.ch-res { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; position: sticky; top: 12px; }
+.ch-bar { display: grid; grid-template-columns: 110px minmax(0, 1fr) 24px; gap: 8px; align-items: center; font-size: .9rem; }
+.ch-bar .tr { height: 12px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.ch-bar .fill { height: 100%; background: var(--accent); width: 0; transition: width .3s ease; }
+.ch-bar b { font-family: var(--font-mono); font-weight: 500; text-align: right; }
+/* 11 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .bd, .sg, .mp, .ch, .pit, .take { grid-template-columns: 1fr; }
+  .gt { grid-template-columns: 1fr 1fr; }
+  .mp-out, .ch-res { position: static; }
+  .sw3 { grid-template-columns: 1fr; }
+  .sw3 .ar { transform: rotate(90deg); }
+  .gt-d dl { grid-template-columns: 1fr; }
+  .ch-q { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .gt { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .dy-mk, .ch-bar .fill { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--api.html">7.1 API →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html" aria-current="page">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>Pensar como automação</h1>
+  <p class="sub">Toda automação é uma frase em três partes: quando, faz, para</p>
+  <p class="lead">Quando algo acontece, eu faço estas coisas, para entregar isto. <strong>Se a sua tarefa cabe nessa frase, ela cabe em qualquer ferramenta de automação.</strong> Se não cabe, o problema não é a ferramenta: é que o processo ainda não está claro nem para você. O mapa vem antes de abrir qualquer programa.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O gatilho</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Fluxo ou agente</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">Três peças de quando dois sistemas conversam</h2>
+  <p class="intro">Esta página é a visão geral: toda automação cabe numa frase, <strong>quando, faz, para</strong>. As três páginas abaixo são as peças que aparecem quando um sistema fala com outro.</p>
+  <div class="fmap c3">
+    <div class="fmap-card"><span class="fmap-n">7.1 · API · 1 de 3</span><h3>API</h3><p>Um sistema pedindo coisas a outro por um balcão com regras: o pedido, o verbo, e o número que volta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro verbos</li><li>faça um pedido</li><li>o crachá</li></ul><a class="fmap-go" href="./automacao--api.html">abrir 7.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.2 · Webhook · 2 de 3</span><h3>Webhook</h3><p>Em vez de perguntar toda hora se chegou, você é avisado quando acontece.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a campainha</li><li>o que chega</li><li>relógio ou aviso</li></ul><a class="fmap-go" href="./automacao--webhook.html">abrir 7.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.3 · JSON · 3 de 3</span><h3>JSON</h3><p>A ficha que os sistemas trocam, e por que ela precisa dizer se cada coisa é palavra ou quantidade.</p><span class="fmap-lab">Lá você encontra</span><ul><li>cinco tipos de linha</li><li>quando 10 + 5 dá 105</li><li>o erro que não avisa</li></ul><a class="fmap-go" href="./automacao--json.html">abrir 7.3 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<!-- 1 -->
+<section class="sec" id="s-frase" aria-labelledby="h-frase">
+  <span class="eyebrow">A frase</span>
+  <h2 id="h-frase">Quando, faz, para</h2>
+  <p class="intro"><strong>Gatilho</strong> é o que dispara. <strong>Execução</strong> é o trabalho do meio, sempre em verbos concretos. <strong>Entrega</strong> é onde o resultado para, com destino específico. Monte um fluxo: escolha um exemplo pronto ou clique nas peças. Os passos entram na ordem em que você clica.</p>
+  <div class="bd-pre">
+    <span class="eyebrow">Exemplos</span>
+    <div class="seg" role="group" aria-label="Exemplos prontos">
+      <button type="button" data-ex="rel" aria-pressed="true">Relatório semanal</button>
+      <button type="button" data-ex="cv" aria-pressed="false">Triagem de currículos</button>
+      <button type="button" data-ex="duv" aria-pressed="false">Dúvida de cliente</button>
+    </div>
+  </div>
+  <div class="bd">
+    <div class="bd-col"><span class="et">01 · GATILHO</span><span class="bd-q">quando?</span><div class="bd-chips" id="chG" role="group" aria-label="Gatilho"></div></div>
+    <div class="bd-col"><span class="et">02 · EXECUÇÃO</span><span class="bd-q">faz o quê? até cinco verbos, em ordem</span><div class="bd-chips" id="chX" role="group" aria-label="Passos"></div></div>
+    <div class="bd-col"><span class="et">03 · ENTREGA</span><span class="bd-q">para onde?</span><div class="bd-chips" id="chE" role="group" aria-label="Entrega"></div></div>
+  </div>
+  <div class="svgbox" role="region" tabindex="0" aria-label="O fluxo montado. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 150" style="min-width:720px" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fl-t">
+      <title id="fl-t">O fluxo montado: gatilho, passos de execução e entrega</title>
+      <defs><marker id="flm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker></defs>
+      <g id="flG"></g>
+    </svg>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A frase do seu fluxo</span><button type="button" class="btn" id="frCopy">Copiar</button></div>
+    <pre id="frTxt" aria-live="polite"></pre>
+  </div>
+  <p class="hint">Buscar dado em outro sistema costuma passar por uma <a href="./automacao--api.html">API</a>; o que viaja de um passo para o outro costuma ser um <a href="./automacao--json.html">JSON</a>. O mapa, porém, existe antes de qualquer um dos dois: repare que nenhuma frase acima exige saber ferramenta.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-vale" aria-labelledby="h-vale">
+  <span class="eyebrow">Vale automatizar?</span>
+  <h2 id="h-vale">Três sinais ao mesmo tempo: repete, é previsível, custa tempo</h2>
+  <p class="intro">Faltando um dos três, pense duas vezes. E cuidado com a tarefa que parece repetitiva mas tem exceção demais: <strong>se você diz “depende” toda vez que tenta explicar como faz, estabilize a regra antes de automatizar.</strong> Marque o que vale para uma tarefa sua.</p>
+  <div class="sg">
+    <div class="sg-sw" role="group" aria-label="Sinais da sua tarefa">
+      <button type="button" data-sg="rep" aria-pressed="false"><b>Repete</b><small>faço mais de uma vez por semana</small></button>
+      <button type="button" data-sg="prev" aria-pressed="false"><b>É previsível</b><small>se acontece X, eu faço Y; a regra é clara</small></button>
+      <button type="button" data-sg="tempo" aria-pressed="false"><b>Custa tempo</b><small>cada vez come minutos de verdade, não trinta segundos</small></button>
+      <button type="button" class="exc" data-sg="exc" aria-pressed="false"><b>Muita exceção</b><small>quando explico, digo “depende” o tempo todo</small></button>
+    </div>
+    <div class="sg-res">
+      <span class="eyebrow">O veredito</span>
+      <div class="sg-dots" aria-hidden="true"><span id="d1"></span><span id="d2"></span><span id="d3"></span></div>
+      <div class="verdict" id="sgVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="intro">Agora classifique quatro tarefas de gente de áreas diferentes.</p>
+  <div class="tq" id="tq"></div>
+  <p class="tq-score" id="tqScore" aria-live="polite"></p>
+  <p class="hint">E há o que não se automatiza mesmo sendo possível: a decisão de alto impacto, o contrato, o retorno difícil para um colaborador. Nessas, a IA pode ajudar a pensar; quem decide e assina é uma pessoa.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-gatilho" aria-labelledby="h-gatilho">
+  <span class="eyebrow">O gatilho</span>
+  <h2 id="h-gatilho">Cinco jeitos de uma automação acordar</h2>
+  <p class="intro">Sem gatilho não há automação: há alguém rodando o fluxo na mão para sempre. Clique em cada um e veja, num dia de trabalho, <strong>quando ele dispara</strong>.</p>
+  <div class="gt" role="group" aria-label="Os cinco gatilhos">
+    <button type="button" data-g="manual" aria-pressed="false"><span class="et">MANUAL</span><b>Um clique</b><small>você decide a hora</small></button>
+    <button type="button" data-g="agendado" aria-pressed="true"><span class="et">AGENDADO</span><b>Um horário</b><small>o despertador</small></button>
+    <button type="button" data-g="formulario" aria-pressed="false"><span class="et">FORMULÁRIO</span><b>Alguém preenche</b><small>a porta de entrada pronta</small></button>
+    <button type="button" data-g="evento" aria-pressed="false"><span class="et">EVENTO</span><b>Algo acontece num app</b><small>e-mail chegou, linha nova</small></button>
+    <button type="button" data-g="webhook" aria-pressed="false"><span class="et">WEBHOOK</span><b>Outro sistema chama</b><small>um endereço que recebe avisos</small></button>
+  </div>
+  <div class="svgbox" role="region" tabindex="0" aria-label="Um dia de trabalho e os disparos de cada gatilho. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 250" style="min-width:680px" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="dy-t">
+      <title id="dy-t">Um dia de 24 horas com os momentos em que cada tipo de gatilho dispara</title>
+      <g id="dyG"></g>
+    </svg>
+  </div>
+  <div class="gt-d" id="gtD" aria-live="polite"></div>
+  <p class="intro"><strong>Qual gatilho?</strong> Cinco situações, cinco respostas diferentes.</p>
+  <div class="tq" id="gq"></div>
+  <p class="tq-score" id="gqScore" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">A sua tarefa</span>
+  <h2 id="h-mapa">Mapeie uma tarefa sua em três linhas</h2>
+  <p class="intro">Escolha uma tarefa real, mesmo pequena, que tenha os três sinais. Escreva como explicaria para um amigo. <strong>O mapa está pronto quando cada linha passa na conferência ao lado dela.</strong> Se travar em “tem várias coisas, não sei explicar”, o processo ainda não está claro, e isso já é uma descoberta.</p>
+  <div class="mp">
+    <div class="mp-in">
+      <div class="mp-f"><label for="mG">GATILHO · quando isso acontece?</label><textarea id="mG" rows="2" placeholder="toda segunda às 9h"></textarea><span class="mp-chk" id="kG"></span></div>
+      <div class="mp-f"><label for="mX">EXECUÇÃO · quais passos, em verbos, em ordem? (separe com →)</label><textarea id="mX" rows="3" placeholder="abrir a planilha de pedidos → filtrar a semana → somar por loja → escrever o resumo"></textarea><span class="mp-chk" id="kX"></span></div>
+      <div class="mp-f"><label for="mE">ENTREGA · onde o resultado para?</label><textarea id="mE" rows="2" placeholder="e-mail para o gerente com o resumo"></textarea><span class="mp-chk" id="kE"></span></div>
+    </div>
+    <div class="mp-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">Mapa + pedido de revisão</span><button type="button" class="btn" id="mpCopy">Copiar</button></div>
+        <pre id="mpTxt"></pre>
+      </div>
+      <p class="hint">Cole num chat de IA para uma segunda opinião antes de abrir qualquer ferramenta. Guarde o mapa: é ele que vira o fluxo depois.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-partes" aria-labelledby="h-partes">
+  <span class="eyebrow">Três partes separadas</span>
+  <h2 id="h-partes">Troque a entrega, e o resto fica igual</h2>
+  <p class="intro">Separar execução de entrega parece detalhe e não é. <strong>Quando as três partes estão separadas, dá para trocar uma sem mexer nas outras</strong>, e quando algo quebra você sabe onde olhar. Troque o destino do mesmo relatório.</p>
+  <div class="seg" role="group" aria-label="Entrega">
+    <button type="button" data-to="email" aria-pressed="true">E-mail</button>
+    <button type="button" data-to="chat" aria-pressed="false">Mensagem no chat</button>
+    <button type="button" data-to="plan" aria-pressed="false">Linha na planilha</button>
+  </div>
+  <div class="sw3">
+    <div class="bx"><span class="et">GATILHO · igual</span><span>toda segunda às 9h</span></div>
+    <div class="ar" aria-hidden="true">→</div>
+    <div class="bx"><span class="et">EXECUÇÃO · igual</span><span>abrir a planilha de vendas → filtrar os últimos 7 dias → somar por loja → escrever o resumo</span></div>
+    <div class="ar" aria-hidden="true">→</div>
+    <div class="bx chg" id="toBox" aria-live="polite"></div>
+  </div>
+  <div class="pit">
+    <div><b>Pular o gatilho</b>Sem ele, alguém roda na mão para sempre. Isso é um atalho, não automação.</div>
+    <div><b>Entregar em cinco lugares</b>Sinal de que são dois ou três fluxos menores, cada um com a sua entrega.</div>
+    <div><b>“Tratar os dados”</b>Não é passo, é esconderijo. Passo é verbo: abrir, filtrar, somar, formatar.</div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-fluxo" aria-labelledby="h-fluxo">
+  <span class="eyebrow">Fluxo ou agente</span>
+  <h2 id="h-fluxo">A tarefa é sempre a mesma, ou muda toda vez?</h2>
+  <p class="intro">Existem dois jeitos de a IA trabalhar sem você do lado. <strong>O fluxo automático</strong> roda sozinho num servidor, a qualquer hora, sempre os mesmos passos. <strong>O assistente que age</strong> trabalha quando você pede, adapta o caminho e para para perguntar antes do que não tem volta. Responda as cinco perguntas sobre uma tarefa sua.</p>
+  <div class="ch">
+    <div class="ch-list" id="chList"></div>
+    <div class="ch-res">
+      <span class="eyebrow">Para onde pende</span>
+      <div class="ch-bar"><span>Fluxo</span><div class="tr"><div class="fill" id="fillF"></div></div><b id="nF">0</b></div>
+      <div class="ch-bar"><span>Assistente</span><div class="tr"><div class="fill" id="fillA"></div></div><b id="nA">0</b></div>
+      <div class="verdict ok" id="chVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">Um cabe dentro do outro: é comum o fluxo capturar o gatilho e organizar o dado, e um passo de IA ou um <a href="./agente.html">agente</a> entrar só na ponta que pede julgamento.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Se cabe na frase, cabe na ferramenta</h3><p>Quando, faz, para. O mapa em português vem antes de qualquer programa, e vale para todos eles.</p></div>
+    <div class="take-card"><h3>Três sinais, ao mesmo tempo</h3><p>Repete, é previsível, custa tempo. Com muito “depende”, estabilize a regra primeiro.</p></div>
+    <div class="take-card"><h3>Gatilho concreto, entrega com endereço</h3><p>“Toda segunda às 9h”, não “quando precisar”. “E-mail para o gerente”, não “avisar alguém”.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Gatilho</dt><dd>O que dispara a automação: um clique, um horário, um formulário, um evento num aplicativo ou um aviso de outro sistema.</dd>
+    <dt>Execução</dt><dd>Os passos do meio, cada um um verbo concreto: buscar, filtrar, calcular, classificar, formatar.</dd>
+    <dt>Entrega</dt><dd>Onde o resultado para: um e-mail, uma linha, uma mensagem, um registro num sistema.</dd>
+    <dt>Webhook</dt><dd>Um endereço que recebe avisos de outro sistema no momento em que algo acontece. Mais em <a href="./automacao--webhook.html">Webhook</a>.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Cada ferramenta de automação dá nomes próprios aos gatilhos e aos passos; os horários do dia de exemplo são ilustrativos.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao--api.html"><span>próxima →</span><b>7.1 · API</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, txt) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt) e.textContent = txt; return e; }
+
+  /* 1 · construtor */
+  var GAT = [
+    { k: 'manual', n: 'Manual', f: 'Quando eu clico para rodar' },
+    { k: 'agendado', n: 'Agendado', f: 'Toda segunda às 9h' },
+    { k: 'formulario', n: 'Formulário', f: 'Quando alguém preenche o formulário do site' },
+    { k: 'evento', n: 'Evento', f: 'Quando chega uma mensagem nova' },
+    { k: 'webhook', n: 'Webhook', f: 'Quando outro sistema avisa' }
+  ];
+  var VERB = ['buscar', 'filtrar', 'calcular', 'extrair (IA)', 'classificar (IA)', 'resumir (IA)', 'comparar', 'decidir caminho', 'formatar'];
+  var ENT = [
+    { k: 'email', n: 'E-mail', f: 'um e-mail para o gerente' },
+    { k: 'plan', n: 'Planilha', f: 'uma linha nova na planilha' },
+    { k: 'chat', n: 'Chat', f: 'uma mensagem no grupo da equipe' },
+    { k: 'sis', n: 'Sistema', f: 'o registro atualizado no sistema de clientes' },
+    { k: 'resp', n: 'Resposta', f: 'a resposta na própria conversa' }
+  ];
+  var EX = {
+    rel: { g: 'agendado', x: ['buscar', 'filtrar', 'calcular', 'formatar'], e: 'email' },
+    cv: { g: 'formulario', x: ['extrair (IA)', 'comparar', 'classificar (IA)', 'decidir caminho'], e: 'plan' },
+    duv: { g: 'evento', x: ['classificar (IA)', 'buscar', 'formatar'], e: 'resp' }
+  };
+  var bs = { g: 'agendado', x: [], e: 'email' };
+  function chips(id, list, key) {
+    var box = document.getElementById(id);
+    list.forEach(function (it) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = it.n || it; b.dataset.v = it.k || it; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () {
+        var v = b.dataset.v;
+        if (key === 'x') { var i = bs.x.indexOf(v); if (i > -1) bs.x.splice(i, 1); else if (bs.x.length < 5) bs.x.push(v); }
+        else bs[key] = v;
+        pressGroup(document.querySelectorAll('[data-ex]'), function () { return false; });
+        build();
+      });
+      box.appendChild(b);
+    });
+  }
+  chips('chG', GAT, 'g'); chips('chX', VERB, 'x'); chips('chE', ENT, 'e');
+  function find(list, k) { return list.filter(function (x) { return x.k === k; })[0]; }
+  function box(g, x, w, cls, t, s) {
+    var gg = el('g', { 'class': 'fl-box ' + cls }); gg.appendChild(el('rect', { x: x, y: 40, width: w, height: 70, rx: 8 }));
+    gg.appendChild(el('text', { 'class': 't', x: x + w / 2, y: 64 }, t));
+    var words = s.split(' '), l1 = s, l2 = '';
+    if (s.length > w / 7.2 && words.length > 1) { var h = Math.ceil(words.length / 2); l1 = words.slice(0, h).join(' '); l2 = words.slice(h).join(' '); }
+    gg.appendChild(el('text', { 'class': 's', x: x + w / 2, y: l2 ? 84 : 90 }, l1));
+    if (l2) gg.appendChild(el('text', { 'class': 's', x: x + w / 2, y: 100 }, l2));
+    g.appendChild(gg);
+  }
+  function arrow(g, x1, x2) { g.appendChild(el('path', { 'class': 'fl-arr', d: 'M' + x1 + ',75 H' + (x2 - 4), 'marker-end': 'url(#flm)' })); }
+  function build() {
+    document.querySelectorAll('#chG button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === bs.g)); });
+    document.querySelectorAll('#chX button').forEach(function (b) { var i = bs.x.indexOf(b.dataset.v); b.setAttribute('aria-pressed', String(i > -1)); b.textContent = (i > -1 ? (i + 1) + ' · ' : '') + b.dataset.v; });
+    document.querySelectorAll('#chE button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === bs.e)); });
+    var G = find(GAT, bs.g), E = find(ENT, bs.e), g = document.getElementById('flG'); g.innerHTML = '';
+    box(g, 10, 150, 'g', 'GATILHO', G.n.toLowerCase());
+    box(g, 740, 150, 'e', 'ENTREGA', E.n.toLowerCase());
+    var n = bs.x.length;
+    if (!n) { g.appendChild(el('text', { 'class': 'fl-empty', x: 450, y: 80 }, 'escolha os passos da execução')); arrow(g, 160, 740); }
+    else {
+      var gap = 26, w = (550 - (n + 1) * gap) / n, x = 175 + gap;
+      arrow(g, 160, x);
+      bs.x.forEach(function (v, i) { box(g, x, w, 'x', 'PASSO ' + (i + 1), v); arrow(g, x + w, i === n - 1 ? 740 : x + w + gap); x += w + gap; });
+    }
+    var passos = n ? bs.x.map(function (v) { return v.replace(' (IA)', ' com IA'); }) : ['(escolha os passos)'];
+    var last = passos.length > 1 ? passos.slice(0, -1).join(', ') + ' e ' + passos[passos.length - 1] : passos[0];
+    document.getElementById('frTxt').textContent = G.f + ',\neu faço: ' + last + ',\ne entrego ' + E.f + '.' + (bs.x.length === 5 ? '\n\n(cinco passos: se precisar de mais, talvez sejam dois fluxos)' : '');
+  }
+  var exBtns = document.querySelectorAll('[data-ex]');
+  function setEx(k) { pressGroup(exBtns, function (x) { return x.dataset.ex === k; }); bs = { g: EX[k].g, x: EX[k].x.slice(), e: EX[k].e }; build(); }
+  exBtns.forEach(function (b) { b.addEventListener('click', function () { setEx(b.dataset.ex); }); });
+  setEx('rel');
+  document.getElementById('frCopy').addEventListener('click', function () { copyText(document.getElementById('frTxt').textContent, this); });
+
+  /* 2 · sinais */
+  var sgs = { rep: false, prev: false, tempo: false, exc: false }, sgBtns = document.querySelectorAll('[data-sg]');
+  function sg() {
+    var n = (sgs.rep ? 1 : 0) + (sgs.prev ? 1 : 0) + (sgs.tempo ? 1 : 0);
+    ['d1', 'd2', 'd3'].forEach(function (id, i) { document.getElementById(id).classList.toggle('on', i < n); });
+    var v = document.getElementById('sgVer'), falta = [];
+    if (!sgs.rep) falta.push('não repete: construir custa mais do que economiza');
+    if (!sgs.prev) falta.push('não é previsível: vai pedir decisão humana a cada passo');
+    if (!sgs.tempo) falta.push('não custa tempo: automatizar trinta segundos por mês não compensa');
+    if (n === 3 && !sgs.exc) { v.className = 'verdict ok'; v.innerHTML = '<b>Candidata forte.</b> Os três sinais ao mesmo tempo. Próximo passo: escrever a frase em três partes.'; }
+    else if (n === 3) { v.className = 'verdict no'; v.innerHTML = '<b>Parcialmente.</b> Automatize a parte que não depende (separar, organizar, rascunhar) e deixe a decisão com uma pessoa. Ou estabilize a regra antes.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Ainda não.</b> ' + falta.join('; ') + '.'; }
+  }
+  sgBtns.forEach(function (b) { b.addEventListener('click', function () { sgs[b.dataset.sg] = !sgs[b.dataset.sg]; b.setAttribute('aria-pressed', String(sgs[b.dataset.sg])); sg(); }); });
+  sg();
+
+  function quiz(boxId, scoreId, items, opts, end) {
+    var box = document.getElementById(boxId), sc = document.getElementById(scoreId), ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'tq-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="tq-opts" role="group" aria-label="Resposta">' + opts.map(function (o) { return '<button type="button" data-v="' + o.k + '" aria-pressed="false">' + o.n + '</button>'; }).join('') + '</div><div class="tq-fb" hidden></div>';
+      var bb = d.querySelectorAll('button'), fb = d.querySelector('.tq-fb');
+      bb.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bb, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        fb.hidden = false; fb.className = 'tq-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : find(opts, q.a).n + '. ') + '</b>' + q.w;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        sc.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length ? end : '');
+      }); });
+      box.appendChild(d);
+    });
+  }
+  quiz('tq', 'tqScore', [
+    { s: 'Gerente comercial: “toda segunda de manhã eu junto os contatos novos da semana e mando um resumo para a diretoria”. Uns 45 minutos.', a: 'sim', w: 'Repete toda semana, o formato é sempre o mesmo e custa tempo. É o caso clássico: horário, leitura, cálculo, envio.' },
+    { s: 'Advogado: “leio cada e-mail de cliente novo, decido se o caso é meu e respondo de forma pessoal, pelo histórico”.', a: 'parte', w: 'Repete e custa tempo, mas depende do conteúdo. Dá para automatizar a triagem (separar, juntar o histórico, sugerir resposta); a decisão fica com ele.' },
+    { s: 'Criadora de conteúdo: “quando publico um post numa rede, quero que ele vá para outra, adaptado ao tom de lá”.', a: 'sim', w: 'Evento numa plataforma, adaptação, publicação em outra. Os três sinais estão lá.' },
+    { s: 'Assistente: “uma vez por mês renomeio um arquivo”. Leva trinta segundos.', a: 'nao', w: 'Não custa tempo. Montar o fluxo leva mais do que anos de renomear na mão.' }
+  ], [{ k: 'sim', n: 'Automatizável' }, { k: 'parte', n: 'Em parte' }, { k: 'nao', n: 'Não compensa' }], ' · o sinal que mais engana é o “depende”.');
+
+  /* 3 · gatilhos */
+  var GT = {
+    manual: { r: 'MANUAL', h: [10.5, 16.2], o: 'Você aperta um botão e o fluxo roda.', e: 'Gerar o relatório do mês no dia em que o financeiro fecha os números, que varia.', u: 'Quando a hora certa depende de alguém decidir. Também serve para testar qualquer fluxo antes de ligar o gatilho de verdade.', c: 'Se você roda na mão toda semana no mesmo horário, ele queria ser agendado.' },
+    agendado: { r: 'AGENDADO', h: [9], o: 'Um despertador: roda num horário fixo, todo dia, toda semana, todo mês.', e: 'Toda segunda às 9h, o resumo das vendas da semana na caixa da diretoria.', u: 'Quando a tarefa tem dia e hora, e não depende de nada acontecer antes. É o gatilho mais comum de todos.', c: 'Confira o fuso horário. E lembre de ativar o fluxo: agendado desligado não acorda.' },
+    formulario: { r: 'FORMULÁRIO', h: [8.2, 11.7, 14.1, 19.5], o: 'Um formulário pronto: cada envio dispara o fluxo com as respostas.', e: 'O cliente pede orçamento no site, e o pedido cai na planilha com um e-mail de recebido.', u: 'Quando quem começa o processo é uma pessoa de fora, preenchendo campos.', c: 'Campo livre demais vira texto bagunçado. Peça o que dá para pedir em opções.' },
+    evento: { r: 'EVENTO', h: [7.8, 9.3, 13, 15.75, 17.2], o: 'Algo acontece num aplicativo que você já usa: e-mail novo, linha nova na planilha, arquivo novo na pasta.', e: 'Chega um e-mail com “nota fiscal” no assunto, e o anexo vai para a pasta do financeiro.', u: 'Quando o começo é um acontecimento, não uma hora. Alguns aplicativos avisam na hora; outros a ferramenta precisa perguntar de tempos em tempos (“chegou algo novo?”), e aí há um pequeno atraso.', c: 'Filtre bem o evento, ou tudo que chega dispara o fluxo.' },
+    webhook: { r: 'WEBHOOK', h: [10.05, 12.8, 18.3, 22.4], o: 'Um endereço na internet que fica esperando. Quando outro sistema manda dados para ele, o fluxo roda na hora.', e: 'O sistema de pagamentos avisa que um pagamento foi aprovado, e o pedido é liberado.', u: 'Quando o outro sistema sabe avisar. É a porta de entrada universal entre sistemas. Mais em <a href="./automacao--webhook.html">Webhook</a>.', c: 'O que chega é quase sempre um <a href="./automacao--json.html">JSON</a>: abra e confira os campos antes de usar.' }
+  };
+  var ORDER = ['manual', 'agendado', 'formulario', 'evento', 'webhook'], dyG = document.getElementById('dyG');
+  function hx(h) { return 130 + h / 24 * 740; }
+  ORDER.forEach(function (k, i) {
+    var y = 30 + i * 40, row = el('g', { 'data-row': k });
+    row.appendChild(el('text', { 'class': 'dy-row', x: 10, y: y + 4 }, GT[k].r));
+    row.appendChild(el('line', { 'class': 'dy-line', x1: 130, y1: y, x2: 870, y2: y }));
+    GT[k].h.forEach(function (h) { row.appendChild(el('circle', { 'class': 'dy-mk', cx: hx(h), cy: y, r: 7 })); });
+    dyG.appendChild(row);
+  });
+  dyG.appendChild(el('line', { 'class': 'dy-ax', x1: 130, y1: 222, x2: 870, y2: 222 }));
+  [0, 6, 9, 12, 18, 24].forEach(function (h) { dyG.appendChild(el('text', { 'class': 'dy-h', x: hx(h), y: 240 }, h + 'h')); });
+  var gtBtns = document.querySelectorAll('[data-g]');
+  function showGt(k) {
+    pressGroup(gtBtns, function (x) { return x.dataset.g === k; });
+    dyG.querySelectorAll('[data-row]').forEach(function (r) { var on = r.getAttribute('data-row') === k; r.querySelectorAll('*').forEach(function (e) { e.classList.toggle('on', on); }); });
+    var g = GT[k];
+    document.getElementById('gtD').innerHTML = '<dl><dt>O que é</dt><dd>' + g.o + '</dd><dt>Exemplo</dt><dd>' + g.e + '</dd><dt>Quando usar</dt><dd>' + g.u + '</dd><dt>Cuidado</dt><dd>' + g.c + '</dd></dl>';
+  }
+  gtBtns.forEach(function (b) { b.addEventListener('click', function () { showGt(b.dataset.g); }); });
+  showGt('agendado');
+  quiz('gq', 'gqScore', [
+    { s: 'Toda sexta às 17h, mandar para a equipe o resumo das vendas da semana.', a: 'agendado', w: 'Dia e hora fixos, sem depender de nada acontecer antes.' },
+    { s: 'Um cliente preenche o pedido de orçamento no site.', a: 'formulario', w: 'Quem começa é uma pessoa de fora, preenchendo campos.' },
+    { s: 'O sistema de pagamentos avisa, na hora, que um pagamento foi aprovado.', a: 'webhook', w: 'Outro sistema chama o seu endereço no momento em que algo acontece lá.' },
+    { s: 'Chega um e-mail com “nota fiscal” no assunto.', a: 'evento', w: 'Um acontecimento num aplicativo que você já usa, com um filtro.' },
+    { s: 'Gerar o relatório do mês só quando o financeiro avisar que fechou os números, e esse dia varia.', a: 'manual', w: 'A hora depende de uma pessoa decidir. Um clique resolve, e o resto do fluxo continua automático.' }
+  ], ORDER.map(function (k) { return { k: k, n: GT[k].r.charAt(0) + GT[k].r.slice(1).toLowerCase() }; }), ' · cada situação pedia um gatilho diferente.');
+
+  /* 4 · mapa */
+  var mG = document.getElementById('mG'), mX = document.getElementById('mX'), mE = document.getElementById('mE');
+  function chk(id, ok, msg) { var e = document.getElementById(id); e.className = 'mp-chk ' + (ok === null ? '' : ok ? 'ok' : 'no'); e.textContent = msg; }
+  function mp() {
+    var g = mG.value.trim(), x = mX.value.trim(), e = mE.value.trim();
+    if (!g) chk('kG', null, 'uma frase com momento: “toda segunda às 9h”, “quando chega e-mail com X”');
+    else if (/quando precisar|às vezes|as vezes|de vez em quando|sempre que der/i.test(g)) chk('kG', false, 'vago: quando exatamente? diga o dia, a hora ou o acontecimento');
+    else chk('kG', true, 'concreto o bastante');
+    var steps = x ? x.split(/→|->|\n|;/).map(function (s) { return s.trim(); }).filter(Boolean) : [];
+    if (!x) chk('kX', null, 'de dois a cinco verbos: abrir, filtrar, somar, formatar');
+    else if (/várias coisas|varias coisas|tratar os dados|tratar|etc|e aí/i.test(x)) chk('kX', false, 'tem passo escondido: troque “tratar” ou “várias coisas” por verbos');
+    else if (steps.length < 2) chk('kX', false, 'um passo só: separe com → o que acontece em ordem');
+    else if (steps.length > 5) chk('kX', false, steps.length + ' passos: talvez sejam dois fluxos');
+    else chk('kX', true, steps.length + ' passos, em ordem');
+    if (!e) chk('kE', null, 'um destino com endereço: “e-mail para o gerente com o resumo”');
+    else if (/avisar alguém|avisa alguém|alguém|mandar pra quem|avisar o pessoal/i.test(e)) chk('kE', false, 'quem, exatamente? e por onde? dê endereço à entrega');
+    else chk('kE', true, 'destino específico');
+    document.getElementById('mpTxt').textContent = 'Mapeei uma tarefa minha para automatizar:\n\nGATILHO: ' + (g || '___') + '\nEXECUÇÃO: ' + (steps.length ? steps.join(' → ') : '___') + '\nENTREGA: ' + (e || '___') + '\n\nRevise o mapa como alguém que vai construir a automação:\n1. O gatilho é concreto (tem momento ou acontecimento)?\n2. Algum passo esconde uma decisão que depende de uma pessoa?\n3. A entrega tem destino específico?\n4. O que eu ainda não sei como fazer em cada passo? Liste as dúvidas.\nNão monte a automação ainda. Só aponte o que falta no mapa.';
+  }
+  [mG, mX, mE].forEach(function (t) { t.addEventListener('input', mp); });
+  mp();
+  document.getElementById('mpCopy').addEventListener('click', function () { copyText(document.getElementById('mpTxt').textContent, this); });
+
+  /* 5 · trocar a entrega */
+  var TO = { email: 'e-mail para a diretoria com o resumo', chat: 'mensagem no grupo da equipe com o resumo', plan: 'linha nova na planilha de acompanhamento' };
+  var toBtns = document.querySelectorAll('[data-to]');
+  function setTo(k) { pressGroup(toBtns, function (x) { return x.dataset.to === k; }); document.getElementById('toBox').innerHTML = '<span class="et">ENTREGA · só esta mudou</span><span>' + TO[k] + '</span>'; }
+  toBtns.forEach(function (b) { b.addEventListener('click', function () { setTo(b.dataset.to); }); });
+  setTo('email');
+
+  /* 6 · fluxo ou agente */
+  var CH = [
+    { q: 'Precisa rodar com o seu computador desligado, a qualquer hora?', s: 'f' },
+    { q: 'O volume é alto: dezenas ou centenas de vezes por dia?', s: 'f' },
+    { q: 'A saída tem formato fixo: mesma entrada, mesma saída?', s: 'f' },
+    { q: 'Precisa de alguém decidir no meio, antes de uma ação sem volta?', s: 'a' },
+    { q: 'A tarefa muda a cada vez, e o caminho depende do caso?', s: 'a' }
+  ];
+  var chAns = {}, chList = document.getElementById('chList');
+  CH.forEach(function (c, i) {
+    var d = document.createElement('div'); d.className = 'ch-q';
+    d.innerHTML = '<span>' + c.q + '</span><div class="seg" role="group" aria-label="Resposta"><button type="button" data-y="1" aria-pressed="false">Sim</button><button type="button" data-y="0" aria-pressed="false">Não</button></div>';
+    var bb = d.querySelectorAll('button');
+    bb.forEach(function (b) { b.addEventListener('click', function () { pressGroup(bb, function (x) { return x === b; }); chAns[i] = b.dataset.y === '1'; ch(); }); });
+    chList.appendChild(d);
+  });
+  function ch() {
+    var f = 0, a = 0, n = Object.keys(chAns).length;
+    Object.keys(chAns).forEach(function (k) { if (chAns[k]) { if (CH[k].s === 'f') f++; else a++; } });
+    document.getElementById('nF').textContent = f; document.getElementById('nA').textContent = a;
+    document.getElementById('fillF').style.width = (f / 3 * 100) + '%'; document.getElementById('fillA').style.width = (a / 2 * 100) + '%';
+    var v = document.getElementById('chVer');
+    if (!n) v.innerHTML = 'Responda as perguntas ao lado.';
+    else if (f && a) v.innerHTML = '<b>As duas juntas.</b> O fluxo cuida do gatilho, do volume e do formato; a parte que pede julgamento vai para a IA ou para uma pessoa.';
+    else if (f) v.innerHTML = '<b>Fluxo automático.</b> Sempre a mesma tarefa, muda só o dado. Mapeie a frase e monte uma vez.';
+    else if (a) v.innerHTML = '<b>Assistente que age.</b> A tarefa muda toda vez ou pede decisão no meio. Deixe a IA trabalhar com você, não sozinha.';
+    else v.innerHTML = '<b>Nenhum dos dois, por enquanto.</b> Talvez um bom pedido no chat já resolva.';
+  }
+  ch();
+})();
+</script>
+
+</html>

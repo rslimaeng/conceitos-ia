@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="assistente--time">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Time de assistentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 4.4. Peças: um assistente × um time, organograma clicável com tensões, stepper do caminho da pergunta, descrever × virar, quiz de roteamento, checklist vale montar, simulador da trava, escada. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · um × time */
+.tm-q { font-family: var(--font-mono); font-size: .95rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.tm-ans { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.tm-ans.one { border-color: var(--atencao); }
+.tm-ans.team { border-color: var(--accent); background: var(--accent-soft); }
+.tm-ans ul { margin: 0; padding-left: 18px; }
+.tm-ans .who { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: var(--accent); }
+
+/* 2 · organograma */
+.og-wrap { display: grid; gap: 14px; }
+.og-o rect { fill: var(--text); }
+.og-o text { font: 600 12.5px var(--font-mono); fill: var(--bg-elev); text-anchor: middle; letter-spacing: .08em; }
+.og-o .s { font: 400 11.5px var(--font-body); }
+.og-line { stroke: var(--border-strong); stroke-width: 1.4; fill: none; transition: stroke .25s ease; }
+.og-line.on { stroke: var(--accent); stroke-width: 2.4; }
+.og-r { cursor: pointer; }
+.og-r rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.og-r.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
+.og-r .n { font: 600 12.5px var(--font-mono); fill: var(--text); text-anchor: middle; letter-spacing: .08em; }
+.og-r .s { font: 400 11.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.og-ten { stroke: var(--atencao); stroke-width: 1.6; stroke-dasharray: 5 4; fill: none; }
+.og-tl { font: 500 11px var(--font-mono); fill: var(--atencao-texto); text-anchor: middle; }
+.og-dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
+.og-dl dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); padding-top: 3px; }
+.og-dl dd { margin: 0; }
+.og-dl dd.q { color: var(--accent); font-size: 1.05rem; }
+
+/* 3 · caminho da pergunta */
+.fl-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.fl-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
+.fl-box .t { font: 600 12px var(--font-mono); fill: var(--text); text-anchor: middle; letter-spacing: .06em; }
+.fl-box .s { font: 400 11.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.fl-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.fl-mk { fill: var(--text-muted); }
+.fl-hid { font: 500 10.5px var(--font-mono); fill: var(--text-dim); text-anchor: middle; letter-spacing: .1em; }
+
+/* 5 · vale a pena */
+.vp { display: grid; gap: 8px; }
+.vp-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; }
+.vp-row .seg button { padding: 6px 14px; font-size: .9rem; }
+
+/* 7 · trava */
+.tv { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.tv-sw { display: grid; gap: 8px; }
+.tv-sw button { text-align: left; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; align-items: center; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 12px; }
+.tv-sw button .k { width: 38px; height: 22px; border-radius: 999px; background: var(--border-strong); position: relative; }
+.tv-sw button .k::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--bg-elev); transition: left .2s ease; }
+.tv-sw button[aria-pressed="true"] .k { background: var(--ok); }
+.tv-sw button[aria-pressed="true"] .k::after { left: 19px; }
+.tv-sw button small { display: block; color: var(--text-muted); font-size: .85rem; }
+.tv-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tv-cols ol { margin: 0; padding-left: 18px; font-size: .92rem; color: var(--text-muted); }
+
+/* 8 · escada */
+.es-st rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.3; }
+.es-st.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
+.es-st .t { font: 600 11.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.es-st .b { font: 500 13px var(--font-body); fill: var(--text); }
+.es-st .c { font: 500 11.5px var(--font-mono); fill: var(--accent); }
+.og-key { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--atencao-texto); border-bottom: 2px dashed var(--atencao); margin-right: 4px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .tv, .tv-cols { grid-template-columns: 1fr; }
+  .og-dl { grid-template-columns: 1fr; }
+  .vp-row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .og-line, .og-r rect, .fl-box rect, .tv-sw button .k::after { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Assistente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente--skill.html">← 4.3 Skill</a><a href="./assistente.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./assistente.html">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html" aria-current="page"><b>4.4</b>Time de assistentes</a></div>
+  </nav>
+  <span class="eyebrow">4.4 · 4 de 4</span>
+  <h1>Time de assistentes</h1>
+  <p class="sub">Quando a pergunta cruza várias áreas, um assistente só devolve o meio-termo</p>
+  <p class="lead">Um assistente bem montado executa bem o trabalho dele. Pergunte a ele algo que atravessa custo, risco e operação ao mesmo tempo, e volta um texto equilibrado, razoável e sem opinião. <strong>Um time dá a cada olhar um escopo que não se cruza com o dos outros, e põe alguém para distribuir as perguntas.</strong> A discordância entre eles deixa de ser defeito e vira o produto.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-meio">O meio-termo</a><a href="#s-papeis">Os papéis</a><a href="#s-caminho">O caminho da pergunta</a><a href="#s-voz">Descrever ou virar</a><a href="#s-rotear">Quem atende</a><a href="#s-vale">Vale montar?</a><a href="#s-confere">Quem confere</a><a href="#s-escada">Na escada</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-meio" aria-labelledby="h-meio">
+  <span class="eyebrow">O meio-termo</span>
+  <h2 id="h-meio">A mesma pergunta grande, num assistente e num time</h2>
+  <p class="intro">A pergunta é daquelas que cruzam três áreas de uma vez. <strong>Nada na resposta do assistente está errado, e nada nela muda a sua segunda-feira.</strong></p>
+  <p class="tm-q">Vale a pena mudar o meu processo de orçamento, tirando a espera de dois dias pela resposta do técnico?</p>
+  <div class="seg" role="group" aria-label="Quem responde">
+    <button type="button" data-mt="one" aria-pressed="true">Um assistente</button>
+    <button type="button" data-mt="team" aria-pressed="false">Um time</button>
+  </div>
+  <div id="mtOut" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-papeis" aria-labelledby="h-papeis">
+  <span class="eyebrow">Os papéis</span>
+  <h2 id="h-papeis">Seis escopos que não se cruzam, e duas brigas de propósito</h2>
+  <p class="intro">Cada papel é funcional, nunca uma pessoa. Cada um defende um pedaço da decisão e tem uma pergunta que só ele faz. <strong>As linhas tracejadas são as tensões declaradas:</strong> um time em que todos concordam é um assistente com seis nomes. Clique nos papéis.</p>
+  <div class="og-wrap">
+    <div class="scroll">
+      <svg viewBox="0 0 720 280" role="img" aria-labelledby="og-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+        <title id="og-t">Organograma de um time de revisão de proposta: quem distribui no topo, seis papéis abaixo (régua, caixa, fila, gente, freio e prazo) e duas tensões declaradas, caixa contra freio e prazo contra fila</title>
+        <g class="og-o"><rect x="250" y="12" width="220" height="58" rx="8"/><text x="360" y="38">QUEM DISTRIBUI</text><text class="s" x="360" y="57">não responde por conta própria</text></g>
+        <path class="og-line" data-ln="0" d="M360,70 V95 H65 V120"/>
+        <path class="og-line" data-ln="1" d="M360,70 V95 H183 V120"/>
+        <path class="og-line" data-ln="2" d="M360,70 V95 H301 V120"/>
+        <path class="og-line" data-ln="3" d="M360,70 V95 H419 V120"/>
+        <path class="og-line" data-ln="4" d="M360,70 V95 H537 V120"/>
+        <path class="og-line" data-ln="5" d="M360,70 V95 H655 V120"/>
+        <g class="og-r on" data-rl="0"><rect x="12" y="120" width="106" height="62" rx="8"/><text class="n" x="65" y="146">RÉGUA</text><text class="s" x="65" y="166">o dado</text></g>
+        <g class="og-r" data-rl="1"><rect x="130" y="120" width="106" height="62" rx="8"/><text class="n" x="183" y="146">CAIXA</text><text class="s" x="183" y="166">o dinheiro</text></g>
+        <g class="og-r" data-rl="2"><rect x="248" y="120" width="106" height="62" rx="8"/><text class="n" x="301" y="146">FILA</text><text class="s" x="301" y="166">o processo</text></g>
+        <g class="og-r" data-rl="3"><rect x="366" y="120" width="106" height="62" rx="8"/><text class="n" x="419" y="146">GENTE</text><text class="s" x="419" y="166">quem executa</text></g>
+        <g class="og-r" data-rl="4"><rect x="484" y="120" width="106" height="62" rx="8"/><text class="n" x="537" y="146">FREIO</text><text class="s" x="537" y="166">o risco</text></g>
+        <g class="og-r" data-rl="5"><rect x="602" y="120" width="106" height="62" rx="8"/><text class="n" x="655" y="146">PRAZO</text><text class="s" x="655" y="166">a execução</text></g>
+        <path class="og-ten" d="M183,182 C183,214 537,214 537,182"/>
+        <path class="og-ten" d="M301,182 C301,300 655,300 655,182"/>
+      </svg>
+    </div>
+    <div class="panel" id="ogPanel" aria-live="polite"></div>
+  </div>
+  <p class="hint"><span class="og-key">Tracejado</span> caixa × freio: o que rende contra o que pode dar errado. <span class="og-key">Tracejado</span> prazo × fila: ir rápido contra não derrubar o que já roda.</p>
+  <p class="hint">Repare que cada papel abre por um problema de quem chega, e não por uma área de conhecimento. “A proposta que cai na primeira pergunta da reunião” roteia; “finanças” não roteia nada.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-caminho" aria-labelledby="h-caminho">
+  <span class="eyebrow">O caminho da pergunta</span>
+  <h2 id="h-caminho">Quatro passos, e você só vê o primeiro e o último</h2>
+  <p class="intro">Escolha uma pergunta e siga o que acontece por dentro. <strong>A escolha do especialista é feita sozinha</strong>: é por isso que escopo sobreposto dá errado sem avisar.</p>
+  <div class="seg" role="group" aria-label="Pergunta" id="flSeg">
+    <button type="button" data-fq="0" aria-pressed="true">“Economizo 40 horas por mês”</button>
+    <button type="button" data-fq="1" aria-pressed="false">“Vou automatizar o envio”</button>
+    <button type="button" data-fq="2" aria-pressed="false">“O técnico sai do processo”</button>
+  </div>
+  <div class="stepbar"><span class="eyebrow" id="flLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 760 150" role="img" aria-labelledby="fl-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+      <title id="fl-t">O caminho da pergunta: você manda, quem distribui lê a base de especialistas, escolhe e incorpora um especialista, e a resposta chega na voz dele</title>
+      <defs><marker id="mkfl" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="fl-mk"/></marker></defs>
+      <text class="fl-hid" x="380" y="26">VOCÊ NÃO VÊ ESTES PASSOS</text>
+      <line class="fl-arr" x1="170" y1="36" x2="590" y2="36"/>
+      <g class="fl-box" data-fl="1"><rect x="10" y="52" width="140" height="74" rx="8"/><text class="t" x="80" y="84">VOCÊ</text><text class="s" x="80" y="104">manda a pergunta</text></g>
+      <g class="fl-box" data-fl="2"><rect x="170" y="52" width="140" height="74" rx="8"/><text class="t" x="240" y="84">A BASE</text><text class="s" x="240" y="104">lida antes de tudo</text></g>
+      <g class="fl-box" data-fl="3"><rect x="330" y="52" width="260" height="74" rx="8"/><text class="t" x="460" y="84" id="flSp">RÉGUA</text><text class="s" x="460" y="104">escolhido e incorporado</text></g>
+      <g class="fl-box" data-fl="4"><rect x="610" y="52" width="140" height="74" rx="8"/><text class="t" x="680" y="84">A RESPOSTA</text><text class="s" x="680" y="104">na voz dele</text></g>
+      <path class="fl-arr" d="M150,89 H164" marker-end="url(#mkfl)"/><path class="fl-arr" d="M310,89 H324" marker-end="url(#mkfl)"/><path class="fl-arr" d="M590,89 H604" marker-end="url(#mkfl)"/>
+    </svg>
+  </div>
+  <div class="caption" id="flCap" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-voz" aria-labelledby="h-voz">
+  <span class="eyebrow">Descrever ou virar</span>
+  <h2 id="h-voz">Quem distribui não descreve o especialista: vira ele</h2>
+  <p class="intro">É uma frase na instrução, e é a que costuma faltar. <strong>Sem ela, o time devolve um relatório sobre o que seis pessoas achariam</strong>, que é o meio-termo com mais palavras.</p>
+  <div class="seg" role="group" aria-label="Modo da resposta">
+    <button type="button" data-vz="desc" aria-pressed="true">Descreve o especialista</button>
+    <button type="button" data-vz="vira" aria-pressed="false">Vira o especialista</button>
+  </div>
+  <div id="vzOut" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-rotear" aria-labelledby="h-rotear">
+  <span class="eyebrow">Quem atende</span>
+  <h2 id="h-rotear">Cinco perguntas do mês, e o papel de cada uma</h2>
+  <p class="intro">É o teste que prova se os escopos se separam. <strong>Se três perguntas caem no mesmo papel, os outros sobram; se uma não cabe em nenhum, falta um.</strong></p>
+  <div class="qz" id="rtQuiz"></div>
+  <p class="qz-score" id="rtScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-vale" aria-labelledby="h-vale">
+  <span class="eyebrow">Vale montar?</span>
+  <h2 id="h-vale">Um bom pedido ainda vence um time mal montado</h2>
+  <p class="intro">Time virou moda, e é exagero para a maior parte dos casos. <strong>Responda com honestidade.</strong> Teste de bolso antes de tudo: faça a pergunta a um colega de cada área. Se as respostas discordarem, o time faz sentido. Se disserem a mesma coisa, você precisa de um pedido bem escrito.</p>
+  <div class="vp" id="vpRows"></div>
+  <div class="verdict" id="vpVer" aria-live="polite"></div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-confere" aria-labelledby="h-confere">
+  <span class="eyebrow">Quem confere</span>
+  <h2 id="h-confere">Quem produz nunca é o único a dizer que está bom</h2>
+  <p class="intro">Num time maior, os papéis se dividem em dois grupos, e a divisão é a parte que importa: <strong>quem executa não tem permissão para dar a etapa por encerrada</strong>. É a mesma divisão entre quem escreve um parecer e quem revisa antes de assinar. Um dos que conferem só olha três campos, e devolve o trabalho quando falta qualquer um. Ligue os campos.</p>
+  <div class="tv">
+    <div class="tv-sw" role="group" aria-label="Campos da trava">
+      <button type="button" data-tv="0" aria-pressed="true"><span class="k" aria-hidden="true"></span><span>Responsável<small>nomeado; não vale “a equipe”</small></span></button>
+      <button type="button" data-tv="1" aria-pressed="false"><span class="k" aria-hidden="true"></span><span>Métrica<small>quantificada; não vale “melhorar bastante”</small></span></button>
+      <button type="button" data-tv="2" aria-pressed="true"><span class="k" aria-hidden="true"></span><span>Prazo<small>defensável; uma data que dá para justificar</small></span></button>
+    </div>
+    <div class="card" aria-live="polite"><div class="verdict" id="tvVer"></div>
+      <div class="tv-cols"><div><span class="eyebrow">quem executa</span><ol><li>pesquisa o setor</li><li>organiza na ordem</li><li>faz a conta</li></ol></div><div><span class="eyebrow">quem confere</span><ol><li>a linguagem serve a quem lê?</li><li>as peças se contradizem?</li><li>os três campos estão lá?</li></ol></div></div>
+    </div>
+  </div>
+  <p class="hint">A trava não escreve nada, não preenche sozinha, não sugere e não estima. Devolve. É por isso que ninguém precisa lembrar dela. Para o que não pode falhar nunca, a trava sai da IA de vez: ver <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-escada" aria-labelledby="h-escada">
+  <span class="eyebrow">Na escada</span>
+  <h2 id="h-escada">O segundo degrau, e ele só se sobe depois do primeiro</h2>
+  <p class="intro">Muda o tamanho do problema e o custo de montar; o princípio é o mesmo. <strong>Quem ainda erra o pedido básico ganha, com o time, seis lugares novos para o mesmo erro aparecer.</strong> A escada inteira está em <a href="./ai-first.html">AI First</a>.</p>
+  <div class="scroll">
+    <svg viewBox="0 0 720 210" role="img" aria-labelledby="es-t" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
+      <title id="es-t">Escada de quatro degraus: um assistente com papel, um time com quem distribui, um método com fases e portões, uma empresa que confere a si mesma; o segundo degrau está destacado</title>
+      <g class="es-st"><rect x="10" y="150" width="170" height="50" rx="6"/><text class="t" x="22" y="170">DEGRAU 1</text><text class="b" x="22" y="190">Um assistente</text><text class="c" x="120" y="170">uma tarde</text></g>
+      <g class="es-st on"><rect x="185" y="105" width="170" height="95" rx="6"/><text class="t" x="197" y="125">DEGRAU 2</text><text class="b" x="197" y="147">Um time com</text><text class="b" x="197" y="165">quem distribui</text><text class="c" x="197" y="188">uma tarde</text></g>
+      <g class="es-st"><rect x="360" y="60" width="170" height="140" rx="6"/><text class="t" x="372" y="80">DEGRAU 3</text><text class="b" x="372" y="102">Fases com portão</text><text class="b" x="372" y="120">entre elas</text><text class="c" x="372" y="188">semanas</text></g>
+      <g class="es-st"><rect x="535" y="15" width="175" height="185" rx="6"/><text class="t" x="547" y="35">DEGRAU 4</text><text class="b" x="547" y="57">Uma empresa que</text><text class="b" x="547" y="75">confere a si mesma</text><text class="c" x="547" y="188">meses, e nunca termina</text></g>
+    </svg>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A instrução de quem distribui · vai no campo de instruções; a base de papéis sobe como arquivo</span><button type="button" class="btn" data-copy="orqText">Copiar</button></div>
+<pre id="orqText"><b>## FUNÇÃO</b>
+Você é quem distribui. Não responde por conta própria: lê a pergunta, identifica qual papel do arquivo base deve responder, assume a voz dele e responde como ele.
+
+<b>## PROTOCOLO, NESTA ORDEM</b>
+1. Leia o arquivo base de papéis antes de qualquer coisa.
+2. Escolha o papel cujo escopo cobre a pergunta. Se dois cobrirem, escolha o dominante e diga, em uma linha, que o outro discordaria.
+3. Assuma o tom, a pergunta característica e as restrições daquele papel.
+4. Se faltar um dado para a resposta ficar de pé, peça o dado em vez de estimar.
+
+<b>## REGRAS</b>
+- O arquivo base é lei: papel que não está lá não existe.
+- Diga no começo qual papel está ativo.
+- Nunca misture dois papéis na mesma resposta sem avisar.
+- Sem voz própria: se nenhum papel servir, diga e pergunte, em vez de responder no meio-termo.
+- Discordância entre papéis é resultado, não defeito: mostre as duas leituras antes de recomendar.
+
+<b>## COMO COMEÇAR</b>
+Na primeira mensagem, liste os papéis em uma linha cada e pergunte qual decisão a pessoa quer revisar. Não comece respondendo.</pre>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Escopo que não se cruza</h3><p>O trabalho todo está em escolher os papéis. Se dois fariam a mesma pergunta, um sobra.</p></div>
+    <div class="take-card"><h3>Discordar é o produto</h3><p>Declare as tensões. A resposta útil é a pergunta incômoda, não o consenso bem escrito.</p></div>
+    <div class="take-card"><h3>Degrau, não atalho</h3><p>Primeiro um assistente que funciona. Sem uso toda semana, manter a base custa mais do que rende.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Quem distribui</dt><dd>A instrução que lê a pergunta, escolhe o papel e empresta a voz dele. Também chamado de orquestrador ou roteador.</dd>
+    <dt>Base de papéis</dt><dd>O arquivo com um bloco por papel: escopo, tom, quando ativar, restrições e a pergunta característica.</dd>
+    <dt>Tensão declarada</dt><dd>Dois papéis que discordam de propósito, escritos na base para que a discordância apareça em vez de virar média.</dd>
+    <dt>Papel funcional</dt><dd>Um escopo com nome de função. Nunca uma pessoa real: imitar um nome traz autoridade emprestada a uma opinião que é sua.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os seis papéis e o caso do orçamento são um exemplo; times maiores usam a mesma anatomia com mais gente dentro. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>, <a href="./assistente--skill.html">skill</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Assistente: anterior e próxima">
+  <a class="famfoot-prev" href="./assistente--skill.html"><span>← anterior</span><b>4.3 · Skill</b></a>
+  <a class="famfoot-fam" href="./assistente.html#mapa">Família 4 · Assistente · o mapa</a>
+  <a class="famfoot-next" href="./assistente.html"><span>volta ao começo ↺</span><b>Visão geral · Assistente especializado</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · meio-termo */
+  var MT = {
+    one: '<div class="tm-ans one"><span class="eyebrow">O assistente responde</span><ul><li>Reconhece que a espera é o maior componente do prazo</li><li>Sugere criar a tabela de preços e nomear um responsável</li><li>Lista benefícios prováveis e cita risco de resistência</li><li>Fecha recomendando avaliar com a liderança</li></ul><p class="hint">Está tudo certo, e serve para um relatório. Não serve para a reunião em que alguém vai discordar.</p></div>',
+    team: '<div class="tm-ans team"><span class="who">ATIVO: RÉGUA · o dado</span><ul><li>“Esses dois dias são medidos, estimados ou lembrados?”</li><li>“Em quantos orçamentos você cronometrou, e em que período?”</li><li>“Se for estimativa, diga isso na proposta antes que perguntem.”</li><li>“CAIXA discordaria de mim aqui: para ele, estimativa já basta para decidir.”</li></ul><p class="hint">Você sai com uma pergunta para responder, e não com um parágrafo para ler. E o time declarou a própria discordância em vez de escondê-la numa média.</p></div>'
+  };
+  var mtBtns = document.querySelectorAll('[data-mt]'), mtOut = document.getElementById('mtOut');
+  function setMt(k) { pressGroup(mtBtns, function (x) { return x.dataset.mt === k; }); mtOut.innerHTML = MT[k]; }
+  mtBtns.forEach(function (b) { b.addEventListener('click', function () { setMt(b.dataset.mt); }); });
+  setMt('one');
+
+  /* 2 · organograma */
+  var RL = [
+    { n: 'Régua', e: 'a origem de todo número da proposta', tom: 'seco, pergunta antes de comentar', at: 'a pergunta cita economia, percentual, tempo ganho ou volume', r: 'não estima nada no seu lugar; se o dado não tem origem, diz e para', q: 'Este número é medido, estimado ou lembrado?', t: '' },
+    { n: 'Caixa', e: 'custo de fazer, custo de manter, e quando o retorno aparece', tom: 'direto, pensa em mês e não em ano', at: 'a pergunta é se vale a pena, ou compara duas opções', r: 'não fala de retorno sem falar do esforço de implantar', q: 'Quanto custa fazer, quanto custa manter, e em que mês isso se paga?', t: 'briga com FREIO: o que rende contra o que pode dar errado' },
+    { n: 'Fila', e: 'o trabalho que já está andando durante a mudança', tom: 'operacional, pensa na segunda-feira seguinte', at: 'a proposta muda uma etapa de um processo que roda hoje', r: 'não aceita “vira a chave e pronto”; pergunta pelo período em que os dois jeitos convivem', q: 'O que está na fila hoje atravessa por qual dos dois caminhos?', t: 'briga com PRAZO: não derrubar o que roda contra ir rápido' },
+    { n: 'Gente', e: 'quem deixa de fazer o quê, quem aprende o novo, quem perde algo', tom: 'cuidadoso, sem paternalismo', at: 'a mudança tira trabalho de alguém ou muda o que alguém faz', r: 'não trata resistência como problema de comunicação; procura o que a pessoa perde de concreto', q: 'Quem faz isso hoje, e o que passa a fazer na segunda-feira?', t: '' },
+    { n: 'Freio', e: 'o que acontece quando dá errado, e quem descobre primeiro', tom: 'cético, sem ser do contra', at: 'a proposta automatiza, delega ou acelera uma etapa', r: 'não lista risco sem dizer como ele seria percebido', q: 'Se isto sair errado, quem percebe, quando, e o que já aconteceu até lá?', t: 'briga com CAIXA: o que pode dar errado contra o que rende' },
+    { n: 'Prazo', e: 'quem faz, até quando, e com o que já existe', tom: 'prático, corta escopo antes de esticar data', at: 'a proposta foi aprovada e falta virar plano', r: 'não aceita tarefa sem dono nem prazo em “próximas semanas”', q: 'Qual é o menor pedaço entregável em duas semanas, e quem entrega?', t: 'briga com FILA: ir rápido contra não derrubar o que roda' }
+  ];
+  var ogR = document.querySelectorAll('.og-r'), ogL = document.querySelectorAll('.og-line'), ogPanel = document.getElementById('ogPanel');
+  function showRl(i) {
+    ogR.forEach(function (g) { g.classList.toggle('on', +g.dataset.rl === i); });
+    ogL.forEach(function (p) { p.classList.toggle('on', +p.dataset.ln === i); });
+    var r = RL[i];
+    ogPanel.innerHTML = '<span class="eyebrow">Papel ' + (i + 1) + ' de 6</span><h3>' + r.n + '</h3><dl class="og-dl"><dt>Escopo</dt><dd>' + r.e + '</dd><dt>Tom</dt><dd>' + r.tom + '</dd><dt>Quando entra</dt><dd>' + r.at + '</dd><dt>Nunca</dt><dd>' + r.r + '</dd><dt>A pergunta</dt><dd class="q">“' + r.q + '”</dd>' + (r.t ? '<dt>Tensão</dt><dd>' + r.t + '</dd>' : '') + '</dl>';
+  }
+  ogR.forEach(function (g) {
+    g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.setAttribute('aria-label', RL[+g.dataset.rl].n);
+    g.addEventListener('click', function () { showRl(+g.dataset.rl); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showRl(+g.dataset.rl); } });
+  });
+  showRl(0);
+
+  /* 3 · caminho */
+  var FQ = [
+    { q: '“A mudança economiza 40 horas por mês.”', sp: 'RÉGUA · o dado', why: 'A pergunta cita tempo ganho: cai no escopo de quem pergunta pela origem do número.', ans: '“Quarenta horas medidas em quantos meses? Se é estimativa, a conta precisa estar na proposta.”' },
+    { q: '“Vou automatizar o envio das propostas.”', sp: 'FREIO · o risco', why: 'Automatizar uma etapa que chega ao cliente: cai em quem olha o que acontece quando dá errado.', ans: '“Se sair uma proposta com preço errado, quem percebe, e quantas já saíram até lá?”' },
+    { q: '“O técnico deixa de ser consultado.”', sp: 'GENTE · quem executa', why: 'A mudança tira trabalho de alguém: cai em quem procura o que essa pessoa perde de concreto.', ans: '“O que o técnico passa a fazer na segunda-feira, e o que ele perde com isso?”' }
+  ];
+  var fqCur = 0, flStep = 1, fqBtns = document.querySelectorAll('[data-fq]'), flBoxes = document.querySelectorAll('.fl-box');
+  var FL = [
+    function (f) { return ['Você manda a pergunta', 'Do jeito que ela sai: ' + f.q + ' Ela é ambígua entre dois ou três assuntos, e está certo que seja.']; },
+    function () { return ['Quem distribui lê a base', 'Antes de qualquer resposta, ele consulta o arquivo com os seis escopos. Papel que não está lá não existe.']; },
+    function (f) { return ['Escolhe, e vira o especialista', f.why + ' Ele assume o tom, a pergunta característica e as restrições daquele papel.']; },
+    function (f) { return ['A resposta chega na voz certa', f.ans + ' Quem distribui some no meio da resposta.']; }
+  ];
+  function renderFl() {
+    var f = FQ[fqCur];
+    document.getElementById('flSp').textContent = f.sp.toUpperCase();
+    flBoxes.forEach(function (g) { g.classList.toggle('on', +g.dataset.fl === flStep); });
+    var c = FL[flStep - 1](f);
+    document.getElementById('flCap').innerHTML = '<h3>' + c[0] + '</h3><p>' + c[1] + '</p>';
+  }
+  var flTo = stepper(4, document.getElementById('flPrev'), document.getElementById('flNext'), document.getElementById('flLab'), 'Passo', function (k) { flStep = k; renderFl(); });
+  fqBtns.forEach(function (b) { b.addEventListener('click', function () { fqCur = +b.dataset.fq; pressGroup(fqBtns, function (x) { return x === b; }); flTo(1); }); });
+
+  /* 4 · descrever ou virar */
+  var VZ = {
+    desc: '<div class="tm-ans one"><span class="eyebrow">Descreve</span><p>“O especialista em risco provavelmente apontaria que automatizar o envio pode gerar erros. Já o especialista financeiro destacaria a economia. Recomenda-se equilibrar os dois pontos de vista.”</p><p class="hint">Um resumo do que seis pessoas achariam. É o meio-termo de volta, com mais palavras.</p></div>',
+    vira: '<div class="tm-ans team"><span class="who">ATIVO: FREIO · o risco</span><p>“Antes da economia: se uma proposta sair com o preço errado, quem percebe, e quantas terão saído até lá? Sem essa resposta, não assino. CAIXA vai discordar de mim, e deve.”</p><p class="hint">Na primeira pessoa, com a pergunta que só aquele papel faz. A pergunta incômoda é o produto.</p></div>'
+  };
+  var vzBtns = document.querySelectorAll('[data-vz]'), vzOut = document.getElementById('vzOut');
+  function setVz(k) { pressGroup(vzBtns, function (x) { return x.dataset.vz === k; }); vzOut.innerHTML = VZ[k]; }
+  vzBtns.forEach(function (b) { b.addEventListener('click', function () { setVz(b.dataset.vz); }); });
+  setVz('desc');
+
+  /* 5 · quem atende */
+  quiz(document.getElementById('rtQuiz'), document.getElementById('rtScore'), [
+    { s: '“Em que mês essa mudança se paga?”', a: 'caixa', why: 'Custo de fazer, custo de manter, e quando o retorno aparece.' },
+    { s: '“E os pedidos que já estão em andamento na semana da troca?”', a: 'fila', why: 'O trabalho que atravessa a mudança. É a segunda-feira seguinte.' },
+    { s: '“Aprovado. Qual é o primeiro passo, e de quem?”', a: 'prazo', why: 'Dono, data e o menor pedaço entregável.' },
+    { s: '“De onde saiu o número de 30% de ganho?”', a: 'regua', why: 'A origem do número, antes de qualquer comentário sobre ele.' },
+    { s: '“A equipe de atendimento vai aceitar mudar o jeito de trabalhar?”', a: 'gente', why: 'Quem executa e o que perde de concreto, não “problema de comunicação”.' }
+  ], [['regua', 'Régua'], ['caixa', 'Caixa'], ['fila', 'Fila'], ['gente', 'Gente'], ['freio', 'Freio'], ['prazo', 'Prazo']], 'se você errou por achar que dois papéis serviam, o escopo deles precisa ser estreitado.');
+
+  /* 6 · vale montar */
+  var VP = [
+    ['A decisão precisa de três olhares diferentes ao mesmo tempo?', 1],
+    ['O problema tem tensões de verdade, como custo contra risco?', 1],
+    ['Esse tipo de análise se repete toda semana?', 1],
+    ['Você já escreve bem um pedido e já tem um assistente funcionando?', 1],
+    ['Você consegue escrever o escopo de cada papel em uma frase?', 1]
+  ];
+  var vpAns = {}, vpRows = document.getElementById('vpRows');
+  VP.forEach(function (v, i) {
+    var d = document.createElement('div'); d.className = 'vp-row';
+    d.innerHTML = '<span>' + v[0] + '</span><div class="seg" role="group" aria-label="Resposta"><button type="button" data-v="1" aria-pressed="false">Sim</button><button type="button" data-v="0" aria-pressed="false">Não</button></div>';
+    var bs = d.querySelectorAll('button');
+    bs.forEach(function (b) { b.addEventListener('click', function () { pressGroup(bs, function (x) { return x === b; }); vpAns[i] = +b.dataset.v; vp(); }); });
+    vpRows.appendChild(d);
+  });
+  function vp() {
+    var n = Object.keys(vpAns).length, yes = Object.keys(vpAns).filter(function (k) { return vpAns[k]; }).length, v = document.getElementById('vpVer');
+    if (n < VP.length) { v.className = 'verdict'; v.innerHTML = n + ' de ' + VP.length + ' respondidas.'; return; }
+    if (vpAns[3] === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Ainda não.</b> Sem o pedido básico e um assistente funcionando, o time só multiplica o problema. Comece pelo <a href="./assistente.html">assistente</a>.'; }
+    else if (yes === 5) { v.className = 'verdict ok'; v.innerHTML = '<b>Faz sentido montar.</b> Comece pelos papéis, e teste com dez perguntas reais do seu mês antes de confiar.'; }
+    else if (yes >= 3) { v.className = 'verdict no'; v.innerHTML = '<b>Talvez.</b> Olhe as respostas “não”: são elas que vão fazer o time patinar. Resolva essas antes de montar.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Não monte.</b> Aqui um pedido bem escrito rende mais, e não custa manter uma base de papéis.'; }
+  }
+  vp();
+
+  /* 7 · trava */
+  var tvBtns = document.querySelectorAll('[data-tv]'), TVN = ['responsável', 'métrica', 'prazo'];
+  function tv() {
+    var miss = [];
+    tvBtns.forEach(function (b) { if (b.getAttribute('aria-pressed') !== 'true') miss.push(TVN[+b.dataset.tv]); });
+    var v = document.getElementById('tvVer');
+    v.className = 'verdict ' + (miss.length ? 'no' : 'ok');
+    v.innerHTML = miss.length ? '<b>Devolvido.</b> Falta ' + miss.join(' e ') + '. A trava não completa, não sugere e não estima: devolve para a pessoa.' : '<b>Passa.</b> Os três campos estão preenchidos, e a etapa pode ser dada por encerrada.';
+  }
+  tvBtns.forEach(function (b) { b.addEventListener('click', function () { b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true')); tv(); }); });
+  tv();
+})();
+</script>
+</body>
+</html>

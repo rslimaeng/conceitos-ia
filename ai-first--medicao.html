@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--medicao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nada começa sem quatro campos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, pilar 5 da família AI First. Peças: o funil do que chega à rotina, a ficha preenchida ao vivo, os quatro campos clicáveis, três exemplos com barras, o quiz de onde trava, frase ou medida, a trava dentro do processo, a linha dos sessenta dias e o prompt para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict.mid { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 36ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.panel { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel.focal { border-color: var(--accent); }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+
+/* 1 · funil */
+.fn { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.fn-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; }
+.fn-grid i { aspect-ratio: 1; border-radius: 3px; background: var(--border); border: 1px solid transparent; transition: background .3s ease, border-color .3s ease; }
+.fn-grid i.on { background: var(--accent); }
+.fn-grid i.back { background: var(--atencao-soft); border: 1px dashed var(--atencao); }
+.fn-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--text-muted); }
+.fn-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; background: var(--border); }
+.fn-legend i.on { background: var(--accent); }
+.fn-legend i.back { background: var(--atencao-soft); border: 1px dashed var(--atencao); }
+.fn-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fn-stats div { border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; background: var(--bg-elev); }
+.fn-stats span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.fn-stats b { font-family: var(--font-mono); font-weight: 500; font-size: 1.4rem; color: var(--accent); }
+
+/* 2 · a ficha */
+.fc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.fc-in { display: grid; gap: 10px; }
+.fc-f { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 6px; }
+.fc-f label, .fc-f .lab { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; font-size: .95rem; }
+.fc-f label span, .fc-f .lab span { font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--text-dim); }
+.fc-f input { width: 100%; border: 0; border-bottom: 1px dashed var(--border-strong); font: inherit; font-size: .95rem; color: var(--text); background: transparent; padding: 4px 0; }
+.fc-dest { display: flex; flex-wrap: wrap; gap: 6px; }
+.fc-dest button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 5px 10px; font-size: .88rem; }
+.fc-dest button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.fc-out { display: grid; gap: 12px; position: sticky; top: 12px; }
+.fc-card { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.fc-card h3 { font-size: 1.15rem; }
+.fc-row { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; border-top: 1px solid var(--border); padding-top: 8px; }
+.fc-st { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-family: var(--font-mono); border: 1px solid var(--border-strong); color: var(--text-dim); }
+.fc-st.ok { background: var(--ok); border-color: var(--ok); color: var(--bg-elev); }
+.fc-st.warn { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.fc-row small { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.fc-row .v { font-size: .95rem; }
+.fc-row .v.empty { color: var(--text-dim); font-style: italic; }
+.fc-row .why { font-size: .85rem; color: var(--atencao-texto); }
+.fc-bar { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* 3 · campos */
+.cp-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.cp { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 4px; align-content: start; }
+.cp .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--accent); }
+.cp b { font-weight: 600; font-size: 1.02rem; line-height: 1.3; }
+.cp[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.cp-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.cp-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.cp-det dd { margin: 0; }
+.cp-det dd.q { color: var(--accent); font-size: 1.05rem; }
+
+/* 4 · destinos */
+.ds { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+.ds-row dl { margin: 0; display: grid; gap: 10px; }
+.ds-row dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.ds-row dd { margin: 0; }
+.ds-chart svg { width: 100%; height: auto; display: block; }
+.dc-ax { stroke: var(--border-strong); stroke-width: 1; }
+.dc-now { fill: var(--text-muted); transition: y .45s ease, height .45s ease; }
+.dc-goal { fill: var(--accent); transition: y .45s ease, height .45s ease; }
+.dc-v { font: 600 14px var(--font-body); fill: var(--text); text-anchor: middle; transition: y .45s ease; }
+.dc-x { font: 500 12px var(--font-mono); fill: var(--text-muted); text-anchor: middle; letter-spacing: .06em; }
+.common { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.common div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 14px 16px; display: grid; gap: 4px; }
+.common b { font-weight: 600; }
+.common p { font-size: .92rem; color: var(--text-muted); }
+
+/* 5 · onde trava */
+.tq-list { display: grid; gap: 10px; }
+.tq { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 10px; }
+.tq .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.tq .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-size: .9rem; }
+.tq .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tq .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.tq .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.tq .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 6 · frase ou medida */
+.fm { display: grid; gap: 8px; }
+.fm-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 10px 14px; }
+.fm-row.done { border-style: solid; border-color: var(--accent); }
+.fm-row .vago { color: var(--text-muted); }
+.fm-row.done .vago { text-decoration: line-through; text-decoration-color: var(--text-dim); font-size: .88rem; }
+.fm-row .med { display: none; color: var(--accent); font-weight: 500; }
+.fm-row.done .med { display: block; }
+.fm-row .test { display: none; font-size: .85rem; color: var(--text-muted); }
+.fm-row.done .test { display: block; }
+
+/* 7 · a trava */
+.tv { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: 20px; align-items: start; }
+.tv-rules dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 14px; }
+.tv-rules dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); padding-top: 3px; }
+.tv-rules dd { margin: 0; font-size: .95rem; }
+.tv-list { display: grid; gap: 10px; }
+.tv-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 16px; display: grid; gap: 8px; transition: border-color .25s ease; }
+.tv-item .ttl { font-weight: 600; }
+.tv-f { display: flex; flex-wrap: wrap; gap: 6px; }
+.tv-f span { font-size: .85rem; border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; color: var(--text-muted); }
+.tv-f span.bad { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.tv-res { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; }
+.tv-item.pass .tv-res { color: var(--ok-texto); }
+.tv-item.back { border-color: var(--atencao); }
+.tv-item.back .tv-res { color: var(--atencao-texto); }
+
+/* 8 · sessenta dias */
+.sx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px; align-items: start; }
+.sx-in { display: grid; gap: 16px; }
+.field { display: grid; gap: 6px; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.sx-chart svg { width: 100%; height: auto; display: block; }
+.sx-line { stroke: var(--accent); stroke-width: 3; fill: none; }
+.sx-pt { fill: var(--accent); }
+.sx-pt.now { fill: var(--text-muted); }
+.sx-t { font: 500 12px var(--font-mono); fill: var(--text-muted); }
+.sx-tv { font: 600 14px var(--font-body); fill: var(--text); }
+.sx-back { stroke: var(--ok); stroke-width: 1.6; stroke-dasharray: 5 4; fill: none; }
+.sx-bt { font: 500 11.5px var(--font-mono); fill: var(--ok-texto); }
+.mk-ok { fill: var(--ok); }
+
+/* 9 · levar */
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bolso { border-left: 3px solid var(--accent); padding: 6px 0 6px 14px; font-size: 1.15rem; color: var(--accent); max-width: 50ch; }
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .fn, .fc, .ds, .tv, .sx, .take, .common { grid-template-columns: 1fr; }
+  .cp-grid { grid-template-columns: 1fr 1fr; }
+  .fc-out { position: static; }
+  .cp-det dl, .tv-rules dl { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .cp-grid, .fn-stats { grid-template-columns: 1fr; } .fm-row { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .fn-grid i, .dc-now, .dc-goal, .dc-v, .tv-item { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--memoria.html">← 5.4 Memória</a><a href="./ai-first--ipo.html">5.6 IPO →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html" aria-current="page"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.5 · pilar 5 de 5</span>
+  <h1>Nada começa sem quatro campos</h1>
+  <p class="sub">O filtro que separa a iniciativa que vira rotina da que morre na demonstração</p>
+  <p class="lead">Antes de começar qualquer coisa com IA, quatro perguntas: <strong>em que isso ajuda, qual é o número, quanto é hoje, quanto em sessenta dias.</strong> Sem as quatro, é vontade, não projeto. E o campo que você não consegue preencher não reprova a ideia: ele é a próxima tarefa.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-demo">O que morre na demonstração</a><a href="#s-ficha">A ficha</a><a href="#s-campos">Os quatro campos</a><a href="#s-destinos">Um de cada destino</a><a href="#s-trava">Onde trava</a><a href="#s-numero">Frase ou medida</a><a href="#s-dentro">A ficha dentro do processo</a><a href="#s-sessenta">Sessenta dias</a><a href="#s-copiar">Para copiar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-demo" aria-labelledby="h-demo">
+  <span class="eyebrow">O que morre na demonstração</span>
+  <h2 id="h-demo">A parte difícil não é funcionar uma vez</h2>
+  <p class="intro">A maioria das iniciativas com IA funciona na apresentação, agrada, e nunca entra no dia a dia de ninguém. <strong>O que separa as que chegam não é a ferramenta nem o orçamento: é ter número e prazo antes de começar.</strong> Avance pelas etapas, nos dois jeitos de começar.</p>
+  <div class="seg" role="group" aria-label="Como começa">
+    <button type="button" data-fn="sem" aria-pressed="true">Começar pela ideia</button>
+    <button type="button" data-fn="com" aria-pressed="false">Começar pela ficha</button>
+  </div>
+  <div class="fn">
+    <div class="panel">
+      <div class="stepbar"><span class="eyebrow" id="fnLab">Etapa 1 de 4</span><div class="nav"><button type="button" class="btn" id="fnPrev">←</button><button type="button" class="btn primary" id="fnNext">Próxima etapa →</button></div></div>
+      <div class="fn-grid" id="fnGrid" role="img" aria-label="Sessenta quadrados, um por iniciativa"></div>
+      <div class="fn-legend" aria-hidden="true"><span><i class="on"></i>segue</span><span><i class="back"></i>voltou para medir primeiro</span><span><i></i>parou</span></div>
+    </div>
+    <div style="display:grid;gap:12px">
+      <div class="fn-stats">
+        <div><span>cortadas numa folha</span><b id="fnCut">0</b></div>
+        <div><span>semanas em teste que não virou rotina</span><b id="fnWeeks">0</b></div>
+      </div>
+      <div class="verdict" id="fnVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">A forma, não a medida. Nenhuma pesquisa está sendo citada: os quadrados desenham o argumento, e cada teste que não virou rotina foi contado como três semanas.</p>
+  <p class="punch">A ficha não cria ideia melhor. Ela <em>leva o corte para o começo</em>, onde ele custa uma folha em vez de um projeto.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-ficha" aria-labelledby="h-ficha">
+  <span class="eyebrow">A ficha</span>
+  <h2 id="h-ficha">A ficha, preenchida ao vivo, e o campo vazio acusado</h2>
+  <p class="intro">Escolha uma iniciativa real da sua área, uma que você faria se pudesse começar na segunda-feira. <strong>A ficha ao lado diz qual campo ainda não é campo.</strong> O exemplo já vem com dois problemas comuns.</p>
+  <div class="fc">
+    <div class="fc-in">
+      <div class="fc-f"><label for="fcIni">A iniciativa<span>uma frase</span></label><input id="fcIni" value="Responder as dúvidas repetidas de cliente sem alguém lendo uma a uma"></div>
+      <div class="fc-f"><span class="lab">1 · Em que isso ajuda<span>um destino só</span></span>
+        <div class="fc-dest" role="group" aria-label="Em que isso ajuda"><button type="button" data-d="Trazer mais clientes" aria-pressed="false">Trazer mais clientes</button><button type="button" data-d="Fazer cada cliente valer mais" aria-pressed="false">Fazer cada um valer mais</button><button type="button" data-d="Reduzir custo e retrabalho" aria-pressed="true">Reduzir custo e retrabalho</button></div></div>
+      <div class="fc-f"><label for="fcNum">2 · Qual é o número<span>o que se conta</span></label><input id="fcNum" value="melhorar o atendimento"></div>
+      <div class="fc-f"><label for="fcHoje">3 · Quanto é hoje<span>medido, não estimado</span></label><input id="fcHoje" value="" placeholder="ex: 6 horas por semana"></div>
+      <div class="fc-f"><label for="fcMeta">4 · Quanto em 60 dias<span>a meta, com prazo</span></label><input id="fcMeta" value="" placeholder="ex: 3 horas por semana"></div>
+      <div class="fc-bar"><button type="button" class="btn" id="fcEx">Ver um exemplo completo</button><button type="button" class="btn" id="fcClr">Limpar</button></div>
+    </div>
+    <div class="fc-out">
+      <div class="fc-card" aria-live="polite">
+        <span class="eyebrow">A ficha</span>
+        <h3 id="fcTtl"></h3>
+        <div id="fcRows"></div>
+      </div>
+      <div class="verdict" id="fcVer" aria-live="polite"></div>
+      <div class="copy"><div class="copy-head"><span class="eyebrow">A ficha em texto</span><button type="button" class="btn" id="fcCopy">Copiar</button></div><pre id="fcText"></pre></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-campos" aria-labelledby="h-campos">
+  <span class="eyebrow">Os quatro campos</span>
+  <h2 id="h-campos">Quatro perguntas, e nenhuma é sobre tecnologia</h2>
+  <p class="intro">Cada campo tem um teste que você faz sozinho, e um jeito típico de travar. <strong>Clique em cada um.</strong></p>
+  <div class="cp-grid" role="group" aria-label="Os quatro campos">
+    <button type="button" class="cp" data-cp="0" aria-pressed="true"><span class="k">CAMPO 1</span><b>Em que isso ajuda</b></button>
+    <button type="button" class="cp" data-cp="1" aria-pressed="false"><span class="k">CAMPO 2</span><b>Qual é o número</b></button>
+    <button type="button" class="cp" data-cp="2" aria-pressed="false"><span class="k">CAMPO 3</span><b>Quanto é hoje</b></button>
+    <button type="button" class="cp" data-cp="3" aria-pressed="false"><span class="k">CAMPO 4</span><b>Quanto em sessenta dias</b></button>
+  </div>
+  <div class="panel focal cp-det" id="cpDet" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-destinos" aria-labelledby="h-destinos">
+  <span class="eyebrow">Um de cada destino</span>
+  <h2 id="h-destinos">Três fichas preenchidas, uma para cada destino</h2>
+  <p class="intro">Os números são inventados: servem para mostrar o formato, não para sugerir meta. <strong>Troque o destino e compare hoje com a meta.</strong></p>
+  <div class="seg" role="group" aria-label="Destino">
+    <button type="button" data-ds="0" aria-pressed="true">Reduzir custo e retrabalho</button>
+    <button type="button" data-ds="1" aria-pressed="false">Trazer mais clientes</button>
+    <button type="button" data-ds="2" aria-pressed="false">Fazer cada um valer mais</button>
+  </div>
+  <div class="ds">
+    <div class="panel ds-row" id="dsRow" aria-live="polite"></div>
+    <div class="panel ds-chart">
+      <span class="eyebrow" id="dsUnit">hoje × em 60 dias</span>
+      <svg viewBox="0 0 320 220" role="img" aria-labelledby="dc-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="dc-t">Duas barras: o valor de hoje e a meta em sessenta dias</title>
+        <line class="dc-ax" x1="20" y1="180" x2="300" y2="180"/>
+        <rect class="dc-now" id="dcA" x="60" width="80" y="40" height="140" rx="4"/>
+        <rect class="dc-goal" id="dcB" x="180" width="80" y="110" height="70" rx="4"/>
+        <text class="dc-v" id="dcAv" x="100" y="32"></text><text class="dc-v" id="dcBv" x="220" y="102"></text>
+        <text class="dc-x" x="100" y="202">HOJE</text><text class="dc-x" x="220" y="202">EM 60 DIAS</text>
+      </svg>
+    </div>
+  </div>
+  <div class="common">
+    <div><b>Nenhum menciona ferramenta</b><p>Não dizem qual IA, nem se vai ter uma. Dizem o que muda no processo.</p></div>
+    <div><b>O número é contável</b><p>Horas, dias, porcentagem. Nada que dependa de interpretação.</p></div>
+    <div><b>A meta é modesta</b><p>Metade, um terço, alguns dias. Meta agressiva em sessenta dias é o jeito mais rápido de virar demonstração.</p></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-trava" aria-labelledby="h-trava">
+  <span class="eyebrow">Onde trava</span>
+  <h2 id="h-trava">Cada trava quer dizer uma coisa diferente</h2>
+  <p class="intro">Travar não reprova a iniciativa: mostra por onde ela começa. <strong>Para cada situação, diga qual campo travou.</strong></p>
+  <div class="tq-list" id="tqList"></div>
+  <p class="score" id="tqScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-numero" aria-labelledby="h-numero">
+  <span class="eyebrow">Frase ou medida</span>
+  <h2 id="h-numero">Se duas pessoas medirem, elas chegam ao mesmo valor?</h2>
+  <p class="intro">O campo 2 costuma chegar como frase. O teste é simples: <strong>duas pessoas, medindo separadas, chegariam ao mesmo número?</strong> Se não, ainda é frase. Transforme cada uma.</p>
+  <div class="fm" id="fm"></div>
+  <p class="hint">O atalho quando trava: pergunte o que uma pessoa faria de diferente se desse certo. O número está nessa ação.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-dentro" aria-labelledby="h-dentro">
+  <span class="eyebrow">A ficha dentro do processo</span>
+  <h2 id="h-dentro">A trava que ninguém precisa lembrar</h2>
+  <p class="intro">Numa equipe que monta propostas com vários auxiliares, um deles não escreve nada: <strong>só confere se três campos foram preenchidos, e devolve quando falta qualquer um.</strong> É a ficha morando no caminho do trabalho, em vez de num manual. Ligue e desligue a trava.</p>
+  <div class="seg" role="group" aria-label="Estado da trava">
+    <button type="button" data-tv="off" aria-pressed="true">Sem a trava</button>
+    <button type="button" data-tv="on" aria-pressed="false">Com a trava</button>
+  </div>
+  <div class="tv">
+    <div class="panel focal tv-rules">
+      <span class="eyebrow">A trava, como está escrita</span>
+      <dl>
+        <dt>Responsável</dt><dd>Nomeado. Não vale “a equipe” nem “a coordenação”.</dd>
+        <dt>Métrica</dt><dd>Quantificada. Não vale “melhorar” nem “reduzir bastante”.</dd>
+        <dt>Prazo</dt><dd>Defensável. Uma data que a pessoa consegue justificar.</dd>
+        <dt>Se faltar</dt><dd>Devolve para a pessoa. Não preenche sozinho, não sugere, não estima.</dd>
+      </dl>
+    </div>
+    <div class="tv-list" id="tvList" aria-live="polite"></div>
+  </div>
+  <p class="punch">Ela funciona porque <em>aparece na hora em que o trabalho passa</em>, e não deixa passar. É o pilar 4 aplicado ao pilar 5.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-sessenta" aria-labelledby="h-sessenta">
+  <span class="eyebrow">Sessenta dias</span>
+  <h2 id="h-sessenta">Curto de propósito, e com a volta marcada</h2>
+  <p class="intro">Sessenta dias obriga a escolher um pedaço que cabe: um curso, uma turma, um tipo de documento. <strong>No dia sessenta alguém compara, e o que a comparação mostrar vira registro.</strong> É aqui que o ciclo dos cinco pilares fecha. Ajuste a sua meta.</p>
+  <div class="sx">
+    <div class="panel sx-in">
+      <div class="field"><label for="sxA">Hoje, medido (horas por semana)</label><div class="row"><input type="range" id="sxA" min="1" max="30" value="6"><output id="sxAo">6</output></div></div>
+      <div class="field"><label for="sxB">Meta em sessenta dias</label><div class="row"><input type="range" id="sxB" min="0" max="30" value="3"><output id="sxBo">3</output></div></div>
+      <div class="verdict" id="sxVer" aria-live="polite"></div>
+    </div>
+    <div class="panel sx-chart">
+      <svg viewBox="0 0 440 250" role="img" aria-labelledby="sx-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="sx-t">Linha do valor medido no dia zero até a meta no dia sessenta, com uma seta de volta para o registro</title>
+        <defs><marker id="sxm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-ok"/></marker></defs>
+        <line class="dc-ax" x1="50" y1="170" x2="400" y2="170"/>
+        <line id="sxL" class="sx-line" x1="70" y1="60" x2="380" y2="120"/>
+        <circle id="sxP1" class="sx-pt now" cx="70" cy="60" r="7"/><circle id="sxP2" class="sx-pt" cx="380" cy="120" r="7"/>
+        <text id="sxT1" class="sx-tv" x="70" y="44" text-anchor="middle">6 h</text><text id="sxT2" class="sx-tv" x="380" y="104" text-anchor="middle">3 h</text>
+        <text class="sx-t" x="70" y="190" text-anchor="middle">DIA 0 · medir</text><text class="sx-t" x="380" y="190" text-anchor="middle">DIA 60 · comparar</text>
+        <path class="sx-back" d="M380,196 V228 H80 V200" marker-end="url(#sxm)"/>
+        <text class="sx-bt" x="230" y="244" text-anchor="middle">o que a comparação mostrar vira registro · pilar 1</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-copiar" aria-labelledby="h-copiar">
+  <span class="eyebrow">Para copiar</span>
+  <h2 id="h-copiar">Um revisor que devolve, em vez de completar</h2>
+  <p class="intro">Cole a sua ficha depois deste pedido. <strong>Ele não melhora a sua ideia nem preenche o que faltou</strong>: aponta o campo que ainda não é campo, e diz qual é a próxima tarefa.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O revisor da ficha</span><button type="button" class="btn" id="rvCopy">Copiar</button></div>
+<pre id="rvText">Papel: um revisor de iniciativas que confere se quatro campos foram preenchidos, e que devolve para a pessoa em vez de completar por ela.
+
+Contexto: vou colar abaixo uma iniciativa da minha área com quatro campos: em que isso ajuda (um destino só, entre trazer mais clientes, fazer cada cliente valer mais, ou reduzir custo e retrabalho), qual é o número, quanto é hoje e quanto em sessenta dias.
+
+Tarefa: confira cada campo com estes testes. Campo 1: tem um destino só? Campo 2: se duas pessoas medirem, chegam ao mesmo valor? Campo 3: o valor veio de medição ou de estimativa? Campo 4: tem número e cabe em sessenta dias, sem ser mais que o dobro de melhora?
+
+Formato: uma linha por campo, com "passa" ou "devolve" e o motivo em uma frase. No fim, uma frase só: qual é a próxima tarefa.
+
+Limites: não preencha campo vazio, não sugira número e não estime o valor de hoje. Não comente se a ideia é boa. Se um campo estiver vago, devolva citando a palavra que o deixou vago.
+
+Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e nenhum campo foi inventado por você.</pre>
+  </div>
+  <p class="bolso">A pergunta de bolso: qual dos quatro campos eu não consigo preencher? Esse é o meu próximo passo.</p>
+</section>
+
+<!-- 10 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Sem os quatro, é vontade</h3><p>Em que ajuda, qual é o número, quanto é hoje, quanto em sessenta dias. E o campo vazio é diagnóstico, não reprovação.</p></div>
+    <div class="take-card"><h3>O campo 3 sai de medição</h3><p>Quase ninguém sabe quanto é hoje. Medir uma semana comum é a primeira tarefa, antes de qualquer automação.</p></div>
+    <div class="take-card"><h3>A trava mora no caminho</h3><p>A ficha que funciona é a que aparece na hora em que o trabalho passa, e devolve quando falta.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Destino</dt><dd>O único dos três lugares onde a iniciativa ajuda: trazer mais clientes, fazer cada um valer mais, ou reduzir custo e retrabalho.</dd>
+    <dt>Número</dt><dd>A medida que o destino move, contável do mesmo jeito por qualquer pessoa.</dd>
+    <dt>Linha de base</dt><dd>O valor de hoje, medido antes de mudar qualquer coisa. Sem ele, só existe o depois.</dd>
+    <dt>Trava</dt><dd>Uma conferência no caminho do trabalho que devolve o que chegou sem responsável, métrica ou prazo.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os quadrados das etapas, as semanas de teste e os números dos exemplos mostram a forma, não a medida. O corte de “mais que o dobro de melhora” é um sinal prático para meta de sessenta dias, não uma regra.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first--memoria.html"><span>← anterior</span><b>5.4 · Toda correção vira regra</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--ipo.html"><span>próxima →</span><b>5.6 · IPO</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · funil */
+  var FN = {
+    sem: { on: [60, 36, 24, 6], back: [0, 0, 0, 0], cut: 0, weeks: [0, 0, 36, 90] },
+    com: { on: [24, 20, 16, 10], back: [36, 36, 36, 36], cut: 36, weeks: [0, 0, 12, 30] }
+  };
+  var FNL = ['Ideias que aparecem', 'Viram teste', 'Funcionam na apresentação', 'Viram rotina'];
+  var FNT = {
+    sem: ['<b>Sessenta ideias, todas seguem.</b> Nenhuma foi perguntada sobre número, e todas parecem boas.', '<b>Viram teste.</b> Cada teste custa semanas de alguém. Ninguém sabe ainda o que seria dar certo.', '<b>Funcionam na apresentação.</b> Agradam. Mas sem o número de hoje, não existe antes e depois para mostrar.', '<b>Poucas viram rotina.</b> O resto parou na demonstração, depois de consumir semanas.'],
+    com: ['<b>Mais da metade volta na primeira folha.</b> Não morreu: travou num campo, e esse campo virou a próxima tarefa, quase sempre medir.', '<b>As que passaram viram teste.</b> Cada uma com destino, número, ponto de partida e meta.', '<b>Funcionam na apresentação, com número.</b> Dá para mostrar o antes e o depois.', '<b>Mais delas viram rotina.</b> E as que não viraram gastaram menos semanas, porque o corte veio cedo.']
+  };
+  var fnGrid = document.getElementById('fnGrid'), fnSq = [], fnMode = 'sem', fnStep = 1;
+  for (var i = 0; i < 60; i++) { var sq = document.createElement('i'); fnGrid.appendChild(sq); fnSq.push(sq); }
+  function fnRender() {
+    var d = FN[fnMode], k = fnStep - 1;
+    fnSq.forEach(function (s, j) { s.className = j < d.on[k] ? 'on' : (j >= 60 - d.back[k] ? 'back' : ''); });
+    document.getElementById('fnLab').textContent = 'Etapa ' + fnStep + ' de 4 · ' + FNL[k];
+    document.getElementById('fnCut').textContent = d.cut && k >= 0 ? d.cut : 0;
+    document.getElementById('fnWeeks').textContent = d.weeks[k];
+    var v = document.getElementById('fnVer'); v.className = 'verdict ' + (fnMode === 'com' ? 'ok' : (k === 3 ? 'no' : 'mid')); v.innerHTML = FNT[fnMode][k];
+    document.getElementById('fnPrev').disabled = fnStep === 1;
+    document.getElementById('fnNext').textContent = fnStep === 4 ? 'Recomeçar ↺' : 'Próxima etapa →';
+  }
+  var fnB = document.querySelectorAll('[data-fn]');
+  fnB.forEach(function (b) { b.addEventListener('click', function () { pressGroup(fnB, function (x) { return x === b; }); fnMode = b.dataset.fn; fnRender(); }); });
+  document.getElementById('fnPrev').addEventListener('click', function () { fnStep = Math.max(1, fnStep - 1); fnRender(); });
+  document.getElementById('fnNext').addEventListener('click', function () { fnStep = fnStep === 4 ? 1 : fnStep + 1; fnRender(); });
+  fnRender();
+
+  /* 2 · a ficha */
+  var fIni = document.getElementById('fcIni'), fNum = document.getElementById('fcNum'), fHoje = document.getElementById('fcHoje'), fMeta = document.getElementById('fcMeta');
+  var dBtns = document.querySelectorAll('[data-d]'), dest = 'Reduzir custo e retrabalho';
+  var VAGO = /(melhor|agilidade|organiza|qualidade|eficien|eficiên|produtiv|satisfa|engaja|experiên)/i;
+  var CONTA = /\b(horas?|min|minutos?|dias?|semanas?|meses|vezes|reais|percentual|taxa|quantos|quantas)\b|%|por cento|quantidade|número de|r\$|m[eê]s\b/i;
+  var CHUTE = /(acho|uns |umas |cerca|mais ou menos|~|\?|aproximad|talvez)/i;
+  function num(s) { var m = (s || '').replace(',', '.').match(/\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
+  function check() {
+    var r = [], nv = fNum.value.trim(), hv = fHoje.value.trim(), mv = fMeta.value.trim();
+    r.push(dest ? { s: 'ok', v: dest } : { s: '', v: '', w: 'Escolha um destino só.' });
+    if (!nv) r.push({ s: '', v: '', w: 'Sem número, não há como saber depois se mudou.' });
+    else if (VAGO.test(nv) && !CONTA.test(nv)) r.push({ s: 'warn', v: nv, w: 'Ainda é frase: duas pessoas mediriam diferente. O que se conta aqui?' });
+    else r.push({ s: 'ok', v: nv });
+    if (!hv) r.push({ s: '', v: '', w: 'O campo mais comum de travar. Meça uma semana comum: é a primeira tarefa, antes da automação.' });
+    else if (/n[ãa]o medido/i.test(hv)) r.push({ s: 'warn', v: hv, w: 'Honesto. A próxima tarefa é medir, e ela vem antes de qualquer outra.' });
+    else if (num(hv) === null) r.push({ s: 'warn', v: hv, w: 'Sem número, não há ponto de partida.' });
+    else if (CHUTE.test(hv)) r.push({ s: 'warn', v: hv, w: 'Parece estimativa. Escreva ao lado quando vai medir de verdade.' });
+    else r.push({ s: 'ok', v: hv });
+    var a = num(hv), b = num(mv);
+    if (!mv) r.push({ s: '', v: '', w: 'Sem meta com prazo, a gestão não tem o que acompanhar.' });
+    else if (b === null) r.push({ s: 'warn', v: mv, w: 'A meta precisa de um número.' });
+    else if (a !== null && a > 0 && (b / a < 0.34 || b / a > 3)) r.push({ s: 'warn', v: mv, w: 'Agressiva para sessenta dias. Corte o pedaço até caber.' });
+    else if (a !== null && a === b) r.push({ s: 'warn', v: mv, w: 'Igual a hoje. O que deveria mudar?' });
+    else r.push({ s: 'ok', v: mv });
+    return r;
+  }
+  var LBL = ['Em que isso ajuda', 'Qual é o número', 'Quanto é hoje', 'Quanto em 60 dias'];
+  function renderFicha() {
+    var r = check(), html = '', firstBad = -1, okN = 0;
+    r.forEach(function (x, i) {
+      if (x.s === 'ok') okN++; else if (firstBad < 0) firstBad = i;
+      html += '<div class="fc-row"><span class="fc-st ' + x.s + '">' + (x.s === 'ok' ? '✓' : (x.s === 'warn' ? '!' : (i + 1))) + '</span><div><small>' + (i + 1) + ' · ' + LBL[i] + '</small><span class="v' + (x.v ? '' : ' empty') + '">' + (x.v || 'vazio') + '</span>' + (x.w ? '<span class="why"> · ' + x.w + '</span>' : '') + '</div></div>';
+    });
+    document.getElementById('fcTtl').textContent = fIni.value.trim() || 'Qual é a iniciativa?';
+    document.getElementById('fcRows').innerHTML = html;
+    var v = document.getElementById('fcVer');
+    if (okN === 4) { v.className = 'verdict ok'; v.innerHTML = '<b>Projeto.</b> Cabe em quatro linhas e sobrevive à pergunta “e isso dá quanto?”.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Ainda é vontade, e isso é diagnóstico.</b> O campo ' + (firstBad + 1) + ' é a sua próxima tarefa.'; }
+    document.getElementById('fcText').textContent = 'Iniciativa: ' + (fIni.value.trim() || '[a iniciativa]') + '\n1. Em que isso ajuda: ' + (dest || '[um destino]') + '\n2. Qual é o número: ' + (fNum.value.trim() || '[a medida]') + '\n3. Quanto é hoje: ' + (fHoje.value.trim() || 'não medido') + '\n4. Quanto em 60 dias: ' + (fMeta.value.trim() || '[a meta]');
+  }
+  dBtns.forEach(function (b) { b.addEventListener('click', function () { dest = b.dataset.d; pressGroup(dBtns, function (x) { return x === b; }); renderFicha(); }); });
+  [fIni, fNum, fHoje, fMeta].forEach(function (x) { x.addEventListener('input', renderFicha); });
+  document.getElementById('fcEx').addEventListener('click', function () {
+    fIni.value = 'Responder as dúvidas repetidas de cliente sem alguém lendo uma a uma'; dest = 'Reduzir custo e retrabalho';
+    pressGroup(dBtns, function (x) { return x.dataset.d === dest; });
+    fNum.value = 'Horas por semana respondendo dúvida já respondida antes'; fHoje.value = '6 horas por semana, medidas numa semana comum'; fMeta.value = '3 horas por semana'; renderFicha();
+  });
+  document.getElementById('fcClr').addEventListener('click', function () { fIni.value = fNum.value = fHoje.value = fMeta.value = ''; dest = ''; pressGroup(dBtns, function () { return false; }); renderFicha(); });
+  document.getElementById('fcCopy').addEventListener('click', function () { copyText(document.getElementById('fcText').textContent, this); });
+  renderFicha();
+
+  /* 3 · campos */
+  var CP = [
+    { q: 'Em que isso ajuda?', t: 'Um destino só, entre três: trazer mais clientes, fazer cada um valer mais, reduzir custo e retrabalho.', e: 'Marcar os três. Iniciativa que ajuda em tudo costuma não ajudar em nada.', f: 'Se travou aqui, a ideia nasceu da ferramenta, não do problema. Recomece pelo incômodo: o que na sua semana faz você pensar “de novo isso”?' },
+    { q: 'Qual é o número?', t: 'Se duas pessoas medirem, chegam ao mesmo valor?', e: 'Escrever “melhorar o atendimento” ou “ganhar agilidade”. É real, mas é difuso.', f: 'Pergunte o que uma pessoa faria de diferente se desse certo. O número está nessa ação: horas, dias, quantidade, porcentagem.' },
+    { q: 'Quanto é hoje?', t: 'O valor veio de contagem, e não de estimativa?', e: 'Chutar. Sem o hoje medido não existe antes e depois: existe só o depois.', f: 'É a trava mais comum e a mais fácil. O número existe, ninguém contou. Meça uma semana: contar à mão numa folha vale.' },
+    { q: 'Quanto em sessenta dias?', t: 'Tem número, tem prazo, e a meta é modesta?', e: 'Meta agressiva, ou não saber se dá. Os dois indicam que o pedaço é grande demais.', f: 'Corte o escopo até caber: um curso, uma turma, um tipo de documento. Depois repita no pedaço seguinte.' }
+  ];
+  var cpB = document.querySelectorAll('.cp');
+  function showCp(i) {
+    pressGroup(cpB, function (x) { return +x.dataset.cp === i; });
+    var c = CP[i];
+    document.getElementById('cpDet').innerHTML = '<dl><dt>A pergunta</dt><dd class="q">' + c.q + '</dd><dt>O teste</dt><dd>' + c.t + '</dd><dt>O erro comum</dt><dd>' + c.e + '</dd><dt>Se travou</dt><dd>' + c.f + '</dd></dl>';
+  }
+  cpB.forEach(function (b) { b.addEventListener('click', function () { showCp(+b.dataset.cp); }); });
+  showCp(0);
+
+  /* 4 · destinos */
+  var DS = [
+    { i: 'Escrever uma vez as respostas das dúvidas de cliente que se repetem, num lugar que a equipe consulta', n: 'Horas por semana respondendo dúvida já respondida antes', a: 6, b: 3, u: 'h / semana' },
+    { i: 'Padronizar o material de divulgação de produto novo, com o público escrito uma vez', n: 'Dias entre o produto ser aprovado e o material estar no ar', a: 9, b: 3, u: 'dias' },
+    { i: 'Conferir os documentos do pedido com uma lista fixa antes de cobrar o cliente', n: 'Percentual de pedidos que voltam por documento faltando', a: 22, b: 10, u: '%' }
+  ];
+  var dsB = document.querySelectorAll('[data-ds]');
+  function showDs(k) {
+    pressGroup(dsB, function (x) { return +x.dataset.ds === k; });
+    var d = DS[k];
+    document.getElementById('dsRow').innerHTML = '<dl><dt>A iniciativa</dt><dd>' + d.i + '</dd><dt>Qual é o número</dt><dd>' + d.n + '</dd><dt>Hoje → em 60 dias</dt><dd><b>' + d.a + ' ' + d.u + '</b> → <b>' + d.b + ' ' + d.u + '</b></dd></dl>';
+    var hA = 140, hB = Math.round(d.b / d.a * 140);
+    var A = document.getElementById('dcA'), B = document.getElementById('dcB');
+    A.setAttribute('y', 180 - hA); A.setAttribute('height', hA); B.setAttribute('y', 180 - hB); B.setAttribute('height', hB);
+    var Av = document.getElementById('dcAv'), Bv = document.getElementById('dcBv');
+    Av.setAttribute('y', 172 - hA); Av.textContent = d.a + ' ' + d.u; Bv.setAttribute('y', 172 - hB); Bv.textContent = d.b + ' ' + d.u;
+  }
+  dsB.forEach(function (b) { b.addEventListener('click', function () { showDs(+b.dataset.ds); }); });
+  showDs(0);
+
+  /* 5 · onde trava */
+  var TQ = [
+    { s: 'Vimos uma ferramenta que resume reuniões muito bem, e queremos achar onde usar.', a: 0, w: 'A ideia nasceu da ferramenta. Recomece pelo incômodo, e o destino aparece.' },
+    { s: 'O objetivo é ganhar agilidade no atendimento.', a: 1, w: 'Agilidade é real e difusa. O que se conta? Horas até a primeira resposta, por exemplo.' },
+    { s: 'Sabemos que a equipe perde muito tempo com isso, só não sabemos quanto.', a: 2, w: 'O número existe, ninguém contou. Medir uma semana é a primeira tarefa.' },
+    { s: 'Queremos zerar o retrabalho da empresa inteira até o fim do trimestre.', a: 3, w: 'Pedaço grande demais. Uma área, um tipo de documento, e depois o seguinte.' }
+  ];
+  var tqList = document.getElementById('tqList'), tqAns = {};
+  TQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'tq';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Qual campo travou">' + [0, 1, 2, 3].map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="false">Campo ' + (k + 1) + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.v === q.a; tqAns[i] = ok; fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Travou no campo ' + (q.a + 1) + '. ') + '</b>' + q.w;
+      var n = Object.keys(tqAns).length, c = Object.keys(tqAns).filter(function (k) { return tqAns[k]; }).length;
+      document.getElementById('tqScore').textContent = n + ' de 4 respondidas · ' + c + ' certas';
+    }); });
+    tqList.appendChild(d);
+  });
+
+  /* 6 · frase ou medida */
+  var FM = [
+    ['Melhorar o atendimento', 'Horas até a primeira resposta ao cliente', 'Duas pessoas olham o horário do pedido e o da resposta: mesmo número.'],
+    ['Ganhar agilidade nas propostas', 'Dias entre o pedido chegar e a proposta ser enviada', 'Duas datas no histórico. Ninguém interpreta.'],
+    ['Errar menos no fechamento do mês', 'Percentual de fechamentos que voltam para correção', 'Conta-se quantos voltaram, sobre quantos saíram.'],
+    ['Deixar a equipe mais organizada', 'Minutos por semana procurando arquivo ou informação', 'Mede-se numa semana comum, anotando à mão. Vale.']
+  ];
+  var fm = document.getElementById('fm');
+  FM.forEach(function (x) {
+    var r = document.createElement('div'); r.className = 'fm-row';
+    r.innerHTML = '<div><span class="vago">“' + x[0] + '”</span><span class="med">' + x[1] + '</span><span class="test">' + x[2] + '</span></div><button type="button" class="btn" aria-pressed="false">Virar número</button>';
+    var b = r.querySelector('button');
+    b.addEventListener('click', function () { var on = !r.classList.contains('done'); r.classList.toggle('done', on); b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Voltar à frase' : 'Virar número'; });
+    fm.appendChild(r);
+  });
+
+  /* 7 · a trava */
+  var TV = [
+    { t: 'Resumo automático das dúvidas de cliente', r: 'Coordenadora do atendimento', m: 'Horas por semana: de 6 para 3', p: '30 de novembro', bad: [] },
+    { t: 'Proposta montada a partir da tabela de preços', r: 'a equipe comercial', m: 'Horas: de 40 min para 15 por proposta', p: 'fim do trimestre, após levantar os itens', bad: [0] },
+    { t: 'Painel semanal de metas por loja', r: 'Gerente regional', m: 'melhorar o acompanhamento', p: 'em breve', bad: [1, 2] }
+  ];
+  var tvB = document.querySelectorAll('[data-tv]'), tvList = document.getElementById('tvList'), tvWhy = ['responsável não nomeado', 'métrica não quantificada', 'prazo não defensável'];
+  function renderTv(on) {
+    pressGroup(tvB, function (x) { return x.dataset.tv === (on ? 'on' : 'off'); });
+    tvList.innerHTML = TV.map(function (x) {
+      var back = on && x.bad.length > 0;
+      var f = [x.r, x.m, x.p].map(function (v, k) { return '<span class="' + (on && x.bad.indexOf(k) > -1 ? 'bad' : '') + '">' + ['responsável: ', 'métrica: ', 'prazo: '][k] + v + '</span>'; }).join('');
+      var res = back ? 'devolvida para a pessoa · ' + x.bad.map(function (k) { return tvWhy[k]; }).join(' · ') : (on ? 'passa · segue para a próxima etapa' : 'passa · ninguém conferiu');
+      return '<div class="tv-item ' + (back ? 'back' : 'pass') + '"><span class="ttl">' + x.t + '</span><div class="tv-f">' + f + '</div><span class="tv-res">' + res + '</span></div>';
+    }).join('');
+  }
+  tvB.forEach(function (b) { b.addEventListener('click', function () { renderTv(b.dataset.tv === 'on'); }); });
+  renderTv(false);
+
+  /* 8 · sessenta dias */
+  var sxA = document.getElementById('sxA'), sxB = document.getElementById('sxB');
+  function renderSx() {
+    var a = +sxA.value, b = +sxB.value; document.getElementById('sxAo').textContent = a; document.getElementById('sxBo').textContent = b;
+    var y = function (v) { return 160 - v / 30 * 130; };
+    var L = document.getElementById('sxL'); L.setAttribute('y1', y(a)); L.setAttribute('y2', y(b));
+    document.getElementById('sxP1').setAttribute('cy', y(a)); document.getElementById('sxP2').setAttribute('cy', y(b));
+    var t1 = document.getElementById('sxT1'), t2 = document.getElementById('sxT2');
+    t1.setAttribute('y', y(a) - 14); t1.textContent = a + ' h'; t2.setAttribute('y', y(b) - 14); t2.textContent = b + ' h';
+    var v = document.getElementById('sxVer'), red = (a - b) / a;
+    if (b >= a) { v.className = 'verdict no'; v.innerHTML = '<b>A meta não reduz nada.</b> Em sessenta dias, o que deveria estar diferente?'; }
+    else if (red > 0.66) { v.className = 'verdict no'; v.innerHTML = '<b>Agressiva: ' + Math.round(red * 100) + '% a menos em sessenta dias.</b> É o jeito mais rápido de virar demonstração. Corte o pedaço até caber.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Modesta: ' + Math.round(red * 100) + '% a menos.</b> Dá para acompanhar sem entender de tecnologia, e dá para comparar no dia sessenta.'; }
+  }
+  [sxA, sxB].forEach(function (x) { x.addEventListener('input', renderSx); });
+  renderSx();
+
+  document.getElementById('rvCopy').addEventListener('click', function () { copyText(document.getElementById('rvText').innerText, this); });
+})();
+</script>
+
+</html>

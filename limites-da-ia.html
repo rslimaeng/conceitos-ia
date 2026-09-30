@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="limites-da-ia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Limites da IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página mãe da família 3. Peças: o mapa da família (gerado), antes/durante/depois (passo a passo com diagrama), qual limite é esse (quiz), três gestos de bolso (copiar). */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.sec .intro code { font-family: var(--font-mono); font-size: .88em; color: var(--accent); }
+
+
+/* 8 · levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* antes, durante, depois */
+.ad-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.ad-nav { display: flex; gap: 8px; }
+.ad-map { overflow-x: auto; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px; }
+.ad-map svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.ad-map .st rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.5; transition: fill .2s ease; }
+.ad-map .st text { fill: var(--text); font-family: var(--font-body); font-size: 14px; }
+.ad-map .st .k { fill: var(--text-dim); font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; }
+.ad-map .st .lim { fill: var(--accent); font-weight: 600; }
+.ad-map .st { cursor: pointer; }
+.ad-map .st:focus { outline: none; }
+.ad-map .st.on rect { fill: var(--accent); stroke: var(--accent); }
+.ad-map .st.on text, .ad-map .st.on .k, .ad-map .st.on .lim { fill: var(--bg-elev); }
+.ad-map .arr { stroke: var(--border-strong); stroke-width: 2; fill: none; }
+.ad-map .arrh { fill: var(--border-strong); }
+.ad-cap { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 20px; display: grid; gap: 10px; align-content: start; }
+.ad-cap h3 { font-size: 1.25rem; }
+.ad-cap dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+.ad-cap dt { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); padding-top: 3px; }
+.ad-cap dd { margin: 0; color: var(--text-muted); }
+.ad-cap a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.ad-cap a:hover { text-decoration: underline; }
+
+/* qual limite */
+.ql-list { display: grid; gap: 8px; }
+.ql-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; }
+.ql-item .fr { font-size: .98rem; }
+.ql-item .ans { display: flex; gap: 6px; flex-wrap: wrap; }
+.ql-item .ans button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 10px; font-size: .86rem; color: var(--text-muted); }
+.ql-item .ans button[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+.ql-item .why { grid-column: 1 / -1; font-size: .9rem; }
+.ql-item .why a { color: inherit; font-weight: 600; }
+.ql-item.ok { border-color: var(--ok); background: var(--ok-soft); }
+.ql-item.ok .why { color: var(--ok-texto); }
+.ql-item.no { border-color: var(--atencao); background: var(--atencao-soft); }
+.ql-item.no .why { color: var(--atencao-texto); }
+.ql-score { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.ql-score .n { font-family: var(--font-mono); font-size: 1.4rem; color: var(--accent); }
+
+/* bolso */
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 860px) {
+  .take { grid-template-columns: 1fr; }
+  .ql-item { grid-template-columns: 1fr; }
+  .ad-cap dl { grid-template-columns: 1fr; gap: 2px; }
+  .ad-cap dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .ad-map .st rect { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Limites da IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./limites-da-ia.html">Família 3 · Limites da IA</a></span><span class="famhead-pn"><a href="./limites-da-ia--janela-de-contexto.html">3.1 Janela de contexto →</a></span></div>
+    <div class="famhead-chips"><a href="./limites-da-ia.html" aria-current="page">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html"><b>3.3</b>O que pode subir</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>Limites da IA</h1>
+  <p class="sub">Três limites que valem para qualquer ferramenta, e o gesto de bolso que resolve cada um</p>
+  <p class="lead">Nenhum dos três some com a versão nova do modelo nem com o plano mais caro. <strong>Um aparece antes de você anexar, outro durante a conversa, e o terceiro na resposta.</strong> Saber em que momento cada um mora é o que faz você olhar para o lugar certo.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-momento">Antes, durante, depois</a><a href="#s-qual">Qual limite é esse</a><a href="#s-bolso">Três gestos de bolso</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">Três limites, cada um com página própria</h2>
+  <p class="intro">Esta página é a visão geral. Três limites valem para qualquer ferramenta, e cada um tem a sua página: <strong>o que ela enxerga</strong>, <strong>o que ela inventa quando não enxerga</strong> e <strong>o que pode chegar até ela</strong>.</p>
+  <div class="fmap c3">
+    <div class="fmap-card"><span class="fmap-n">3.1 · Janela de contexto · 1 de 3</span><h3>Janela de contexto</h3><p>Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e a conversa longa enche a mesa sozinha.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a mesa enchendo</li><li>lembrar ou recomeçar</li><li>chat ou projeto</li></ul><a class="fmap-go" href="./limites-da-ia--janela-de-contexto.html">abrir 3.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">3.2 · Alucinação · 2 de 3</span><h3>Alucinação</h3><p>Quando a informação não está no que ela enxerga, ela continua escrevendo com a mesma fluência. Fluência não é evidência.</p><span class="fmap-lab">Lá você encontra</span><ul><li>caça ao erro</li><li>quatro jeitos de errar</li><li>a conferência de trinta segundos</li></ul><a class="fmap-go" href="./limites-da-ia--alucinacao.html">abrir 3.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">3.3 · O que pode subir · 3 de 3</span><h3>O que pode subir para a IA</h3><p>A regra é sobre o dado, não sobre a ferramenta. Quase todo documento só precisa perder a identificação para entrar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três caixas</li><li>o semáforo</li><li>antes de anexar</li></ul><a class="fmap-go" href="./limites-da-ia--o-que-pode-subir.html">abrir 3.3 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<section class="sec" id="s-momento" aria-labelledby="h-momento">
+  <span class="eyebrow">Antes, durante, depois</span>
+  <h2 id="h-momento">Cada limite mora num momento do trabalho</h2>
+  <p class="intro">Siga um pedido do começo ao fim. <strong>Avance pelos três momentos</strong> e veja qual limite aparece em cada um, o sinal de que ele apareceu, e o gesto que resolve.</p>
+  <div class="ad-bar"><span class="eyebrow" id="adLab">Momento 1 de 3</span><div class="ad-nav"><button type="button" class="btn" id="adPrev">← Anterior</button><button type="button" class="btn primary" id="adNext">Próximo →</button></div></div>
+  <div class="ad-map">
+    <svg viewBox="0 0 640 150" role="img" aria-labelledby="adT">
+      <title id="adT">Três momentos de um pedido, da esquerda para a direita: antes de anexar mora o limite do que pode subir; durante a conversa mora a janela de contexto; na resposta mora a alucinação.</title>
+      <g id="adArr"></g>
+      <g id="adSt"></g>
+    </svg>
+  </div>
+  <div class="ad-cap" id="adCap" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-qual" aria-labelledby="h-qual">
+  <span class="eyebrow">Qual limite é esse</span>
+  <h2 id="h-qual">Seis situações de uma semana comum</h2>
+  <p class="intro">Para cada uma, <strong>decida qual dos três limites está em jogo</strong>. A resposta leva para a página que resolve.</p>
+  <div class="ql-list" id="qlList"></div>
+  <div class="ql-score"><span class="hint" id="qlHint">Responda as seis.</span><span><span class="n" id="qlN">0</span> <span class="hint">de 6</span></span><button type="button" class="btn" id="qlReset">Refazer</button></div>
+</section>
+
+<section class="sec" id="s-bolso" aria-labelledby="h-bolso">
+  <span class="eyebrow">Três gestos de bolso</span>
+  <h2 id="h-bolso">Um gesto por momento, e nenhum depende da ferramenta</h2>
+  <p class="intro">Cada página da família termina num gesto que se faz em segundos. Juntos, eles cabem num papel ao lado do teclado.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Para colar ao lado do teclado</span><button type="button" class="btn" id="bolsoCopy">Copiar</button></div>
+    <pre id="bolso">Antes de anexar: tem dado que identifica alguém, ou que a empresa não quer circulando?
+  Tire a identificação. Sem o nome, cargo, unidade e data ainda podem apontar para uma pessoa só.
+
+Conversa longa piorando: não peça "não esqueça".
+  Recomece com duas ou três linhas escolhidas por mim.
+
+Antes de usar a resposta: número, nome próprio e causa, conferidos contra alguma coisa.
+  E peça a lacuna declarada: "não localizado" é uma resposta certa.</pre>
+  </div>
+</section>
+
+<section class="sec" id="levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>A regra é sobre o dado</h3><p>Não sobre a ferramenta. Por isso ela sobrevive ao produto novo e à configuração que mudou.</p></div>
+    <div class="take-card"><h3>A mesa tem tamanho fixo</h3><p>A conversa engorda sozinha. Recomeçar com poucas linhas escolhidas é barato.</p></div>
+    <div class="take-card"><h3>Fluência não é evidência</h3><p>A parte inventada tem a mesma cara da parte certa. Confira contra alguma coisa.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Janela de contexto</dt><dd>O espaço de tamanho fixo onde precisa caber tudo o que orienta a resposta: pedido, material, regras e a conversa até ali.</dd>
+    <dt>Alucinação</dt><dd>O texto que a IA escreve com a mesma fluência quando a informação não está no que ela enxerga.</dd>
+    <dt>Dado identificável</dt><dd>O que aponta para uma pessoa, sozinho ou junto com outros dados: nome, e também cargo, unidade e data.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os três limites são uma forma de organizar o assunto; na prática eles se misturam, e a conversa longa, por exemplo, também aumenta a chance de a resposta inventar. As situações do quiz são fictícias.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Limites da IA: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./limites-da-ia.html#mapa">Família 3 · Limites da IA · o mapa</a>
+  <a class="famfoot-next" href="./limites-da-ia--janela-de-contexto.html"><span>próxima →</span><b>3.1 · Janela de contexto</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, parent) { var e = document.createElementNS(NS, tag); for (var a in attrs) e.setAttribute(a, attrs[a]); if (parent) parent.appendChild(e); return e; }
+
+  /* antes, durante, depois */
+  var AD = [
+    { k: 'ANTES · VOCÊ ANEXA', lim: 'O que pode subir', n: '3.3', href: './limites-da-ia--o-que-pode-subir.html',
+      l: 'O dado que identifica uma pessoa, ou que a empresa não quer circulando, continua sendo esse dado em qualquer ferramenta.',
+      s: 'O gesto de anexar custa um segundo, e não há atrito nenhum entre decidir e fazer.',
+      g: 'Tirar a identificação antes. Quase todo documento que parece proibido só precisa disso para entrar.' },
+    { k: 'DURANTE · A CONVERSA CRESCE', lim: 'Janela de contexto', n: '3.1', href: './limites-da-ia--janela-de-contexto.html',
+      l: 'Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e cada troca acrescenta mais em cima dela.',
+      s: 'A conversa longa piora sem ninguém mexer em nada: o combinado do começo para de valer.',
+      g: 'Recomeçar com duas ou três linhas escolhidas por você. Vale mais que cinquenta mensagens de histórico.' },
+    { k: 'DEPOIS · A RESPOSTA VOLTA', lim: 'Alucinação', n: '3.2', href: './limites-da-ia--alucinacao.html',
+      l: 'Quando a informação não está no que ela enxerga, ela continua escrevendo o mais provável, com a mesma fluência.',
+      s: 'Número, nome próprio ou causa que você não reconhece no material que deu.',
+      g: 'Conferir contra alguma coisa, e pedir a lacuna declarada: “não localizado” é um resultado certo.' }
+  ];
+  var gSt = document.getElementById('adSt'), gAr = document.getElementById('adArr'), boxes = [], cur = 0;
+  AD.forEach(function (a, i) {
+    var x = 10 + i * 215;
+    var g = el('g', { 'class': 'st', tabindex: 0, role: 'button', 'aria-label': a.k + ': ' + a.lim }, gSt);
+    el('rect', { x: x, y: 20, width: 190, height: 110, rx: 10 }, g);
+    var k = el('text', { 'class': 'k', x: x + 14, y: 48 }, g); k.textContent = a.k.split(' · ')[0];
+    var t = el('text', { x: x + 14, y: 74 }, g); t.textContent = a.k.split(' · ')[1].toLowerCase();
+    var l = el('text', { 'class': 'lim', x: x + 14, y: 106 }, g); l.textContent = a.n + ' · ' + a.lim;
+    g.addEventListener('click', function () { go(i); });
+    g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(i); } });
+    boxes.push(g);
+    if (i < 2) { el('path', { 'class': 'arr', d: 'M' + (x + 192) + ' 75 L' + (x + 213) + ' 75' }, gAr); el('path', { 'class': 'arrh', d: 'M' + (x + 207) + ' 70 L' + (x + 214) + ' 75 L' + (x + 207) + ' 80 Z' }, gAr); }
+  });
+  function go(i) {
+    cur = i; var a = AD[i];
+    boxes.forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-pressed', String(k === i)); });
+    document.getElementById('adCap').innerHTML = '<span class="eyebrow">' + a.k + '</span><h3>' + a.n + ' · ' + a.lim + '</h3><dl><dt>O limite</dt><dd>' + a.l + '</dd><dt>O sinal</dt><dd>' + a.s + '</dd><dt>O gesto</dt><dd>' + a.g + '</dd></dl><a href="' + a.href + '">Abrir ' + a.n + ' →</a>';
+    document.getElementById('adLab').textContent = 'Momento ' + (i + 1) + ' de 3';
+    document.getElementById('adPrev').disabled = i === 0;
+    document.getElementById('adNext').textContent = i === 2 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('adPrev').addEventListener('click', function () { go(Math.max(0, cur - 1)); });
+  document.getElementById('adNext').addEventListener('click', function () { go(cur === 2 ? 0 : cur + 1); });
+  go(0);
+
+  /* qual limite */
+  var LIM = { s: ['o que pode subir', './limites-da-ia--o-que-pode-subir.html', '3.3'], j: ['janela de contexto', './limites-da-ia--janela-de-contexto.html', '3.1'], a: ['alucinação', './limites-da-ia--alucinacao.html', '3.2'] };
+  var QL = [
+    ['Na mensagem quarenta, ela parou de seguir o formato combinado no começo.', 'j', 'O combinado continua lá, mas ficou longe demais para pesar. A mesa encheu.'],
+    ['O resumo trouxe um número que não está na planilha.', 'a', 'Sem a informação no que ela enxerga, ela escreveu o mais provável, com a mesma segurança.'],
+    ['Vou anexar a planilha de salários com nome e documento de cada pessoa para montar a análise.', 's', 'A análise funciona igual sem a identificação. Troque o nome por um código antes de anexar.'],
+    ['Colei três relatórios inteiros, e a resposta ignorou o primeiro.', 'j', 'Colar mais ocupa mais mesa. Escolha o trecho que importa, ou divida em conversas.'],
+    ['Ela citou uma norma com número e ano, e a norma não existe.', 'a', 'Nome próprio e número são os primeiros a conferir. Peça a fonte, e aceite “não localizado”.'],
+    ['A ata tem o nome do colaborador afastado e o motivo do afastamento.', 's', 'Motivo de afastamento é dado de saúde de uma pessoa. O pedido funciona sem o nome e sem o motivo.']
+  ];
+  var list = document.getElementById('qlList'), ans = [];
+  QL.forEach(function (x, i) {
+    var it = document.createElement('div'); it.className = 'ql-item';
+    it.innerHTML = '<span class="fr">“' + x[0] + '”</span><span class="ans"><button type="button" data-v="s" aria-pressed="false">Subir</button><button type="button" data-v="j" aria-pressed="false">Janela</button><button type="button" data-v="a" aria-pressed="false">Alucinação</button></span><span class="why" aria-live="polite"></span>';
+    var bs = it.querySelectorAll('button');
+    bs.forEach(function (b) {
+      b.addEventListener('click', function () {
+        press(bs, function (o) { return o === b; });
+        var ok = b.dataset.v === x[1]; ans[i] = ok;
+        it.classList.toggle('ok', ok); it.classList.toggle('no', !ok);
+        var p = LIM[x[1]];
+        it.querySelector('.why').innerHTML = (ok ? 'Isso. ' : 'É ' + p[0] + '. ') + x[2] + ' <a href="' + p[1] + '">Abrir ' + p[2] + ' →</a>';
+        score();
+      });
+    });
+    list.appendChild(it);
+  });
+  function score() {
+    var done = 0, right = 0;
+    ans.forEach(function (v) { if (v !== undefined) { done++; if (v) right++; } });
+    document.getElementById('qlN').textContent = right;
+    document.getElementById('qlHint').textContent = done < 6 ? 'Faltam ' + (6 - done) + '.' : (right >= 5 ? 'Você já sabe em que momento cada limite aparece.' : 'O teste: foi antes de anexar, durante a conversa, ou na resposta?');
+  }
+  document.getElementById('qlReset').addEventListener('click', function () {
+    ans = []; list.querySelectorAll('.ql-item').forEach(function (it) { it.classList.remove('ok', 'no'); it.querySelector('.why').textContent = ''; it.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); });
+    document.getElementById('qlN').textContent = '0'; document.getElementById('qlHint').textContent = 'Responda as seis.';
+  });
+
+  /* bolso */
+  document.getElementById('bolsoCopy').addEventListener('click', function () {
+    var btn = this, done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(document.getElementById('bolso').innerText).then(done, done); else done();
+  });
+})();
+</script>
+
+</html>

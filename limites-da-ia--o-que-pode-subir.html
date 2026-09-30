@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="limites-da-ia--o-que-pode-subir">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O que pode subir para a IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito em coluna única. Peças: as duas reações erradas, as três caixas em proporção, o semáforo de trinta segundos, a árvore das quatro perguntas, o simulador de identificação indireta, a mesma planilha antes e depois, o caminho do arquivo em quatro passos e o checklist de antes de anexar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.mid { background: var(--bg-elev); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.bar-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+/* ---- só desta peça ---- */
+/* 1 · o conteúdo */
+.sb-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.sb-fact { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.sb-fact .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.sb-fact.is { border-color: var(--accent); background: var(--accent-soft); }
+.sb-fact.is .tag { color: var(--accent); }
+.sb-fact.not h3 { text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.sb-fact h3 { font-size: 1.1rem; font-weight: 500; }
+.sb-fact p { font-size: .95rem; color: var(--text-muted); }
+.sb-analogy { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.sb-analogy h3 { font-size: 1.15rem; font-weight: 500; }
+.sb-analogy ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.sb-analogy li { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; font-size: .94rem; }
+.sb-analogy li span:first-child { color: var(--text-muted); }
+.sb-analogy li span:nth-child(2) { color: var(--text-dim); font-family: var(--font-mono); }
+.rx-out { background: var(--bg-elev); border: 1px solid var(--atencao); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+
+/* 2 · três caixas */
+.cx-row { display: grid; grid-template-columns: 1fr 1.6fr .9fr; gap: 12px; align-items: end; }
+.cx-box { text-align: left; border: 1.5px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.cx-box.in { min-height: 170px; border-color: var(--ok); }
+.cx-box.mid { min-height: 240px; border-color: var(--accent); }
+.cx-box.out { min-height: 130px; border-color: var(--atencao); }
+.cx-box .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.cx-box.in .k { color: var(--ok-texto); }
+.cx-box.mid .k { color: var(--accent); }
+.cx-box.out .k { color: var(--atencao-texto); }
+.cx-box b { font-weight: 600; font-size: 1.1rem; }
+.cx-box[aria-pressed="true"].in { background: var(--ok-soft); }
+.cx-box[aria-pressed="true"].mid { background: var(--accent-soft); }
+.cx-box[aria-pressed="true"].out { background: var(--atencao-soft); }
+.cx-detail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+.cx-detail ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+
+/* 3 · semáforo */
+.fam { display: flex; flex-wrap: wrap; gap: 8px; }
+.fam span { border: 1px solid var(--atencao); color: var(--atencao-texto); background: var(--atencao-soft); border-radius: 999px; padding: 3px 12px; font-size: .9rem; }
+.sm-list { display: grid; gap: 10px; }
+.sm-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.sm-q .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.sm-q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-size: .9rem; display: inline-flex; gap: 8px; align-items: center; }
+.sm-q .opts button i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; border: 1px solid; }
+.sm-q .opts button i.g { background: var(--ok); border-color: var(--ok); }
+.sm-q .opts button i.a { background: var(--bg-elev); border-color: var(--atencao); box-shadow: inset 0 0 0 3px var(--atencao-soft); }
+.sm-q .opts button i.r { background: var(--atencao); border-color: var(--atencao); }
+.sm-q .opts button[aria-pressed="true"] { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); background: var(--bg-elev); font-weight: 600; }
+.sm-fb { font-size: .93rem; border-radius: 6px; padding: 8px 12px; border: 1px solid; }
+.sm-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.sm-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.sm-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 4 · árvore */
+.tr { display: grid; gap: 0; }
+.tr-node { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; position: relative; padding-bottom: 18px; }
+.tr-node:not(:last-child)::before { content: ""; position: absolute; left: 22px; top: 44px; bottom: 0; border-left: 2px dashed var(--border-strong); }
+.tr-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 10px; align-content: start; transition: opacity .2s ease; position: relative; }
+.tr-q .n { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--text); background: var(--bg-elev); font-family: var(--font-mono); font-size: 13px; display: grid; place-items: center; }
+.tr-q .opts { grid-column: 2; display: flex; gap: 6px; }
+.tr-q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 4px 14px; font-size: .9rem; }
+.tr-q .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tr-node.now .tr-q { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.tr-node.later .tr-q, .tr-node.later .tr-yes { opacity: .35; }
+.tr-yes { border: 1px dashed var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; align-content: start; font-size: .94rem; color: var(--text-muted); transition: opacity .2s ease; }
+.tr-yes .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.tr-node.hit .tr-yes { border-style: solid; border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.tr-end { border-radius: 8px; padding: 12px 16px; border: 1px solid var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+
+/* 5 · identificação indireta */
+.id-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 20px; align-items: start; }
+.id-cols { display: flex; flex-wrap: wrap; gap: 8px; }
+.id-cols button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 8px 14px; font-size: .92rem; display: inline-flex; gap: 8px; align-items: center; }
+.id-cols button::before { content: "✓"; font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.id-cols button[aria-pressed="false"] { color: var(--text-dim); text-decoration: line-through; border-style: dashed; background: var(--bg); }
+.id-cols button[aria-pressed="false"]::before { content: "✕"; color: var(--text-dim); }
+.id-res { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 10px; }
+.id-big { font-family: var(--font-mono); font-size: 2.4rem; line-height: 1; color: var(--accent); }
+.id-dots { display: flex; flex-wrap: wrap; gap: 3px; }
+.id-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.id-dots span.on { background: var(--atencao); }
+
+/* 6 · antes e depois */
+.ad-scroll { overflow-x: auto; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-elev); }
+.ad-tbl { width: 100%; min-width: 620px; border-collapse: collapse; font-size: .92rem; }
+.ad-tbl th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.ad-tbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.ad-tbl td.chg { background: var(--accent-soft); color: var(--accent); font-family: var(--font-mono); font-size: .86rem; }
+.ad-tbl td.gone { color: var(--text-dim); font-style: italic; }
+.ad-tbl td.keep { background: var(--ok-soft); }
+
+/* 7 · caminho */
+.cm-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.cm-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.cm-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.cm-box .t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.cm-box .s { font: 400 12.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.cm-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
+.cm-box.warn rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-width: 2.2; }
+.cm-fora { fill: none; stroke: var(--atencao); stroke-width: 1.5; stroke-dasharray: 6 5; }
+.cm-lbl { font: 500 11px var(--font-mono); letter-spacing: .08em; fill: var(--atencao-texto); text-anchor: middle; }
+.cm-lbl.m { fill: var(--text-dim); }
+.cm-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; }
+.mk-m { fill: var(--text-muted); }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+
+/* 8 · checklist */
+.ck-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.ck-list { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
+.ck-item { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: .95rem; cursor: pointer; }
+.ck-item input { accent-color: var(--accent); width: 18px; height: 18px; margin-top: 3px; }
+.ck-bar { height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+.ck-fill { height: 100%; background: var(--ok); transition: width .25s ease; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.nu { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.nu div { border: 1px dashed var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.nu b { font-weight: 600; }
+.nu p { font-size: .92rem; color: var(--text-muted); }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .sb-facts { grid-template-columns: 1fr 1fr; }
+  .sb-analogy, .id-wrap, .ck-wrap, .take, .nu { grid-template-columns: 1fr; }
+  .cx-row { grid-template-columns: 1fr; }
+  .cx-box.in, .cx-box.mid, .cx-box.out { min-height: 0; }
+  .tr-node { grid-template-columns: 1fr; gap: 8px; }
+  .tr-node:not(:last-child)::before { display: none; }
+}
+@media (max-width: 520px) {
+  .sb-facts { grid-template-columns: 1fr; }
+  .sb-analogy li { grid-template-columns: 1fr; gap: 0; }
+  .sb-analogy li span:nth-child(2) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .tr-q, .tr-yes, .cm-box rect, .ck-fill { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Limites da IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./limites-da-ia.html">Família 3 · Limites da IA</a></span><span class="famhead-pn"><a href="./limites-da-ia--alucinacao.html">← 3.2 Alucinação</a><a href="./limites-da-ia.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./limites-da-ia.html">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html" aria-current="page"><b>3.3</b>O que pode subir</a></div>
+  </nav>
+  <span class="eyebrow">3.3 · 3 de 3</span>
+  <h1>O que pode subir para a IA</h1>
+  <p class="sub">Dado sensível, proteção de dados e a decisão de trinta segundos antes de anexar</p>
+  <p class="lead">O gesto de anexar custa um segundo, e não existe atrito nenhum entre decidir e fazer. <strong>A regra que resolve não é sobre a ferramenta: é sobre o conteúdo.</strong> Um dado que identifica uma pessoa, ou que a empresa não quer circulando, continua sendo esse dado em qualquer ferramenta, em qualquer plano, com qualquer configuração.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-conteudo">O conteúdo</a><a href="#s-caixas">Três caixas</a><a href="#s-semaforo">O semáforo</a><a href="#s-perguntas">Quatro perguntas</a><a href="#s-indireta">Sem o nome</a><a href="#s-planilha">A mesma planilha</a><a href="#s-caminho">O caminho do arquivo</a><a href="#s-anexar">Antes de anexar</a>
+  </nav>
+</header>
+
+<section class="sec" id="s-conteudo" aria-labelledby="h-conteudo">
+  <span class="eyebrow">O conteúdo</span>
+  <h2 id="h-conteudo">A decisão é sobre o dado, e vem antes da ferramenta</h2>
+  <p class="intro">A pergunta que todo mundo faz é qual ferramenta é segura. Ela muda de resposta a cada seis meses. <strong>A que dura é outra: este dado é meu para compartilhar?</strong> A lei brasileira de proteção de dados pessoais diz que a empresa responde pelo que faz com dado pessoal, inclusive pelo que alguém da equipe cola numa ferramenta de fora.</p>
+  <div class="sb-facts">
+    <div class="sb-fact is"><span class="tag">É</span><h3>Uma regra sobre conteúdo</h3><p>Vale igual no chat, no anexo, no print e na automação que você montar depois.</p></div>
+    <div class="sb-fact is"><span class="tag">É</span><h3>Compatível com o material real</h3><p>Quase todo caso funciona com o dado trocado. O que ensina é a estrutura, não o nome.</p></div>
+    <div class="sb-fact not"><span class="tag">Não é</span><h3>Uma lista de ferramentas proibidas</h3><p>Lista de produto envelhece em meses. A pergunta sobre o dado continua valendo.</p></div>
+    <div class="sb-fact not"><span class="tag">Não é</span><h3>Motivo para não usar IA</h3><p>Trocar três colunas custa dois minutos. Travar custa o uso inteiro.</p></div>
+  </div>
+  <div class="sb-analogy">
+    <div style="display:grid;gap:8px"><h3>É como o que você fala no elevador</h3><p class="hint" style="font-size:.95rem">Falar no elevador não é proibido. Você fala do tempo, do trânsito, da reunião da tarde. O que você segura é o nome do cliente em negociação e o valor da proposta, porque ali você não controla quem está ouvindo. Chegando na sala, o mesmo assunto pode.</p></div>
+    <ul>
+      <li><span>o elevador</span><span>→</span><span>a ferramenta de terceiro, onde você não controla o que acontece com o que sai</span></li>
+      <li><span>quem está ouvindo</span><span>→</span><span>o processamento que acontece fora da empresa</span></li>
+      <li><span>a sala</span><span>→</span><span>o ambiente que a empresa aprovou, quando existe</span></li>
+      <li><span>falar do trânsito</span><span>→</span><span>o problema descrito sem o nome, sem o número, sem a pessoa</span></li>
+    </ul>
+  </div>
+  <span class="eyebrow">As duas reações erradas</span>
+  <div class="seg" role="group" aria-label="Reação"><button type="button" data-rx="cola" aria-pressed="true">Colar tudo sem olhar</button><button type="button" data-rx="trava" aria-pressed="false">Travar e não subir nada</button></div>
+  <div class="rx-out" id="rxOut" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-caixas" aria-labelledby="h-caixas">
+  <span class="eyebrow">Três caixas</span>
+  <h2 id="h-caixas">Não existe uma linha só entre o que pode e o que não pode</h2>
+  <p class="intro">Existem três situações. <strong>A do meio é a maior na prática</strong>, e é a que quase todo mundo deixa vazia por não saber que existe. O tamanho de cada caixa mostra a forma, não uma medida. Clique em cada uma.</p>
+  <div class="cx-row" role="group" aria-label="As três caixas">
+    <button type="button" class="cx-box in" data-cx="0"><span class="k">entra</span><b>O que é seu, ou já é público</b></button>
+    <button type="button" class="cx-box mid" data-cx="1"><span class="k">entra sem identificação</span><b>O que é de terceiro e não precisa de nome para ser analisado</b></button>
+    <button type="button" class="cx-box out" data-cx="2"><span class="k">não entra</span><b>O que identifica alguém, ou não é seu para compartilhar</b></button>
+  </div>
+  <div class="cx-detail" id="cxDetail" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-semaforo" aria-labelledby="h-semaforo">
+  <span class="eyebrow">O semáforo</span>
+  <h2 id="h-semaforo">Nove documentos de uma semana comum, trinta segundos cada</h2>
+  <p class="intro">Verde entra como está. Amarelo entra depois de tirar a identificação. Vermelho não entra. <strong>Classifique</strong>, e repare nas cinco famílias do que não sai de casa:</p>
+  <div class="fam" aria-label="Cinco famílias do que não sai"><span>gente</span><span>produto e produção</span><span>contrato e preço</span><span>resultado não divulgado</span><span>negociação e concorrência</span></div>
+  <div class="sm-list" id="smList"></div>
+  <p class="sm-score" id="smScore" aria-live="polite"></p>
+</section>
+
+<section class="sec" id="s-perguntas" aria-labelledby="h-perguntas">
+  <span class="eyebrow">Quatro perguntas</span>
+  <h2 id="h-perguntas">A primeira que der "sim" decide</h2>
+  <p class="intro">Pense num arquivo que você quer anexar hoje e percorra de cima para baixo. <strong>Pare na primeira que responder sim.</strong> As três primeiras você responde sozinho, olhando para o dado; a quarta pode exigir uma conversa.</p>
+  <div class="tr" id="tr"></div>
+  <div class="tr-end" id="trEnd" hidden aria-live="polite"></div>
+  <div class="bar-row"><button type="button" class="btn" id="trReset">Recomeçar com outro arquivo</button></div>
+  <p class="hint">Repare que nenhuma das quatro pergunta qual ferramenta você vai usar. É de propósito: a régua precisa continuar funcionando quando o produto mudar de nome, de plano ou de dono.</p>
+</section>
+
+<section class="sec" id="s-indireta" aria-labelledby="h-indireta">
+  <span class="eyebrow">Sem o nome</span>
+  <h2 id="h-indireta">Tirar o nome não basta: a identificação é o conjunto</h2>
+  <p class="intro">Uma planilha de avaliação com 240 pessoas. <strong>Desligue as colunas</strong> e veja quantas pessoas ainda combinam com o que sobrou. A pergunta não é se o nome saiu: é se ainda dá para chegar em alguém cruzando o resto.</p>
+  <div class="id-wrap">
+    <div style="display:grid;gap:12px"><span class="eyebrow">Colunas que vão junto no anexo</span><div class="id-cols" id="idCols" role="group" aria-label="Colunas da planilha"></div><p class="hint">A avaliação não entra na conta: ela é o que a análise precisa, e não identifica ninguém depois que o resto saiu.</p></div>
+    <div class="id-res" aria-live="polite"><span class="eyebrow">Pessoas que combinam com o que sobrou</span><div class="id-big" id="idBig">1</div><div class="id-dots" id="idDots" aria-hidden="true"></div><div class="verdict" id="idVer"></div></div>
+  </div>
+  <p class="hint">As contagens mostram a forma, não a medida: numa planilha real elas dependem de quantas pessoas dividem o mesmo cargo, a mesma unidade e o mesmo mês de admissão.</p>
+</section>
+
+<section class="sec" id="s-planilha" aria-labelledby="h-planilha">
+  <span class="eyebrow">A mesma planilha</span>
+  <h2 id="h-planilha">Anonimizar não é apagar: é tirar a identificação e manter o problema</h2>
+  <p class="intro">Troque a versão e repare que a preparada <strong>não perdeu nada do que fazia a análise funcionar</strong>. O que saiu foi identificação; o que ficou foi estrutura, proporção e o problema.</p>
+  <div class="seg" role="group" aria-label="Versão da planilha"><button type="button" data-pl="antes" aria-pressed="true">Como ela vive</button><button type="button" data-pl="depois" aria-pressed="false">Pronta para anexar</button></div>
+  <div class="ad-scroll" role="region" tabindex="0" aria-label="Planilha. Role para os lados se a tela for estreita."><table class="ad-tbl" id="plTbl" aria-live="polite"></table></div>
+  <p class="punch">A troca por código funciona porque <em>a chave fica com você</em>. Apagar o nome sem guardar a correspondência resolve o risco e destrói o trabalho.</p>
+  <p class="hint">Nomes e números da planilha são fictícios. Em trabalho longo, o nome sai na primeira etapa, antes de qualquer análise, e a tabela que liga código e nome fica com uma pessoa só. Se ele atravessa a primeira etapa, atravessa todas as seguintes e vai parar no documento final.</p>
+</section>
+
+<section class="sec" id="s-caminho" aria-labelledby="h-caminho">
+  <span class="eyebrow">O caminho do arquivo</span>
+  <h2 id="h-caminho">Para onde vai o arquivo quando você anexa</h2>
+  <p class="intro">A decisão fica mais fácil quando o caminho deixa de ser abstrato. São quatro momentos, e <strong>um deles surpreende quase todo mundo</strong>. Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="cmLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="cmPrev">← Anterior</button><button type="button" class="btn primary" id="cmNext">Próximo →</button></div></div>
+  <div class="cm-scroll" role="region" tabindex="0" aria-label="Caminho do arquivo em quatro passos. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 860 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="cm-t">
+      <title id="cm-t">Caminho do arquivo: você anexa, o aplicativo envia aos servidores, o modelo processa lá fora, e a resposta volta para você decidir. Os passos 2 e 3 acontecem fora da sua máquina.</title>
+      <defs><marker id="cmk" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker></defs>
+      <rect class="cm-fora" x="222" y="30" width="416" height="160" rx="12"/>
+      <text class="cm-lbl" x="430" y="22">FORA DA SUA MÁQUINA</text>
+      <text class="cm-lbl m" x="110" y="22">NA SUA MÁQUINA</text><text class="cm-lbl m" x="750" y="22">DE VOLTA COM VOCÊ</text>
+      <g class="cm-box" data-b="1"><rect x="20" y="64" width="180" height="92" rx="8"/><text class="t" x="110" y="96">01 · ANEXA</text><text class="s" x="110" y="118">o arquivo sai</text><text class="s" x="110" y="135">da sua pasta</text></g>
+      <g class="cm-box" data-b="2"><rect x="240" y="64" width="180" height="92" rx="8"/><text class="t" x="330" y="96">02 · ENVIA</text><text class="s" x="330" y="118">o aplicativo manda</text><text class="s" x="330" y="135">para os servidores</text></g>
+      <g class="cm-box" data-b="3"><rect x="440" y="64" width="180" height="92" rx="8"/><text class="t" x="530" y="96">03 · PROCESSA</text><text class="s" x="530" y="118">a resposta é</text><text class="s" x="530" y="135">gerada lá</text></g>
+      <g class="cm-box" data-b="4"><rect x="660" y="64" width="180" height="92" rx="8"/><text class="t" x="750" y="96">04 · DECIDE</text><text class="s" x="750" y="118">o que fazer com</text><text class="s" x="750" y="135">o que voltou</text></g>
+      <path class="cm-arr" d="M200,110 H236" marker-end="url(#cmk)"/><path class="cm-arr" d="M420,110 H436" marker-end="url(#cmk)"/><path class="cm-arr" d="M620,110 H656" marker-end="url(#cmk)"/>
+    </svg>
+  </div>
+  <div class="caption" id="cmCap" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-anexar" aria-labelledby="h-anexar">
+  <span class="eyebrow">Antes de anexar</span>
+  <h2 id="h-anexar">A IA não é quem limpa o dado: você limpa antes</h2>
+  <p class="intro">Marque conforme confere o seu arquivo. Quando o texto chega na IA, ele já tem que estar sem identificação. <strong>Depois de limpo</strong>, o pedido ao lado usa a IA como rede de segurança, nunca como faxina.</p>
+  <div class="ck-wrap">
+    <div class="ck-list" id="ckList"><div class="ck-bar" aria-hidden="true"><div class="ck-fill" id="ckFill" style="width:0"></div></div><p class="hint" id="ckTxt" aria-live="polite"></p></div>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">Rede de segurança · depois de limpar</span><button type="button" class="btn" data-copy="cpRede">Copiar</button></div>
+<pre id="cpRede">Vou colar abaixo um texto que eu já anonimizei: as pessoas viraram "Colaborador A, B, C", os números de documento viraram "XXXX" e os valores de contrato viraram "[VALOR]".
+O que eu preciso: antes de qualquer outra coisa, aponte se ainda sobrou algo que identifique uma pessoa, um cliente, um contrato ou um preço, direta ou indiretamente (cargo, unidade e data que juntos apontam para alguém).
+Restrições: não complete nem adivinhe o que foi mascarado. Não use o que eu tirei.
+Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de seguir.
+
+[cole aqui o texto já anonimizado]</pre></div>
+  </div>
+  <div class="nu">
+    <div><b>Quando a identificação é o objeto</b><p>Se a tarefa é justamente cruzar pessoa com pessoa, tirar o nome destrói o trabalho, e manter não é opção. Fica na mão.</p></div>
+    <div><b>Quando existe regra da casa</b><p>Política da empresa vence esta página inteira, inclusive quando for mais permissiva. Dado de cliente e de fornecedor costuma vir com contrato que diz o que pode.</p></div>
+    <div><b>Quando o ganho é pequeno</b><p>Documento de duas páginas que você lê em cinco minutos não justifica nem a preparação do anexo.</p></div>
+  </div>
+  <p class="hint">Anexo não tem desfazer. Documento com pessoa identificável não sobe para "ver o que volta": teste se faz com material fictício. E anonimizar reduz o risco de exposição sem transferir a responsabilidade: o que sai com o seu nome continua pedindo a conferência de <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
+</section>
+
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>A regra é sobre o dado</h3><p>Não sobre a ferramenta. Por isso ela sobrevive ao produto novo e à configuração que mudou sem aviso.</p></div>
+    <div class="take-card"><h3>A caixa do meio é a maior</h3><p>Quase todo documento que parece proibido só precisa perder a identificação para entrar.</p></div>
+    <div class="take-card"><h3>Identificação é o conjunto</h3><p>Sem o nome, cargo, unidade e data ainda podem apontar para uma pessoa só.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Dado pessoal</dt><dd>Qualquer informação que identifica alguém, direta ou indiretamente: nome, documento, telefone, salário, atestado, avaliação.</dd>
+    <dt>Anonimizar</dt><dd>Tirar do material o que identifica, mantendo o que a análise precisa. A chave de volta fica com você.</dd>
+    <dt>Identificação indireta</dt><dd>Quando o nome saiu, mas o que sobrou, cruzado, ainda aponta para uma pessoa.</dd>
+    <dt>Regra da casa</dt><dd>A política de dados da sua empresa. Quando existe, vence qualquer régua geral.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Isto não é orientação jurídica e não substitui a política da sua empresa nem a palavra de quem responde por proteção de dados onde você trabalha. Quanto tempo o conteúdo fica guardado e o que é feito dele depende do plano e das configurações de cada ferramenta, e muda com o tempo: a fonte é a página de privacidade da própria ferramenta, no dia em que você decidir. As contagens e os tamanhos das caixas mostram a forma, não a medida. Veja também <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>, sobre o que a IA enxerga depois que o arquivo chega.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Limites da IA: anterior e próxima">
+  <a class="famfoot-prev" href="./limites-da-ia--alucinacao.html"><span>← anterior</span><b>3.2 · Alucinação</b></a>
+  <a class="famfoot-fam" href="./limites-da-ia.html#mapa">Família 3 · Limites da IA · o mapa</a>
+  <a class="famfoot-next" href="./limites-da-ia.html"><span>volta ao começo ↺</span><b>Visão geral · Limites da IA</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* reações */
+  var RX = {
+    cola: '<b>O anexo sobe sem a pergunta chegar a se formar.</b><p>Você está no meio da tarefa, o arquivo está aberto, e "posso?" não chega a ser pensado. Depois, se alguém perguntar, a resposta honesta é que você não pensou nisso. Não foi má-fé: foi hábito sem regra.</p>',
+    trava: '<b>Nada da empresa sobe, e o método é aprendido num caso que não existe.</b><p>A reação oposta custa mais caro do que parece. Quem trava trabalha com exemplo inventado, e na segunda-feira não consegue aplicar no que existe. Em equipe, proibir tudo empurra o uso para o celular pessoal, fora de qualquer visibilidade, e o dado vai junto.</p>'
+  };
+  var rxBtns = document.querySelectorAll('[data-rx]');
+  function setRx(k) { press(rxBtns, function (b) { return b.dataset.rx === k; }); document.getElementById('rxOut').innerHTML = RX[k]; }
+  rxBtns.forEach(function (b) { b.addEventListener('click', function () { setRx(b.dataset.rx); }); });
+  setRx('cola');
+
+  /* três caixas */
+  var CX = [
+    { t: 'Entra como está', e: ['o seu texto, o seu rascunho, o seu jeito de trabalhar', 'o edital publicado, a norma, a lei', 'o modelo de documento que a casa usa'], c: 'Custo: nenhum. É aqui que mora boa parte do que trava o seu dia.' },
+    { t: 'Entra sem identificação', e: ['a lista de presença sem nome e sem documento, mantendo turma, data e frequência', 'as respostas da pesquisa de satisfação, sem quem respondeu', 'a planilha com as lojas ou pessoas trocadas por código'], c: 'Custo: cinco minutos tirando coluna. Vale quase sempre, porque a análise raramente depende do nome.' },
+    { t: 'Não entra', e: ['informação de saúde de alguém', 'a folha com nome e salário', 'a proposta recebida sob sigilo, em processo em andamento', 'senha e credencial de acesso'], c: 'Custo: a tarefa continua na mão. E essa é a resposta certa, não uma derrota.' }
+  ];
+  var cxBtns = document.querySelectorAll('.cx-box');
+  function showCx(i) {
+    press(cxBtns, function (b) { return +b.dataset.cx === i; });
+    var c = CX[i];
+    document.getElementById('cxDetail').innerHTML = '<span class="eyebrow">' + c.t + '</span><ul>' + c.e.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul><p><b>' + c.c + '</b></p>';
+  }
+  cxBtns.forEach(function (b) { b.addEventListener('click', function () { showCx(+b.dataset.cx); }); });
+  showCx(1);
+
+  /* semáforo */
+  var SM = [
+    { s: 'A lista de presença do treinamento, com nome e CPF.', a: 'a', w: 'Sai nome e CPF; ficam turma, data e frequência. A análise continua a mesma.' },
+    { s: 'O modelo de relatório que a sua área já usa, em branco.', a: 'g', w: 'É seu e não identifica ninguém. Entra como está.' },
+    { s: 'O atestado médico de um colaborador, para resumir o afastamento.', a: 'r', w: 'Dado de saúde é da família "gente" e constrangeria alguém se vazasse. Fica na mão.' },
+    { s: 'As respostas abertas da pesquisa de satisfação, com o nome de quem respondeu.', a: 'a', w: 'Tire quem respondeu. O que a análise precisa é o que foi dito, não quem disse.' },
+    { s: 'A proposta de um fornecedor recebida sob sigilo, com o processo em andamento.', a: 'r', w: 'Não é seu para compartilhar: veio com um compromisso de sigilo. Na dúvida, pergunte a quem responde pelo processo.' },
+    { s: 'O edital publicado da concorrência de que a empresa vai participar.', a: 'g', w: 'Já é público. O que não entra é a sua proposta de preço para ele.' },
+    { s: 'A margem negociada com o maior cliente, para montar um argumento de venda.', a: 'a', w: 'Descreva sem o número e sem o nome do cliente. A estrutura do argumento funciona igual sem a margem real.' },
+    { s: 'A folha de pagamento com nome e salário.', a: 'r', w: 'Não entra como está. Se a análise precisa de salário, ela vira outro arquivo, com faixa e código, e esse passa pelo semáforo de novo.' },
+    { s: 'O resultado do trimestre, antes de a diretoria divulgar.', a: 'r', w: 'Resultado não divulgado é uma das famílias que não sai de casa. Se vazasse, quem daria explicação seria você.' }
+  ];
+  var SML = { g: 'verde', a: 'amarelo', r: 'vermelho' };
+  var smList = document.getElementById('smList'), smAns = {};
+  SM.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'sm-q';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Classificar"><button type="button" data-v="g" aria-pressed="false"><i class="g"></i>Entra</button><button type="button" data-v="a" aria-pressed="false"><i class="a"></i>Sem identificação</button><button type="button" data-v="r" aria-pressed="false"><i class="r"></i>Não entra</button></div><div class="sm-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.sm-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      press(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; smAns[i] = ok;
+      fb.hidden = false; fb.className = 'sm-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + SML[q.a] + '. ') + '</b>' + q.w;
+      var n = Object.keys(smAns).length, c = Object.keys(smAns).filter(function (k) { return smAns[k]; }).length;
+      document.getElementById('smScore').textContent = n + ' de 9 classificados · ' + c + ' certos' + (n === 9 ? ' · o teste de bolso: o trabalho continua funcionando com o dado trocado? Se sim, troque e siga.' : '');
+    }); });
+    smList.appendChild(d);
+  });
+
+  /* árvore */
+  var TR = [
+    { q: 'Dá para dizer quem é a pessoa, direta ou indiretamente?', y: 'Troque.', d: 'Nome vira Cliente A, documento sai, matrícula vira sequencial. E confira o conjunto: cargo, unidade e data juntos também apontam.' },
+    { q: 'Isso constrangeria alguém se vazasse amanhã?', y: 'Não entra.', d: 'Salário, avaliação, saúde, advertência, desligamento. Fica na mão.' },
+    { q: 'Isso dá vantagem a um concorrente?', y: 'Descreva sem o número.', d: 'Margem, preço, condição negociada. A estrutura ensina igual sem o valor real.' },
+    { q: 'A sua empresa já disse alguma coisa sobre isso?', y: 'A palavra dela vence.', d: 'Política interna manda mais que qualquer régua geral, inclusive quando for mais permissiva. É a pergunta mais pulada, porque é a única que não depende de você.' }
+  ];
+  var tr = document.getElementById('tr'), trEnd = document.getElementById('trEnd'), trNodes = [], trCur = 0, trStop = -1;
+  TR.forEach(function (t, i) {
+    var d = document.createElement('div'); d.className = 'tr-node';
+    d.innerHTML = '<div class="tr-q"><span class="n">' + (i + 1) + '</span><p>' + t.q + '</p><div class="opts" role="group" aria-label="Resposta"><button type="button" data-v="s" aria-pressed="false">Sim</button><button type="button" data-v="n" aria-pressed="false">Não</button></div></div><div class="tr-yes"><span class="k">se sim</span><b>' + t.y + '</b><span>' + t.d + '</span></div>';
+    var bs = d.querySelectorAll('button');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      if (i !== trCur) return;
+      press(bs, function (x) { return x === b; });
+      if (b.dataset.v === 's') { d.classList.add('hit'); trCur = 99; trStop = i; trEnd.hidden = true; }
+      else if (i === TR.length - 1) { trCur = 99; trStop = i; trEnd.hidden = false; trEnd.innerHTML = '<b>Pode ir, e a decisão é sua.</b> Escreva o critério que você adotou, para não decidir de novo toda semana. Ele vale até alguém da empresa dizer o contrário.'; }
+      else trCur = i + 1;
+      renderTr();
+    }); });
+    tr.appendChild(d); trNodes.push(d);
+  });
+  function renderTr() { trNodes.forEach(function (n, i) { n.classList.toggle('now', i === trCur); n.classList.toggle('later', trCur !== 99 ? i > trCur : i > trStop); }); }
+  document.getElementById('trReset').addEventListener('click', function () {
+    trCur = 0; trStop = -1; trEnd.hidden = true;
+    trNodes.forEach(function (n) { n.classList.remove('hit'); n.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); });
+    renderTr();
+  });
+  renderTr();
+
+  /* identificação indireta */
+  var COLS = [['nome', 'Nome completo'], ['cpf', 'CPF'], ['mat', 'Matrícula'], ['cargo', 'Cargo'], ['un', 'Unidade'], ['adm', 'Mês de admissão']];
+  var on = { nome: true, cpf: true, mat: true, cargo: true, un: true, adm: true };
+  var idCols = document.getElementById('idCols'), idBtns = [];
+  COLS.forEach(function (c) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = c[1]; b.dataset.k = c[0];
+    b.addEventListener('click', function () { on[c[0]] = !on[c[0]]; renderId(); }); idCols.appendChild(b); idBtns.push(b);
+  });
+  function count() {
+    if (on.nome || on.cpf || on.mat) return 1;
+    var k = (on.cargo ? 'c' : '') + (on.un ? 'u' : '') + (on.adm ? 'a' : '');
+    return { cua: 1, cu: 3, ca: 2, ua: 6, c: 18, u: 40, a: 20, '': 240 }[k];
+  }
+  function renderId() {
+    idBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(on[b.dataset.k])); });
+    var n = count(), v = document.getElementById('idVer');
+    document.getElementById('idBig').textContent = n + (n === 1 ? ' pessoa' : ' pessoas');
+    var dots = ''; for (var i = 0; i < 60; i++) dots += '<span class="' + (i < Math.min(n, 60) ? 'on' : '') + '"></span>'; document.getElementById('idDots').innerHTML = dots;
+    if (on.nome || on.cpf || on.mat) { v.className = 'verdict no'; v.innerHTML = '<b>Identifica.</b> ' + (on.nome ? 'O nome está lá.' : 'O nome saiu, mas ' + (on.mat ? 'a matrícula' : 'o CPF') + ' aponta para a mesma pessoa dentro da empresa.'); }
+    else if (n === 1) { v.className = 'verdict no'; v.innerHTML = '<b>Ainda identifica.</b> Sem nome e sem documento, cargo, unidade e mês de admissão juntos descrevem uma pessoa só. É o erro mais comum depois de "tirei o nome".'; }
+    else if (n < 10) { v.className = 'verdict mid'; v.innerHTML = '<b>Quase.</b> Com ' + n + ' pessoas no grupo, quem conhece a equipe ainda adivinha. Tire mais uma coluna, ou troque o valor por uma faixa.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Difícil de chegar em alguém.</b> Com ' + n + ' pessoas combinando, a avaliação deixa de apontar para um nome.'; }
+  }
+  renderId();
+
+  /* a mesma planilha */
+  var PL = {
+    antes: '<thead><tr><th>Colaborador</th><th>CPF</th><th>Salário</th><th>Matrícula</th><th>Avaliação</th></tr></thead><tbody><tr><td>Mariana Albuquerque Lopes</td><td>123.456.789-00</td><td>R$ 6.840,00</td><td>40217</td><td>abaixo do esperado</td></tr><tr><td>Ricardo Nunes Teixeira</td><td>987.654.321-00</td><td>R$ 9.120,00</td><td>40388</td><td>dentro do esperado</td></tr><tr><td>Beatriz Campos Rocha</td><td>456.123.789-00</td><td>R$ 5.310,00</td><td>40512</td><td>acima do esperado</td></tr></tbody>',
+    depois: '<thead><tr><th>Colaborador</th><th>CPF</th><th>Salário</th><th>Matrícula</th><th>Avaliação</th></tr></thead><tbody><tr><td class="chg">Colaborador A</td><td class="gone">coluna removida</td><td class="chg">faixa 3</td><td class="chg">001</td><td class="keep">abaixo do esperado</td></tr><tr><td class="chg">Colaborador B</td><td class="gone">coluna removida</td><td class="chg">faixa 4</td><td class="chg">002</td><td class="keep">dentro do esperado</td></tr><tr><td class="chg">Colaborador C</td><td class="gone">coluna removida</td><td class="chg">faixa 2</td><td class="chg">003</td><td class="keep">acima do esperado</td></tr></tbody>'
+  };
+  var plBtns = document.querySelectorAll('[data-pl]');
+  function setPl(k) { press(plBtns, function (b) { return b.dataset.pl === k; }); document.getElementById('plTbl').innerHTML = PL[k]; }
+  plBtns.forEach(function (b) { b.addEventListener('click', function () { setPl(b.dataset.pl); }); });
+  setPl('antes');
+
+  /* caminho do arquivo */
+  var CM = [
+    { t: 'Você anexa', d: 'O arquivo sai da sua pasta. Pode ser um anexo, pode ser uma pasta liberada no aplicativo do computador: o efeito é o mesmo.', w: false },
+    { t: 'O aplicativo envia: o passo que surpreende', d: 'Aplicativo instalado dá a impressão de que o arquivo fica no computador. Não fica: o conteúdo vai para os servidores, inclusive os arquivos locais que o aplicativo abre. Essa confusão é a origem da maior parte dos anexos que não deviam ter subido.', w: true },
+    { t: 'O modelo processa, lá fora', d: 'A resposta é gerada fora da sua máquina. Quanto tempo o conteúdo fica guardado depende do plano e das configurações da conta, e isso muda com o tempo. A fonte é a página de privacidade da ferramenta no dia em que você decidir.', w: false },
+    { t: 'Você decide o que fazer com o que voltou', d: 'E responde pelo documento que sair com o seu nome. A decisão sobre o que subir já foi tomada no passo 1, e não tem desfazer.', w: false }
+  ];
+  var cmCur = 1, cmBoxes = document.querySelectorAll('.cm-box');
+  function cmGo(n) {
+    cmCur = Math.max(1, Math.min(4, n)); var s = CM[cmCur - 1];
+    cmBoxes.forEach(function (g) { var b = +g.dataset.b; g.classList.toggle('on', b === cmCur && !s.w); g.classList.toggle('warn', b === cmCur && s.w); });
+    document.getElementById('cmCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('cmLab').textContent = 'Passo ' + cmCur + ' de 4';
+    document.getElementById('cmPrev').disabled = cmCur === 1;
+    document.getElementById('cmNext').textContent = cmCur === 4 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('cmPrev').addEventListener('click', function () { cmGo(cmCur - 1); });
+  document.getElementById('cmNext').addEventListener('click', function () { cmGo(cmCur === 4 ? 1 : cmCur + 1); });
+  cmGo(1);
+
+  /* checklist */
+  var CK = ['Troquei nome de pessoa por "Colaborador A, B, C" e guardei a correspondência comigo.', 'Mascarei documento, matrícula e telefone.', 'Tirei número de contrato, preço e condição comercial, ou troquei por [VALOR].', 'Tirei nome e dado de cliente.', 'Conferi o conjunto: cargo, unidade e data que sobraram não apontam para uma pessoa só.', 'Conferi se a empresa já tem regra para este tipo de material.'];
+  var ckList = document.getElementById('ckList'), ckBoxes = [];
+  CK.forEach(function (t, i) {
+    var l = document.createElement('label'); l.className = 'ck-item';
+    l.innerHTML = '<input type="checkbox" id="ck' + i + '"><span>' + t + '</span>';
+    var cb = l.querySelector('input'); cb.addEventListener('change', renderCk); ckBoxes.push(cb);
+    ckList.insertBefore(l, ckList.querySelector('.ck-bar'));
+  });
+  function renderCk() {
+    var n = ckBoxes.filter(function (c) { return c.checked; }).length;
+    document.getElementById('ckFill').style.width = (n / CK.length * 100) + '%';
+    document.getElementById('ckTxt').textContent = n === CK.length ? 'Seis de seis. Agora o arquivo pode subir, e o pedido ao lado confere o que escapou.' : n + ' de ' + CK.length + ' conferidos. Se sobrou algo, não mande: mascare primeiro.';
+  }
+  renderCk();
+
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+})();
+</script>
+
+</html>

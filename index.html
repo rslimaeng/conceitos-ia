@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="indice">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conceitos de IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: a página índice da biblioteca, raiz do site. A grade das famílias e a contagem são geradas por familias.py a partir da tabela. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.sec .intro code { font-family: var(--font-mono); font-size: .88em; color: var(--accent); }
+
+
+/* topo */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 36px; }
+.top .who { display: grid; gap: 0; }
+.top .who b { font-weight: 600; font-size: 1rem; }
+.top .who span { font-size: .85rem; color: var(--text-dim); }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 4px 12px; font-size: .88rem; color: var(--text-muted); }
+
+/* por onde começar */
+.start { background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 22px; display: grid; gap: 8px; }
+.start p { color: var(--text-muted); }
+.start b { color: var(--text); font-weight: 600; }
+.start a { color: var(--accent); font-weight: 500; text-decoration: none; }
+.start a:hover { text-decoration: underline; }
+
+/* grade de famílias (gerada por familias.py) */
+.fams { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.fam-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 10px; padding: 20px; display: grid; gap: 10px; grid-template-rows: auto auto 1fr auto auto; text-decoration: none; color: inherit; transition: border-color .2s ease; }
+.fam-card:hover { border-color: var(--accent); }
+.fam-card .n { font-family: var(--font-mono); font-size: .9rem; color: var(--accent); }
+.fam-card h3 { font-size: 1.35rem; line-height: 1.2; }
+.fam-card p { color: var(--text-muted); font-size: .98rem; }
+.fam-card .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.fam-card .tags span { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: .82rem; color: var(--text-muted); }
+.fam-card .ft { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; font-size: .9rem; color: var(--text-dim); }
+.fam-card .ft b { color: var(--accent); font-weight: 500; }
+.fam-card.base { border-style: dashed; }
+
+@media (max-width: 960px) { .fams { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px) { .fams { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { .fam-card { transition: none; } }
+</style>
+
+<div class="page">
+
+<div class="top">
+  <div class="who"><b>Conceitos de IA</b><span>Rafael Lima · @iacomrafael</span></div>
+  <!-- contagem -->
+  <div class="pills"><span class="pill">7 famílias</span><span class="pill">27 páginas</span><span class="pill">interativas, para abrir no navegador</span></div>
+  <!-- /contagem -->
+</div>
+
+<header class="hero">
+  <span class="eyebrow">Biblioteca de conceitos</span>
+  <h1>Os conceitos por trás do uso de IA no trabalho</h1>
+  <p class="sub">Uma página por conceito, para abrir, mexer e levar para a rotina</p>
+  <p class="lead">Cada família começa por uma <strong>visão geral</strong> e se abre em páginas menores, uma para cada parte. Nenhuma página é aula: é o conceito, com peças para clicar, exemplos de trabalho de verdade e o que dá para copiar e usar amanhã.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-comecar">Por onde começar</a><a href="#s-familias">As famílias</a><a href="#s-base">Antes das famílias</a>
+  </nav>
+</header>
+
+<section class="sec" id="s-comecar" aria-labelledby="h-comecar">
+  <span class="eyebrow">Por onde começar</span>
+  <h2 id="h-comecar">Escolha pelo incômodo, não pela ordem</h2>
+  <div class="start">
+    <p>Se você está <b>começando</b>, abra <a href="./usar-ia.html">Usar IA</a> e <a href="./prompt.html">Prompt</a>. Se a IA <b>já erra de um jeito que você reconhece</b>, <a href="./limites-da-ia.html">Limites da IA</a>. Se você <b>reexplica a mesma coisa toda semana</b>, <a href="./assistente.html">Assistente</a>. Se quer <b>mudar o processo</b>, e não só acelerar uma tarefa, <a href="./ai-first.html">AI First</a>. Se vai <b>ligar um sistema no outro</b>, <a href="./agente.html">Agente</a> e <a href="./automacao.html">Automação</a>.</p>
+    <p>As famílias são independentes: pode pular a que não serve para você agora.</p>
+  </div>
+</section>
+
+<section class="sec" id="s-familias" aria-labelledby="h-familias">
+  <span class="eyebrow">As famílias</span>
+  <h2 id="h-familias">Sete famílias, do primeiro pedido à automação</h2>
+  <!-- familias -->
+  <div class="fams">
+    <a class="fam-card" href="./usar-ia.html"><span class="n">01</span><h3>Usar IA</h3><p>Duas perguntas que decidem o resultado antes de qualquer técnica: em que degrau você está, e em que modo está pedindo.</p><span class="tags"><span>Níveis de uso</span><span>Delegar ou pensar junto</span></span><span class="ft"><span>3 páginas</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./prompt.html"><span class="n">02</span><h3>Prompt</h3><p>Por que o pedido volta genérico, e o que muda quando você conta antes de pedir.</p><span class="tags"><span>uma página só</span></span><span class="ft"><span>1 página</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./limites-da-ia.html"><span class="n">03</span><h3>Limites da IA</h3><p>Três limites que valem para qualquer ferramenta, e o gesto de bolso que resolve cada um.</p><span class="tags"><span>Janela de contexto</span><span>Alucinação</span><span>O que pode subir</span></span><span class="ft"><span>4 páginas</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./assistente.html"><span class="n">04</span><h3>Assistente</h3><p>A mesma IA de sempre, com três coisas guardadas: como trabalhar, o que consultar, e a prova de que consulta.</p><span class="tags"><span>Resposta ancorada</span><span>Onde a regra mora</span><span>Skill</span><span>Time de assistentes</span></span><span class="ft"><span>5 páginas</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./ai-first.html"><span class="n">05</span><h3>AI First</h3><p>A diferença entre usar IA no fim do trabalho e colocá-la no desenho desde o começo.</p><span class="tags"><span>Captura</span><span>Contexto</span><span>Execução</span><span>Memória</span><span>Medição</span><span>IPO</span></span><span class="ft"><span>7 páginas</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./agente.html"><span class="n">06</span><h3>Agente</h3><p>O que muda quando o modelo ganha ferramentas, memória e um objetivo.</p><span class="tags"><span>Anatomia</span></span><span class="ft"><span>2 páginas</span><b>abrir →</b></span></a>
+    <a class="fam-card" href="./automacao.html"><span class="n">07</span><h3>Automação</h3><p>Toda automação é uma frase em três partes: quando, faz, para.</p><span class="tags"><span>API</span><span>Webhook</span><span>JSON</span></span><span class="ft"><span>4 páginas</span><b>abrir →</b></span></a>
+  </div>
+  <!-- /familias -->
+</section>
+
+<section class="sec" id="s-base" aria-labelledby="h-base">
+  <span class="eyebrow">Antes das famílias</span>
+  <h2 id="h-base">O fundamento que vale para todas</h2>
+  <div class="fams">
+    <a class="fam-card base" href="./llm-e-harness.html"><span class="n">00 · fundamento</span><h3>LLM e harness</h3><p>Por que o mesmo modelo faz coisas diferentes em cada aplicativo.</p><span class="tags"><span>o modelo</span><span>o aplicativo</span><span>o fluxo</span></span><span class="ft"><span>1 página</span><b>abrir →</b></span></a>
+  </div>
+</section>
+
+</div>
+
+</html>

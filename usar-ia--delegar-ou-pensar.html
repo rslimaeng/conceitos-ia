@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="usar-ia--delegar-ou-pensar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delegar ou pensar junto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito em coluna única. Peças: as três faixas do trabalho, os dois cartões comparados linha a linha, o percurso em cinco momentos, o mesmo anexo em dois pedidos, o classificador de pedidos, a matriz do que dá errado ao trocar, as três rotinas em abas, as três perguntas e os dois pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+/* ---- só desta peça ---- */
+/* 1 · três faixas */
+.tf-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.tf-scroll svg { display: block; width: 100%; min-width: 640px; height: auto; }
+.tf-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; }
+.tf-box.mid rect { fill: var(--accent-soft); stroke: var(--accent); }
+.tf-box .t { font: 600 14px var(--font-mono); letter-spacing: .1em; fill: var(--text); text-anchor: middle; }
+.tf-box .s { font: 400 12.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.tf-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.tf-mode { font: 500 12px var(--font-mono); text-anchor: middle; letter-spacing: .04em; }
+.tf-mode.d { fill: var(--accent); }
+.tf-mode.p { fill: var(--atencao-texto); }
+.tf-mode.y { fill: var(--text-dim); }
+.tf-brace { fill: none; stroke-width: 1.6; }
+.tf-brace.d { stroke: var(--accent); }
+.tf-brace.p { stroke: var(--atencao); }
+.tf-brace.y { stroke: var(--text-dim); stroke-dasharray: 4 4; }
+.mk-m { fill: var(--text-muted); }
+
+/* 2 · cartões comparados */
+.md-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.md-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 10px; align-content: start; }
+.md-card.del { border-top: 4px solid var(--accent); }
+.md-card.pen { border-top: 4px solid var(--atencao); }
+.md-card h3 { font-size: 1.35rem; }
+.md-card .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.md-row { display: grid; gap: 2px; padding: 8px 10px; border-radius: 6px; border: 1px solid transparent; transition: background .2s ease, border-color .2s ease; }
+.md-row.on { background: var(--accent-soft); border-color: var(--accent); }
+.md-card.pen .md-row.on { background: var(--atencao-soft); border-color: var(--atencao); }
+
+/* 3 · percurso */
+.pc-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.pc-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.pc-lane { font: 600 12px var(--font-mono); letter-spacing: .08em; fill: var(--text-dim); }
+.pc-col { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.pc-colbg { fill: var(--bg); transition: fill .25s ease; }
+.pc-colbg.on { fill: var(--accent-soft); }
+.pc-line { stroke: var(--border); stroke-width: 1; }
+.pc-cell rect { stroke-width: 1.3; transition: opacity .25s ease; }
+.pc-cell.you rect { fill: var(--bg-elev); stroke: var(--text); }
+.pc-cell.del rect { fill: var(--accent-soft); stroke: var(--accent); }
+.pc-cell.pen rect { fill: var(--atencao-soft); stroke: var(--atencao); }
+.pc-cell text { font: 500 12px var(--font-body); fill: var(--text); text-anchor: middle; }
+.pc-cell.dim { opacity: .35; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+
+/* 4 · o mesmo anexo */
+.dm-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 16px; align-items: start; }
+.dm-att { background: var(--bg-elev); border: 1.5px dashed var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; }
+.dm-att .doc { display: flex; gap: 10px; align-items: center; font-size: .95rem; }
+.dm-att .doc span { font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--border-strong); border-radius: 3px; padding: 1px 6px; color: var(--text-dim); }
+.dm-out { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.dm-req { font-size: 1.02rem; border-left: 3px solid var(--border-strong); padding-left: 12px; }
+.dm-req mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 3px; font-weight: 600; }
+.dm-req mark.q { background: var(--atencao-soft); color: var(--atencao-texto); }
+.dm-tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.dm-tbl th { text-align: left; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); border-bottom: 1px solid var(--border); padding: 6px 8px; }
+.dm-tbl td { border-bottom: 1px solid var(--border); padding: 6px 8px; }
+.dm-tbl td.pend { color: var(--atencao-texto); font-weight: 600; }
+.dm-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+/* 5 · classificador */
+.cl-list { display: grid; gap: 12px; }
+.cl-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.cl-q .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.cl-q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 16px; font-size: .95rem; }
+.cl-q .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.cl-fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.cl-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.cl-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.cl-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 6 · matriz */
+.mx { display: grid; grid-template-columns: 150px repeat(2, minmax(0, 1fr)); gap: 8px; }
+.mx .hd { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); display: flex; align-items: end; padding: 4px; }
+.mx .rh { font-weight: 600; font-size: .95rem; display: flex; align-items: center; padding: 4px; }
+.mx-cell { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 14px; display: grid; gap: 4px; align-content: start; min-height: 96px; }
+.mx-cell.good { border-color: var(--ok); }
+.mx-cell.bad { border-color: var(--atencao); }
+.mx-cell .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.mx-cell.good .tag { color: var(--ok-texto); }
+.mx-cell.bad .tag { color: var(--atencao-texto); }
+.mx-cell[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--text); }
+.mx-detail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 8px; }
+
+/* 7 · rotinas */
+.rt-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.rt-tabs button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 6px 16px; font-size: .95rem; }
+.rt-tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.rt-pane { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.rt-req { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.rt-req.del { border-left: 4px solid var(--accent); }
+.rt-req.pen { border-left: 4px solid var(--atencao); }
+.rt-req p.q { font-size: 1.02rem; }
+
+/* 8 · três perguntas */
+.tq { display: grid; gap: 10px; }
+.tq-row { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+.tq-row .opts { display: flex; gap: 6px; }
+.tq-row .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.tq-row .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tq-row .ans { grid-column: 1 / -1; font-size: .95rem; color: var(--text-muted); border-left: 3px solid var(--accent); padding-left: 12px; }
+.tq-row .ans:empty { display: none; }
+
+/* 9 · copiar */
+.cp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; align-content: start; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .md-cards, .dm-grid, .rt-pane, .cp-grid, .take { grid-template-columns: 1fr; }
+  .mx { grid-template-columns: 1fr 1fr; }
+  .mx .corner { display: none; }
+  .mx .rh { grid-column: 1 / -1; }
+  .tq-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .mx { grid-template-columns: 1fr; } .mx .hd { display: none; } }
+@media (prefers-reduced-motion: reduce) { .md-row, .pc-colbg, .pc-cell rect { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Usar IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./usar-ia.html">Família 1 · Usar IA</a></span><span class="famhead-pn"><a href="./usar-ia--niveis.html">← 1.1 Níveis de uso</a><a href="./usar-ia.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./usar-ia.html">Visão geral</a><a href="./usar-ia--niveis.html"><b>1.1</b>Níveis de uso</a><a href="./usar-ia--delegar-ou-pensar.html" aria-current="page"><b>1.2</b>Delegar ou pensar junto</a></div>
+  </nav>
+  <span class="eyebrow">1.2 · 2 de 2</span>
+  <h1>Delegar ou pensar junto</h1>
+  <p class="sub">Os dois modos de pedir, e o que muda no pedido em cada um</p>
+  <p class="lead">Você pode pedir à IA um trabalho que já sabe como deveria sair: isso é <strong>delegar a execução</strong>. Ou pode pedir que ela ajude a enxergar o que você ainda não vê: isso é <strong>pensar junto</strong>. A ferramenta, a tela e o anexo são os mesmos. O que muda é o que você já sabe antes de escrever.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-faixas">As três faixas</a><a href="#s-modos">Dois modos</a><a href="#s-percurso">O percurso</a><a href="#s-anexo">O mesmo anexo</a><a href="#s-qual">Qual dos dois</a><a href="#s-troca">Trocar os dois</a><a href="#s-rotinas">Três rotinas</a><a href="#s-perguntas">Três perguntas</a><a href="#s-pedidos">Os dois pedidos</a>
+  </nav>
+</header>
+
+<section class="sec" id="s-faixas" aria-labelledby="h-faixas">
+  <span class="eyebrow">As três faixas</span>
+  <h2 id="h-faixas">Todo trabalho tem três partes, e cada modo opera uma</h2>
+  <p class="intro">Dirigir é decidir o que fazer e com que critério. Produzir é procurar, rascunhar, montar e formatar. Conferir é responder se aquilo pode sair com o seu nome. <strong>Delegar opera o meio. Pensar junto opera a ponta de cima. A ponta de baixo continua sua nos dois.</strong></p>
+  <div class="tf-scroll" role="region" tabindex="0" aria-label="Diagrama das três faixas. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tf-t">
+      <title id="tf-t">Três faixas do trabalho: dirigir, produzir e conferir. Pensar junto opera o dirigir, delegar opera o produzir, e conferir continua sendo seu.</title>
+      <defs><marker id="tfm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker></defs>
+      <g class="tf-box"><rect x="20" y="70" width="210" height="90" rx="8"/><text class="t" x="125" y="104">DIRIGIR</text><text class="s" x="125" y="126">o que fazer, e com</text><text class="s" x="125" y="143">que critério</text></g>
+      <g class="tf-box mid"><rect x="275" y="70" width="210" height="90" rx="8"/><text class="t" x="380" y="104">PRODUZIR</text><text class="s" x="380" y="126">procurar, rascunhar,</text><text class="s" x="380" y="143">montar, formatar</text></g>
+      <g class="tf-box"><rect x="530" y="70" width="210" height="90" rx="8"/><text class="t" x="635" y="104">CONFERIR</text><text class="s" x="635" y="126">isto pode sair</text><text class="s" x="635" y="143">com o seu nome?</text></g>
+      <path class="tf-arr" d="M230,115 H271" marker-end="url(#tfm)"/><path class="tf-arr" d="M485,115 H526" marker-end="url(#tfm)"/>
+      <path class="tf-brace p" d="M30,58 V46 H220 V58"/><text class="tf-mode p" x="125" y="36">PENSAR JUNTO</text>
+      <path class="tf-brace d" d="M285,58 V46 H475 V58"/><text class="tf-mode d" x="380" y="36">DELEGAR</text>
+      <path class="tf-brace y" d="M540,172 V184 H730 V172"/><text class="tf-mode y" x="635" y="204">CONTINUA SEU</text>
+      <text class="tf-mode y" x="125" y="204">a decisão continua sua</text>
+    </svg>
+  </div>
+  <p class="hint">Para onde vai o tempo quando o meio encolhe é assunto da página <a href="./ai-first.html">AI First</a>: o total de horas não muda, muda qual das três faixas come o seu dia.</p>
+</section>
+
+<section class="sec" id="s-modos" aria-labelledby="h-modos">
+  <span class="eyebrow">Dois modos</span>
+  <h2 id="h-modos">A diferença está no que você já sabe antes de escrever</h2>
+  <p class="intro">Compare os dois cartões uma linha de cada vez. <strong>Comece pela última:</strong> um pedido começa por ordem, o outro termina em pergunta, e é só nisso que a sua mão precisa reparar na hora de escrever.</p>
+  <div class="seg" role="group" aria-label="Linha em destaque" id="mdSeg"><button type="button" data-md="0" aria-pressed="false">Quando usar</button><button type="button" data-md="1" aria-pressed="false">O que você escreve</button><button type="button" data-md="2" aria-pressed="false">O que volta</button><button type="button" data-md="3" aria-pressed="true">A forma do pedido</button></div>
+  <div class="md-cards">
+    <div class="md-card del"><span class="k">opera o produzir</span><h3>Delegar a execução</h3>
+      <div class="md-row" data-r="0"><span class="k">Quando usar</span><p>Você já sabe qual é a resposta certa. Falta o trabalho de produzi-la.</p></div>
+      <div class="md-row" data-r="1"><span class="k">O que você escreve</span><p>O critério que usaria se fizesse na mão, dentro do próprio pedido.</p></div>
+      <div class="md-row" data-r="2"><span class="k">O que volta</span><p>A tarefa executada, no formato pedido. Nada para decidir.</p></div>
+      <div class="md-row" data-r="3"><span class="k">A forma do pedido</span><p>Começa por um verbo de execução: confira, compare, monte, liste.</p></div>
+    </div>
+    <div class="md-card pen"><span class="k">opera o dirigir</span><h3>Pensar junto</h3>
+      <div class="md-row" data-r="0"><span class="k">Quando usar</span><p>Você ainda não sabe qual é a resposta certa. Falta enxergar o que não está vendo.</p></div>
+      <div class="md-row" data-r="1"><span class="k">O que você escreve</span><p>O que já sabe, e o que já confere hoje. A pergunta vem depois disso.</p></div>
+      <div class="md-row" data-r="2"><span class="k">O que volta</span><p>O que faltava entrar na decisão. A decisão continua sendo sua.</p></div>
+      <div class="md-row" data-r="3"><span class="k">A forma do pedido</span><p>Termina em pergunta: o que escapa, o que eu não estou vendo, onde isto quebra.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="s-percurso" aria-labelledby="h-percurso">
+  <span class="eyebrow">O percurso</span>
+  <h2 id="h-percurso">A IA entra duas vezes, e em papéis diferentes</h2>
+  <p class="intro">Desenhado do começo ao fim, o caminho de uma tarefa tem cinco momentos. Avance e repare em <strong>quantos continuam sendo seus</strong>.</p>
+  <div class="stepbar"><span class="eyebrow" id="pcLab">Momento 1 de 5</span><div class="nav"><button type="button" class="btn" id="pcPrev">← Anterior</button><button type="button" class="btn primary" id="pcNext">Próximo →</button></div></div>
+  <div class="pc-scroll" role="region" tabindex="0" aria-label="Percurso de uma tarefa em cinco momentos. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pc-t">
+      <title id="pc-t">Percurso em cinco momentos com três raias: você recebe, decide o critério, confere e assina; a IA em modo pensar junto amplia o que entra na decisão; a IA em modo delegar produz com o critério recebido. O momento de produzir é o único em que você não aparece.</title>
+      <g id="pcCols"></g>
+      <line class="pc-line" x1="150" y1="118" x2="850" y2="118"/><line class="pc-line" x1="150" y1="192" x2="850" y2="192"/>
+      <text class="pc-lane" x="14" y="86">VOCÊ</text>
+      <text class="pc-lane" x="14" y="152">IA · PENSAR</text><text class="pc-lane" x="14" y="168">JUNTO</text>
+      <text class="pc-lane" x="14" y="236">IA · DELEGAR</text>
+      <g class="pc-cell you" data-m="1"><rect x="160" y="60" width="120" height="46" rx="6"/><text x="220" y="88">Recebe a tarefa</text></g>
+      <g class="pc-cell you" data-m="2"><rect x="300" y="60" width="120" height="46" rx="6"/><text x="360" y="88">Decide o critério</text></g>
+      <g class="pc-cell pen" data-m="2"><rect x="300" y="132" width="120" height="46" rx="6"/><text x="360" y="153">Amplia o que</text><text x="360" y="169">entra na decisão</text></g>
+      <g class="pc-cell del" data-m="3"><rect x="440" y="208" width="120" height="46" rx="6"/><text x="500" y="229">Produz com o</text><text x="500" y="245">critério recebido</text></g>
+      <g class="pc-cell you" data-m="4"><rect x="580" y="60" width="120" height="46" rx="6"/><text x="640" y="88">Confere</text></g>
+      <g class="pc-cell you" data-m="5"><rect x="720" y="60" width="120" height="46" rx="6"/><text x="780" y="88">Assina e envia</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="pcCap" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-anexo" aria-labelledby="h-anexo">
+  <span class="eyebrow">O mesmo anexo</span>
+  <h2 id="h-anexo">O mesmo material, dois pedidos, duas respostas</h2>
+  <p class="intro">Anexado nos dois: o plano de metas aprovado no começo do ano e o relatório de fechamento do trimestre. <strong>Antes de trocar, decida qual das duas perguntas você faria primeiro.</strong></p>
+  <div class="seg" role="group" aria-label="Modo do pedido"><button type="button" data-dm="del" aria-pressed="true">Delegar a execução</button><button type="button" data-dm="pen" aria-pressed="false">Pensar junto</button></div>
+  <div class="dm-grid">
+    <div class="dm-att"><span class="eyebrow">O que está anexado, nos dois</span><div class="doc"><span>PDF</span>Plano de metas aprovado</div><div class="doc"><span>PDF</span>Relatório de fechamento do trimestre</div><p class="hint">Mesma conversa, mesmo arquivo. Só o pedido muda.</p></div>
+    <div class="dm-out" id="dmOut" aria-live="polite"></div>
+  </div>
+  <p class="punch">O primeiro pedido economiza a tarde. O segundo <em>evita a devolução que chega três meses depois</em>.</p>
+</section>
+
+<section class="sec" id="s-qual" aria-labelledby="h-qual">
+  <span class="eyebrow">Qual dos dois</span>
+  <h2 id="h-qual">Seis situações de uma semana comum</h2>
+  <p class="intro">Para cada uma, decida: você já sabe como a resposta certa deveria sair, ou ainda precisa enxergar alguma coisa? <strong>Classifique.</strong></p>
+  <div class="cl-list" id="clList"></div>
+  <p class="cl-score" id="clScore" aria-live="polite"></p>
+</section>
+
+<section class="sec" id="s-troca" aria-labelledby="h-troca">
+  <span class="eyebrow">Trocar os dois</span>
+  <h2 id="h-troca">O que volta quando o modo não combina com a necessidade</h2>
+  <p class="intro">Dois acertos e dois erros. <strong>Os erros não parecem erro:</strong> um devolve texto demais, o outro devolve texto bem escrito em cima de uma premissa que ninguém conferiu. Clique em cada célula.</p>
+  <div class="mx" role="group" aria-label="Matriz do que você precisava contra o que você pediu">
+    <span class="hd corner"></span><span class="hd">Você pediu: delegar</span><span class="hd">Você pediu: pensar junto</span>
+    <span class="rh">Você precisava produzir</span>
+    <button type="button" class="mx-cell good" data-mx="0"><span class="tag">combina</span><b>O documento pronto</b></button>
+    <button type="button" class="mx-cell bad" data-mx="1"><span class="tag">troca</span><b>Reflexão no lugar do documento</b></button>
+    <span class="rh">Você precisava enxergar</span>
+    <button type="button" class="mx-cell bad" data-mx="2"><span class="tag">troca</span><b>Texto bem escrito sobre premissa não conferida</b></button>
+    <button type="button" class="mx-cell good" data-mx="3"><span class="tag">combina</span><b>O que faltava entrar na decisão</b></button>
+  </div>
+  <div class="mx-detail" id="mxDetail" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-rotinas" aria-labelledby="h-rotinas">
+  <span class="eyebrow">Três rotinas</span>
+  <h2 id="h-rotinas">O mesmo par de pedidos, em três trabalhos diferentes</h2>
+  <p class="intro">Ache a rotina que se parece com a sua semana. Leia os dois lados como pedidos, não como exemplos: <strong>o da esquerda carrega o critério; o da direita termina em pergunta</strong>.</p>
+  <div class="rt-tabs" role="tablist" aria-label="Rotinas" id="rtTabs"></div>
+  <div class="rt-pane" id="rtPane" role="tabpanel" aria-live="polite"></div>
+</section>
+
+<section class="sec" id="s-perguntas" aria-labelledby="h-perguntas">
+  <span class="eyebrow">Três perguntas</span>
+  <h2 id="h-perguntas">Qual dos dois cabe neste caso</h2>
+  <p class="intro">Pense numa tarefa sua desta semana e responda. As perguntas não dizem qual modo é melhor: <strong>dizem qual cabe naquele caso, e o que custa cada escolha</strong>.</p>
+  <div class="tq" id="tq"></div>
+  <div class="verdict ok" id="tqVer" aria-live="polite" hidden></div>
+  <p class="hint">Olhe a terceira pergunta: é a única em que os dois lados dizem a mesma coisa. Delegar a execução nunca é delegar a assinatura, e o que a IA aponta quando você pensa junto são hipóteses para conferir na fonte. É o assunto da página <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
+</section>
+
+<section class="sec" id="s-pedidos" aria-labelledby="h-pedidos">
+  <span class="eyebrow">Os dois pedidos</span>
+  <h2 id="h-pedidos">Dois modelos para adaptar, na mesma conversa</h2>
+  <p class="intro">Descreva a tarefa e o seu critério antes, anexe o material uma vez e rode os dois pedidos <strong>na mesma conversa</strong>: o segundo já encontra o anexo lá. Leia as duas respostas antes de julgar qualquer uma, porque é a comparação que ensina.</p>
+  <div class="cp-grid">
+    <div class="copy"><div class="copy-head"><span class="eyebrow">Delegar · opera o produzir</span><button type="button" class="btn" data-copy="cpDel">Copiar</button></div>
+<pre id="cpDel">Anexei o material da tarefa que eu descrevi acima.
+O que eu preciso: o trabalho feito, entregue em tabela, uma linha por item, com a situação de cada um e o que ficou pendente separado no fim.
+Restrições: use o critério que eu escrevi acima, e não outro. Não decida nada que eu não tenha deixado decidido.
+Na dúvida: se um caso não se encaixar no critério, marque para eu conferir em vez de escolher por mim. Não preencha buraco por estimativa.</pre></div>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">Pensar junto · opera o dirigir</span><button type="button" class="btn" data-copy="cpPen">Copiar</button></div>
+<pre id="cpPen">O material continua anexado nesta conversa, e a minha leitura dele está descrita acima.
+O que eu preciso: três coisas que a minha conferência não pegaria, e o que eu deveria olhar em cada uma. Não me dê a decisão, me dê o que falta entrar nela.
+Restrições: não repita o que eu já disse que confiro. Cada ponto precisa vir com o motivo pelo qual ele escapa do meu critério atual.
+Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor.</pre></div>
+  </div>
+  <p class="hint">O "marque para eu conferir" do primeiro pedido é a linha que quase todo mundo esquece. Sem ela, delegar vira entregar a decisão junto com a execução. Como montar o resto do pedido está em <a href="./prompt.html">Prompt</a>.</p>
+</section>
+
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Ordem ou pergunta</h3><p>Delegar começa por um verbo de execução e carrega o critério. Pensar junto termina em pergunta.</p></div>
+    <div class="take-card"><h3>Sem critério não é delegar</h3><p>"Confira estes relatórios" sem dizer contra o quê é entregar a decisão junto com a execução.</p></div>
+    <div class="take-card"><h3>Pensar junto não decide</h3><p>O que volta amplia o que entra na decisão. Quem assina continua sendo quem sempre assinou.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Delegar a execução</dt><dd>Pedir à IA um trabalho cuja resposta certa você já sabe descrever, com o seu critério dentro do pedido.</dd>
+    <dt>Pensar junto</dt><dd>Pedir à IA que amplie o que você enxerga antes de decidir: o que escapa, onde quebra, o que falta.</dd>
+    <dt>Critério</dt><dd>A regra que você usaria se fizesse a tarefa na mão. É o que transforma uma ordem em delegação.</dd>
+    <dt>Verbo de execução</dt><dd>O verbo que diz o que volta: confira, compare, monte, liste, resuma.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os dois modos são uma forma de organizar o assunto; outros materiais os chamam de outros nomes, e na prática muitos pedidos misturam os dois. As situações e os documentos dos exemplos são fictícios.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Usar IA: anterior e próxima">
+  <a class="famfoot-prev" href="./usar-ia--niveis.html"><span>← anterior</span><b>1.1 · Níveis de uso da IA</b></a>
+  <a class="famfoot-fam" href="./usar-ia.html#mapa">Família 1 · Usar IA · o mapa</a>
+  <a class="famfoot-next" href="./usar-ia.html"><span>volta ao começo ↺</span><b>Visão geral · Usar IA</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function press(btns, pred, attr) { btns.forEach(function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* dois modos: linha em destaque */
+  var mdBtns = document.querySelectorAll('[data-md]'), rows = document.querySelectorAll('.md-row');
+  function setMd(k) {
+    press(mdBtns, function (b) { return b.dataset.md === k; });
+    rows.forEach(function (r) { r.classList.toggle('on', r.dataset.r === k); });
+  }
+  mdBtns.forEach(function (b) { b.addEventListener('click', function () { setMd(b.dataset.md); }); });
+  setMd('3');
+
+  /* percurso */
+  var NS = 'http://www.w3.org/2000/svg', pcCols = document.getElementById('pcCols');
+  var COLS = ['1 · a tarefa chega', '2 · o critério', '3 · produzir', '4 · conferir', '5 · sai assinado'];
+  COLS.forEach(function (c, i) {
+    var x = 150 + i * 140;
+    var r = document.createElementNS(NS, 'rect'); r.setAttribute('class', 'pc-colbg'); r.setAttribute('x', x + 2); r.setAttribute('y', 30); r.setAttribute('width', 136); r.setAttribute('height', 262); r.setAttribute('rx', 6); r.dataset.c = i + 1; pcCols.appendChild(r);
+    var t = document.createElementNS(NS, 'text'); t.setAttribute('class', 'pc-col'); t.setAttribute('x', x + 70); t.setAttribute('y', 22); t.textContent = c; pcCols.appendChild(t);
+  });
+  var PC = [
+    { t: 'A tarefa chega', d: 'Só você aparece. Ninguém pede nada à IA antes de saber o que foi pedido.' },
+    { t: 'Decidir o critério: a primeira entrada da IA', d: 'Você decide. A IA, no modo pensar junto, amplia o que entra na decisão: o que escapa, o que você não está vendo. A decisão continua na raia de cima.' },
+    { t: 'Produzir: a segunda entrada, e a única coluna sem você', d: 'A IA, no modo delegar, produz com o critério que recebeu no momento 2. É por isso que o critério precisa estar escrito: é a única coisa sua que atravessa esta coluna.' },
+    { t: 'Conferir', d: 'De volta à raia de cima. A IA aparece duas vezes no percurso, e nenhuma das duas está na coluna onde se decide se o resultado presta.' },
+    { t: 'Sai com o seu nome', d: 'Três dos cinco momentos continuam sendo seus. O que o percurso muda não é quem responde: é quanto do meio você deixa de carregar.' }
+  ];
+  var pcCur = 1, cells = document.querySelectorAll('.pc-cell'), colbg = pcCols.querySelectorAll('.pc-colbg');
+  function pcGo(n) {
+    pcCur = Math.max(1, Math.min(5, n)); var s = PC[pcCur - 1];
+    cells.forEach(function (c) { c.classList.toggle('dim', +c.dataset.m > pcCur); });
+    colbg.forEach(function (r) { r.classList.toggle('on', +r.dataset.c === pcCur); });
+    document.getElementById('pcCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('pcLab').textContent = 'Momento ' + pcCur + ' de 5';
+    document.getElementById('pcPrev').disabled = pcCur === 1;
+    document.getElementById('pcNext').textContent = pcCur === 5 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('pcPrev').addEventListener('click', function () { pcGo(pcCur - 1); });
+  document.getElementById('pcNext').addEventListener('click', function () { pcGo(pcCur === 5 ? 1 : pcCur + 1); });
+  pcGo(1);
+
+  /* o mesmo anexo */
+  var DM = {
+    del: '<span class="eyebrow">O pedido</span><p class="dm-req">"<mark>Compare</mark> o relatório de fechamento com o plano aprovado. Liste, em tabela, cada meta prometida, se ela aparece no relatório e em que página. Marque como pendente o que não encontrar."</p>' +
+      '<span class="eyebrow">O que volta</span><table class="dm-tbl"><thead><tr><th>Meta do plano</th><th>No relatório</th><th>Página</th></tr></thead><tbody><tr><td>Abrir duas lojas no interior</td><td>sim</td><td>4</td></tr><tr><td>Reduzir a ruptura de estoque</td><td>sim</td><td>7</td></tr><tr><td>Treinar as equipes de caixa</td><td>sim</td><td>9</td></tr><tr><td>Novo canal de venda online</td><td class="pend">pendente</td><td>—</td></tr></tbody></table>' +
+      '<p class="hint">O trabalho que levaria a tarde, feito com o critério que estava no pedido. Nada para decidir.</p>',
+    pen: '<span class="eyebrow">O pedido</span><p class="dm-req">"Este relatório bate com o plano em todos os itens. Antes de eu aprovar, <mark class="q">aponte três coisas que uma conferência item a item não pegaria, e diga o que eu deveria olhar em cada uma</mark>."</p>' +
+      '<span class="eyebrow">O que volta</span><ul class="dm-list"><li><b>Meta cumprida não é meta bem feita.</b> As lojas abriram; o relatório não diz se vendem.</li><li><b>A data pode estar dentro do trimestre e fora do combinado.</b> O treinamento aconteceu, depois do pico de vendas que ele devia preparar.</li><li><b>O item mais caro é o que menos aparece descrito.</b> Duas linhas sobre o investimento que consumiu metade do orçamento.</li></ul>' +
+      '<p class="hint">Nenhuma tabela. Volta o que faltava entrar na decisão, e a decisão continua sua.</p>'
+  };
+  var dmBtns = document.querySelectorAll('[data-dm]');
+  function setDm(k) { press(dmBtns, function (b) { return b.dataset.dm === k; }); document.getElementById('dmOut').innerHTML = DM[k]; }
+  dmBtns.forEach(function (b) { b.addEventListener('click', function () { setDm(b.dataset.dm); }); });
+  setDm('del');
+
+  /* classificador */
+  var CL = [
+    { s: 'Cruzar a lista de presença do treinamento com as fichas entregues e dizer quem assinou e não entregou.', a: 'del', w: 'O critério existe e cabe numa linha. Falta só o trabalho de cruzar.' },
+    { s: 'O orçamento do ano que vem fecha nas contas, e mesmo assim alguma coisa nele te incomoda.', a: 'pen', w: 'Você ainda não sabe o que procura. Diga o que já conferiu e pergunte o que escapa.' },
+    { s: 'Escolher entre dois fornecedores que empataram em preço e prazo.', a: 'pen', w: 'A decisão está aberta. Peça os critérios que você não está pesando, não a escolha.' },
+    { s: 'Transformar as anotações da reunião em ata, na estrutura que a casa já usa.', a: 'del', w: 'A estrutura é o critério. Cole o modelo no pedido e receba pronto.' },
+    { s: 'Resumir as dúvidas de cliente do mês por tema, contando quantas vezes cada tema aparece.', a: 'del', w: 'Tarefa com regra clara: agrupar e contar. Diga como tratar a dúvida que cai em dois temas.' },
+    { s: 'A proposta para um cliente importante está pronta, e você quer saber onde ele recusaria primeiro.', a: 'pen', w: 'Você pede uma leitura que não tem: a do cliente que recusa. O pedido termina em pergunta.' }
+  ];
+  var clList = document.getElementById('clList'), clScore = document.getElementById('clScore'), clAns = {};
+  var NAME = { del: 'delegar', pen: 'pensar junto' };
+  CL.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'cl-q';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Classificar"><button type="button" data-v="del" aria-pressed="false">Delegar</button><button type="button" data-v="pen" aria-pressed="false">Pensar junto</button></div><div class="cl-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.cl-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      press(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; clAns[i] = ok;
+      fb.hidden = false; fb.className = 'cl-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Aqui cabe ' + NAME[q.a] + '. ') + '</b>' + q.w;
+      var n = Object.keys(clAns).length, c = Object.keys(clAns).filter(function (k) { return clAns[k]; }).length;
+      clScore.textContent = n + ' de 6 respondidas · ' + c + ' certas' + (n === 6 ? ' · a pergunta de bolso: eu já sei como a resposta certa deveria sair?' : '');
+    }); });
+    clList.appendChild(d);
+  });
+
+  /* matriz */
+  var MX = [
+    { t: 'Precisava produzir, pediu para delegar', d: 'Volta a tarefa feita, no formato pedido, com o seu critério. É o caso em que a IA economiza a tarde.' },
+    { t: 'Precisava produzir, pediu para pensar junto', d: 'Você já sabia o que queria e perguntou "o que você acha disto?". Volta reflexão genérica no lugar do documento, e custa o dobro do tempo: você lê a reflexão e depois pede o documento. Pensar junto serve quando a decisão está aberta, não para adiar uma que já está tomada.' },
+    { t: 'Precisava enxergar, pediu para delegar', d: 'O erro mais caro, porque não parece erro. Volta um texto bem escrito, no formato certo, em cima de uma premissa que ninguém conferiu. "Confira estes relatórios" sem dizer contra o quê é isto: a IA confere contra o critério que ela imaginou.' },
+    { t: 'Precisava enxergar, pediu para pensar junto', d: 'Volta o que faltava entrar na decisão: riscos, leituras, perguntas. Trate cada ponto como hipótese para conferir na fonte, e não como veredito.' }
+  ];
+  var mxBtns = document.querySelectorAll('.mx-cell');
+  function showMx(i) { press(mxBtns, function (b) { return +b.dataset.mx === i; }); document.getElementById('mxDetail').innerHTML = '<span class="eyebrow">' + MX[i].t + '</span><p>' + MX[i].d + '</p>'; }
+  mxBtns.forEach(function (b) { b.addEventListener('click', function () { showMx(+b.dataset.mx); }); });
+  showMx(2);
+
+  /* rotinas */
+  var RT = [
+    { t: 'Fechamento das lojas', d: '"Confira estes 18 relatórios de loja contra este checklist e liste o que falta em cada um."', p: '"Estes 18 relatórios passaram no checklist. Que tipo de problema este checklist não pegaria?"' },
+    { t: 'Proposta para cliente', d: '"Transforme estas anotações da reunião em proposta, nesta estrutura de sete seções."', p: '"Leia esta proposta como se fosse o cliente que vai recusar. Onde ele recusa primeiro?"' },
+    { t: 'Treinamento da equipe', d: '"Monte a grade de cinco encontros com estes doze temas, respeitando a carga de cada um."', p: '"Nesta grade, que pré-requisito eu estou assumindo que a equipe tem, e talvez não tenha?"' }
+  ];
+  var rtTabs = document.getElementById('rtTabs'), rtBtns = [];
+  RT.forEach(function (r, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = r.t; b.addEventListener('click', function () { showRt(i); }); rtTabs.appendChild(b); rtBtns.push(b); });
+  function showRt(i) {
+    press(rtBtns, function (b) { return b === rtBtns[i]; }, 'aria-selected');
+    var r = RT[i];
+    document.getElementById('rtPane').innerHTML = '<div class="rt-req del"><span class="eyebrow">Delegar · começa por um verbo</span><p class="q">' + r.d + '</p></div><div class="rt-req pen"><span class="eyebrow">Pensar junto · termina em pergunta</span><p class="q">' + r.p + '</p></div>';
+  }
+  showRt(0);
+
+  /* três perguntas */
+  var TQ = [
+    { q: 'Você já sabe qual é a resposta certa?', s: 'Delegue. Falta produzir: escreva o critério no pedido e receba pronto.', n: 'Pense junto. Falta enxergar: traga o material e peça as leituras que faltam.' },
+    { q: 'Existe uma regra escrita em algum lugar?', s: 'Cole a regra no pedido. Ela vira o critério da conferência.', n: 'A regra está na sua cabeça, e esta é a hora de escrevê-la. Peça ajuda para formulá-la, não para aplicá-la.' },
+    { q: 'Se sair errado, quem responde é você?', s: 'Delegue a execução, nunca a assinatura. Confira antes de mandar.', n: 'Confira do mesmo jeito. O erro que passa por você leva o seu nome no meio do caminho.' }
+  ];
+  var tq = document.getElementById('tq'), tqAns = {};
+  TQ.forEach(function (x, i) {
+    var d = document.createElement('div'); d.className = 'tq-row';
+    d.innerHTML = '<p><b>' + x.q + '</b></p><div class="opts" role="group" aria-label="Resposta"><button type="button" data-v="s" aria-pressed="false">Sim</button><button type="button" data-v="n" aria-pressed="false">Não</button></div><p class="ans" aria-live="polite"></p>';
+    var bs = d.querySelectorAll('button'), an = d.querySelector('.ans');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      press(bs, function (y) { return y === b; }); tqAns[i] = b.dataset.v; an.textContent = b.dataset.v === 's' ? x.s : x.n; renderTq();
+    }); });
+    tq.appendChild(d);
+  });
+  function renderTq() {
+    var v = document.getElementById('tqVer'); if (!tqAns[0]) { v.hidden = true; return; }
+    v.hidden = false;
+    v.innerHTML = tqAns[0] === 's' ? '<b>Este caso pede delegação.</b> ' + (tqAns[1] === 'n' ? 'Mas antes escreva a regra que está na sua cabeça: sem ela, você entrega a decisão junto.' : 'Com o critério no pedido, e a conferência na sua mão.') : '<b>Este caso pede pensar junto.</b> Diga o que já sabe e o que já confere, e termine em pergunta. Quando a decisão estiver tomada, aí sim delegue a execução.';
+  }
+
+  /* copiar */
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+})();
+</script>
+
+</html>

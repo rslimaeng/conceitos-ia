@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="llm-e-harness">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM e Harness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de aula em coluna única, seções separadas por fio, um diagrama de sequência como peça central. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+
+     Os valores NÃO são escolha desta página: são a superfície "aula" do 17.
+     13 dos 15 já batiam quando esta peça nasceu — só os nomes eram outros.
+     O que mudou na adaptação, e por quê:
+       · --atencao-texto  #8A4F1E -> #8f5628   valor do 17 (medido para contraste)
+       · --ok-texto       #3F5F48 -> #4a6551   idem
+       · --font-display   removido             a superfície aula tem Inter e
+                                               JetBrains Mono, e só. "Outfit" não
+                                               existe no sistema; adicioná-la é
+                                               decisão do 17, não desta pasta.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --on-accent: #ffffff;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026: "pode ficar o modo claro /
+   sempre deixar que possível dentro do padrão do 17 de cores, fontes e tudo mais."
+   A peça nasceu com um modo escuro próprio (15 valores que não estavam no 17);
+   ele foi removido aqui. A superfície "aula" do 17 é clara, e a biblioteca segue ela. */
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+code { font-family: var(--font-mono); font-size: .86em; background: var(--accent-soft); color: var(--accent); padding: 1px 6px; border-radius: 4px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+
+/* Cabeçalho */
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 400; letter-spacing: -.01em; }
+.hero .sub { font-family: var(--font-body); font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 30ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+
+/* Seções */
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+/* A: texto entra, texto sai */
+.io { display: grid; grid-template-columns: 1fr auto 0.8fr auto 1fr; gap: 12px; align-items: center; }
+.io-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 18px; min-width: 0; }
+.io-card .eyebrow { display: block; margin-bottom: 8px; }
+.io-card p { font-size: .98rem; }
+.io-card.focal { background: var(--accent-soft); border-color: var(--accent); text-align: center; }
+.io-card.focal .big { font-family: var(--font-body); font-size: 1.9rem; color: var(--accent); }
+.io-arrow { font-family: var(--font-mono); color: var(--text-dim); font-size: 1.3rem; }
+.cant { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.cant .lab { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); margin-right: 4px; }
+.pill-no { border: 1px dashed var(--border-strong); border-radius: 999px; padding: 4px 14px; font-size: .95rem; color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--text-dim); }
+.hook { font-family: var(--font-body); font-size: 1.35rem; color: var(--accent); }
+
+/* B: por baixo do app */
+.seg { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 18px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"], .seg button[aria-checked="true"] { background: var(--text); color: var(--bg); }
+.stack { background: var(--bg-elev); border: 1px solid var(--text); border-radius: 8px; padding: 18px; display: grid; gap: 16px; }
+.stack-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.chat { display: grid; gap: 10px; max-width: 640px; }
+.bubble { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; justify-self: end; max-width: 100%; }
+.composer { border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; gap: 12px; color: var(--text-dim); font-size: .95rem; align-items: center; }
+.chip-model { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--border-strong); border-radius: 4px; padding: 2px 8px; color: var(--text-muted); white-space: nowrap; }
+.seen-note { color: var(--text-muted); font-size: .98rem; }
+.harness { border: 1.5px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; display: grid; gap: 14px; }
+.harness-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.harness-head .eyebrow { color: var(--accent); }
+.parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.part { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 12px 14px; display: grid; gap: 2px; }
+.part b { font-weight: 600; font-size: .98rem; }
+.part span { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); letter-spacing: .04em; }
+.part[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.part-detail { background: var(--bg-elev); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; min-height: 5.6em; }
+.llm-core { background: var(--bg-elev); border: 1px solid var(--text); border-radius: 6px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.llm-core .nm { font-weight: 600; }
+.llm-core .sb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+
+/* C: sequência */
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.dots { display: flex; gap: 6px; flex-wrap: wrap; }
+.dot { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-strong); background: var(--bg-elev); font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); padding: 0; }
+.dot[aria-current="step"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.dot.done { border-color: var(--accent); color: var(--accent); }
+.nav { display: flex; gap: 8px; }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 18px 22px; display: grid; gap: 8px; min-height: 176px; align-content: start; }
+.caption .top { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.caption h3 { font-size: 1.45rem; }
+.caption p { max-width: 70ch; font-size: 1.05rem; }
+.who { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; border-radius: 4px; padding: 3px 8px; border: 1px solid var(--border-strong); color: var(--text-muted); }
+.who.harness { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.who.llm { border-color: var(--text); color: var(--text); }
+.who.tool { border-style: dashed; }
+.diagram-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
+.diagram-scroll svg { display: block; width: 100%; min-width: 880px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; font-size: .9rem; color: var(--text-muted); }
+.legend span { display: inline-flex; gap: 8px; align-items: center; }
+.lg-line { width: 28px; border-top: 1.5px solid var(--text-muted); display: inline-block; }
+.lg-line.dash { border-top-style: dashed; }
+.lg-line.acc { border-top: 2px solid var(--accent); }
+.lg-box { width: 16px; height: 12px; border: 1.5px solid var(--accent); background: var(--accent-soft); border-radius: 3px; display: inline-block; }
+.hint { font-size: .9rem; color: var(--text-dim); }
+
+/* SVG do diagrama de sequência */
+.sq-life { stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.sq-actor rect { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.2; }
+.sq-actor.input rect { fill: var(--bg); stroke: var(--text-dim); }
+.sq-actor.focal rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.8; }
+.sq-actor.ext rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.4; }
+.nm { font: 600 15px var(--font-body); fill: var(--text); text-anchor: middle; }
+.sb { font: 400 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.bar { fill: var(--bg-elev); stroke: var(--text-muted); stroke-width: .9; }
+.msg-line { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
+.msg-line.ret { stroke-dasharray: 6 4; }
+.msg-line.acc { stroke: var(--accent); stroke-width: 2.2; }
+.mk-muted { fill: var(--text-muted); }
+.mk-acc { fill: var(--accent); }
+.lbl { font: 500 10.5px var(--font-mono); letter-spacing: .06em; fill: var(--text-muted); text-anchor: middle; }
+.lbl.start { text-anchor: start; }
+.lbl-mask { fill: var(--bg); }
+.acc-t { fill: var(--accent); }
+.st { transition: opacity .25s ease; }
+.st.is-future { opacity: .16; }
+.st.is-now .msg-line { stroke-width: 2.6; }
+.st.is-now .lbl { fill: var(--text); font-weight: 600; }
+.st.is-now .lbl.acc-t { fill: var(--accent); }
+
+/* D: simulador */
+.sim { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 20px; align-items: start; }
+.panel { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.panel h3 { font-size: 1.3rem; }
+.panel.focal { border-color: var(--accent); background: var(--accent-soft); }
+.tools { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tool { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; }
+.tool .t-name { display: grid; gap: 0; }
+.tool .t-name b { font-weight: 500; font-size: .98rem; }
+.tool .t-name span { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+.sw { width: 40px; height: 22px; border-radius: 999px; border: 1px solid var(--text-muted); position: relative; flex: none; background: var(--bg); }
+.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-muted); transition: transform .18s ease; }
+.tool[aria-checked="true"] { border-color: var(--accent); }
+.tool[aria-checked="true"] .sw { background: var(--accent); border-color: var(--accent); }
+.tool[aria-checked="true"] .sw::after { transform: translateX(18px); background: var(--on-accent); }
+.model-note { font-size: .92rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 12px; }
+.asks { display: flex; flex-wrap: wrap; gap: 8px; }
+.ask { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 9px 14px; font-size: .95rem; }
+.ask[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.prompt-line { font-size: 1.02rem; border-left: 3px solid var(--border-strong); padding-left: 12px; color: var(--text); }
+.trace { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.trace li { display: grid; grid-template-columns: 128px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--border); animation: rise .3s ease both; animation-delay: calc(var(--i) * 80ms); }
+.trace li:first-child { border-top: 0; }
+.trace .who { justify-self: start; white-space: nowrap; }
+.trace .txt { font-size: .98rem; min-width: 0; overflow-wrap: anywhere; }
+.trace .txt small { display: inline-block; margin-left: 6px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); border: 1px solid var(--border-strong); border-radius: 3px; padding: 0 5px; }
+.verdict { border-radius: 6px; padding: 12px 16px; font-size: .98rem; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.seg button { padding-inline: 14px; }
+.vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.vs-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.vs-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.vs-card h3 { font-size: 1.35rem; }
+.vs-card dl { margin: 0; display: grid; gap: 10px; }
+.vs-card dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.vs-card dd { margin: 2px 0 0; }
+.vs-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.punch { font-family: var(--font-body); font-size: clamp(1.25rem, 2.6vw, 1.6rem); color: var(--text); max-width: 40ch; }
+.punch em { font-style: normal; color: var(--accent); }
+
+/* E: para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.35rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .io { grid-template-columns: 1fr; }
+  .io-arrow { transform: rotate(90deg); justify-self: center; }
+  .parts { grid-template-columns: 1fr; }
+  .sim, .take, .vs { grid-template-columns: 1fr; }
+  .trace li { grid-template-columns: 1fr; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .st, .sw::after { transition: none; }
+  .trace li { animation: none; }
+}
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <span class="eyebrow">Fundamento · a base das sete famílias</span>
+  <h1>LLM e harness</h1>
+  <p class="sub">Por que o mesmo modelo faz coisas diferentes em cada aplicativo</p>
+  <p class="lead">Uma LLM só gera texto. Tudo o que você vê uma IA fazer, como pesquisar na web, salvar um arquivo ou acender uma luz, vem do sistema que existe em volta dela. Esse sistema se chama <strong>harness</strong>.</p>
+</header>
+
+<!-- A · O MODELO -->
+<section class="sec" aria-labelledby="h-modelo">
+  <span class="eyebrow">O modelo</span>
+  <h2 id="h-modelo">Uma LLM recebe texto e devolve texto</h2>
+  <div class="io">
+    <div class="io-card"><span class="eyebrow">Texto que entra</span><p>Escreva um e-mail de cobrança educado para o Marcos.</p></div>
+    <span class="io-arrow" aria-hidden="true">→</span>
+    <div class="io-card focal"><span class="eyebrow">LLM</span><div class="big">gera texto</div></div>
+    <span class="io-arrow" aria-hidden="true">→</span>
+    <div class="io-card"><span class="eyebrow">Texto que sai</span><p>Olá, Marcos. Passando para lembrar do pagamento em aberto…</p></div>
+  </div>
+  <div class="cant">
+    <span class="lab">Sozinha, ela não</span>
+    <span class="pill-no">pesquisa na web</span>
+    <span class="pill-no">salva arquivo no seu computador</span>
+    <span class="pill-no">acende a luz da sua casa</span>
+  </div>
+  <p class="hook">Então por que o Claude no navegador consegue pesquisar na web?</p>
+</section>
+
+<!-- B · O APLICATIVO -->
+<section class="sec" aria-labelledby="h-app">
+  <span class="eyebrow">O aplicativo</span>
+  <h2 id="h-app">Entre você e o modelo existe um sistema</h2>
+  <p class="intro">O aplicativo parece uma conversa direta com a IA. Por baixo, existe um sistema pronto que liga o app ao modelo. É o <strong>harness</strong>: ele define o que o modelo pode fazer, o que não pode e quais ferramentas ele pode acionar.</p>
+
+  <div class="seg" role="group" aria-label="Camada do aplicativo">
+    <button type="button" id="viewSeeBtn" aria-pressed="false">O que você vê</button>
+    <button type="button" id="viewUnderBtn" aria-pressed="true">O que existe por baixo</button>
+  </div>
+
+  <div class="stack">
+    <div class="stack-head"><span class="eyebrow">O app</span><span class="hint">a interface que você usa</span></div>
+    <div class="chat">
+      <div class="bubble">Faça uma pesquisa na web para mim: quem é o presidente atual da Argentina?</div>
+      <div class="composer"><span>Escreva uma mensagem…</span><span class="chip-model">Opus</span></div>
+    </div>
+    <p class="seen-note" id="seenNote" hidden>Do seu lado, parece que você fala direto com a IA. Só existe a caixa de texto e o nome do modelo.</p>
+
+    <div class="harness" id="harnessBox">
+      <div class="harness-head"><span class="eyebrow">Harness</span><span class="hint">o sistema pronto por baixo do app</span></div>
+      <div class="parts" role="group" aria-label="Partes do harness">
+        <button type="button" class="part" data-part="regras" aria-pressed="false"><b>Instruções do sistema</b><span>o que pode e não pode</span></button>
+        <button type="button" class="part" data-part="ferramentas" aria-pressed="true"><b>Ferramentas</b><span>o que o modelo pode pedir</span></button>
+        <button type="button" class="part" data-part="ponte" aria-pressed="false"><b>Ponte com o modelo</b><span>leva e traz texto</span></button>
+      </div>
+      <div class="part-detail" id="partDetail" aria-live="polite"></div>
+      <div class="llm-core"><span class="eyebrow">Dentro do harness</span><span class="nm">LLM (Opus)</span><span class="sb">só gera texto</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- C · O FLUXO -->
+<section class="sec" aria-labelledby="h-fluxo">
+  <span class="eyebrow">O fluxo</span>
+  <h2 id="h-fluxo">O que acontece quando você pede uma pesquisa</h2>
+  <p class="intro">Siga o pedido “quem é o presidente atual da Argentina?” do seu teclado até a resposta. Repare em quem escreve texto e em quem executa.</p>
+
+  <div class="stepbar">
+    <div class="dots" id="dots" role="group" aria-label="Passos do fluxo"></div>
+    <div class="nav">
+      <button type="button" class="btn" id="prevBtn">← Anterior</button>
+      <button type="button" class="btn primary" id="nextBtn">Próximo →</button>
+    </div>
+  </div>
+
+  <div class="caption" id="caption" aria-live="polite"></div>
+
+  <div class="diagram-scroll" role="region" tabindex="0" aria-label="Diagrama de sequência do fluxo. Role para os lados se a tela for estreita.">
+    <svg id="seq" viewBox="0 0 880 600" role="img" aria-labelledby="seq-title seq-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="seq-title">Fluxo de uma pesquisa na web</title>
+      <desc id="seq-desc">Diagrama de sequência com quatro atores: você, o app com harness, o modelo e a busca na web. O modelo só escreve um pedido de ferramenta; o app executa a busca e devolve os resultados ao modelo.</desc>
+      <defs>
+        <marker id="seq-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-muted"/></marker>
+        <marker id="seq-arrow-acc" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-acc"/></marker>
+      </defs>
+      <rect width="880" height="600" fill="var(--bg)"/>
+
+      <!-- lifelines -->
+      <line class="sq-life" x1="120" y1="76" x2="120" y2="584"/>
+      <line class="sq-life" x1="340" y1="76" x2="340" y2="584"/>
+      <line class="sq-life" x1="560" y1="76" x2="560" y2="584"/>
+      <line class="sq-life" x1="780" y1="76" x2="780" y2="584"/>
+
+      <!-- activation bars -->
+      <rect class="bar st" data-step="1" x="336" y="136" width="8" height="412"/>
+      <rect class="bar st" data-step="2" x="556" y="184" width="8" height="48"/>
+      <rect class="bar st" data-step="7" x="556" y="452" width="8" height="48"/>
+      <rect class="bar st" data-step="5" x="776" y="356" width="8" height="48"/>
+
+      <!-- messages -->
+      <g class="st" data-step="1">
+        <line class="msg-line" x1="122" y1="136" x2="336" y2="136" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="184" y="112" width="92" height="16"/>
+        <text class="lbl" x="230" y="124">PERGUNTA</text>
+      </g>
+      <g class="st" data-step="2">
+        <line class="msg-line" x1="344" y1="184" x2="556" y2="184" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="404" y="160" width="92" height="16"/>
+        <text class="lbl" x="450" y="172">PROMPT+REGRAS</text>
+      </g>
+      <g class="st" data-step="3">
+        <line class="msg-line acc" x1="556" y1="232" x2="344" y2="232" marker-end="url(#seq-arrow-acc)"/>
+        <rect class="lbl-mask" x="404" y="208" width="92" height="16"/>
+        <text class="lbl acc-t" x="450" y="220">PEDE BUSCA</text>
+      </g>
+      <g class="st" data-step="4">
+        <path class="msg-line" d="M344,280 h32 q6,0 6,6 v12 q0,6 -6,6 h-32" marker-end="url(#seq-arrow)"/>
+        <text class="lbl start" x="394" y="297">FERRAMENTA ON?</text>
+      </g>
+      <g class="st" data-step="5">
+        <line class="msg-line" x1="344" y1="356" x2="776" y2="356" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="650" y="332" width="84" height="16"/>
+        <text class="lbl" x="692" y="344">BUSCA</text>
+      </g>
+      <g class="st" data-step="6">
+        <line class="msg-line ret" x1="776" y1="404" x2="344" y2="404" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="650" y="380" width="84" height="16"/>
+        <text class="lbl" x="692" y="392">RESULTADOS</text>
+      </g>
+      <g class="st" data-step="7">
+        <line class="msg-line" x1="344" y1="452" x2="556" y2="452" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="404" y="428" width="92" height="16"/>
+        <text class="lbl" x="450" y="440">REPASSA DADOS</text>
+      </g>
+      <g class="st" data-step="8">
+        <line class="msg-line ret" x1="556" y1="500" x2="344" y2="500" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="404" y="476" width="92" height="16"/>
+        <text class="lbl" x="450" y="488">TEXTO PRONTO</text>
+      </g>
+      <g class="st" data-step="9">
+        <line class="msg-line ret" x1="336" y1="548" x2="122" y2="548" marker-end="url(#seq-arrow)"/>
+        <rect class="lbl-mask" x="184" y="524" width="92" height="16"/>
+        <text class="lbl" x="230" y="536">RESPOSTA</text>
+      </g>
+
+      <!-- actors -->
+      <g class="sq-actor input"><rect x="32" y="16" width="176" height="60" rx="6"/><text class="nm" x="120" y="43">Você</text><text class="sb" x="120" y="62">no app</text></g>
+      <g class="sq-actor focal"><rect x="252" y="16" width="176" height="60" rx="6"/><text class="nm" x="340" y="43">App (harness)</text><text class="sb" x="340" y="62">sistema por baixo</text></g>
+      <g class="sq-actor"><rect x="472" y="16" width="176" height="60" rx="6"/><text class="nm" x="560" y="43">Modelo (LLM)</text><text class="sb" x="560" y="62">só gera texto</text></g>
+      <g class="sq-actor ext"><rect x="692" y="16" width="176" height="60" rx="6"/><text class="nm" x="780" y="43">Busca na web</text><text class="sb" x="780" y="62">ferramenta</text></g>
+    </svg>
+  </div>
+  <div class="legend" aria-hidden="true">
+    <span><i class="lg-line"></i>pedido</span>
+    <span><i class="lg-line dash"></i>resposta</span>
+    <span><i class="lg-line acc"></i>o modelo pede uma ferramenta</span>
+    <span><i class="lg-box"></i>harness</span>
+  </div>
+  <p class="hint">Dica: as setas ← → do teclado também avançam os passos.</p>
+</section>
+
+<!-- D · O TESTE -->
+<section class="sec" aria-labelledby="h-teste">
+  <span class="eyebrow">O teste</span>
+  <h2 id="h-teste">Mude o harness, mude o que a IA faz</h2>
+  <p class="intro">Ligue e desligue as ferramentas do harness e faça o mesmo pedido de novo. O modelo é sempre o mesmo.</p>
+
+  <div class="sim">
+    <div class="panel focal">
+      <h3>Harness do app</h3>
+      <div class="seg" role="group" aria-label="Configuração pronta">
+        <button type="button" data-preset="chat" aria-pressed="true">Chat simples</button>
+        <button type="button" data-preset="code" aria-pressed="false">Claude Code</button>
+        <button type="button" data-preset="all" aria-pressed="false">Harness ampliado</button>
+      </div>
+      <ul class="tools">
+        <li><button type="button" class="tool" role="switch" data-tool="web" aria-checked="true"><span class="t-name"><b>Busca na web</b><span>busca_web</span></span><span class="sw" aria-hidden="true"></span></button></li>
+        <li><button type="button" class="tool" role="switch" data-tool="files" aria-checked="false"><span class="t-name"><b>Arquivos do computador</b><span>arquivos</span></span><span class="sw" aria-hidden="true"></span></button></li>
+        <li><button type="button" class="tool" role="switch" data-tool="terminal" aria-checked="false"><span class="t-name"><b>Terminal</b><span>executar_comando</span></span><span class="sw" aria-hidden="true"></span></button></li>
+        <li><button type="button" class="tool" role="switch" data-tool="house" aria-checked="false"><span class="t-name"><b>Casa conectada</b><span>controlar_casa</span></span><span class="sw" aria-hidden="true"></span></button></li>
+      </ul>
+      <p class="model-note">Modelo: <code>Opus</code>, o mesmo em qualquer configuração.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Peça algo ao modelo</h3>
+      <div class="asks" role="group" aria-label="Pedidos de exemplo">
+        <button type="button" class="ask" data-ask="web" aria-pressed="true">Pesquisar na web</button>
+        <button type="button" class="ask" data-ask="weather" aria-pressed="false">Previsão do tempo</button>
+        <button type="button" class="ask" data-ask="save" aria-pressed="false">Salvar um arquivo</button>
+        <button type="button" class="ask" data-ask="read" aria-pressed="false">Ler um arquivo</button>
+        <button type="button" class="ask" data-ask="tests" aria-pressed="false">Rodar os testes</button>
+        <button type="button" class="ask" data-ask="ls" aria-pressed="false">Listar a pasta</button>
+        <button type="button" class="ask" data-ask="light" aria-pressed="false">Acender a luz</button>
+        <button type="button" class="ask" data-ask="ac" aria-pressed="false">Desligar o ar</button>
+      </div>
+      <p class="prompt-line" id="promptLine"></p>
+      <ol class="trace" id="trace" aria-live="polite"></ol>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </div>
+  <p class="punch">O modelo não mudou. Mudou a lista de ferramentas do <em>harness</em>.</p>
+</section>
+
+<!-- D2 · SEGUNDO EXEMPLO -->
+<section class="sec" aria-labelledby="h-code">
+  <span class="eyebrow">Segundo exemplo</span>
+  <h2 id="h-code">Claude Code é outro harness</h2>
+  <p class="intro">O Claude Code também é um harness em volta de um modelo da Claude. O que muda é o que o harness oferece: ele foi feito para trabalhar dentro de um projeto no seu computador.</p>
+  <div class="vs">
+    <div class="vs-card">
+      <h3>App de chat (ex.: Claude Web)</h3>
+      <dl>
+        <div><dt>Interface</dt><dd>Janela de conversa no navegador.</dd></div>
+        <div><dt>Ferramentas</dt><dd>Busca na web. Sem acesso direto aos arquivos do seu computador.</dd></div>
+        <div><dt>Serve para</dt><dd>Conversar, pesquisar e escrever.</dd></div>
+      </dl>
+    </div>
+    <div class="vs-card focal">
+      <h3>Claude Code</h3>
+      <dl>
+        <div><dt>Interface</dt><dd>Terminal, app desktop ou editor de código.</dd></div>
+        <div><dt>Ferramentas</dt><dd>Ler e editar arquivos, executar comandos no terminal e buscar na web.</dd></div>
+        <div><dt>Serve para</dt><dd>Construir e alterar coisas dentro de uma pasta de projeto.</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="vs-actions">
+    <button type="button" class="btn primary" id="tryCode">Testar no simulador →</button>
+    <span class="hint">Abre o simulador com o harness do Claude Code e o pedido “Rodar os testes”.</span>
+  </div>
+  <p class="punch">O modelo não aprendeu nada novo. O <em>harness</em> ganhou ferramentas.</p>
+</section>
+
+<!-- E · PARA LEVAR -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>A LLM gera texto</h3><p>Só isso. Ela escreve, inclusive o pedido para usar uma ferramenta. Quem executa é outro programa.</p></div>
+    <div class="take-card"><h3>O harness liga tudo</h3><p>Instruções do sistema, lista de ferramentas e a ponte entre o app e o modelo. É ele que decide o que o modelo pode e não pode fazer.</p></div>
+    <div class="take-card"><h3>Novo harness, nova capacidade</h3><p>Quem controla o harness adiciona ferramentas sem trocar de modelo.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>LLM</dt><dd>Modelo de linguagem. Recebe texto e gera texto.</dd>
+    <dt>Harness</dt><dd>Sistema em volta do modelo: instruções, ferramentas e a ligação com o app.</dd>
+    <dt>Ferramenta</dt><dd>Programa que o harness sabe executar quando o modelo pede, como uma busca na web.</dd>
+    <dt>Prompt</dt><dd>O texto enviado ao modelo. No app, inclui a sua mensagem e as instruções do sistema.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Cada aplicativo monta o seu harness de um jeito, e os nomes das ferramentas nos exemplos são ilustrativos.</p>
+</section>
+
+</div>
+
+<script>
+(function () {
+  /* ---------- B · por baixo do app ---------- */
+  var PARTS = {
+    regras: 'Um texto escondido que segue junto com toda mensagem sua. Ele diz ao modelo o que ele pode fazer, o que não pode e como deve se comportar.',
+    ferramentas: 'A lista do que o modelo pode pedir: buscar na web, ler um arquivo, acionar um dispositivo. Cada item é um programa que o app sabe executar. Sem o item na lista, o modelo não tem como pedir.',
+    ponte: 'Leva o seu texto até o modelo e traz a resposta de volta. Também executa a ferramenta quando o modelo pede e entrega o resultado para ele continuar.'
+  };
+  var seeBtn = document.getElementById('viewSeeBtn');
+  var underBtn = document.getElementById('viewUnderBtn');
+  var harnessBox = document.getElementById('harnessBox');
+  var seenNote = document.getElementById('seenNote');
+  function setView(under) {
+    seeBtn.setAttribute('aria-pressed', String(!under));
+    underBtn.setAttribute('aria-pressed', String(under));
+    harnessBox.hidden = !under;
+    seenNote.hidden = under;
+  }
+  seeBtn.addEventListener('click', function () { setView(false); });
+  underBtn.addEventListener('click', function () { setView(true); });
+  var partBtns = document.querySelectorAll('.part');
+  var partDetail = document.getElementById('partDetail');
+  function setPart(k) {
+    partBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.part === k)); });
+    partDetail.textContent = PARTS[k];
+  }
+  partBtns.forEach(function (b) { b.addEventListener('click', function () { setPart(b.dataset.part); }); });
+  setPart('ferramentas');
+
+  /* ---------- C · fluxo passo a passo ---------- */
+  var STEPS = [
+    { who: 'user', whoLabel: 'Você', title: 'Você faz a pergunta', text: 'Você digita no app: “Faça uma pesquisa na web: quem é o presidente atual da Argentina?”. Até aqui é só uma mensagem na tela.' },
+    { who: 'harness', whoLabel: 'Harness', title: 'O app monta o pacote', text: 'O app não manda só a sua pergunta. Ele junta as instruções do sistema, a lista de ferramentas disponíveis e a sua mensagem. Tudo isso vira texto e segue para o modelo.' },
+    { who: 'llm', whoLabel: 'Modelo · só gera texto', title: 'O modelo pede uma ferramenta', text: 'O modelo lê o pacote e conclui: para responder, preciso pesquisar, e eu não pesquiso. Ele escreve um texto especial pedindo a ferramenta de busca. Ele apenas escreve. Não executa nada.' },
+    { who: 'harness', whoLabel: 'Harness', title: 'O app confere a ferramenta', text: 'O harness lê o pedido e verifica se essa ferramenta está habilitada. Está. Se não estivesse, o pedido morreria aqui e o modelo responderia que não consegue.' },
+    { who: 'harness', whoLabel: 'Harness → ferramenta', title: 'O app executa a busca', text: 'Quem sai na internet é o app, não o modelo. O harness chama a ferramenta de busca com o que o modelo pediu.' },
+    { who: 'tool', whoLabel: 'Ferramenta', title: 'A busca devolve resultados', text: 'Páginas e trechos sobre o presidente da Argentina voltam para o app, como texto.' },
+    { who: 'harness', whoLabel: 'Harness', title: 'O app entrega os resultados ao modelo', text: 'O modelo nunca viu a internet. O app cola os resultados no texto e envia de volta, para o modelo continuar de onde parou.' },
+    { who: 'llm', whoLabel: 'Modelo · só gera texto', title: 'O modelo escreve a resposta', text: 'Com os resultados na mão, o modelo gera o texto final: “O presidente atual da Argentina é Javier Milei…”. De novo, é só texto.' },
+    { who: 'harness', whoLabel: 'Harness', title: 'O app mostra a resposta', text: 'O harness exibe o texto na tela. Para você, foi uma pergunta e uma resposta. Por baixo, foram nove passos e uma ferramenta.' }
+  ];
+  var N = STEPS.length, cur = 1;
+  var dotsEl = document.getElementById('dots');
+  var capEl = document.getElementById('caption');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var stEls = document.querySelectorAll('#seq .st');
+  for (var i = 1; i <= N; i++) {
+    var d = document.createElement('button');
+    d.type = 'button'; d.className = 'dot'; d.textContent = i;
+    d.setAttribute('aria-label', 'Passo ' + i);
+    d.dataset.n = i;
+    d.addEventListener('click', function () { go(+this.dataset.n); });
+    dotsEl.appendChild(d);
+  }
+  function go(n) {
+    cur = Math.max(1, Math.min(N, n));
+    stEls.forEach(function (el) {
+      var s = +el.dataset.step;
+      el.classList.toggle('is-future', s > cur);
+      el.classList.toggle('is-now', s === cur);
+    });
+    dotsEl.querySelectorAll('.dot').forEach(function (b) {
+      var k = +b.dataset.n;
+      if (k === cur) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+      b.classList.toggle('done', k < cur);
+    });
+    var s = STEPS[cur - 1];
+    capEl.innerHTML = '<div class="top"><span class="eyebrow">Passo ' + cur + ' de ' + N + '</span><span class="who ' + s.who + '">' + s.whoLabel + '</span></div><h3>' + s.title + '</h3><p>' + s.text + '</p>';
+    prevBtn.disabled = cur === 1;
+    nextBtn.textContent = cur === N ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  prevBtn.addEventListener('click', function () { go(cur - 1); });
+  nextBtn.addEventListener('click', function () { go(cur === N ? 1 : cur + 1); });
+  document.addEventListener('keydown', function (e) {
+    var t = e.target, tag = t && t.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowRight') { if (cur < N) go(cur + 1); }
+    else if (e.key === 'ArrowLeft') { if (cur > 1) go(cur - 1); }
+  });
+  go(1);
+
+  /* ---------- D · simulador ---------- */
+  var TOOLS = { web: 'busca_web', files: 'arquivos', terminal: 'executar_comando', house: 'controlar_casa' };
+  var ASKS = {
+    web: { tool: 'web', q: 'Faça uma pesquisa na web: quem é o presidente atual da Argentina?', call: 'busca_web("presidente atual da Argentina")', result: 'Javier Milei, no cargo desde dezembro de 2023.', done: 'O presidente atual da Argentina é Javier Milei.', no: 'Não consigo pesquisar na web nesta conversa.', deed: 'A pesquisa foi feita na internet.' },
+    weather: { tool: 'web', q: 'Como vai estar o tempo em Fortaleza amanhã?', call: 'busca_web("previsão do tempo Fortaleza amanhã")', result: 'Sol com poucas nuvens, máxima de 31 °C.', done: 'Amanhã em Fortaleza: sol com poucas nuvens e máxima de 31 °C.', no: 'Não consigo consultar a previsão do tempo nesta conversa.', deed: 'A consulta foi feita na internet.' },
+    save: { tool: 'files', q: 'Salve este resumo em uma pasta do meu computador.', call: 'arquivos("escrever", "resumo.txt")', result: 'Arquivo resumo.txt gravado em Documentos.', done: 'Pronto, salvei o resumo.txt na pasta Documentos.', no: 'Não tenho como salvar arquivos no seu computador.', deed: 'O arquivo foi gravado no computador.' },
+    read: { tool: 'files', q: 'Leia o arquivo notas.txt e me diga o que está pendente.', call: 'arquivos("ler", "notas.txt")', result: 'Conteúdo lido: 3 tarefas pendentes para sexta.', done: 'O notas.txt lista 3 tarefas pendentes para sexta.', no: 'Não tenho acesso aos arquivos do seu computador.', deed: 'O arquivo foi lido no computador.' },
+    tests: { tool: 'terminal', q: 'Rode os testes do projeto e me diga se passou.', call: 'executar_comando("npm test")', result: '12 testes passaram, 0 falharam.', done: 'Rodei os testes: 12 passaram e nenhum falhou.', no: 'Não consigo rodar comandos no seu computador.', deed: 'O comando rodou no seu computador.' },
+    ls: { tool: 'terminal', q: 'Liste o que tem na pasta do projeto.', call: 'executar_comando("ls")', result: 'README.md  notas.txt  package.json  src/', done: 'A pasta tem README.md, notas.txt, package.json e a pasta src.', no: 'Não consigo ver as pastas do seu computador.', deed: 'O comando rodou no seu computador.' },
+    light: { tool: 'house', q: 'Acenda a luz da sala.', call: 'controlar_casa("luz_sala", "ligar")', result: 'Luz da sala: ligada.', done: 'A luz da sala está acesa.', no: 'Não tenho acesso à sua casa, então não consigo acender a luz.', deed: 'A luz acendeu de verdade.' },
+    ac: { tool: 'house', q: 'Desligue o ar-condicionado do quarto.', call: 'controlar_casa("ar_quarto", "desligar")', result: 'Ar-condicionado do quarto: desligado.', done: 'Desliguei o ar-condicionado do quarto.', no: 'Não tenho acesso à sua casa, então não consigo controlar o ar-condicionado.', deed: 'O aparelho desligou de verdade.' }
+  };
+  var PRESETS = { chat: { web: true, files: false, terminal: false, house: false }, code: { web: true, files: true, terminal: true, house: false }, all: { web: true, files: true, terminal: true, house: true } };
+  var on = { web: true, files: false, terminal: false, house: false };
+  var ask = 'web';
+  var toolBtns = document.querySelectorAll('.tool');
+  var presetBtns = document.querySelectorAll('[data-preset]');
+  var askBtns = document.querySelectorAll('.ask');
+  var promptLine = document.getElementById('promptLine');
+  var traceEl = document.getElementById('trace');
+  var verdictEl = document.getElementById('verdict');
+
+  function chip(kind, label) { return '<span class="who ' + kind + '">' + label + '</span>'; }
+  function row(i, kind, label, html) { return '<li style="--i:' + i + '">' + chip(kind, label) + '<div class="txt">' + html + '</div></li>'; }
+
+  function renderSim() {
+    toolBtns.forEach(function (b) { b.setAttribute('aria-checked', String(!!on[b.dataset.tool])); });
+    presetBtns.forEach(function (b) {
+      var p = PRESETS[b.dataset.preset];
+      var same = Object.keys(p).every(function (k) { return p[k] === on[k]; });
+      b.setAttribute('aria-pressed', String(same));
+    });
+    askBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.ask === ask)); });
+
+    var a = ASKS[ask];
+    promptLine.textContent = '“' + a.q + '”';
+    var list = Object.keys(on).filter(function (k) { return on[k]; }).map(function (k) { return '<code>' + TOOLS[k] + '</code>'; });
+    var listTxt = list.length ? list.join(' ') : 'nenhuma';
+    var html = '';
+    html += row(0, 'user', 'Você', 'Envia o pedido.');
+    if (on[a.tool]) {
+      html += row(1, 'harness', 'Harness', 'Envia ao modelo: sua mensagem, as instruções e a lista de ferramentas (' + listTxt + ').');
+      html += row(2, 'llm', 'Modelo', 'Escreve um pedido: usar <code>' + a.call + '</code> <small>só texto</small>');
+      html += row(3, 'harness', 'Harness', 'Confere que a ferramenta está habilitada e <b>executa</b>.');
+      html += row(4, 'tool', 'Ferramenta', a.result);
+      html += row(5, 'llm', 'Modelo', '“' + a.done + '” <small>só texto</small>');
+      verdictEl.className = 'verdict ok';
+      verdictEl.innerHTML = '<b>Funcionou.</b> ' + a.deed + ' Quem fez foi o harness, a pedido do modelo.';
+    } else {
+      html += row(1, 'harness', 'Harness', 'Envia ao modelo: sua mensagem, as instruções e a lista de ferramentas (' + listTxt + '). Nada nela serve para esse pedido.');
+      html += row(2, 'llm', 'Modelo', 'Não vê ferramenta para isso e responde só com texto: “' + a.no + '” <small>só texto</small>');
+      verdictEl.className = 'verdict no';
+      verdictEl.innerHTML = '<b>Nada aconteceu fora da conversa.</b> Ligue a ferramenta no painel ao lado e peça de novo.';
+    }
+    traceEl.innerHTML = html;
+  }
+  toolBtns.forEach(function (b) { b.addEventListener('click', function () { on[b.dataset.tool] = !on[b.dataset.tool]; renderSim(); }); });
+  presetBtns.forEach(function (b) { b.addEventListener('click', function () { on = Object.assign({}, PRESETS[b.dataset.preset]); renderSim(); }); });
+  askBtns.forEach(function (b) { b.addEventListener('click', function () { ask = b.dataset.ask; renderSim(); }); });
+  renderSim();
+  document.getElementById('tryCode').addEventListener('click', function () {
+    on = Object.assign({}, PRESETS.code); ask = 'tests'; renderSim();
+    document.getElementById('h-teste').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
+</script>
+
+</html>

@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="assistente--skill">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 4.3. Peças: stepper com diagrama da etiqueta que abre o conteúdo, instrução × skill no pedido errado, pasta com gavetas por exemplo, quiz da gaveta, montador de etiqueta com teste de acionamento, tabelas de comparação, prova pela citação. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · quando é chamada (svg) */
+.sk-shelf rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.sk-shelf.hit rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.sk-shelf text { font: 500 11.5px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.sk-shelf.hit text { fill: var(--accent); }
+.sk-zone { fill: none; stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.sk-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.sk-req rect { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.3; }
+.sk-req text { font: 400 12.5px var(--font-body); fill: var(--text); }
+.sk-open rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; }
+.sk-open text { font: 400 12px var(--font-body); fill: var(--text); }
+.sk-open .h { font: 600 12px var(--font-mono); fill: var(--accent); letter-spacing: .06em; }
+.sk-ref rect { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1.6; }
+.sk-ref text { font: 400 12px var(--font-body); fill: var(--ok-texto); }
+.sk-hide { opacity: 0; transition: opacity .3s ease; }
+.sk-show { opacity: 1; transition: opacity .3s ease; }
+.sk-arr { stroke: var(--accent); stroke-width: 2; fill: none; }
+.sk-mk { fill: var(--accent); }
+
+/* 2 · e-mail */
+.sk-mail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; font-size: .95rem; display: grid; gap: 6px; }
+.sk-mail.bad { border-color: var(--atencao); }
+.sk-mail.good { border-color: var(--ok); }
+.sk-mail ol, .sk-mail ul { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .9rem; }
+
+/* 3 · pasta com gavetas */
+.pa-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.pa-folder { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 4px 12px 12px 12px; padding: 14px; display: grid; gap: 8px; position: relative; margin-top: 18px; }
+.pa-folder::before { content: attr(data-name); position: absolute; top: -24px; left: -1px; font-family: var(--font-mono); font-size: 12px; padding: 3px 12px; border: 1px solid var(--border-strong); border-bottom: 0; border-radius: 6px 6px 0 0; background: var(--bg-elev); color: var(--text); }
+.pa-folder button { text-align: left; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 10px 12px; }
+.pa-folder button b { font-family: var(--font-mono); font-size: .9rem; font-weight: 500; }
+.pa-folder button small { grid-column: 1 / -1; color: var(--text-muted); font-size: .85rem; }
+.pa-folder button .st { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; border-radius: 4px; padding: 1px 7px; border: 1px dashed var(--border-strong); color: var(--text-dim); }
+.pa-folder button.full .st { border-style: solid; border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.pa-folder button.full { border-color: var(--ok); }
+.pa-folder button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+
+/* 5 · etiqueta ao vivo */
+.et-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.et-form { display: grid; gap: 10px; }
+.et-form label { display: grid; gap: 4px; font-size: .92rem; }
+.et-form input, .et-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.et-test { display: grid; gap: 8px; }
+.et-test mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 3px; }
+.sk-cmd { font-family: var(--font-mono); font-size: .92rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .pa-wrap, .et-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .sk-hide, .sk-show, .sk-shelf rect { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Assistente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente--onde-a-regra-mora.html">← 4.2 Onde a regra mora</a><a href="./assistente--time.html">4.4 Time de assistentes →</a></span></div>
+    <div class="famhead-chips"><a href="./assistente.html">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html" aria-current="page"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a></div>
+  </nav>
+  <span class="eyebrow">4.3 · 3 de 4</span>
+  <h1>Skill</h1>
+  <p class="sub">Um procedimento escrito, com etiqueta, que a IA só abre quando a tarefa bate com a etiqueta</p>
+  <p class="lead">A instrução diz quem você é e vale sempre. A skill diz <strong>como uma tarefa específica se faz</strong>: os passos, as exceções, o material que se consulta. Ela fica guardada e fechada; na mesa fica só o nome e uma frase dizendo quando usar. O nome do recurso muda de ferramenta para ferramenta (no Claude, por exemplo, aparece como Skills ou Habilidades); <strong>o mecanismo da etiqueta que abre o conteúdo é o que interessa</strong>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-etiqueta">Quando ela abre</a><a href="#s-hora">A hora errada</a><a href="#s-pasta">A pasta</a><a href="#s-gaveta">Qual gaveta</a><a href="#s-descricao">A etiqueta</a><a href="#s-parentes">Os parentes</a><a href="#s-prova">A prova</a><a href="#s-nasce">Como nasce</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-etiqueta" aria-labelledby="h-etiqueta">
+  <span class="eyebrow">Quando ela abre</span>
+  <h2 id="h-etiqueta">Ela lê por partes, e cada parte tem a sua hora</h2>
+  <p class="intro">Na largada entram só as etiquetas. O passo a passo abre quando o pedido bate com uma delas. O anexo abre só se o passo a passo mandar consultar. <strong>Por isso uma skill pode ser longa sem pesar.</strong> Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="skLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="skPrev">← Anterior</button><button type="button" class="btn primary" id="skNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 760 320" role="img" aria-labelledby="sk-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+      <title id="sk-t">Cinco etiquetas de skill sempre à vista; um pedido chega, a etiqueta que bate abre o passo a passo, e o passo a passo abre o documento de referência; um pedido diferente não abre nada</title>
+      <defs><marker id="mksk" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="sk-mk"/></marker></defs>
+      <rect class="sk-zone" x="10" y="26" width="300" height="284" rx="10"/><text class="sk-zl" x="24" y="18">SEMPRE À VISTA · SÓ A ETIQUETA</text>
+      <g class="sk-shelf" data-sh="0"><rect x="30" y="44" width="260" height="36" rx="6"/><text x="160" y="67">fechar-cotacao</text></g>
+      <g class="sk-shelf" data-sh="1"><rect x="30" y="96" width="260" height="36" rx="6"/><text x="160" y="119">pauta-do-dia</text></g>
+      <g class="sk-shelf" data-sh="2"><rect x="30" y="148" width="260" height="36" rx="6"/><text x="160" y="171">conferir-ponto</text></g>
+      <g class="sk-shelf" data-sh="3"><rect x="30" y="200" width="260" height="36" rx="6"/><text x="160" y="223">triagem-de-curriculo</text></g>
+      <g class="sk-shelf" data-sh="4"><rect x="30" y="252" width="260" height="36" rx="6"/><text x="160" y="275">resumo-de-reuniao</text></g>
+      <g class="sk-req sk-hide" id="skReq"><rect x="350" y="26" width="396" height="48" rx="8"/><text x="366" y="55" id="skReqT"></text></g>
+      <path class="sk-arr sk-hide" id="skArr" d="M290,62 C320,62 320,150 344,150" marker-end="url(#mksk)"/>
+      <g class="sk-open sk-hide" id="skOpen"><rect x="350" y="96" width="396" height="116" rx="8"/><text class="h" x="366" y="120">fechar-cotacao · o passo a passo</text><text x="366" y="144">1. Tabela em preço por milheiro, nunca por total</text><text x="366" y="164">2. Converter caixa em unidade antes de somar</text><text x="366" y="184">3. Quem não cotou tudo é dito antes do total</text><text x="366" y="204">4. Conferir a política antes de recomendar</text></g>
+      <g class="sk-ref sk-hide" id="skRef"><rect x="350" y="232" width="396" height="56" rx="8"/><text x="366" y="256">referências/política-de-compras</text><text x="366" y="276">anexo de exceções · item de acabamento especial</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="skCap" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-hora" aria-labelledby="h-hora">
+  <span class="eyebrow">A hora errada</span>
+  <h2 id="h-hora">O mesmo procedimento, colado nas instruções ou guardado como skill</h2>
+  <p class="intro">Texto idêntico, palavra por palavra. A diferença é o lugar, e ela aparece num pedido que não tem nada a ver com ele. <strong>Colado nas instruções, o procedimento é lido sempre, e aplicado onde não devia.</strong></p>
+  <p class="sk-cmd">Pedido: “Escreva um e-mail curto avisando a unidade que o prazo mudou.”</p>
+  <div class="seg" role="group" aria-label="Onde o procedimento está">
+    <button type="button" data-hr="col" aria-pressed="true">Colado nas instruções</button>
+    <button type="button" data-hr="sk" aria-pressed="false">Guardado como skill</button>
+  </div>
+  <div id="hrOut" aria-live="polite"></div>
+  <p class="punch">Guardar no lugar certo não melhora o texto. <em>Melhora quando ele é usado.</em></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-pasta" aria-labelledby="h-pasta">
+  <span class="eyebrow">A pasta</span>
+  <h2 id="h-pasta">A skill não é um texto: é uma pasta com gavetas</h2>
+  <p class="intro">Só a primeira gaveta é obrigatória. As outras levam junto o material que a sua área já tem: a norma, o modelo, uma conta que não pode variar. <strong>Gaveta vazia não é skill incompleta: é skill do tamanho do problema.</strong> Troque de skill e clique nas gavetas.</p>
+  <div class="seg" role="group" aria-label="Exemplo de skill" id="paSeg">
+    <button type="button" data-pa="0" aria-pressed="true">pauta-do-dia</button>
+    <button type="button" data-pa="1" aria-pressed="false">fechar-cotacao</button>
+    <button type="button" data-pa="2" aria-pressed="false">proposta-comercial</button>
+    <button type="button" data-pa="3" aria-pressed="false">conferir-ponto</button>
+  </div>
+  <div class="pa-wrap">
+    <div class="pa-folder" id="paFolder" data-name="pauta-do-dia/">
+      <button type="button" data-dr="0" aria-pressed="true"><b>SKILL.md</b><span class="st">sempre tem</span><small>o nome, a etiqueta, e o passo a passo escrito por você</small></button>
+      <button type="button" data-dr="1" aria-pressed="false"><b>referências/</b><span class="st">vazia</span><small>o que ela lê para decidir</small></button>
+      <button type="button" data-dr="2" aria-pressed="false"><b>modelos/</b><span class="st">vazia</span><small>o arquivo em branco que a saída preenche</small></button>
+      <button type="button" data-dr="3" aria-pressed="false"><b>scripts/</b><span class="st">vazia</span><small>uma conta que precisa sair sempre igual</small></button>
+    </div>
+    <div class="panel" id="paPanel" aria-live="polite"></div>
+  </div>
+  <p class="hint">Das quatro skills de exemplo, nenhuma usa a gaveta de scripts. Ela existe, e quase ninguém precisa. E o anexo pode ser grande: ele só é lido quando o passo a passo manda. Não resuma a norma antes de anexar; é no resumo que a exceção some.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-gaveta" aria-labelledby="h-gaveta">
+  <span class="eyebrow">Qual gaveta</span>
+  <h2 id="h-gaveta">A gaveta depende do verbo, não do documento</h2>
+  <p class="intro">Ela <strong>lê para decidir</strong>, <strong>copia para produzir</strong>, <strong>roda para calcular</strong>, ou aquilo é o próprio método? O mesmo arquivo pode cair em gavetas diferentes conforme o uso.</p>
+  <div class="qz" id="gvQuiz"></div>
+  <p class="qz-score" id="gvScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-descricao" aria-labelledby="h-descricao">
+  <span class="eyebrow">A etiqueta</span>
+  <h2 id="h-descricao">Etiqueta vaga é procedimento perfeito que nunca abre</h2>
+  <p class="intro">A descrição é o que ela lê para decidir se a skill entra. Ela precisa dizer <strong>o que faz e quando usar, com as palavras que você usaria no pedido</strong>. Escreva a sua e teste com um pedido: a simulação procura as palavras em comum, que é uma versão tosca do que a IA faz.</p>
+  <div class="et-grid">
+    <div class="et-form">
+      <label>Nome curto, em minúsculas com hífen<input id="etName" value="fechar-cotacao"></label>
+      <label>O que ela faz<textarea id="etFaz" rows="2">Compara propostas de fornecedores em preço por milheiro, com frete e prazo, e fecha com uma recomendação.</textarea></label>
+      <label>Use quando o pedido for…<textarea id="etQuando" rows="2">comparar propostas, analisar cotação, escolher fornecedor, "fecha essa cotação", "qual fornecedor eu escolho"</textarea></label>
+      <label>Um pedido de teste<input id="etTeste" value="Anexei três propostas, qual fornecedor eu escolho?"></label>
+    </div>
+    <div class="et-test">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O topo do arquivo · ao vivo</span><button type="button" class="btn" data-copy="etOut">Copiar</button></div>
+        <pre id="etOut"></pre>
+      </div>
+      <div class="verdict" id="etVer" aria-live="polite"></div>
+      <p class="hint" id="etWords"></p>
+    </div>
+  </div>
+  <p class="hint">Escreva a etiqueta antes do conteúdo. Quem escreve o passo a passo primeiro acaba com uma etiqueta que descreve o texto (“procedimento de cotação”) e não o momento (“quando o pedido for comparar propostas”).</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-parentes" aria-labelledby="h-parentes">
+  <span class="eyebrow">Os parentes</span>
+  <h2 id="h-parentes">Skill, instrução, prompt salvo e comando</h2>
+  <p class="intro">Os quatro guardam texto. <strong>O que muda é quem puxa o gatilho, e quando.</strong></p>
+  <div class="seg" role="group" aria-label="Comparar com">
+    <button type="button" data-pr="ins" aria-pressed="true">× instrução</button>
+    <button type="button" data-pr="pro" aria-pressed="false">× prompt salvo</button>
+    <button type="button" data-pr="cmd" aria-pressed="false">× comando</button>
+  </div>
+  <div class="tablewrap" id="prOut" aria-live="polite"></div>
+  <p class="hint">Onde cada coisa mora, no mapa completo: <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-prova" aria-labelledby="h-prova">
+  <span class="eyebrow">A prova</span>
+  <h2 id="h-prova">A citação do item é o que prova que ela abriu o anexo</h2>
+  <p class="intro">Uma contratação de acabamento especial, estimada em R$ 3.200. Pela regra geral, abaixo de cinco mil, basta uma proposta e o comprador aprova. <strong>Pelo anexo de exceções, que ninguém abre há dois anos, é outra coisa.</strong> Nenhuma linha do passo a passo mudou entre os dois lados.</p>
+  <div class="seg" role="group" aria-label="Gavetas">
+    <button type="button" data-pv="sem" aria-pressed="true">Só o passo a passo</button>
+    <button type="button" data-pv="com" aria-pressed="false">Com a política na gaveta</button>
+  </div>
+  <div id="pvOut" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A pergunta que separa consultar de lembrar</span><button type="button" class="btn" data-copy="pvAsk">Copiar</button></div>
+<pre id="pvAsk">De onde saiu cada regra que você acabou de aplicar? Diga a seção ou o item do documento em cada uma. Se alguma coisa você respondeu sem estar no documento, diga isso com todas as letras.</pre>
+  </div>
+  <p class="hint">Ela escreve bem com ou sem o anexo aberto. Um código de item só existe dentro do documento: é por isso que a citação prova e a resposta bonita não. Mais em <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-nasce" aria-labelledby="h-nasce">
+  <span class="eyebrow">Como nasce</span>
+  <h2 id="h-nasce">O pior jeito de fazer uma skill é sentar para escrever uma skill</h2>
+  <p class="intro">A sua área já escreveu quase todos os procedimentos: norma, checklist, o passo a passo que você explicou para quem entrou. <strong>O caminho que funciona é fazer a tarefa uma vez, junto com a IA, e só depois empacotar o que deu certo.</strong></p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · faça</span><h3>A tarefa, uma vez, corrigindo</h3><p>“Faltou o frete.” “Põe em preço por milheiro.” Vá até a resposta ficar do jeito que você entregaria. As correções são o material da skill.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · empacote</span><h3>Peça para virar skill</h3><p>Na mesma conversa. Mandar listar as correções antes de escrever é o que impede metade delas de sumir.</p></div>
+    <div class="card"><span class="eyebrow">03 · teste</span><h3>Em conversa nova, sem dizer o nome</h3><p>Peça uma tarefa parecida com as palavras do dia a dia. Se ela não entrar, o defeito está na etiqueta, não no passo a passo.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido do passo 2 · literal</span><button type="button" class="btn" data-copy="nsPrompt">Copiar</button></div>
+<pre id="nsPrompt">Empacote tudo que fizemos nesta conversa numa skill.
+Antes de escrever, me mostre em lista: quais foram as correções que eu fiz ao longo da conversa, e quais regras saem de cada uma. Quero conferir se você pegou todas.
+Depois monte a skill assim:
+1. Um nome curto, em minúsculas e com hífen, dizendo a tarefa.
+2. Uma descrição que diga o que ela faz E quando usar, incluindo as palavras que eu usaria no dia a dia para pedir isso.
+3. O passo a passo na ordem em que a tarefa acontece de verdade, com as exceções no lugar certo.
+4. Uma seção final com os erros que essa tarefa costuma ter.
+Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes de escrever.</pre>
+  </div>
+  <div class="three">
+    <div class="card"><h3>Skill de fora é código de estranho</h3><p>É instrução que ela vai seguir, com os seus arquivos ao alcance. Ou veio de fonte confiável, ou você leu o arquivo inteiro antes de instalar.</p></div>
+    <div class="card"><h3>Procedimento não vira alçada</h3><p>Uma skill que monta a pauta não passa a aprovar parada de máquina. O documento continua sendo lido; quem assina continua sendo quem assinava.</p></div>
+    <div class="card"><h3>A primeira versão nunca é a boa</h3><p>Toda vez que você mexer na saída à mão, diga o que mudou e peça para atualizar a skill. Umas três correções depois, ela faz do seu jeito.</p></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Etiqueta sempre, conteúdo às vezes</h3><p>É isso que deixa ter quarenta skills sem pesar, e é por isso que a etiqueta decide tudo.</p></div>
+    <div class="take-card"><h3>A norma entra inteira</h3><p>O documento que a área já tem vai para a gaveta como está. O resumo é onde a exceção some.</p></div>
+    <div class="take-card"><h3>Peça a fonte</h3><p>A resposta boa não prova que ela abriu o anexo. O número do item prova.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Skill</dt><dd>Um procedimento guardado fora da conversa, com nome, etiqueta e passo a passo, aberto quando a tarefa bate com a etiqueta. Também aparece como habilidade.</dd>
+    <dt>Etiqueta</dt><dd>A descrição de quando usar. É a única parte que fica sempre à vista, e é por ela que a skill é chamada ou não.</dd>
+    <dt>Gaveta</dt><dd>Cada pasta dentro da skill: referências para decidir, modelos para produzir, scripts para calcular.</dd>
+    <dt>Comando</dt><dd>O mesmo conteúdo de uma skill, com outro gatilho: só roda quando você chama pelo nome.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O nome do recurso, o formato do arquivo e o lugar onde ele fica guardado mudam entre ferramentas e versões; nome, etiqueta, passo a passo e gavetas continuam. As skills, a política e os valores são exemplos inventados. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Assistente: anterior e próxima">
+  <a class="famfoot-prev" href="./assistente--onde-a-regra-mora.html"><span>← anterior</span><b>4.2 · Onde a regra mora</b></a>
+  <a class="famfoot-fam" href="./assistente.html#mapa">Família 4 · Assistente · o mapa</a>
+  <a class="famfoot-next" href="./assistente--time.html"><span>próxima →</span><b>4.4 · Time de assistentes</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · quando abre */
+  var SK = [
+    { req: '', hit: -1, open: 0, ref: 0, t: 'A vitrine', d: 'De cada skill instalada, só o nome e a etiqueta ficam na mesa. Cinco ou quarenta, o custo é quase o mesmo: etiquetas são curtas, e o conteúdo está fechado.' },
+    { req: '“Anexei três propostas. Qual fornecedor eu escolho?”', hit: -1, open: 0, ref: 0, t: 'Chega um pedido', d: 'Antes de responder, ela compara o pedido com as etiquetas. É aqui que uma etiqueta vaga perde a vez: se ela não diz quando usar, o pedido não reconhece a tarefa.' },
+    { req: '“Anexei três propostas. Qual fornecedor eu escolho?”', hit: 0, open: 1, ref: 0, t: 'A etiqueta bate, e só então o passo a passo abre', d: 'A etiqueta de fechar-cotacao diz “use quando o pedido for comparar propostas ou escolher fornecedor”. Agora, e só agora, os passos entram. As outras quatro continuam fechadas.' },
+    { req: '“Anexei três propostas. Qual fornecedor eu escolho?”', hit: 0, open: 1, ref: 1, t: 'O passo a passo manda consultar, e o anexo abre', d: 'O passo 4 diz “conferir a política antes de recomendar”. É isso que abre a gaveta de referências. Se nenhum passo mandasse, a política ficaria fechada para sempre, por melhor que fosse.' },
+    { req: '“Escreva um e-mail curto avisando que o prazo mudou.”', hit: -1, open: 0, ref: 0, t: 'Um pedido que não é de nenhuma delas', d: 'Nenhuma etiqueta bate, nada abre, e o e-mail sai com quatro linhas. É o comportamento que o procedimento colado nas instruções não consegue ter.' }
+  ];
+  var shelves = document.querySelectorAll('.sk-shelf');
+  function vis(id, on) { document.getElementById(id).setAttribute('class', document.getElementById(id).getAttribute('class').replace(/ ?sk-(hide|show)/g, '') + (on ? ' sk-show' : ' sk-hide')); }
+  stepper(SK.length, document.getElementById('skPrev'), document.getElementById('skNext'), document.getElementById('skLab'), 'Passo', function (k) {
+    var s = SK[k - 1];
+    shelves.forEach(function (g) { g.classList.toggle('hit', +g.dataset.sh === s.hit); });
+    document.getElementById('skReqT').textContent = s.req;
+    vis('skReq', !!s.req); vis('skArr', s.hit >= 0); vis('skOpen', !!s.open); vis('skRef', !!s.ref);
+    document.getElementById('skCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 2 · hora errada */
+  var HR = {
+    col: '<div class="sk-mail bad"><span class="eyebrow">O que voltou · 8 seções</span><ol><li>Contexto do aviso</li><li>Unidades afetadas</li><li>Tabela de conferência de prazos</li><li>Pendências abertas</li><li>Valores envolvidos</li><li>Responsáveis</li><li>Próximos passos</li><li>Checklist de envio</li></ol><p class="hint">Nada disso foi pedido. Os doze passos do fechamento estavam na mesa, como estão em toda conversa, e ela aplicou o que tinha à mão.</p></div>',
+    sk: '<div class="sk-mail good"><span class="eyebrow">O que voltou · 4 linhas</span><p>Pessoal, o prazo de entrega do relatório passou para <b>26/09</b>. O restante do calendário segue igual. Quem já tinha programado o envio para antes não precisa mudar nada. Qualquer dúvida, respondam este e-mail.</p><p class="hint">A etiqueta do procedimento diz “fechar a prestação do trimestre”. O pedido não era esse, então o conteúdo nem chegou a ser lido.</p></div>'
+  };
+  var hrBtns = document.querySelectorAll('[data-hr]'), hrOut = document.getElementById('hrOut');
+  function setHr(k) { pressGroup(hrBtns, function (x) { return x.dataset.hr === k; }); hrOut.innerHTML = HR[k]; }
+  hrBtns.forEach(function (b) { b.addEventListener('click', function () { setHr(b.dataset.hr); }); });
+  setHr('col');
+
+  /* 3 · pasta */
+  var DR = [
+    { n: 'SKILL.md', g: 'O método, escrito por você', q: 'Nada: é o próprio método.', w: 'sempre tem' },
+    { n: 'referências/', g: 'O material que ela lê para decidir', q: 'Lê para decidir: tem regra, limite, exceção, critério.', w: 'só se precisar' },
+    { n: 'modelos/', g: 'O arquivo que a saída tem que preencher', q: 'Copia para produzir: a saída precisa sair naquele formato.', w: 'só se precisar' },
+    { n: 'scripts/', g: 'Uma conta que não pode variar', q: 'Roda para calcular: a conta é sempre a mesma.', w: 'quase nunca' }
+  ];
+  var PA = [
+    { n: 'pauta-do-dia', c: ['os seis passos de montar a pauta de produção', '', '', ''] },
+    { n: 'fechar-cotacao', c: ['como comparar três propostas, na ordem', 'a política de compras inteira, com o anexo de exceções', '', ''] },
+    { n: 'proposta-comercial', c: ['a ordem das seções da proposta', 'a tabela de preços e a política de desconto', 'o modelo em branco da empresa', ''] },
+    { n: 'conferir-ponto', c: ['o que olhar no ponto, e em que ordem', 'a norma de ponto que ninguém lê', '', ''] }
+  ];
+  var paBtns = document.querySelectorAll('[data-pa]'), drBtns = document.querySelectorAll('[data-dr]'), paCur = 0, drCur = 0;
+  function renderPa() {
+    var p = PA[paCur];
+    document.getElementById('paFolder').setAttribute('data-name', p.n + '/');
+    drBtns.forEach(function (b, i) { var full = !!p.c[i]; b.classList.toggle('full', full); b.querySelector('.st').textContent = full ? (i === 0 ? 'sempre tem' : 'ocupada') : 'vazia'; b.setAttribute('aria-pressed', String(i === drCur)); });
+    var d = DR[drCur], c = p.c[drCur];
+    document.getElementById('paPanel').innerHTML = '<span class="eyebrow">' + p.n + '/' + d.n + ' · ' + d.w + '</span><h3>' + d.g + '</h3><p><b>Nesta skill:</b> ' + (c || 'vazia, e está certo assim.') + '</p><p class="hint">' + d.q + '</p>';
+  }
+  paBtns.forEach(function (b) { b.addEventListener('click', function () { paCur = +b.dataset.pa; pressGroup(paBtns, function (x) { return x === b; }); renderPa(); }); });
+  drBtns.forEach(function (b) { b.addEventListener('click', function () { drCur = +b.dataset.dr; renderPa(); }); });
+  renderPa();
+
+  /* 4 · qual gaveta */
+  quiz(document.getElementById('gvQuiz'), document.getElementById('gvScore'), [
+    { s: 'A norma interna que diz quantas propostas são exigidas e quem aprova.', a: 'ref', why: 'Tem limite, alçada e exceção: ela lê para decidir. Referências.' },
+    { s: 'O documento timbrado em branco que toda proposta tem que preencher.', a: 'mod', why: 'A saída precisa sair com aquela cara: ela copia para produzir. Modelos.' },
+    { s: 'O cálculo de sobra de papel, que precisa dar sempre o mesmo número.', a: 'scr', why: 'Conta que não pode variar nunca. Scripts, e é um dos raros casos que precisam da gaveta.' },
+    { s: 'Os seis passos, na ordem, de fechar uma cotação.', a: 'md', why: 'É o método: vai no próprio SKILL.md.' },
+    { s: 'Uma proposta antiga que ficou ótima e serve de exemplo de tom.', a: 'ref', why: 'Se ela lê para saber o que é bom, é referência. Se copiasse a estrutura, seria modelo: o verbo decide, não o arquivo.' }
+  ], [['md', 'O método'], ['ref', 'Lê para decidir'], ['mod', 'Copia para produzir'], ['scr', 'Roda para calcular']], 'a primeira coluna nunca fala do documento: fala do que ela faz com ele.');
+
+  /* 5 · etiqueta */
+  var etN = document.getElementById('etName'), etF = document.getElementById('etFaz'), etQ = document.getElementById('etQuando'), etT = document.getElementById('etTeste');
+  var STOP = ['para', 'como', 'quando', 'com', 'uma', 'que', 'pedido', 'for', 'dos', 'das', 'nos', 'nas', 'isso', 'essa', 'esse', 'este', 'esta', 'meu', 'minha', 'seu', 'sua', 'use', 'mais', 'por', 'sem', 'entre'];
+  function norm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(function (w) { return w.length > 3 && STOP.indexOf(w) < 0; }); }
+  function stem(w) { return w.slice(0, 6); }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function et() {
+    var name = etN.value.trim().toLowerCase().replace(/\s+/g, '-') || 'sem-nome';
+    document.getElementById('etOut').innerHTML = '<b>---</b>\n<b>name:</b> ' + esc(name) + '\n<b>description:</b> ' + esc(etF.value.trim()) + ' Use quando o pedido for ' + esc(etQ.value.trim()) + '.\n<b>---</b>\n\n<i>[o passo a passo vem aqui, e só abre quando a etiqueta bate]</i>';
+    var lab = norm(etF.value + ' ' + etQ.value).map(stem), hits = [];
+    norm(etT.value).forEach(function (w) { if (lab.indexOf(stem(w)) > -1 && hits.indexOf(w) < 0) hits.push(w); });
+    var v = document.getElementById('etVer');
+    if (!etQ.value.trim()) { v.className = 'verdict no'; v.innerHTML = '<b>Sem “quando usar”.</b> A etiqueta diz o que ela faz e não diz a hora. É o defeito mais comum.'; }
+    else if (hits.length >= 2) { v.className = 'verdict ok'; v.innerHTML = '<b>Abriria.</b> O pedido de teste encontra a tarefa na etiqueta.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Provavelmente não abriria.</b> O pedido usa palavras que a etiqueta não tem. Acrescente, no “use quando”, as palavras que você usa no dia a dia.'; }
+    document.getElementById('etWords').innerHTML = hits.length ? 'Em comum: ' + hits.map(function (w) { return '<mark>' + esc(w) + '</mark>'; }).join(' ') : 'Nenhuma palavra em comum entre o pedido e a etiqueta.';
+  }
+  [etN, etF, etQ, etT].forEach(function (i) { i.addEventListener('input', et); });
+  et();
+
+  /* 6 · parentes */
+  var PR = {
+    ins: [['', 'Instrução', 'Skill'], ['O que guarda', 'quem você é, a regra da casa', 'como uma tarefa se faz'], ['Quando é lida', 'sempre, desde a primeira palavra', 'quando a tarefa bate com a etiqueta'], ['Pode ser longa?', 'não: ocupa a mesa em toda conversa', 'sim: o detalhe dorme até a tarefa aparecer'], ['O erro clássico', 'colar nela o procedimento de uma tarefa só', 'mover para ela uma regra que vale sempre']],
+    pro: [['', 'Prompt salvo', 'Skill'], ['Quem aciona', 'você cola, toda vez', 'ela lê sozinha quando a tarefa aparece'], ['Lembrar que existe', 'depende de você', 'a etiqueta lembra por você'], ['Onde fica', 'num bloco de notas, sumindo entre conversas', 'guardada fora da conversa'], ['De quem é', 'de quem descobriu o atalho', 'da função: continua funcionando nas suas férias']],
+    cmd: [['', 'Comando', 'Skill'], ['O conteúdo', 'o mesmo', 'o mesmo'], ['Quem puxa o gatilho', 'você, chamando pelo nome', 'ela, lendo a etiqueta'], ['Use quando', 'errar o momento sai caro', 'você prefere não ter que lembrar'], ['Exemplo', '“gerar proposta”, que só sai quando você manda', 'a pauta do dia, sempre que o pedido for sobre carga de máquina']]
+  };
+  var prBtns = document.querySelectorAll('[data-pr]'), prOut = document.getElementById('prOut');
+  function setPr(k) { pressGroup(prBtns, function (x) { return x.dataset.pr === k; }); prOut.innerHTML = '<table class="vtable">' + PR[k].map(function (r, i) { var tag = i === 0 ? 'th' : 'td'; return '<tr>' + r.map(function (c) { return '<' + tag + '>' + c + '</' + tag + '>'; }).join('') + '</tr>'; }).join('') + '</table>'; }
+  prBtns.forEach(function (b) { b.addEventListener('click', function () { setPr(b.dataset.pr); }); });
+  setPr('ins');
+
+  /* 7 · prova */
+  var PV = {
+    sem: '<div class="sk-mail bad"><span class="eyebrow">Com as gavetas vazias</span><ul><li>Valor abaixo de R$ 5.000: cotação simples, <b>uma proposta basta</b></li><li>Aprovação: <b>o comprador</b>, dentro da alçada</li><li>Prazo de pagamento: 28 dias, o padrão da casa</li></ul><p class="hint">Não está errada: é exatamente o que a regra geral manda, e o que qualquer pessoa da área responderia de cabeça. Por isso ninguém desconfia.</p></div>',
+    com: '<div class="sk-mail good"><span class="eyebrow">Com a política na gaveta de referências</span><ul><li>Acabamento especial cai no anexo de exceções, <b>item E-04</b></li><li><b>Três propostas</b>, em qualquer valor, inclusive abaixo de R$ 5.000</li><li>Aprovação: <b>o gerente da área</b>, e não o comprador</li><li>O anexo prevalece sobre as seções de limite, conforme o item 12.3</li></ul><p class="hint">Ninguém corrigiu a skill. A única coisa que mudou foi o que ela podia consultar, e a prova é o código do item, que não existe fora do documento.</p></div>'
+  };
+  var pvBtns = document.querySelectorAll('[data-pv]'), pvOut = document.getElementById('pvOut');
+  function setPv(k) { pressGroup(pvBtns, function (x) { return x.dataset.pv === k; }); pvOut.innerHTML = PV[k]; }
+  pvBtns.forEach(function (b) { b.addEventListener('click', function () { setPv(b.dataset.pv); }); });
+  setPv('sem');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao--json">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito da família Automação. Peças: formulário que vira JSON ao vivo, cartões dos cinco tipos, quiz texto ou número, calculadora da soma de palavras, explorador que abre e fecha, tabela × JSON, esteira item a item, cartões de erro silencioso, biblioteca de pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--accent-soft); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.seg.sm button { padding: 5px 10px; font-size: .85rem; }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.fam { font-size: .92rem; color: var(--text-muted); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* ---- só desta peça ---- */
+/* realce do JSON, usado em várias peças */
+.js-k { color: var(--accent); }
+.js-s { color: var(--ok-texto); }
+.js-n { color: var(--atencao-texto); font-weight: 500; }
+.js-b { color: var(--text); font-weight: 600; }
+.js-z { color: var(--text-dim); font-style: italic; }
+.js-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .85rem; }
+.js-legend span { font-family: var(--font-mono); }
+
+/* 1 · ficha */
+.jf-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.jf-form { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.jf-row { display: grid; gap: 6px; }
+.jf-row > label, .jf-row > .lab { font-size: .95rem; font-weight: 500; }
+.jf-row input[type=text], .jf-row input[type=number] { font: inherit; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg); width: 100%; }
+.jf-inline { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.jf-inline label { display: inline-flex; gap: 6px; align-items: center; font-size: .95rem; }
+.jf-inline input[type=checkbox] { accent-color: var(--accent); width: 17px; height: 17px; }
+.jf-box { border: 1.5px dashed var(--border-strong); border-radius: 6px; padding: 12px; display: grid; gap: 10px; }
+.jf-box .two { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 10px; }
+.jf-out { position: sticky; top: 12px; display: grid; gap: 10px; }
+.jf-out pre { margin: 0; background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px; font-family: var(--font-mono); font-size: .88rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 280px; }
+
+/* 2 · cinco tipos */
+.jt-cards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.jt-card { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.jt-card .sym { font-family: var(--font-mono); font-size: 1.25rem; color: var(--accent); }
+.jt-card b { font-weight: 600; }
+.jt-card span { font-size: .85rem; color: var(--text-muted); }
+.jt-card[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.jt-det { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 10px; }
+.jt-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.jt-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.jt-det dd { margin: 0; }
+.jt-line { font-family: var(--font-mono); font-size: .95rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; overflow-wrap: anywhere; }
+
+/* 3 · quiz texto ou número */
+.jq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.jq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.jq-item .what { font-weight: 600; }
+.jq-item .ex { font-family: var(--font-mono); font-size: .88rem; color: var(--text-muted); }
+.jq-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.jq-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-size: .9rem; }
+.jq-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.jq-item .fb { font-size: .9rem; border-radius: 6px; padding: 8px 12px; border: 1px solid; }
+.jq-item .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.jq-item .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.jq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 4 · soma */
+.js-calc { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.js-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.js-val { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; align-items: center; }
+.js-val input { font: inherit; font-family: var(--font-mono); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg); width: 100%; }
+.js-res { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.js-big { font-family: var(--font-mono); font-size: 2.2rem; line-height: 1.1; color: var(--accent); overflow-wrap: anywhere; }
+.js-big.bad { color: var(--atencao-texto); }
+.js-res pre { margin: 0; font-family: var(--font-mono); font-size: .86rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 5 · explorador */
+.jx-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.jx-tree { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; font-family: var(--font-mono); font-size: .88rem; overflow-x: auto; }
+.jx-tree ul { list-style: none; margin: 0; padding-left: 20px; border-left: 1px dashed var(--border-strong); }
+.jx-tree > ul { padding-left: 0; border-left: 0; }
+.jx-tree li { margin: 3px 0; }
+.jx-node, .jx-leaf { font-family: var(--font-mono); font-size: .88rem; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 1px 6px; text-align: left; }
+.jx-node .tw { display: inline-block; width: 14px; color: var(--accent); }
+.jx-node .meta { color: var(--text-dim); }
+.jx-leaf:hover, .jx-node:hover { border-color: var(--border-strong); }
+.jx-leaf[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.jx-det { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; min-height: 230px; position: sticky; top: 12px; }
+.jx-path { font-family: var(--font-mono); font-size: 1.05rem; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 8px 12px; overflow-wrap: anywhere; }
+
+/* 6 · lista de fichas */
+.jl-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.jl-view { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; overflow-x: auto; min-height: 230px; }
+.jl-view pre { margin: 0; font-family: var(--font-mono); font-size: .84rem; line-height: 1.6; white-space: pre-wrap; }
+.jl-tbl { width: 100%; border-collapse: collapse; font-size: .92rem; }
+.jl-tbl th, .jl-tbl td { text-align: left; padding: 8px 10px; border-top: 1px solid var(--border); }
+.jl-tbl th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.jl-tbl td.obj { font-family: var(--font-mono); color: var(--atencao-texto); background: var(--atencao-soft); }
+.jl-belt { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 10px; align-content: start; }
+.jl-items { display: grid; gap: 6px; }
+.jl-it { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 10px; align-items: center; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .92rem; transition: background .25s ease, border-color .25s ease; }
+.jl-it .n { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.jl-it.now { border-color: var(--accent); background: var(--accent-soft); }
+.jl-it.done { border-color: var(--ok); background: var(--ok-soft); }
+.jl-out { font-family: var(--font-mono); font-size: .84rem; color: var(--ok-texto); min-height: 1.4em; }
+
+/* 7 · erro calado */
+.jc-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.jc-card { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.jc-card .et { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--atencao-texto); }
+.jc-card b { font-weight: 600; font-size: 1.02rem; }
+.jc-card .ln { font-family: var(--font-mono); font-size: .86rem; color: var(--text-muted); }
+.jc-card .more { color: var(--text-muted); font-size: .95rem; }
+.jc-card .more strong { color: var(--ok-texto); font-weight: 600; }
+.jc-card[aria-expanded="true"] { border-color: var(--atencao); }
+.jc-card .tog { font-size: .85rem; color: var(--accent); }
+
+/* 8 · pedidos para a IA */
+.jp-lib { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.6fr); gap: 16px; align-items: start; }
+.jp-tabs { display: grid; gap: 6px; }
+.jp-tabs button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 14px; display: grid; gap: 2px; }
+.jp-tabs button b { font-weight: 600; font-size: .95rem; }
+.jp-tabs button span { font-size: .82rem; color: var(--text-dim); }
+.jp-tabs button[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.jp-pane { display: grid; gap: 10px; }
+.jp-conf { margin: 0; padding-left: 20px; color: var(--text-muted); display: grid; gap: 4px; }
+
+/* 9 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .jf-grid, .js-calc, .jx-grid, .jl-wrap, .jp-lib, .take { grid-template-columns: 1fr; }
+  .jf-out, .jx-det { position: static; }
+  .jt-cards { grid-template-columns: 1fr 1fr; }
+  .jq-grid, .jc-cards { grid-template-columns: 1fr; }
+  .jt-det dl { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; gap: 2px 0; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .jt-cards { grid-template-columns: 1fr; } .js-val { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .jl-it { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--webhook.html">← 7.2 Webhook</a><a href="./automacao.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html" aria-current="page"><b>7.3</b>JSON</a></div>
+  </nav>
+  <span class="eyebrow">7.3 · 3 de 3</span>
+  <h1>JSON</h1>
+  <p class="sub">A ficha que os sistemas trocam, e por que ela precisa dizer se cada coisa é palavra ou quantidade</p>
+  <p class="lead">Quando um sistema manda informação para outro, ela não vai solta: vai numa ficha com linhas, cada linha com um nome e um valor. O formato dessa ficha é o mesmo no mundo inteiro, e se chama JSON. <strong>Você não precisa escrevê-lo do zero. Precisa saber lê-lo</strong>, porque é nele que aparece o erro que deixa tudo verde e o resultado errado.</p>
+  <p class="fam">Família <a href="./automacao.html">Automação</a> · nesta família também: <a href="./automacao--api.html">API</a> · <a href="./automacao--webhook.html">Webhook</a></p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-ficha">A ficha</a><a href="#s-tipos">Cinco tipos de linha</a><a href="#s-aspas">Texto ou número</a><a href="#s-soma">Quando 10 + 5 dá 105</a><a href="#s-dentro">Ficha dentro da ficha</a><a href="#s-lista">Tudo chega em lista</a><a href="#s-calado">O erro que não avisa</a><a href="#s-pedir">Pedir para a IA</a><a href="#s-levar">Para levar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-ficha" aria-labelledby="h-ficha">
+  <span class="eyebrow">A ficha</span>
+  <h2 id="h-ficha">Preencha a ficha e veja a máquina escrevê-la</h2>
+  <p class="intro">É como a ficha de cadastro de uma recepção: linhas impressas (<strong>o nome do campo</strong>, que nunca muda) e o que você escreve ao lado (<strong>o valor</strong>, que muda a cada pessoa). Tem uma linha onde cabe mais de uma coisa, e um quadrinho separado para o endereço. Preencha à esquerda.</p>
+  <div class="jf-grid">
+    <div class="jf-form">
+      <div class="jf-row"><label for="jfNome">Nome</label><input type="text" id="jfNome" value="Ana Souza" maxlength="40" autocomplete="off"></div>
+      <div class="jf-row"><label for="jfIdade">Idade</label><input type="number" id="jfIdade" value="32" min="0" max="120">
+        <div class="jf-inline"><span class="hint">guardar como</span><div class="seg sm" role="group" aria-label="Tipo da idade"><button type="button" data-it="num" aria-pressed="true">quantidade</button><button type="button" data-it="txt" aria-pressed="false">palavra</button></div></div></div>
+      <div class="jf-row"><span class="lab">Já é cliente?</span><div class="jf-inline"><label><input type="checkbox" id="jfCli" checked> sim</label></div></div>
+      <div class="jf-row"><span class="lab">Interesses <span class="hint">(cabe mais de um)</span></span>
+        <div class="jf-inline"><label><input type="checkbox" class="jfInt" value="relatórios" checked> relatórios</label><label><input type="checkbox" class="jfInt" value="planilhas" checked> planilhas</label><label><input type="checkbox" class="jfInt" value="automação"> automação</label></div></div>
+      <div class="jf-box"><span class="eyebrow">O quadrinho do endereço</span>
+        <div class="two"><div class="jf-row"><label for="jfCid">Cidade</label><input type="text" id="jfCid" value="Recife" maxlength="30" autocomplete="off"></div><div class="jf-row"><label for="jfUf">Estado</label><input type="text" id="jfUf" value="PE" maxlength="2" autocomplete="off"></div></div></div>
+    </div>
+    <div class="jf-out">
+      <div class="copy-head" style="border:0;padding:0"><span class="eyebrow">A mesma ficha, em JSON</span><button type="button" class="btn" id="jfCopy">Copiar</button></div>
+      <pre id="jfJson" aria-live="polite"></pre>
+      <div class="js-legend"><span class="js-k">"campo"</span><span class="js-s">"palavra"</span><span class="js-n">quantidade</span><span class="js-b">true / false</span></div>
+    </div>
+  </div>
+  <p class="punch">O nome do campo fica à esquerda dos dois pontos, o valor à direita. E repare: <em>o nome tem aspas, a idade não.</em></p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tipos" aria-labelledby="h-tipos">
+  <span class="eyebrow">Cinco tipos de linha</span>
+  <h2 id="h-tipos">Toda linha da ficha é de um destes cinco tipos</h2>
+  <p class="intro">Você não precisa decorar os nomes em inglês que a ferramenta mostra. Precisa <strong>reconhecê-los quando aparecerem</strong>, e saber que o primeiro é palavra e o segundo é quantidade. Clique em cada um.</p>
+  <div class="jt-cards" role="group" aria-label="Os cinco tipos">
+    <button type="button" class="jt-card" data-t="s" aria-pressed="true"><span class="sym">"…"</span><b>Palavra</b><span>com aspas</span></button>
+    <button type="button" class="jt-card" data-t="n" aria-pressed="false"><span class="sym">32</span><b>Quantidade</b><span>sem aspas</span></button>
+    <button type="button" class="jt-card" data-t="b" aria-pressed="false"><span class="sym">true</span><b>Sim ou não</b><span>sem aspas</span></button>
+    <button type="button" class="jt-card" data-t="a" aria-pressed="false"><span class="sym">[ ]</span><b>Lista</b><span>colchetes</span></button>
+    <button type="button" class="jt-card" data-t="o" aria-pressed="false"><span class="sym">{ }</span><b>Ficha dentro</b><span>chaves</span></button>
+  </div>
+  <div class="jt-det" id="jtDet" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-aspas" aria-labelledby="h-aspas">
+  <span class="eyebrow">Texto ou número</span>
+  <h2 id="h-aspas">A única regra: eu somaria dois desses?</h2>
+  <p class="intro">CPF, CEP, telefone e número do pedido são feitos de algarismos, e ninguém soma dois deles: <strong>são etiqueta, e etiqueta é palavra</strong>. Idade, preço e dias de atraso, somados, significam alguma coisa: são quantidade. O computador não consegue decidir isso sozinho; quem decide é você, pelo uso. Classifique os oito.</p>
+  <div class="jq-grid" id="jqGrid"></div>
+  <p class="jq-score" id="jqScore" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-soma" aria-labelledby="h-soma">
+  <span class="eyebrow">Quando 10 + 5 dá 105</span>
+  <h2 id="h-soma">Somar duas palavras cola uma na outra</h2>
+  <p class="intro">Se um sistema manda o valor como palavra, o próximo passo não faz conta: <strong>junta os pedaços</strong>. E a comparação "maior que 18" nem começa. Mude os valores e o tipo de cada um.</p>
+  <div class="js-calc">
+    <div class="js-in">
+      <div class="js-val"><label for="jsA">Valor A</label><input type="text" id="jsA" value="10" maxlength="8" autocomplete="off"></div>
+      <div class="seg sm" role="group" aria-label="Tipo do valor A"><button type="button" data-ta="num" aria-pressed="false">quantidade</button><button type="button" data-ta="txt" aria-pressed="true">palavra</button></div>
+      <div class="js-val"><label for="jsB">Valor B</label><input type="text" id="jsB" value="5" maxlength="8" autocomplete="off"></div>
+      <div class="seg sm" role="group" aria-label="Tipo do valor B"><button type="button" data-tb="num" aria-pressed="true">quantidade</button><button type="button" data-tb="txt" aria-pressed="false">palavra</button></div>
+      <pre class="jf-mini" id="jsJson" style="margin:0;font-family:var(--font-mono);font-size:.86rem"></pre>
+    </div>
+    <div class="js-res" aria-live="polite">
+      <span class="eyebrow">A + B</span>
+      <div class="js-big" id="jsSum"></div>
+      <span class="eyebrow">A é maior que 18?</span>
+      <div class="verdict" id="jsCmp"></div>
+    </div>
+  </div>
+  <p class="hint">A mensagem da comparação é a que as ferramentas mostram de verdade, em inglês: <code>'32' is a string but was expecting a number</code>, ou seja, "esperava uma quantidade e recebeu uma palavra". A saída é converter antes, e a conversão é um passo, não um palpite.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-dentro" aria-labelledby="h-dentro">
+  <span class="eyebrow">Ficha dentro da ficha</span>
+  <h2 id="h-dentro">Para chegar num valor, vá de fora para dentro, separando por ponto</h2>
+  <p class="intro">Um pedido de uma loja tem o cliente, e o cliente tem o endereço. Os itens são uma lista, e cada item é uma ficha. <strong>Abra e feche as partes, e clique num valor</strong> para ver o caminho até ele. É a mesma lógica de pasta dentro de pasta no computador.</p>
+  <div class="jx-grid">
+    <div class="jx-tree" id="jxTree" role="group" aria-label="Explorador do pedido"></div>
+    <div class="jx-det" id="jxDet" aria-live="polite"></div>
+  </div>
+  <p class="hint">Na lista, a contagem começa do zero: o primeiro item é <code>itens[0]</code>. E se o quadrinho de dentro não existir num cadastro, o caminho inteiro quebra naquele ponto.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-lista" aria-labelledby="h-lista">
+  <span class="eyebrow">Tudo chega em lista</span>
+  <h2 id="h-lista">Três fichas numa lista, e o passo que roda três vezes</h2>
+  <p class="intro">Uma planilha de 50 linhas chega ao passo seguinte como uma lista de 50 fichas, e o passo roda <strong>uma vez para cada uma</strong>, sozinho. Mesmo quando aparece "1 item", ele está dentro de uma lista. Troque a visão e rode o passo.</p>
+  <div class="seg" role="group" aria-label="Visão">
+    <button type="button" data-lv="tab" aria-pressed="true">Ver como tabela</button>
+    <button type="button" data-lv="json" aria-pressed="false">Ver como JSON</button>
+  </div>
+  <div class="jl-wrap">
+    <div class="jl-view" id="jlView" aria-live="polite"></div>
+    <div class="jl-belt">
+      <span class="eyebrow">Passo: "Olá, {nome}! Seu cargo é {cargo}."</span>
+      <div class="jl-items" id="jlItems"></div>
+      <button type="button" class="btn primary" id="jlRun">Rodar o passo</button>
+      <div class="jl-out" id="jlOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="punch">A tabela arruma para ficar bonito, e nesse arrumar <em>as aspas e o quadrinho de dentro somem</em>. Quando algo der errado, olhe o JSON.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-calado" aria-labelledby="h-calado">
+  <span class="eyebrow">O erro que não avisa</span>
+  <h2 id="h-calado">Tudo verde, e o resultado errado</h2>
+  <p class="intro">Erro que aparece é fácil: a ferramenta avisa e você conserta. <strong>O caro é o que passa calado</strong>: o e-mail vai para quem não devia, o cliente satisfeito cai na lista dos insatisfeitos. Quase sempre é a regra das aspas aparecendo de outro jeito. Abra cada cartão.</p>
+  <div class="jc-cards" id="jcCards"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-pedir" aria-labelledby="h-pedir">
+  <span class="eyebrow">Pedir para a IA</span>
+  <h2 id="h-pedir">Ninguém escreve essa ficha do zero</h2>
+  <p class="intro">Nem quem programa. O que se faz é descrever em português o que você quer guardar, <strong>pedir para a IA montar o formato, e conferir a resposta olhando as aspas</strong>. Dois pedidos prontos: um para montar, outro para quando a ferramenta recusar. Veja também como escrever pedidos na página <a href="./prompt.html">Prompt</a>.</p>
+  <div class="jp-lib">
+    <div class="jp-tabs" id="jpTabs" role="tablist" aria-label="Pedidos"></div>
+    <div class="jp-pane" id="jpPane" role="tabpanel"></div>
+  </div>
+  <span class="eyebrow">O que conferir antes de usar a resposta</span>
+  <ol class="jp-conf">
+    <li>O que é código (pedido, CPF, CEP, telefone) está entre aspas?</li>
+    <li>O que é quantidade (dias, valores, notas) está sem aspas?</li>
+    <li>Sim e não estão como <code>true</code> e <code>false</code>, e não como "sim" e "não" entre aspas?</li>
+    <li>Os nomes dos campos estão sem acento, sem espaço e sem maiúscula?</li>
+    <li>Cada chave e cada colchete que abriu, fechou?</li>
+  </ol>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Palavra com aspas, quantidade sem</h3><p>É a regra inteira. Sim e não viram true e false, também sem aspas.</p></div>
+    <div class="take-card"><h3>Eu somaria dois desses?</h3><p>Se a soma não significa nada, é palavra, mesmo escrita com algarismos.</p></div>
+    <div class="take-card"><h3>A tabela arruma; o JSON conta</h3><p>Quando o resultado sair errado sem erro nenhum, abra o JSON do passo anterior e olhe as aspas primeiro.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>JSON</dt><dd>O formato de ficha que os sistemas usam para trocar informação: nome do campo, dois pontos, valor.</dd>
+    <dt>Campo (chave)</dt><dd>O nome da linha, à esquerda dos dois pontos. Não muda de uma ficha para outra.</dd>
+    <dt>Valor</dt><dd>O que foi preenchido, à direita dos dois pontos.</dd>
+    <dt>Palavra (string)</dt><dd>Texto, sempre entre aspas: nome, cidade, código, telefone.</dd>
+    <dt>Quantidade (number)</dt><dd>Número de fazer conta, sem aspas: idade, preço, dias.</dd>
+    <dt>Sim ou não (boolean)</dt><dd>Só dois valores, true e false, sem aspas.</dd>
+    <dt>Lista (array)</dt><dd>Vários valores numa linha só, entre colchetes. A contagem começa do zero.</dd>
+    <dt>Ficha dentro (object)</dt><dd>Um quadrinho com linhas próprias, entre chaves. Chega-se nele com ponto: <code>endereco.cidade</code>.</dd>
+    <dt>Vazio (null)</dt><dd>Nada preenchido. Não é zero, e comparado com um número dá sempre falso.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As fichas, nomes e pedidos são fictícios. O formato JSON tem mais detalhes do que os mostrados aqui; os cinco tipos e a regra das aspas cobrem o que aparece no dia a dia de quem monta automação. Os nomes em inglês entre parênteses são os que as ferramentas costumam mostrar.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <a class="famfoot-prev" href="./automacao--webhook.html"><span>← anterior</span><b>7.2 · Webhook</b></a>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao.html"><span>volta ao começo ↺</span><b>Visão geral · Pensar como automação</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function copyText(txt, btn) {
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  /* realce: devolve HTML com as cores de cada tipo */
+  function hl(v, ind) {
+    ind = ind || '';
+    var nx = ind + '  ';
+    if (v === null) return '<span class="js-z">null</span>';
+    if (typeof v === 'string') return '<span class="js-s">"' + esc(v) + '"</span>';
+    if (typeof v === 'number') return '<span class="js-n">' + v + '</span>';
+    if (typeof v === 'boolean') return '<span class="js-b">' + v + '</span>';
+    if (Array.isArray(v)) return v.length ? '[' + v.map(function (x) { return (typeof x === 'object' && x) ? '\n' + nx + hl(x, nx) : hl(x, nx); }).join(', ') + (v.some(function (x) { return typeof x === 'object' && x; }) ? '\n' + ind : '') + ']' : '[]';
+    var ks = Object.keys(v);
+    return '{\n' + ks.map(function (k) { return nx + '<span class="js-k">"' + esc(k) + '"</span>: ' + hl(v[k], nx); }).join(',\n') + '\n' + ind + '}';
+  }
+
+  /* 1 · ficha */
+  var itBtns = document.querySelectorAll('[data-it]'), idType = 'num';
+  itBtns.forEach(function (b) { b.addEventListener('click', function () { pressGroup(itBtns, function (x) { return x === b; }); idType = b.dataset.it; ficha(); }); });
+  var fichaObj;
+  function ficha() {
+    var idade = document.getElementById('jfIdade').value;
+    fichaObj = {
+      nome: document.getElementById('jfNome').value,
+      idade: idType === 'num' ? (idade === '' ? null : +idade) : idade,
+      cliente: document.getElementById('jfCli').checked,
+      interesses: Array.prototype.filter.call(document.querySelectorAll('.jfInt'), function (c) { return c.checked; }).map(function (c) { return c.value; }),
+      endereco: { cidade: document.getElementById('jfCid').value, estado: document.getElementById('jfUf').value.toUpperCase() }
+    };
+    document.getElementById('jfJson').innerHTML = hl(fichaObj);
+  }
+  document.querySelectorAll('.jf-form input').forEach(function (i) { i.addEventListener('input', ficha); i.addEventListener('change', ficha); });
+  ficha();
+  document.getElementById('jfCopy').addEventListener('click', function () { copyText(JSON.stringify(fichaObj, null, 2), this); });
+
+  /* 2 · tipos */
+  var TY = {
+    s: { t: 'Palavra', en: 'String', l: '"cidade": "Recife"', o: 'Texto: nome, cidade, motivo, resposta. E também todo código feito de algarismos, como CEP e número do pedido.', f: 'Comparar se é igual, procurar um trecho, juntar com outra palavra.', c: 'Entre aspas, sempre. Sem aspas, a ferramenta tenta ler como outra coisa e recusa.' },
+    n: { t: 'Quantidade', en: 'Number', l: '"idade": 32', o: 'Número de fazer conta: idade, preço, nota, dias de atraso. Decimal vai com ponto: 19.90.', f: 'Somar, comparar, ordenar do menor para o maior.', c: 'Sem aspas, sempre. Com aspas, vira palavra, e a conta não fecha.' },
+    b: { t: 'Sim ou não', en: 'Boolean', l: '"cliente": true', o: 'Quando só existem duas respostas: pagou ou não, é cliente ou não. Escreve-se true ou false, em inglês.', f: 'Separar em dois caminhos: se é cliente, vai por aqui; se não, por ali.', c: 'Sem aspas. "true" entre aspas é uma palavra que parece sim, e a regra que espera sim ou não deixa de funcionar.' },
+    a: { t: 'Lista', en: 'Array', l: '"interesses": ["relatórios", "planilhas"]', o: 'Uma linha onde cabe mais de um valor, separados por vírgula, entre colchetes. Pode ser lista de palavras, de números ou de fichas.', f: 'Contar quantos, pegar o primeiro, rodar um passo para cada um.', c: 'A contagem começa do zero: o primeiro é o [0].' },
+    o: { t: 'Ficha dentro da ficha', en: 'Object', l: '"endereco": { "cidade": "Recife", "estado": "PE" }', o: 'Um quadrinho separado, com linhas próprias lá dentro, entre chaves.', f: 'Agrupar o que anda junto: o endereço, os dados do cliente, o pagamento.', c: 'Para chegar dentro, use ponto: endereco.cidade. E se o quadrinho faltar, o caminho quebra.' }
+  };
+  var tBtns = document.querySelectorAll('.jt-card'), tDet = document.getElementById('jtDet');
+  function showT(k) {
+    pressGroup(tBtns, function (x) { return x.dataset.t === k; });
+    var t = TY[k];
+    tDet.innerHTML = '<span class="eyebrow">' + t.t + ' · na ferramenta aparece como ' + t.en + '</span><div class="jt-line">' + esc(t.l) + '</div><dl><dt>O que é</dt><dd>' + t.o + '</dd><dt>Serve para</dt><dd>' + t.f + '</dd><dt>A regra</dt><dd>' + t.c + '</dd></dl>';
+  }
+  tBtns.forEach(function (b) { b.addEventListener('click', function () { showT(b.dataset.t); }); });
+  showT('s');
+
+  /* 3 · quiz */
+  var QZ = [
+    { w: 'Idade', ex: '32', a: 'n', why: 'Duas idades somadas dão uma idade maior. É quantidade.' },
+    { w: 'CPF', ex: '123.456.789-00', a: 's', why: 'Somar dois CPFs não significa nada. É etiqueta, e etiqueta é palavra.' },
+    { w: 'Preço do produto', ex: '19.90', a: 'n', why: 'Preços se somam num total. Quantidade, sem aspas.' },
+    { w: 'CEP', ex: '01310-100', a: 's', why: 'Ninguém soma CEP. E sem aspas, o zero da frente some: 01310 vira 1310.' },
+    { w: 'Número do pedido', ex: 'A-781 ou 781', a: 's', why: 'Chama-se número, mas é código. Palavra.' },
+    { w: 'Dias de atraso', ex: '12', a: 'n', why: 'Dá para somar, comparar ("mais de 30?") e ordenar. Quantidade.' },
+    { w: 'Telefone', ex: '81 99999-0000', a: 's', why: 'Algarismos que ninguém soma. Palavra.' },
+    { w: 'Ano de nascimento, para calcular a idade', ex: '1994', a: 'n', why: 'Aqui você faz conta com ele. O mesmo 1994 seria palavra se fosse só o rótulo de uma turma: quem decide é o uso.' }
+  ];
+  var jg = document.getElementById('jqGrid'), js = document.getElementById('jqScore'), got = {};
+  QZ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'jq-item';
+    d.innerHTML = '<span class="what">' + q.w + '</span><span class="ex">exemplo: ' + q.ex + '</span><div class="opts" role="group" aria-label="Palavra ou quantidade"><button type="button" data-k="s" aria-pressed="false">Palavra · com aspas</button><button type="button" data-k="n" aria-pressed="false">Quantidade · sem aspas</button></div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.k === q.a; got[i] = ok;
+      fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + (q.a === 's' ? 'palavra' : 'quantidade') + '. ') + '</b>' + q.why;
+      var n = Object.keys(got).length, c = Object.keys(got).filter(function (k) { return got[k]; }).length;
+      js.textContent = n + ' de ' + QZ.length + ' respondidas · ' + c + ' certas' + (n === QZ.length ? ' · o teste de bolso: eu somaria dois desses?' : '');
+    }); });
+    jg.appendChild(d);
+  });
+
+  /* 4 · soma */
+  var tA = 'txt', tB = 'num';
+  var taB = document.querySelectorAll('[data-ta]'), tbB = document.querySelectorAll('[data-tb]');
+  taB.forEach(function (b) { b.addEventListener('click', function () { pressGroup(taB, function (x) { return x === b; }); tA = b.dataset.ta; soma(); }); });
+  tbB.forEach(function (b) { b.addEventListener('click', function () { pressGroup(tbB, function (x) { return x === b; }); tB = b.dataset.tb; soma(); }); });
+  function soma() {
+    var a = document.getElementById('jsA').value.trim(), b = document.getElementById('jsB').value.trim();
+    var na = a.replace(',', '.'), nb = b.replace(',', '.');
+    var badA = tA === 'num' && (na === '' || isNaN(+na)), badB = tB === 'num' && (nb === '' || isNaN(+nb));
+    var va = tA === 'num' && !badA ? +na : a, vb = tB === 'num' && !badB ? +nb : b;
+    document.getElementById('jsJson').innerHTML = hl({ A: va, B: vb });
+    var sum = document.getElementById('jsSum'), cmp = document.getElementById('jsCmp');
+    if (badA || badB) { sum.className = 'js-big bad'; sum.textContent = 'não é número'; cmp.className = 'verdict no'; cmp.innerHTML = '<b>Não dá para ler como quantidade.</b> Só algarismos, e ponto ou vírgula para o decimal.'; return; }
+    if (typeof va === 'number' && typeof vb === 'number') { sum.className = 'js-big'; sum.textContent = String(Math.round((va + vb) * 100) / 100); }
+    else { sum.className = 'js-big bad'; sum.textContent = '"' + String(va) + String(vb) + '"'; }
+    if (typeof va === 'number') { cmp.className = 'verdict ok'; cmp.innerHTML = '<b>' + (va > 18 ? 'Sim.' : 'Não.') + '</b> A é quantidade, e a comparação funciona.'; }
+    else { cmp.className = 'verdict no'; cmp.innerHTML = '<b>A ferramenta para:</b> <code>\'' + esc(a) + '\' is a string but was expecting a number</code>. Esperava uma quantidade e recebeu uma palavra.'; }
+  }
+  ['jsA', 'jsB'].forEach(function (id) { document.getElementById(id).addEventListener('input', soma); });
+  soma();
+
+  /* 5 · explorador */
+  var PED = { pedido: 'A-781', pago: true, desconto: null, cliente: { nome: 'Ana Souza', endereco: { cidade: 'Recife', estado: 'PE' } }, itens: [{ produto: 'Caderno', qtd: 2, preco: 19.9 }, { produto: 'Caneta', qtd: 5, preco: 3.5 }] };
+  var TN = { string: 'palavra', number: 'quantidade', boolean: 'sim ou não' };
+  var leaves = [], det = document.getElementById('jxDet');
+  function kind(v) { return v === null ? 'vazio' : (Array.isArray(v) ? 'lista' : (typeof v === 'object' ? 'ficha dentro' : TN[typeof v])); }
+  function build(v, path, key) {
+    var li = document.createElement('li');
+    var label = key === null ? '' : (typeof key === 'number' ? '[' + key + '] ' : key + ': ');
+    if (v !== null && typeof v === 'object') {
+      var n = Array.isArray(v) ? v.length + (v.length === 1 ? ' item' : ' itens') : Object.keys(v).length + ' campos';
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'jx-node'; b.setAttribute('aria-expanded', 'true');
+      b.innerHTML = '<span class="tw" aria-hidden="true">▾</span>' + esc(label) + (Array.isArray(v) ? '[ ]' : '{ }') + ' <span class="meta">' + n + '</span>';
+      var ul = document.createElement('ul');
+      (Array.isArray(v) ? v.map(function (x, i) { return [i, x]; }) : Object.keys(v).map(function (k) { return [k, v[k]]; })).forEach(function (p) {
+        var cp = typeof p[0] === 'number' ? path + '[' + p[0] + ']' : (path ? path + '.' : '') + p[0];
+        ul.appendChild(build(p[1], cp, p[0]));
+      });
+      b.addEventListener('click', function () { var o = b.getAttribute('aria-expanded') === 'true'; b.setAttribute('aria-expanded', String(!o)); ul.hidden = o; b.querySelector('.tw').textContent = o ? '▸' : '▾'; });
+      li.appendChild(b); li.appendChild(ul);
+    } else {
+      var lf = document.createElement('button'); lf.type = 'button'; lf.className = 'jx-leaf'; lf.setAttribute('aria-pressed', 'false');
+      lf.innerHTML = esc(label) + hl(v);
+      lf.addEventListener('click', function () { pressGroup(leaves, function (x) { return x === lf; }); showLeaf(path, v); });
+      leaves.push(lf); li.appendChild(lf);
+    }
+    return li;
+  }
+  function showLeaf(path, v) {
+    var k = kind(v);
+    var extra = k === 'vazio' ? 'Não foi preenchido. Não é zero: uma conta ou comparação com ele dá errado sem avisar.' : (path.indexOf('[') > -1 ? 'Passa por uma lista: o número entre colchetes é a posição, contando do zero.' : (path.split('.').length > 2 ? 'Três níveis: pedido, cliente, endereço. Se algum cadastro não tiver endereço, este caminho quebra.' : 'Um valor direto, a um passo da raiz.'));
+    det.innerHTML = '<span class="eyebrow">O caminho até aqui</span><div class="jx-path">' + esc(path) + '</div><p><b>Valor:</b> <code>' + esc(JSON.stringify(v)) + '</code> · <b>tipo:</b> ' + k + '</p><p class="hint">' + extra + '</p>';
+  }
+  var root = document.createElement('ul'); root.appendChild(build(PED, '', null));
+  document.getElementById('jxTree').appendChild(root);
+  var first = leaves.filter(function (l) { return l.textContent.indexOf('cidade') === 0; })[0] || leaves[0];
+  first.click();
+
+  /* 6 · lista */
+  var PEOPLE = [{ nome: 'Ana', cargo: 'Gerente', endereco: { cidade: 'Recife' } }, { nome: 'Bruno', cargo: 'Analista', endereco: { cidade: 'Natal' } }, { nome: 'Carla', cargo: 'Diretora', endereco: { cidade: 'Belém' } }];
+  var lvB = document.querySelectorAll('[data-lv]'), view = document.getElementById('jlView');
+  function setView(k) {
+    pressGroup(lvB, function (x) { return x.dataset.lv === k; });
+    if (k === 'tab') view.innerHTML = '<table class="jl-tbl"><thead><tr><th>nome</th><th>cargo</th><th>endereco</th></tr></thead><tbody>' + PEOPLE.map(function (p) { return '<tr><td>' + p.nome + '</td><td>' + p.cargo + '</td><td class="obj">[object Object]</td></tr>'; }).join('') + '</tbody></table><p class="hint" style="margin-top:10px">A coluna do endereço mostra <code>[object Object]</code>: a tabela não sabe desenhar uma ficha dentro da ficha.</p>';
+    else view.innerHTML = '<pre>' + hl(PEOPLE) + '</pre>';
+  }
+  lvB.forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.lv); }); });
+  setView('tab');
+  var its = document.getElementById('jlItems');
+  PEOPLE.forEach(function (p, i) { var d = document.createElement('div'); d.className = 'jl-it'; d.innerHTML = '<span class="n">item ' + i + '</span><span>' + p.nome + ' · ' + p.cargo + '</span>'; its.appendChild(d); });
+  var runBtn = document.getElementById('jlRun'), out = document.getElementById('jlOut');
+  runBtn.addEventListener('click', function () {
+    var rows = its.querySelectorAll('.jl-it'), i = 0, msgs = [];
+    rows.forEach(function (r) { r.classList.remove('now', 'done'); });
+    runBtn.disabled = true; out.textContent = '';
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function step() {
+      if (i > 0) { rows[i - 1].classList.remove('now'); rows[i - 1].classList.add('done'); }
+      if (i === rows.length) { out.innerHTML = msgs.join('<br>') + '<br><span class="hint">3 fichas entraram, o passo rodou 3 vezes. Ninguém mandou repetir.</span>'; runBtn.disabled = false; return; }
+      rows[i].classList.add('now'); msgs.push('Olá, ' + PEOPLE[i].nome + '! Seu cargo é ' + PEOPLE[i].cargo + '.');
+      out.textContent = 'rodando no item ' + i + '…'; i++;
+      setTimeout(step, reduce ? 0 : 700);
+    }
+    step();
+  });
+
+  /* 7 · erro calado */
+  var CC = [
+    { et: 'sim escrito por extenso', t: 'O cliente satisfeito caiu na lista errada', ln: '"satisfeito": "true"', m: 'Um sistema de fora mandou <code>"true"</code> entre aspas. Virou palavra, e a regra que espera sim ou não trata como se não fosse sim.', f: 'Confira as aspas no JSON do passo anterior. Sim e não, sem aspas.' },
+    { et: 'vazio não é zero', t: 'O pedido sumiu do filtro "valor abaixo de 100"', ln: '"valor": null', m: 'O campo chegou vazio. Vazio não vale zero: vale nada, e comparar nada com um número dá falso. O item sai do filtro sem reclamar.', f: 'Trate o vazio antes de comparar: decida o que ele deve valer.' },
+    { et: 'o quadrinho não existe', t: 'Funcionou em 40 cadastros e parou no 41º', ln: 'cliente.endereco.cidade', m: 'O caminho funciona enquanto o endereço está lá. No cadastro em que a pessoa não preencheu endereço, o fluxo quebra nessa linha.', f: 'Teste com uma ficha incompleta antes de ligar o fluxo.' },
+    { et: 'a ferramenta obedece o tipo', t: 'Você digitou 85 e saiu "85"', ln: '"nota": "85"', m: 'O campo foi criado como palavra, e a ferramenta não adivinha o que você quis dizer, nem avisa. A comparação "nota maior que 70" falha em silêncio.', f: 'Escolha o tipo na hora de criar o campo, ou converta antes de comparar.' }
+  ];
+  var cc = document.getElementById('jcCards');
+  CC.forEach(function (c) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'jc-card'; b.setAttribute('aria-expanded', 'false');
+    b.innerHTML = '<span class="et">' + c.et + '</span><b>' + c.t + '</b><span class="ln">' + esc(c.ln) + '</span><span class="more" hidden>' + c.m + '<br><strong>O que fazer:</strong> ' + c.f + '</span><span class="tog">ver o que aconteceu ↓</span>';
+    b.addEventListener('click', function () {
+      var o = b.getAttribute('aria-expanded') === 'true';
+      b.setAttribute('aria-expanded', String(!o)); b.querySelector('.more').hidden = o;
+      b.querySelector('.tog').textContent = o ? 'ver o que aconteceu ↓' : 'fechar ↑';
+    });
+    cc.appendChild(b);
+  });
+
+  /* 8 · pedidos para a IA */
+  var LIB = [
+    { t: 'Montar a ficha', w: 'quando uma ferramenta pede um exemplo de JSON', p: '<b>Papel:</b> alguém que liga sistemas entre si e explica o que fez para quem não é da área.\n<b>Contexto:</b> eu automatizo processos e não sou programador. Preciso de um exemplo de JSON para usar num fluxo. O que eu quero guardar: <i>[uma solicitação de troca que chega pelo site: nome de quem pediu, número do pedido, motivo em poucas palavras, se é troca ou devolução, e quantos dias faz que a compra foi entregue]</i>.\n<b>Tarefa:</b> monte esse JSON com um exemplo preenchido, decidindo para cada campo se ele é texto, número ou sim/não.\n<b>Formato:</b> primeiro o JSON sozinho, pronto para copiar. Depois, uma linha por campo, com o tipo escolhido e por quê.\n<b>Limitações:</b> nomes de campo sem acento, sem espaço e sem maiúscula. Número de pedido é código, não quantidade: trate como texto. Não acrescente campo que eu não pedi. Na dúvida sobre o tipo, escolha texto e sinalize a dúvida.\n<b>Critério de sucesso:</b> eu colo o JSON na minha ferramenta, ela aceita de primeira, e eu sei explicar por que cada campo está do jeito que está.' },
+    { t: 'Consertar quando deu erro', w: 'quando a ferramenta recusou e a mensagem não ajudou', p: '<b>Papel:</b> alguém que conserta formato de dado e explica o erro para quem não é da área.\n<b>Contexto:</b> colei um JSON na minha ferramenta e ela recusou. Não entendi a mensagem.\nO JSON que eu colei: <i>[cole aqui]</i>\nA mensagem de erro: <i>[cole aqui]</i>\n<b>Tarefa:</b> descubra o que está errado, em qual linha, e conserte.\n<b>Formato:</b> primeiro a explicação em até três linhas, sem termo técnico. Depois o JSON corrigido inteiro.\n<b>Limitações:</b> não mude nenhum valor que eu escrevi, conserte só o formato. Não acrescente nem remova campo. Na dúvida sobre o que eu quis dizer, deixe como está e me pergunte no fim.\n<b>Critério de sucesso:</b> eu colo o corrigido, a ferramenta aceita, e os valores continuam sendo os meus.' }
+  ];
+  var tabs = document.getElementById('jpTabs'), pane = document.getElementById('jpPane'), tb = [];
+  LIB.forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab');
+    b.innerHTML = '<b>' + x.t + '</b><span>' + x.w + '</span>';
+    b.addEventListener('click', function () { showLib(i); }); tabs.appendChild(b); tb.push(b);
+  });
+  function showLib(i) {
+    tb.forEach(function (b, k) { b.setAttribute('aria-selected', String(k === i)); });
+    var x = LIB[i];
+    pane.innerHTML = '<p class="hint">Use ' + x.w + '.' + (i === 1 ? ' Sem as limitações, a IA costuma "melhorar" os seus dados junto com o conserto.' : '') + '</p><div class="copy"><div class="copy-head"><span class="eyebrow">' + (i + 1) + ' de ' + LIB.length + ' · ' + x.t + '</span><button type="button" class="btn" id="jpCopy">Copiar</button></div><pre id="jpText">' + x.p + '</pre></div>';
+    document.getElementById('jpCopy').addEventListener('click', function () { copyText(document.getElementById('jpText').innerText, this); });
+  }
+  showLib(0);
+})();
+</script>
+
+</html>

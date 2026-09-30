@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--execucao">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quebrar em fases e conferir entre elas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: pilar 3 da família AI First. Peças: onde o erro aparece (alternar + passo a passo com diagrama de fases e portões + barras do que se refaz), os três modos de falhar (cartões), a corrente entre fases (tabela clicável), quem executa e quem confere (duas colunas + alternar), você é o portão (quiz), a trava (simulador com campos), o plano antes de gerar (barras da mesa) e pedidos para copiar (abas). */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.2rem, 5.4vw, 3.4rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* ---- só desta peça ---- */
+/* 1 · onde o erro aparece */
+.pp-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.pp-scroll svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.pp-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.pp-box .t { font: 600 12.5px var(--font-mono); letter-spacing: .06em; fill: var(--text); text-anchor: middle; }
+.pp-box .s { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.pp-box.done rect { fill: var(--accent-soft); stroke: var(--accent); }
+.pp-box.bad rect { fill: var(--atencao-soft); stroke: var(--atencao); }
+.pp-box.now rect { stroke-width: 2.6; }
+.pp-gate polygon { fill: var(--bg-elev); stroke: var(--text-muted); stroke-width: 1.5; transition: fill .25s ease; }
+.pp-gate text { font: 500 10.5px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.pp-gate.pass polygon { fill: var(--ok); stroke: var(--ok); }
+.pp-gate.stop polygon { fill: var(--atencao); stroke: var(--atencao); }
+.pp-gate.stop text { fill: var(--atencao-texto); font-weight: 600; }
+.pp-ln { stroke: var(--border-strong); stroke-width: 1.6; }
+.pp-one { fill: none; stroke: var(--text-muted); stroke-width: 1.4; stroke-dasharray: 6 5; opacity: 0; transition: opacity .3s ease; }
+.pp-onet { font: 500 11px var(--font-mono); fill: var(--text-muted); letter-spacing: .08em; opacity: 0; }
+svg.pp-whole .pp-gate { opacity: 0; }
+svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
+.pp-x { font: 700 15px var(--font-mono); fill: var(--atencao-texto); text-anchor: middle; }
+.pp-cost { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 10px 14px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; }
+.pp-segs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.pp-segs span { height: 16px; border-radius: 3px; background: var(--border); transition: background .3s ease; }
+.pp-segs span.redo { background: var(--atencao); }
+
+/* 2 · modos de falhar */
+.md-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.md-card { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 6px; align-content: start; }
+.md-card .md-n { font-family: var(--font-mono); font-size: 12px; color: var(--atencao-texto); letter-spacing: .1em; }
+.md-card b { font-weight: 600; line-height: 1.3; }
+.md-card[aria-pressed="true"] { border-color: var(--atencao); background: var(--atencao-soft); }
+.md-det { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; }
+.md-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; }
+.md-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.md-det dd { margin: 0; }
+
+/* 3 · corrente */
+.ch-scroll { overflow-x: auto; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--bg-elev); }
+.ch-tab { width: 100%; min-width: 620px; border-collapse: collapse; font-size: .93rem; }
+.ch-tab th, .ch-tab td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.ch-tab th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); font-weight: 500; }
+.ch-tab td:first-child button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 4px 10px; font-size: .9rem; white-space: nowrap; }
+.ch-tab td:first-child button[aria-pressed="true"] { background: var(--accent); color: var(--bg-elev); border-color: var(--accent); }
+.ch-tab td.ch-in { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.ch-tab td.ch-out { background: var(--ok-soft); box-shadow: inset 3px 0 0 var(--ok); }
+
+/* 4 · papéis */
+.rl-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.rl-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; transition: opacity .3s ease; }
+.rl-col.rl-conf { border-color: var(--accent); }
+.rl-col .rl-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.rl-col .rl-c { font-family: var(--font-mono); font-size: 1.8rem; color: var(--accent); line-height: 1; }
+.rl-it { text-align: left; border: 1px solid var(--border); background: var(--bg); border-radius: 6px; padding: 8px 12px; font-size: .93rem; }
+.rl-it[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.rl-cols.rl-mixed .rl-conf { opacity: .4; }
+.rl-cols.rl-mixed .rl-conf .rl-it { text-decoration: line-through; text-decoration-color: var(--atencao); }
+.rl-det { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 6px; }
+
+/* 5 · você é o portão */
+.gq-list { display: grid; gap: 10px; }
+.gq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.gq-item .gq-g { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.gq-item .gq-s { font-family: var(--font-mono); font-size: .86rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.gq-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.gq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.gq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.gq-fb { font-size: .93rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.gq-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.gq-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.gq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 6 · trava */
+.tv-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.tv-form { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.tv-f { display: grid; gap: 4px; }
+.tv-f label { font-size: .95rem; font-weight: 500; }
+.tv-f small { color: var(--text-dim); font-size: .85rem; }
+.tv-f input { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg); color: var(--text); width: 100%; }
+.tv-pre { display: flex; gap: 8px; flex-wrap: wrap; }
+.tv-res { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 10px; align-content: start; min-height: 260px; }
+.tv-res ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.tv-res li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 8px; font-size: .94rem; }
+.tv-res li .tv-i { font-family: var(--font-mono); font-weight: 600; }
+.tv-res li.tv-ok .tv-i { color: var(--ok-texto); }
+.tv-res li.tv-no .tv-i { color: var(--atencao-texto); }
+
+/* 7 · plano antes */
+.pl-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 20px; align-items: start; }
+.pl-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pl-stats div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 12px 14px; }
+.pl-stats span { display: block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.pl-stats b { font-family: var(--font-mono); font-weight: 500; font-size: 1.4rem; color: var(--accent); }
+.pl-chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
+.pl-chart svg { width: 100%; height: auto; display: block; }
+.pl-d { fill: var(--accent); }
+.pl-c { fill: var(--atencao); transition: width .45s ease; }
+.pl-f { fill: var(--border); }
+.pl-t { font: 500 11.5px var(--font-mono); fill: var(--text-muted); }
+.pl-lg { font: 400 12px var(--font-body); fill: var(--text-muted); }
+
+/* 8 · abas */
+.tb-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tb-tabs button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 7px 14px; font-size: .92rem; color: var(--text-muted); }
+.tb-tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tb-pane { display: grid; gap: 10px; }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .md-row, .rl-cols, .tv-wrap, .pl-wrap, .take { grid-template-columns: 1fr; }
+  .md-det dl { grid-template-columns: 1fr; }
+  .pp-cost { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .pp-box rect, .pp-gate polygon, .pp-one, .pp-segs span, .rl-col, .pl-c { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--contexto.html">← 5.2 Contexto</a><a href="./ai-first--memoria.html">5.4 Memória →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html" aria-current="page"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.3 · pilar 3 de 5</span>
+  <h1>Quebrar em fases e conferir entre elas</h1>
+  <p class="sub">Por que o trabalho pedido inteiro volta inteiro errado, e onde colocar quem confere</p>
+  <p class="lead">Trabalho grande pedido de uma vez volta rápido, bem escrito, e parecendo bom. Quando está errado, <strong>não dá para saber em que ponto errou</strong>, e a única saída é recomeçar. Em fases, com alguém conferindo entre elas, o erro aparece cedo e sai barato.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-onde">Onde o erro aparece</a><a href="#s-modos">Três modos de falhar</a><a href="#s-corrente">A corrente</a><a href="#s-papeis">Quem executa, quem confere</a><a href="#s-portao">Você é o portão</a><a href="#s-trava">A trava</a><a href="#s-plano">O plano antes de gerar</a><a href="#s-pedir">Pedidos para copiar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-onde" aria-labelledby="h-onde">
+  <span class="eyebrow">Onde o erro aparece</span>
+  <h2 id="h-onde">O mesmo erro, no mesmo lugar, custando coisas diferentes</h2>
+  <p class="intro">Seis entrevistas de uma hora, trezentas páginas de transcrição, três dias de prazo, e alguém vai investir dinheiro com base no resultado. Na fase 2, um nome de pessoa fica esquecido no texto. <strong>Escolha o desenho e avance.</strong></p>
+  <div class="seg" role="group" aria-label="Desenho do trabalho">
+    <button type="button" data-pp="whole" aria-pressed="true">Tudo de uma vez</button>
+    <button type="button" data-pp="fases" aria-pressed="false">Em fases, com portões</button>
+  </div>
+  <div class="stepbar">
+    <span class="eyebrow" id="ppLab">Fase 1 de 5</span>
+    <div class="nav"><button type="button" class="btn" id="ppPrev">← Anterior</button><button type="button" class="btn primary" id="ppNext">Próximo →</button></div>
+  </div>
+  <div class="pp-scroll" role="region" tabindex="0" aria-label="Diagrama das cinco fases. Role para os lados se a tela for estreita.">
+    <svg id="ppSvg" class="pp-whole" viewBox="0 0 940 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pp-t">
+      <title id="pp-t">Cinco fases, preparação, levantamento, análise, priorização e entrega, com um portão de conferência entre cada uma</title>
+      <rect class="pp-one" x="4" y="24" width="932" height="120" rx="12"/>
+      <text class="pp-onet" x="16" y="18">UM PEDIDO SÓ · NINGUÉM OLHA NO MEIO</text>
+      <g id="ppG"></g>
+    </svg>
+  </div>
+  <div class="caption" id="ppCap" aria-live="polite"></div>
+  <div class="pp-cost"><span class="eyebrow">O que se refaz</span><div class="pp-segs" id="ppSegs" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div><span class="hint" id="ppCostTxt" style="grid-column:1/-1"></span></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-modos" aria-labelledby="h-modos">
+  <span class="eyebrow">Três modos de falhar</span>
+  <h2 id="h-modos">O pedido único parece bom, e falha de três jeitos que só aparecem quando alguém confere</h2>
+  <p class="intro">Seis transcrições de uma vez, e um pedido: “faça um diagnóstico com prioridades”. Voltou rápido e bem escrito. <strong>Clique em cada falha.</strong></p>
+  <div class="md-row" role="group" aria-label="Os três modos de falhar">
+    <button type="button" class="md-card" data-md="0" aria-pressed="true"><span class="md-n">01</span><b>Não dá para rastrear</b></button>
+    <button type="button" class="md-card" data-md="1" aria-pressed="false"><span class="md-n">02</span><b>Tudo vira do mesmo tamanho</b></button>
+    <button type="button" class="md-card" data-md="2" aria-pressed="false"><span class="md-n">03</span><b>A conferência só cabe no fim</b></button>
+  </div>
+  <div class="md-det" id="mdDet" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-corrente" aria-labelledby="h-corrente">
+  <span class="eyebrow">A corrente</span>
+  <h2 id="h-corrente">O que sai de uma fase é o que entra na seguinte</h2>
+  <p class="intro">As fases não são uma lista de tarefas. Cada uma consome uma coisa concreta e devolve outra, e <strong>é essa amarração que permite voltar</strong>: quando o fim sai estranho, dá para dizer em que fase olhar. Clique numa fase.</p>
+  <div class="ch-scroll">
+    <table class="ch-tab">
+      <thead><tr><th>A fase</th><th>O que entra</th><th>O que sai</th></tr></thead>
+      <tbody id="chBody"></tbody>
+    </table>
+  </div>
+  <p class="hint" id="chTxt" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-papeis" aria-labelledby="h-papeis">
+  <span class="eyebrow">Quem executa, quem confere</span>
+  <h2 id="h-papeis">Nunca deixe quem produziu ser o único a dizer que está bom</h2>
+  <p class="intro">Um sistema de análise com onze auxiliares, divididos em dois grupos que nunca se misturam. É a mesma divisão entre quem escreve um parecer e quem revisa antes de assinar. <strong>Clique num auxiliar, e depois misture os papéis.</strong></p>
+  <div class="seg" role="group" aria-label="Papéis">
+    <button type="button" data-rl="sep" aria-pressed="true">Papéis separados</button>
+    <button type="button" data-rl="mix" aria-pressed="false">Quem faz também aprova</button>
+  </div>
+  <div class="rl-cols" id="rlCols">
+    <div class="rl-col"><div class="rl-h"><span class="eyebrow">Executam · fazem o trabalho</span><span class="rl-c">5</span></div><div id="rlEx" style="display:grid;gap:6px"></div></div>
+    <div class="rl-col rl-conf"><div class="rl-h"><span class="eyebrow">Conferem · não fazem, apontam</span><span class="rl-c">6</span></div><div id="rlCf" style="display:grid;gap:6px"></div></div>
+  </div>
+  <div class="rl-det" id="rlDet" aria-live="polite"></div>
+  <p class="punch">Um revisor conferiu os dez critérios da lista e aprovou os dez. O resultado tinha catorze problemas. <em>Ele conferiu a saída; o defeito estava no pedido.</em></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-portao" aria-labelledby="h-portao">
+  <span class="eyebrow">Você é o portão</span>
+  <h2 id="h-portao">Cinco coisas que saíram de uma fase. Passa, ou devolve?</h2>
+  <p class="intro">Cada portão tem uma pergunta só, escrita antes. <strong>Confira o que saiu</strong> e decida se a fase seguinte pode começar.</p>
+  <div class="gq-list" id="gqList"></div>
+  <p class="gq-score" id="gqScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-trava" aria-labelledby="h-trava">
+  <span class="eyebrow">A trava</span>
+  <h2 id="h-trava">Um conferente que não escreve nada, e devolve quando falta</h2>
+  <p class="intro">O plano dos primeiros trinta dias é a única peça que a IA não escreve. Um auxiliar só confere três campos, e <strong>não preenche sozinho, não sugere, não estima</strong>. São exatamente os três que a ferramenta inventaria. Tente passar pela trava.</p>
+  <div class="tv-wrap">
+    <div class="tv-form">
+      <div class="tv-pre"><button type="button" class="btn" id="tvBad">Preencher como costuma vir</button><button type="button" class="btn" id="tvGood">Preencher direito</button></div>
+      <div class="tv-f"><label for="tvR">Responsável</label><small>Nomeado. Não vale “a equipe” nem “a coordenação”.</small><input id="tvR" type="text" autocomplete="off"></div>
+      <div class="tv-f"><label for="tvM">Métrica</label><small>Quantificada. Não vale “melhorar” nem “reduzir bastante”.</small><input id="tvM" type="text" autocomplete="off"></div>
+      <div class="tv-f"><label for="tvP">Prazo</label><small>Defensável. Uma data que alguém aceita assinar.</small><input id="tvP" type="text" autocomplete="off"></div>
+      <button type="button" class="btn primary" id="tvGo">Passar pela trava</button>
+    </div>
+    <div class="tv-res" id="tvRes" aria-live="polite"><span class="eyebrow">A trava</span><p class="hint">Preencha e passe pela trava.</p></div>
+  </div>
+  <p class="hint">A trava é a ficha dos <a href="./ai-first--medicao.html">quatro campos</a> morando dentro do processo, em vez de num manual. Ninguém precisa lembrar dela: ela aparece na hora em que o trabalho passa. É assim que uma <a href="./ai-first--memoria.html">correção vira regra</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-plano" aria-labelledby="h-plano">
+  <span class="eyebrow">O plano antes de gerar</span>
+  <h2 id="h-plano">A fase mais barata de todas: pedir que ela confirme o plano antes de fazer</h2>
+  <p class="intro">Mesma planilha de pedidos em produção, dois pedidos. O segundo termina com uma instrução: <strong>confirme em três bullets e espere o meu OK</strong>. São trinta segundos que evitam um documento inteiro feito em cima de um entendimento errado.</p>
+  <div class="seg" role="group" aria-label="Qual pedido">
+    <button type="button" data-pl="vago" aria-pressed="true">Pedido vago</button>
+    <button type="button" data-pl="sit" aria-pressed="false">Pedido que confirma o plano</button>
+  </div>
+  <div class="pl-wrap">
+    <div class="pl-stats">
+      <div><span>o que você escreve</span><b id="plW">8</b> palavras</div>
+      <div><span>idas e vindas</span><b id="plR">4</b></div>
+      <div style="grid-column:1/-1"><span>o que sai</span><p id="plO"></p></div>
+    </div>
+    <div class="pl-chart">
+      <span class="eyebrow">Como fica a mesa no fim</span>
+      <svg viewBox="0 0 420 120" role="img" aria-labelledby="pl-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="pl-t">Barra da janela de contexto: a parte do dado é igual nos dois pedidos; a parte da conversa de correção muda</title>
+        <rect class="pl-f" x="10" y="20" width="400" height="40" rx="4"/>
+        <rect class="pl-d" x="10" y="20" width="120" height="40" rx="4"/>
+        <rect class="pl-c" id="plC" x="130" y="20" width="170" height="40"/>
+        <rect class="pl-d" x="10" y="84" width="12" height="12"/><text class="pl-lg" x="28" y="94">o dado</text>
+        <rect class="pl-c" x="92" y="84" width="12" height="12"/><text class="pl-lg" x="110" y="94">conversa de correção</text>
+        <text class="pl-t" x="300" y="94">livre →</text>
+      </svg>
+      <p class="hint" id="plTxt" aria-live="polite"></p>
+    </div>
+  </div>
+  <p class="hint">Por que a conversa ocupa espaço, e o que acontece quando a mesa enche: <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-pedir" aria-labelledby="h-pedir">
+  <span class="eyebrow">Pedidos para copiar</span>
+  <h2 id="h-pedir">O portão escrito dentro do próprio pedido</h2>
+  <p class="intro">Nos três, a frase que manda parar é o que impede a ferramenta de correr até o fim. <strong>O que está marcado é o que você troca.</strong> Tire nome de pessoa antes de colar material real.</p>
+  <div class="tb-tabs" id="tbTabs" role="tablist" aria-label="Pedidos"></div>
+  <div class="tb-pane" id="tbPane" role="tabpanel"></div>
+</section>
+
+<!-- 9 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Inteiro volta inteiro errado</h3><p>E sem que se saiba onde. Em fases, o erro aparece na fase em que nasceu.</p></div>
+    <div class="take-card"><h3>O portão é uma pessoa</h3><p>Com uma pergunta escrita antes. Quem produziu não é o único a dizer que está bom.</p></div>
+    <div class="take-card"><h3>Confirme antes de gerar</h3><p>Três bullets e um OK. É a fase mais barata que existe.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Fase</dt><dd>Um pedaço do trabalho que recebe uma coisa concreta e devolve outra, que dá para conferir.</dd>
+    <dt>Portão</dt><dd>O ponto entre duas fases em que uma pessoa confere, com uma pergunta escrita antes. A fase seguinte não começa sem ele.</dd>
+    <dt>Trava</dt><dd>Um portão que não depende de ninguém lembrar: campo obrigatório que devolve o trabalho quando falta alguma coisa.</dd>
+    <dt>Rastreabilidade</dt><dd>Conseguir responder “de onde vocês tiraram isso?” para qualquer frase do resultado.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O custo em fases refeitas, as barras da mesa e as contagens de palavras e rodadas mostram a forma, não a medida: cada trabalho tem o seu. O número de fases também varia; o que não varia é existir um portão entre elas.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first--contexto.html"><span>← anterior</span><b>5.2 · Resultado ruim é falta de contexto, não de capacidade</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--memoria.html"><span>próxima →</span><b>5.4 · Toda correção vira regra</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  var ns = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, txt) { var e = document.createElementNS(ns, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt) e.textContent = txt; return e; }
+
+  /* 1 · onde o erro aparece */
+  var PF = [['PREPARAÇÃO', 'o que já se sabe,', 'e o que se quer saber'], ['LEVANTAMENTO', 'as entrevistas, e a', 'retirada dos nomes'], ['ANÁLISE', 'uma por vez, com', 'a fala que sustenta'], ['PRIORIZAÇÃO', 'nota com critério', 'escrito antes'], ['ENTREGA', 'o documento e', 'a apresentação']];
+  var ppG = document.getElementById('ppG'), ppBoxes = [], ppGates = [];
+  PF.forEach(function (f, i) {
+    var x = 14 + i * 186, g = el('g', { 'class': 'pp-box' });
+    g.appendChild(el('rect', { x: x, y: 40, width: 140, height: 88, rx: 8 }));
+    g.appendChild(el('text', { 'class': 't', x: x + 70, y: 70 }, f[0]));
+    g.appendChild(el('text', { 'class': 's', x: x + 70, y: 92 }, f[1]));
+    g.appendChild(el('text', { 'class': 's', x: x + 70, y: 108 }, f[2]));
+    var mk = el('text', { 'class': 'pp-x', x: x + 128, y: 58 }, ''); g.appendChild(mk); g._mk = mk;
+    ppG.appendChild(g); ppBoxes.push(g);
+    if (i < 4) {
+      var cx = x + 163;
+      ppG.appendChild(el('line', { 'class': 'pp-ln', x1: x + 140, y1: 84, x2: x + 186, y2: 84 }));
+      var gg = el('g', { 'class': 'pp-gate' });
+      gg.appendChild(el('polygon', { points: cx + ',70 ' + (cx + 12) + ',84 ' + cx + ',98 ' + (cx - 12) + ',84' }));
+      gg.appendChild(el('text', { x: cx, y: 160 }, 'portão ' + (i + 1)));
+      ppG.appendChild(gg); ppGates.push(gg);
+    }
+  });
+  var ppMode = 'whole', ppCur = 1;
+  var CAP = {
+    whole: [
+      ['Preparação', 'Tudo entra de uma vez: as seis transcrições e um pedido de diagnóstico com prioridades.'],
+      ['Levantamento', 'Um nome de pessoa fica no texto. Ninguém olha agora: o pedido é um só, e segue.'],
+      ['Análise', 'A análise é feita em cima do texto com o nome. O erro agora está em dois lugares.'],
+      ['Priorização', 'As prioridades citam uma fala com o nome junto. O erro já está em três.'],
+      ['Entrega', 'O documento sai bonito, rápido, e com o nome de alguém numa crítica a um colega. Ninguém sabe em que ponto entrou. A única saída é refazer tudo, e o prazo era de três dias.']
+    ],
+    fases: [
+      ['Preparação', 'A primeira fase só levanta o que já se sabe e o que se quer descobrir. O portão 1 confere e deixa passar.'],
+      ['Levantamento', 'Um nome de pessoa fica no texto. A fase termina, e a próxima ainda não começou.'],
+      ['Portão 2 · devolvido', 'A pergunta do portão é uma só: “sobrou algum nome?”. Sobrou. A fase 2 volta, é corrigida em meia hora, e só então a análise começa.'],
+      ['Priorização', 'A análise foi feita sobre texto limpo, uma entrevista por vez. O critério da nota foi escrito antes de pontuar.'],
+      ['Entrega', 'O documento sai com cada prioridade apontando para a fala que a sustenta. O erro custou uma fase, no primeiro dia.']
+    ]
+  };
+  function ppGo(n) {
+    ppCur = Math.max(1, Math.min(5, n));
+    var whole = ppMode === 'whole', found = whole ? (ppCur === 5) : (ppCur >= 3);
+    ppBoxes.forEach(function (b, i) {
+      var k = i + 1, bad = whole ? (k >= 2 && k <= ppCur) : (k === 2 && ppCur === 2);
+      b.setAttribute('class', 'pp-box' + (k <= ppCur ? (bad ? ' bad' : ' done') : '') + (k === ppCur ? ' now' : ''));
+      b._mk.textContent = bad ? '✕' : '';
+    });
+    ppGates.forEach(function (g, i) {
+      var k = i + 1, cls = 'pp-gate';
+      if (!whole) { if (k === 2 && ppCur >= 3) cls += ppCur === 3 ? ' stop' : ' pass'; else if (k < ppCur) cls += ' pass'; }
+      g.setAttribute('class', cls);
+    });
+    var c = CAP[ppMode][ppCur - 1];
+    document.getElementById('ppCap').innerHTML = '<h3>' + c[0] + '</h3><p>' + c[1] + '</p>';
+    document.getElementById('ppLab').textContent = 'Fase ' + ppCur + ' de 5';
+    document.getElementById('ppPrev').disabled = ppCur === 1;
+    document.getElementById('ppNext').textContent = ppCur === 5 ? 'Recomeçar ↺' : 'Próximo →';
+    var redo = found ? (whole ? 5 : 1) : 0;
+    document.querySelectorAll('#ppSegs span').forEach(function (s, i) { s.classList.toggle('redo', whole ? i < redo : (redo && i === 1)); });
+    document.getElementById('ppCostTxt').textContent = !found ? 'O erro já existe, e ainda não apareceu.' : (whole ? 'As cinco fases, porque não há como saber em qual o erro entrou.' : 'Uma fase só: a 2, onde o erro nasceu. As outras não chegaram a ser contaminadas.');
+  }
+  var ppBtns = document.querySelectorAll('[data-pp]');
+  ppBtns.forEach(function (b) { b.addEventListener('click', function () {
+    ppMode = b.dataset.pp; pressGroup(ppBtns, function (x) { return x === b; });
+    document.getElementById('ppSvg').setAttribute('class', ppMode === 'whole' ? 'pp-whole' : 'pp-fases'); ppGo(1);
+  }); });
+  document.getElementById('ppPrev').addEventListener('click', function () { ppGo(ppCur - 1); });
+  document.getElementById('ppNext').addEventListener('click', function () { ppGo(ppCur === 5 ? 1 : ppCur + 1); });
+  ppGo(1);
+
+  /* 2 · modos de falhar */
+  var MD = [
+    { s: 'O texto afirma que existe retrabalho no processo, e não diz de qual entrevista veio nem quantas pessoas disseram.', c: 'Tudo entrou de uma vez, então não existe caminho de volta de uma frase até a página que a originou.', g: 'Na reunião, alguém vai apontar para uma prioridade e perguntar “de onde vocês tiraram isso?”. Conclusão sem origem não sustenta decisão de investimento.' },
+    { s: 'A dor que cinco de seis pessoas citaram aparece com o mesmo peso da que uma citou de passagem.', c: 'Ninguém contou quantas vezes cada coisa apareceu, então não havia com o que ordenar.', g: 'Priorizar é o contrário de achatar. O resumo entrega uma lista, e o que se pediu foi uma ordem.' },
+    { s: 'Quando o resultado sai errado, não há como saber em que ponto do caminho errou.', c: 'Uma etapa só não tem meio. Ou está certo no fim, ou se recomeça do começo.', g: 'Com três dias de prazo, refazer tudo não é opção. O erro precisa aparecer no primeiro dia.' }
+  ];
+  var mdBtns = document.querySelectorAll('.md-card'), mdDet = document.getElementById('mdDet');
+  function showMd(i) {
+    pressGroup(mdBtns, function (x) { return +x.dataset.md === i; });
+    var m = MD[i];
+    mdDet.innerHTML = '<dl><dt>O sintoma</dt><dd>' + m.s + '</dd><dt>A causa</dt><dd>' + m.c + '</dd><dt>Por que é grave</dt><dd>' + m.g + '</dd></dl>';
+  }
+  mdBtns.forEach(function (b) { b.addEventListener('click', function () { showMd(+b.dataset.md); }); });
+  showMd(0);
+
+  /* 3 · corrente */
+  var CH = [
+    ['1 · Preparação', 'O mesmo questionário, com as mesmas perguntas, para todas as áreas', 'Uma primeira leitura, com duas ou três suposições por área'],
+    ['2 · Levantamento', 'As suposições da fase 1, para saber o que perguntar', 'Seis entrevistas gravadas, revisadas e sem nome de pessoa'],
+    ['3 · Análise', 'As seis entrevistas sem nome, e o levantamento dos sistemas', 'Um mapa de oportunidades, cada uma com a frase que a sustenta'],
+    ['4 · Priorização', 'O mapa, e o critério da nota escrito antes de pontuar', 'Três prioridades propostas, na linguagem de quem vai ler'],
+    ['5 · Entrega', 'As três prioridades', 'O relatório, a apresentação e o plano dos primeiros trinta dias']
+  ];
+  var chBody = document.getElementById('chBody'), chRows = [];
+  CH.forEach(function (r, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td><button type="button" aria-pressed="false">' + r[0] + '</button></td><td>' + r[1] + '</td><td>' + r[2] + '</td>';
+    tr.querySelector('button').addEventListener('click', function () { showCh(i); });
+    chBody.appendChild(tr); chRows.push(tr);
+  });
+  function showCh(i) {
+    chRows.forEach(function (tr, k) {
+      tr.querySelector('button').setAttribute('aria-pressed', String(k === i));
+      tr.children[1].className = k === i ? 'ch-in' : '';
+      tr.children[2].className = (k === i - 1) ? 'ch-out' : '';
+    });
+    document.getElementById('chTxt').textContent = i === 0
+      ? 'A primeira fase recebe o que já existe antes do trabalho. Todas as outras recebem o que a anterior entregou.'
+      : 'Em azul, o que a fase ' + (i + 1) + ' recebe. Em verde, o que a fase ' + i + ' entregou. São a mesma coisa. Fase que não recebe nada da anterior não é fase: é documento solto.';
+  }
+  showCh(2);
+
+  /* 4 · papéis */
+  var EX = [
+    ['Pesquisa o setor antes da conversa', 'Levanta o que já se sabe do negócio de quem pediu.'],
+    ['Organiza os pedidos na ordem em que precisam rodar', 'Monta a sequência das fases e o que cada uma recebe.'],
+    ['Levanta onde a ferramenta já é usada sem ninguém ter declarado', 'Acha o uso escondido antes de propor uso novo.'],
+    ['Faz a conta que sustenta a proposta', 'Transforma o achado em número.'],
+    ['Diz se o primeiro resultado já serve, ou se volta', 'Olha o próprio rascunho antes de ele seguir para quem confere.']
+  ];
+  var CF = [
+    ['Se a peça é do tipo que diz ser', 'Um relatório que virou lista de achados é devolvido.'],
+    ['Se as peças não se contradizem entre si', 'A prioridade do relatório é a mesma da apresentação?'],
+    ['Se cada fase recebe e entrega o que devia', 'É a corrente da seção acima, conferida.'],
+    ['Se a linguagem serve a quem vai ler', 'Diretoria não lê jargão de quem fez a análise.'],
+    ['Se o que a fase exigia foi cumprido antes de seguir', 'É o portão. Enquanto ele não passa, a fase seguinte não começa.'],
+    ['Se sobrou nome de pessoa que não podia sair', 'O portão que protege: nome que atravessa uma fase atravessa todas.']
+  ];
+  var rlBtns = [];
+  function mkRl(list, box, conf) {
+    list.forEach(function (it) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'rl-it'; b.setAttribute('aria-pressed', 'false'); b.textContent = it[0];
+      b.addEventListener('click', function () { pressGroup(rlBtns, function (x) { return x === b; }); showRl(it, conf); });
+      document.getElementById(box).appendChild(b); rlBtns.push(b);
+    });
+  }
+  mkRl(EX, 'rlEx', false); mkRl(CF, 'rlCf', true);
+  var rlDet = document.getElementById('rlDet'), rlMode = 'sep';
+  function showRl(it, conf) {
+    rlDet.innerHTML = '<span class="eyebrow">' + (conf ? 'Confere' : 'Executa') + '</span><p><b>' + it[0] + '.</b> ' + it[1] + '</p><p class="hint">' + (conf ? 'Não tem permissão para alterar o que encontrou: aponta e devolve para uma pessoa.' : 'Faz uma coisa só, sempre do mesmo jeito, e não tem permissão para dizer que o trabalho está pronto.') + '</p>';
+  }
+  var rlSeg = document.querySelectorAll('[data-rl]');
+  rlSeg.forEach(function (b) { b.addEventListener('click', function () {
+    rlMode = b.dataset.rl; pressGroup(rlSeg, function (x) { return x === b; });
+    document.getElementById('rlCols').classList.toggle('rl-mixed', rlMode === 'mix');
+    if (rlMode === 'mix') rlDet.innerHTML = '<div class="verdict no"><b>Não há revisão nenhuma, só uma etapa a mais no caminho.</b> Se a mesma parte escreve e aprova, os seis conferentes viram assinatura de quem já achava que estava bom.</div>';
+    else { rlBtns[rlBtns.length - 1].click(); }
+  }); });
+  rlBtns[rlBtns.length - 1].click();
+
+  /* 5 · você é o portão */
+  var GQ = [
+    { g: 'Portão 1 · sobrou algum nome?', s: 'COORDENADORA: “O Marcos do financeiro sempre atrasa o fechamento, todo mês é a mesma coisa.”', a: 'd', why: 'Sobrou um nome dentro da fala. Se ele atravessa esta fase, atravessa todas e vai parar no documento final. Troque por FINANCEIRO.' },
+    { g: 'Portão 2 · cada achado tem a fala que o sustenta?', s: 'Achado: há retrabalho no cadastro de clientes.\nFonte: —', a: 'd', why: 'Achado sem a fala e o horário é achado que ninguém consegue defender depois. É a pergunta “de onde tiraram isso?” sem resposta.' },
+    { g: 'Portão 2 · cada achado tem a fala que o sustenta?', s: 'Achado: o fechamento atrasa dois dias todo mês.\nFonte: entrevista 3, fala às 00:14:32 · fato relatado', a: 'p', why: 'Tem a fala, o horário e a natureza: fato relatado, não opinião nem hipótese. Pode seguir.' },
+    { g: 'Portão 3 · o critério da nota veio antes?', s: 'Critério escrito antes de pontuar: incômodo 5 = citado como urgente por três pessoas ou mais.\nTema: cadastro · incômodo 5 (quatro pessoas citaram como urgente)', a: 'p', why: 'O critério existia antes da nota, e a nota aponta para ele. Nota sem critério é opinião com número; esta não é.' },
+    { g: 'Portão 4 · apareceu número que não está na entrevista?', s: 'Meta: reduzir as 40 horas mensais de retrabalho.\nNa entrevista: “acho que a gente perde muito tempo com isso”.', a: 'd', why: 'Quarenta horas não está em lugar nenhum. É invenção com cara de dado, e é o erro mais caro dos quatro. Se não dá para saber o valor de hoje, o certo é dizer isso.' }
+  ];
+  var gqList = document.getElementById('gqList'), gqScore = document.getElementById('gqScore'), gqAns = {};
+  GQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'gq-item';
+    d.innerHTML = '<span class="gq-g">' + q.g + '</span><div class="gq-s">' + q.s + '</div><div class="gq-opts" role="group" aria-label="Decisão do portão"><button type="button" data-v="p" aria-pressed="false">Passa</button><button type="button" data-v="d" aria-pressed="false">Devolve</button></div><div class="gq-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.gq-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = b.dataset.v === q.a; gqAns[i] = ok;
+      fb.hidden = false; fb.className = 'gq-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : (q.a === 'd' ? 'Devolve. ' : 'Passa. ')) + '</b>' + q.why;
+      var n = Object.keys(gqAns).length, c = Object.keys(gqAns).filter(function (k) { return gqAns[k]; }).length;
+      gqScore.textContent = n + ' de 5 conferidas · ' + c + ' certas' + (n === 5 ? ' · repare que nenhuma pergunta era “ficou bom?”. Cada portão tem uma pergunta que dá para responder sim ou não.' : '');
+    }); });
+    gqList.appendChild(d);
+  });
+
+  /* 6 · trava */
+  var tvR = document.getElementById('tvR'), tvM = document.getElementById('tvM'), tvP = document.getElementById('tvP'), tvRes = document.getElementById('tvRes');
+  function fill(r, m, p) { tvR.value = r; tvM.value = m; tvP.value = p; check(); }
+  document.getElementById('tvBad').addEventListener('click', function () { fill('a equipe comercial', 'melhorar bastante o tempo de resposta', 'assim que possível'); });
+  document.getElementById('tvGood').addEventListener('click', function () { fill('Carla, supervisora de atendimento', 'tempo médio de resposta de 48 h para 24 h', '30/11, depois do fechamento de outubro'); });
+  function check() {
+    var r = tvR.value.trim(), m = tvM.value.trim(), p = tvP.value.trim(), res = [];
+    var vagoR = /^(a |o |os |as )?(equipe|time|coordena|diretoria|gerência|gerencia|área|area|setor|todos|todo mundo|comercial|financeiro)/i;
+    res.push(!r ? [0, 'Responsável', 'está vazio.'] : (vagoR.test(r) ? [0, 'Responsável', '“' + r + '” não é uma pessoa. Quem é que sabe que é ela?'] : [1, 'Responsável', 'nomeado.']));
+    res.push(!m ? [0, 'Métrica', 'está vazia.'] : (!/\d/.test(m) ? [0, 'Métrica', 'sem número. “' + m + '” não diz de quanto para quanto.'] : [1, 'Métrica', 'quantificada.']));
+    res.push(!p ? [0, 'Prazo', 'está vazio.'] : (!/\d/.test(p) || /possível|breve|logo|quando der/i.test(p) ? [0, 'Prazo', '“' + p + '” não é uma data que alguém assina.'] : [1, 'Prazo', 'com data.']));
+    var bad = res.filter(function (x) { return !x[0]; }).length;
+    tvRes.innerHTML = '<span class="eyebrow">A trava</span><ul>' + res.map(function (x) { return '<li class="' + (x[0] ? 'tv-ok' : 'tv-no') + '"><span class="tv-i">' + (x[0] ? '✓' : '✕') + '</span><span><b>' + x[1] + ':</b> ' + x[2] + '</span></li>'; }).join('') + '</ul>' +
+      (bad ? '<div class="verdict no"><b>Devolvido para você.</b> ' + (bad === 1 ? 'Falta um campo.' : 'Faltam ' + bad + ' campos.') + ' A trava não preenche, não sugere e não estima: quem sabe a resposta é você.</div>' : '<div class="verdict ok"><b>Passa.</b> O plano tem dono, número e data. Agora dá para cobrar, e dá para saber daqui a trinta dias se funcionou.</div>');
+  }
+  document.getElementById('tvGo').addEventListener('click', check);
+
+  /* 7 · plano antes */
+  var PL = {
+    vago: { w: '8', r: '4', c: 170, o: 'Uma resposta que você ainda arruma antes de mostrar para alguém.', t: 'A conversa de correção ficou maior que o próprio dado. Cada ida e volta carrega a conversa inteira junto.' },
+    sit: { w: '60', r: '1', c: 18, o: 'Primeiro, três bullets: quantas linhas úteis, como tratou o que estava fora do padrão, que critério usou. Depois do OK, o documento pronto para imprimir.', t: 'O mesmo dado, quase nenhuma conversa. Sobra mesa para continuar a tarefa.' }
+  };
+  var plBtns = document.querySelectorAll('[data-pl]');
+  function setPl(k) {
+    pressGroup(plBtns, function (x) { return x.dataset.pl === k; });
+    var p = PL[k];
+    document.getElementById('plW').textContent = p.w; document.getElementById('plR').textContent = p.r;
+    document.getElementById('plO').textContent = p.o; document.getElementById('plTxt').textContent = p.t;
+    document.getElementById('plC').setAttribute('width', p.c);
+  }
+  plBtns.forEach(function (b) { b.addEventListener('click', function () { setPl(b.dataset.pl); }); });
+  setPl('vago');
+
+  /* 8 · abas */
+  var TB = [
+    { t: 'Confirme o plano antes', w: 'no fim de qualquer pedido que gera um documento inteiro', p: '## ANTES DE GERAR\nConfirme comigo em 3 bullets:\n(a) <i>o que você encontrou no material, e o que descartou</i>\n(b) <i>como vai tratar o que estiver fora do padrão</i>\n(c) <i>que critério vai usar para escolher o que entra</i>\n\nEspere o meu OK e só depois gere.' },
+    { t: 'O pedido em quatro fases', w: 'quando o material é grande, sensível, e alguém vai decidir em cima do resultado', p: '# PAPEL\nVocê analisa entrevistas para diagnóstico de <i>uma área</i>. Trabalha em fases, e não passa para a fase seguinte sem que a anterior tenha sido conferida.\n\n# CONTEXTO\nVou colar a transcrição bruta de <i>uma entrevista de 48 minutos com a gerência de uma área</i>. O texto tem nome de pessoa, opinião sobre colega e coisa dita em confiança.\n\n# COMO VAMOS TRABALHAR\nExecute UMA fase por vez e pare no fim de cada uma para eu conferir. Não adiante fase. Se eu não responder, pergunte.\n\n## FASE 1 · Tirar o que identifica pessoa\nTroque cada pessoa por um rótulo de papel (<i>GERENTE, ATENDIMENTO, FINANCEIRO, COMPRAS</i>). Liste à parte o que trocou e o que ficou na dúvida. Opinião sobre colega: mantenha o conteúdo, tire quem falou de quem.\nPARE AQUI e espere o meu OK.\n\n## FASE 2 · Achados, um por um\nPara cada problema: o achado em uma frase; a frase literal que o sustenta, com o horário; e se é fato relatado, opinião ou hipótese. Não agrupe nem priorize ainda.\nPARE AQUI e espere o meu OK.\n\n## FASE 3 · Agrupar e priorizar\nAgrupe em temas e pontue cada um de 1 a 5 em: tamanho do incômodo, frequência, e o quanto depende de uma pessoa específica. Escreva o critério de cada nota ANTES de pontuar. Mostre a ordem final e o que ficou de fora.\nPARE AQUI e espere o meu OK.\n\n## FASE 4 · O que dá para medir\nPara os três temas do topo, diga qual número mediria cada um e o que precisaria ser coletado para saber quanto é hoje. Se a entrevista não permitir saber, diga isso em vez de estimar.\n\n# REGRAS PARA TODAS AS FASES\nNão invente número que não está na entrevista. Chute da pessoa é marcado como chute, não como dado. Toda afirmação aponta para o horário da fala que a sustenta.' },
+    { t: 'Derrubar uma suposição', w: 'depois de qualquer análise, antes de acreditar nela', p: 'Estas eram as minhas suposições antes da análise:\n1. <i>suposição 1</i>\n2. <i>suposição 2</i>\n3. <i>suposição 3</i>\n\nDiante do que você acabou de encontrar, qual delas seria razoável derrubar? Diga qual, e com qual trecho do material. Se as três sobreviverem, me diga o que faltou testar.' }
+  ];
+  var tbTabs = document.getElementById('tbTabs'), tbPane = document.getElementById('tbPane'), tbBtns = [];
+  TB.forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = x.t;
+    b.addEventListener('click', function () { showTb(i); }); tbTabs.appendChild(b); tbBtns.push(b);
+  });
+  function showTb(i) {
+    tbBtns.forEach(function (b, k) { b.setAttribute('aria-selected', String(k === i)); });
+    var x = TB[i];
+    tbPane.innerHTML = '<p class="hint">Use ' + x.w + '.</p><div class="copy"><div class="copy-head"><span class="eyebrow">' + (i + 1) + ' de ' + TB.length + ' · ' + x.t + '</span><button type="button" class="btn" id="tbCopy">Copiar</button></div><pre id="tbText">' + x.p + '</pre></div>' + (i === 2 ? '<p class="hint">Em toda análise, pelo menos uma suposição tem que cair. Se as três sobrevivem, é sinal de que ninguém testou: sozinha, a ferramenta tende a concordar com o que você escreveu no pedido.</p>' : '');
+    document.getElementById('tbCopy').addEventListener('click', function () { copyText(document.getElementById('tbText').innerText, this); });
+  }
+  showTb(0);
+})();
+</script>
+</body>
+</html>

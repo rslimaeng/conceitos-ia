@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="ai-first--contexto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultado ruim é falta de contexto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: pilar 2 da família AI First. Peças: o mesmo comunicado sem e com contexto (alternar com defeitos marcados), os quatro campos (liga-desliga com termômetro e resposta que se remonta), a régua de quem começou esta semana (três leitores), a regra que ninguém escreveu (quiz), onde a regra da casa mora (calculadora), o teste antes de culpar a ferramenta (checklist) e pedidos para copiar (abas). */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.2rem, 5.4vw, 3.4rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 120px; align-content: start; }
+.caption h3 { font-size: 1.25rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+/* ---- só desta peça ---- */
+/* 1 · comunicado */
+.cm2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.cm2-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+.cm2-box.cm2-focal { border-color: var(--accent); }
+.cm2-ask { font-family: var(--font-mono); font-size: .86rem; line-height: 1.65; white-space: pre-wrap; }
+.cm2-ask mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 2px; }
+.cm2-ask mark small { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; margin-right: 4px; }
+.cm2-ans { font-size: .96rem; white-space: pre-line; }
+.cm2-ans .cm2-bad { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 2px; }
+.cm2-ans .cm2-good { background: var(--ok-soft); color: var(--ok-texto); border-radius: 3px; padding: 0 2px; }
+.cm2-notes { margin: 0; padding-left: 18px; font-size: .92rem; color: var(--text-muted); }
+
+/* 2 · termômetro */
+.th-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 220px minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.th-tg { display: grid; gap: 8px; }
+.th-tg button { text-align: left; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; display: grid; gap: 3px; }
+.th-tg button .th-k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.th-tg button span:last-child { font-size: .88rem; color: var(--text-muted); }
+.th-tg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.th-tg button[aria-pressed="true"] .th-k { color: var(--accent); }
+.th-svg { width: 100%; height: auto; display: block; }
+.th-tube { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.5; }
+.th-fill { fill: var(--accent); transition: y .4s ease, height .4s ease; }
+.th-bulb { fill: var(--accent); }
+.th-tick { stroke: var(--border-strong); stroke-width: 1; }
+.th-lb { font: 400 11.5px var(--font-body); fill: var(--text-dim); }
+.th-lb.on { fill: var(--accent); font-weight: 600; }
+.th-out { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-height: 320px; }
+.th-out .th-resp { white-space: pre-line; font-size: .95rem; }
+.th-meta { display: flex; gap: 16px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.th-meta b { color: var(--accent); font-weight: 500; }
+.th-table { width: 100%; border-collapse: collapse; font-size: .93rem; background: var(--bg-elev); }
+.th-table th, .th-table td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.th-table th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); font-weight: 500; }
+.th-table td:first-child { font-weight: 600; white-space: nowrap; }
+.th-tscroll { overflow-x: auto; border: 1px solid var(--border-strong); border-radius: 8px; }
+.th-tscroll table { min-width: 560px; }
+
+/* 3 · leitores */
+.rd-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.rd-card pre { margin: 0; font-family: var(--font-mono); font-size: .86rem; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; }
+
+/* 4 · quiz */
+.rq-list { display: grid; gap: 12px; }
+.rq-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.rq-item .rq-ask { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); }
+.rq-item .rq-got { border-left: 3px solid var(--atencao); padding-left: 12px; font-size: .95rem; }
+.rq-opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.rq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.rq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.rq-fb { font-size: .93rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.rq-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.rq-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.rq-fb code { font-family: var(--font-mono); font-size: .85rem; }
+.rq-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 5 · calculadora */
+.rc-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.rc-in { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 16px; align-content: start; }
+.rc-row { display: grid; grid-template-columns: minmax(0, 1fr) 56px; gap: 12px; align-items: center; }
+.rc-row input { width: 100%; accent-color: var(--accent); }
+.rc-row output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.rc-out { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px; display: grid; gap: 12px; align-content: start; }
+.rc-big { font-family: var(--font-mono); font-size: 2.2rem; color: var(--accent); line-height: 1; }
+.rc-dots { display: flex; flex-wrap: wrap; gap: 3px; max-height: 96px; overflow: hidden; }
+.rc-dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--atencao); display: block; }
+.rc-dots i.rc-one { background: var(--ok); width: 14px; height: 14px; }
+
+/* 6 · checklist */
+.ck-list { display: grid; gap: 8px; }
+.ck-row { display: grid; grid-template-columns: minmax(0, 1fr) max-content; gap: 12px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; }
+.ck-row .seg button { padding: 5px 12px; font-size: .88rem; }
+.ck-row.ck-no { border-color: var(--atencao); }
+
+/* 7 · abas */
+.tb-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tb-tabs button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 7px 14px; font-size: .92rem; color: var(--text-muted); }
+.tb-tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.tb-pane { display: grid; gap: 10px; }
+
+/* para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .cm2, .th-wrap, .rc-wrap, .take { grid-template-columns: 1fr; }
+  .th-svg { max-width: 240px; }
+  .ck-row { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .th-fill { transition: none; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família AI First">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./ai-first.html">Família 5 · AI First</a></span><span class="famhead-pn"><a href="./ai-first--captura.html">← 5.1 Captura</a><a href="./ai-first--execucao.html">5.3 Execução →</a></span></div>
+    <div class="famhead-chips"><a href="./ai-first.html">Visão geral</a><a href="./ai-first--captura.html"><b>5.1</b>Captura</a><a href="./ai-first--contexto.html" aria-current="page"><b>5.2</b>Contexto</a><a href="./ai-first--execucao.html"><b>5.3</b>Execução</a><a href="./ai-first--memoria.html"><b>5.4</b>Memória</a><a href="./ai-first--medicao.html"><b>5.5</b>Medição</a><a href="./ai-first--ipo.html"><b>5.6</b>IPO</a></div>
+  </nav>
+  <span class="eyebrow">5.2 · pilar 2 de 5</span>
+  <h1>Resultado ruim é falta de contexto, não de capacidade</h1>
+  <p class="sub">Por que a resposta volta genérica, e as quatro coisas da casa que quase nunca entram no pedido</p>
+  <p class="lead">Quando a resposta vem genérica, a reação natural é culpar a ferramenta. Quase sempre a causa é outra: <strong>o pedido não disse o que só quem trabalha aqui sabe.</strong> Os seis campos de um pedido bem montado estão em <a href="./prompt.html#s-campos">Prompt</a>. Esta página é sobre o pedaço que nenhum modelo de pedido preenche por você: o contexto da casa.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-comunicado">O mesmo comunicado</a><a href="#s-quatro">Os quatro campos</a><a href="#s-regua">Quem começou esta semana</a><a href="#s-regra">A regra que ninguém escreveu</a><a href="#s-mora">Onde a regra mora</a><a href="#s-culpa">Antes de culpar a ferramenta</a><a href="#s-pedir">Pedidos para copiar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-comunicado" aria-labelledby="h-comunicado">
+  <span class="eyebrow">O mesmo comunicado</span>
+  <h2 id="h-comunicado">Mesma ferramenta, mesmo dia, e uma diferença só</h2>
+  <p class="intro">O treinamento de sábado das equipes de loja mudou de data. <strong>Troque entre os dois pedidos</strong> e leia o que volta de cada um. As marcas mostram o que está sobrando e o que está fazendo o trabalho.</p>
+  <div class="seg" role="group" aria-label="Qual pedido">
+    <button type="button" data-cm="sem" aria-pressed="true">Pedido sem contexto</button>
+    <button type="button" data-cm="com" aria-pressed="false">Pedido com contexto</button>
+  </div>
+  <div class="cm2">
+    <div class="cm2-box"><span class="eyebrow">O que a pessoa escreveu</span><div class="cm2-ask" id="cmAsk"></div></div>
+    <div class="cm2-box cm2-focal"><span class="eyebrow" id="cmAnsLab">O que voltou</span><div class="cm2-ans" id="cmAns" aria-live="polite"></div><ul class="cm2-notes" id="cmNotes"></ul></div>
+  </div>
+  <p class="punch">A ferramenta não ficou mais capaz entre um e outro. <em>Ela ficou sabendo de mais coisa.</em></p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-quatro" aria-labelledby="h-quatro">
+  <span class="eyebrow">Os quatro campos</span>
+  <h2 id="h-quatro">Quatro coisas quase sempre faltam, e cada uma muda um pedaço da resposta</h2>
+  <p class="intro">Ligue e desligue cada campo. <strong>A resposta se remonta, e o termômetro mostra o quanto ela serve só para a sua casa.</strong> Tente desligar só a regra da casa e veja quantas desculpas voltam.</p>
+  <div class="th-wrap">
+    <div class="th-tg" id="thTg" role="group" aria-label="Os quatro campos"></div>
+    <svg class="th-svg" viewBox="0 0 240 300" role="img" aria-labelledby="th-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="th-t">Termômetro de quanto a resposta serve só para a sua casa, de zero a quatro campos</title>
+      <rect class="th-tube" x="30" y="16" width="34" height="238" rx="17"/>
+      <rect class="th-fill" id="thFill" x="37" width="20" y="232" height="20" rx="10"/>
+      <circle class="th-bulb" cx="47" cy="262" r="22"/>
+      <line class="th-tick" x1="68" y1="236" x2="80" y2="236"/><line class="th-tick" x1="68" y1="184" x2="80" y2="184"/><line class="th-tick" x1="68" y1="132" x2="80" y2="132"/><line class="th-tick" x1="68" y1="80" x2="80" y2="80"/><line class="th-tick" x1="68" y1="28" x2="80" y2="28"/>
+      <text class="th-lb" data-lv="0" x="86" y="232">serve para qualquer</text><text class="th-lb" data-lv="0" x="86" y="246">empresa do mundo</text>
+      <text class="th-lb" data-lv="1" x="86" y="188">reescrever inteiro</text>
+      <text class="th-lb" data-lv="2" x="86" y="136">reescrever metade</text>
+      <text class="th-lb" data-lv="3" x="86" y="84">ajustar o tom</text>
+      <text class="th-lb" data-lv="4" x="86" y="26">sai pronto,</text><text class="th-lb" data-lv="4" x="86" y="40">ou perto disso</text>
+    </svg>
+    <div class="th-out"><span class="eyebrow">O que volta</span><div class="th-resp" id="thResp" aria-live="polite"></div><div class="th-meta"><span>campos <b id="thN">0</b> de 4</span><span>parágrafos <b id="thL">0</b></span><span>desculpas <b id="thD">0</b></span></div></div>
+  </div>
+  <div class="th-tscroll">
+    <table class="th-table">
+      <thead><tr><th>O campo</th><th>A pergunta que ele responde</th><th>No comunicado</th></tr></thead>
+      <tbody>
+        <tr><td>Quem lê</td><td>Para quem este resultado vai?</td><td>Gerentes de loja, que montam a escala com semanas de antecedência</td></tr>
+        <tr><td>O que está acontecendo</td><td>Qual é a situação, com os fatos concretos?</td><td>Mudou de 12/09 para 26/09, porque o instrutor convidado ficou indisponível</td></tr>
+        <tr><td>A regra da casa</td><td>Como aqui se faz isso, e como não se faz?</td><td>Direto, diz o que fazer agora, e nunca pede desculpa duas vezes</td></tr>
+        <tr><td>O limite</td><td>Qual é o formato e o tamanho?</td><td>Um comunicado, no máximo dez linhas</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">Três dos quatro campos só você sabe. O limite até a ferramenta poderia adivinhar; a regra da casa, nunca.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-regua" aria-labelledby="h-regua">
+  <span class="eyebrow">Quem começou esta semana</span>
+  <h2 id="h-regua">Escreva o contexto para alguém competente que ainda não conhece a casa</h2>
+  <p class="intro">O tamanho certo do contexto depende de para quem você imagina que está escrevendo. <strong>Escolha o leitor imaginário</strong> e veja o que sai da sua mão.</p>
+  <div class="seg" role="group" aria-label="Leitor imaginário">
+    <button type="button" data-rd="0" aria-pressed="false">Um colega de dez anos de casa</button>
+    <button type="button" data-rd="1" aria-pressed="false">Uma máquina</button>
+    <button type="button" data-rd="2" aria-pressed="true">Quem começou esta semana</button>
+  </div>
+  <div class="rd-card" id="rdCard" aria-live="polite"></div>
+  <p class="punch">A pergunta de bolso: <em>eu escrevi alguma coisa que só quem trabalha aqui saberia?</em></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-regra" aria-labelledby="h-regra">
+  <span class="eyebrow">A regra que ninguém escreveu</span>
+  <h2 id="h-regra">Quatro respostas ruins. Qual campo faltou em cada uma?</h2>
+  <p class="intro">Cada caso é um pedido real de semana comum e o que voltou dele. <strong>Diga qual dos quatro campos estava faltando.</strong> A resposta mostra a linha que teria resolvido.</p>
+  <div class="rq-list" id="rqList"></div>
+  <p class="rq-score" id="rqScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-mora" aria-labelledby="h-mora">
+  <span class="eyebrow">Onde a regra mora</span>
+  <h2 id="h-mora">Enquanto a regra da casa não está escrita, alguém precisa lembrar dela a cada pedido</h2>
+  <p class="intro">A regra da casa é conhecimento do <a href="./ai-first--captura.html#s-tipos">tipo 2</a>: todo mundo respeita, ninguém escreveu. <strong>É aqui que o pilar 1 e o pilar 2 se encontram.</strong> Conte quantas vezes a mesma regra precisa ser digitada.</p>
+  <div class="rc-wrap">
+    <div class="rc-in">
+      <label for="rcN">Pedidos por semana que dependem desta regra</label>
+      <div class="rc-row"><input type="range" id="rcN" min="1" max="30" value="8"><output id="rcNo" for="rcN">8</output></div>
+      <label for="rcP">Pessoas da equipe que fazem esses pedidos</label>
+      <div class="rc-row"><input type="range" id="rcP" min="1" max="10" value="3"><output id="rcPo" for="rcP">3</output></div>
+      <div class="seg" role="group" aria-label="Onde a regra está">
+        <button type="button" data-rc="cab" aria-pressed="true">Na cabeça de cada um</button>
+        <button type="button" data-rc="reg" aria-pressed="false">Escrita uma vez</button>
+      </div>
+    </div>
+    <div class="rc-out">
+      <span class="eyebrow" id="rcLab">Vezes por ano que alguém precisa lembrar</span>
+      <div class="rc-big" id="rcBig">—</div>
+      <div class="rc-dots" id="rcDots" aria-hidden="true"></div>
+      <div class="verdict" id="rcVer"></div>
+    </div>
+  </div>
+  <p class="hint">A conta usa 46 semanas de trabalho no ano. Cada ponto laranja é uma chance de alguém, no dia corrido, esquecer.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-culpa" aria-labelledby="h-culpa">
+  <span class="eyebrow">Antes de culpar a ferramenta</span>
+  <h2 id="h-culpa">O teste de trinta segundos, com o último pedido que voltou ruim</h2>
+  <p class="intro">Abra o último pedido que você descartou. <strong>Responda com o texto que você realmente escreveu</strong>, não com o que você lembra de ter escrito.</p>
+  <div class="ck-list" id="ckList"></div>
+  <div class="verdict ok" id="ckVer" aria-live="polite"></div>
+  <p class="hint">Se as cinco saíram “sim” e a resposta continua ruim, o problema pode não ser o pedido: veja os três casos em <a href="./prompt.html#s-cerca">quando não resolve</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-pedir" aria-labelledby="h-pedir">
+  <span class="eyebrow">Pedidos para copiar</span>
+  <h2 id="h-pedir">Três formas de levar o contexto da casa para dentro do pedido</h2>
+  <p class="intro">O que está marcado é o que você troca pelo seu caso.</p>
+  <div class="tb-tabs" id="tbTabs" role="tablist" aria-label="Pedidos"></div>
+  <div class="tb-pane" id="tbPane" role="tabpanel"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Genérico é sintoma</h3><p>Resposta que serve para qualquer empresa é sinal de pedido que não disse nada da sua.</p></div>
+    <div class="take-card"><h3>A regra da casa é a que falta</h3><p>Quem lê, a situação e o tamanho você lembra. O jeito da casa, quase nunca.</p></div>
+    <div class="take-card"><h3>Escreva uma vez</h3><p>Regra que vive na cabeça precisa ser digitada a cada pedido, por quem lembrar dela.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Contexto da casa</dt><dd>O que só quem trabalha aqui sabe: para quem se escreve, o que está acontecendo, como aqui se faz e o tamanho certo.</dd>
+    <dt>Regra da casa</dt><dd>O jeito de fazer que todo mundo respeita e ninguém escreveu. Quem chega novo descobre errando uma vez.</dd>
+    <dt>Quem começou esta semana</dt><dd>A régua do contexto: uma pessoa competente que ainda não conhece a casa. Nem colega veterano, nem máquina.</dd>
+    <dt>Resposta genérica</dt><dd>Correta, educada e inútil: serviria para qualquer empresa de qualquer setor.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O termômetro, as respostas remontadas e a contagem de linhas mostram a forma, não a medida. Os nomes dos campos variam entre materiais; o que não varia é que a regra da casa só existe no pedido se alguém a escrever.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família AI First: anterior e próxima">
+  <a class="famfoot-prev" href="./ai-first--captura.html"><span>← anterior</span><b>5.1 · O que não vira registro não existe</b></a>
+  <a class="famfoot-fam" href="./ai-first.html#mapa">Família 5 · AI First · o mapa</a>
+  <a class="famfoot-next" href="./ai-first--execucao.html"><span>próxima →</span><b>5.3 · Quebrar em fases e conferir entre elas</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+
+  /* 1 · comunicado */
+  var CMX = {
+    sem: {
+      ask: 'Escreva um comunicado avisando que a data do treinamento mudou.',
+      ans: '<span class="cm2-bad">Prezados colaboradores,</span>\n\nInformamos que houve uma alteração na data do treinamento. <span class="cm2-bad">Pedimos desculpas por qualquer inconveniente que esta mudança possa vir a causar.</span>\n\n<span class="cm2-bad">Agradecemos a compreensão de todos e permanecemos à disposição para eventuais esclarecimentos.</span>\n\nAtenciosamente,\nEquipe de Treinamento',
+      lab: 'O que voltou · correto, educado e inútil',
+      notes: ['Não diz a data nova.', 'Não diz o que a pessoa precisa fazer.', 'Pede desculpa antes de informar.', 'Serviria para qualquer empresa de qualquer setor. Vai ser reescrito inteiro.']
+    },
+    com: {
+      ask: '<mark><small>quem lê</small>Você escreve para gerentes de loja, que montam a escala da equipe com semanas de antecedência.</mark> <mark><small>o que está acontecendo</small>O treinamento de sábado mudou de 12/09 para 26/09, porque o instrutor convidado ficou indisponível. Quem já montou a escala precisa de tempo para remarcar.</mark> <mark><small>regra da casa</small>A nossa comunicação com as lojas é direta, sem rodeio, e sempre diz o que a pessoa precisa fazer agora. Nunca pedimos desculpa mais de uma vez no mesmo texto.</mark> Escreva o comunicado. <mark><small>limite</small>No máximo dez linhas.</mark>',
+      ans: '<span class="cm2-good">O treinamento de sábado passou de 12/09 para 26/09.</span> O instrutor convidado ficou indisponível na data original. Mantivemos o mesmo horário e o mesmo local.\n\n<span class="cm2-good">Quem já montou a escala para o dia 12: a mudança abre duas semanas de prazo para remarcar.</span> <span class="cm2-good">Se o dia 26 conflitar com a escala da sua loja, responda este e-mail até sexta.</span>',
+      lab: 'O que voltou · sai pronto, ou perto disso',
+      notes: ['Abre com a informação: a data nova na primeira linha.', 'Explica o motivo em uma linha, sem drama.', 'Fala da escala, que é o problema real de quem lê.', 'Termina com o que fazer, e até quando.']
+    }
+  };
+  var cmBtns = document.querySelectorAll('[data-cm]');
+  function setCm(k) {
+    pressGroup(cmBtns, function (x) { return x.dataset.cm === k; });
+    var c = CMX[k];
+    document.getElementById('cmAsk').innerHTML = c.ask;
+    document.getElementById('cmAns').innerHTML = c.ans;
+    document.getElementById('cmAnsLab').textContent = c.lab;
+    document.getElementById('cmNotes').innerHTML = c.notes.map(function (n) { return '<li>' + n + '</li>'; }).join('');
+  }
+  cmBtns.forEach(function (b) { b.addEventListener('click', function () { setCm(b.dataset.cm); }); });
+  setCm('sem');
+
+  /* 2 · termômetro */
+  var TF = [
+    { k: 'q', n: 'Quem lê', t: 'gerentes de loja, que montam a escala com antecedência' },
+    { k: 'a', n: 'O que está acontecendo', t: 'de 12/09 para 26/09, instrutor indisponível' },
+    { k: 'r', n: 'A regra da casa', t: 'direto, diz o que fazer, uma desculpa no máximo' },
+    { k: 'l', n: 'O limite', t: 'no máximo dez linhas' }
+  ];
+  var on = { q: false, a: false, r: false, l: false };
+  var thTg = document.getElementById('thTg'), tBtns = [];
+  TF.forEach(function (f) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = '<span class="th-k">' + f.n + '</span><span>' + f.t + '</span>';
+    b.addEventListener('click', function () { on[f.k] = !on[f.k]; b.setAttribute('aria-pressed', String(on[f.k])); renderTh(); });
+    thTg.appendChild(b); tBtns.push(b);
+  });
+  function renderTh() {
+    var L = [], d = 0;
+    if (!on.r) L.push('Prezados colaboradores,');
+    if (on.a) L.push('O treinamento de sábado passou de 12/09 para 26/09. O instrutor convidado ficou indisponível na data original.');
+    else L.push('Informamos que houve uma alteração na data do treinamento.');
+    if (!on.r) { L.push('Pedimos desculpas por qualquer inconveniente que esta mudança possa vir a causar.'); d++; }
+    if (on.q) L.push(on.a ? 'Quem já montou a escala para o dia 12: a mudança abre duas semanas de prazo para remarcar.' : 'Sabemos que a escala das lojas é montada com antecedência e pode precisar de ajuste.');
+    if (on.q && on.r) L.push('Se a nova data conflitar com a escala da sua loja, responda este e-mail até sexta.');
+    else if (on.r) L.push('Dúvidas, responda este e-mail.');
+    else L.push('Permanecemos à disposição para eventuais esclarecimentos.');
+    if (!on.l) {
+      L.push('A empresa reforça o seu compromisso com o desenvolvimento contínuo das equipes e com a qualidade dos treinamentos oferecidos, que seguem sendo prioridade para todas as áreas.');
+      if (!on.r) { L.push('Mais uma vez, pedimos desculpas pelo transtorno e agradecemos a compreensão e a colaboração de todos.'); d++; }
+    }
+    if (!on.r) L.push('Atenciosamente,\nEquipe de Treinamento');
+    document.getElementById('thResp').textContent = L.join('\n\n');
+    var n = TF.filter(function (f) { return on[f.k]; }).length;
+    document.getElementById('thN').textContent = n;
+    document.getElementById('thL').textContent = L.length;
+    document.getElementById('thD').textContent = d;
+    var h = 20 + n / 4 * 204, y = 252 - h;
+    var fill = document.getElementById('thFill'); fill.setAttribute('y', y); fill.setAttribute('height', h);
+    document.querySelectorAll('.th-lb').forEach(function (t) { t.classList.toggle('on', +t.dataset.lv === n); });
+  }
+  renderTh();
+
+  /* 3 · leitores */
+  var RD = [
+    { t: 'Para o colega de dez anos de casa', p: 'Faz o comunicado da mudança do treinamento, aquele de sábado.', v: 'no', w: '<b>Você pula tudo o que ele já sabe</b>, e é exatamente isso que a IA não sabe: quem lê, por que mudou, como a casa escreve. Ele entenderia. Ela devolve o comunicado genérico.' },
+    { t: 'Para uma máquina', p: 'COMUNICADO. Assunto: treinamento. Data antiga: 12/09. Data nova: 26/09. Público: gerentes. Tom: formal. Tamanho: curto.', v: 'no', w: '<b>Vira uma lista de comandos</b>, sem o porquê e sem a regra da casa. “Formal” e “curto” querem dizer uma coisa para você e outra para ela. Falta o que faz a resposta servir: a escala que precisa ser remarcada.' },
+    { t: 'Para quem começou esta semana', p: 'Você escreve para gerentes de loja, que montam a escala com semanas de antecedência. O treinamento de sábado mudou de 12/09 para 26/09, porque o instrutor ficou indisponível. Aqui, comunicado para loja é direto e sempre diz o que fazer agora; nunca pedimos desculpa duas vezes. No máximo dez linhas.', v: 'ok', w: '<b>É o tamanho certo.</b> Você explica a casa como explicaria a alguém competente no primeiro dia: sem tratar como leigo, sem supor que já sabe. Sai quase igual ao pedido que funciona, e sem esforço.' }
+  ];
+  var rdBtns = document.querySelectorAll('[data-rd]'), rdCard = document.getElementById('rdCard');
+  function setRd(i) {
+    pressGroup(rdBtns, function (x) { return +x.dataset.rd === i; });
+    var r = RD[i];
+    rdCard.innerHTML = '<span class="eyebrow">' + r.t + ', você escreveria</span><pre>' + r.p + '</pre><div class="verdict ' + r.v + '">' + r.w + '</div>';
+  }
+  rdBtns.forEach(function (b) { b.addEventListener('click', function () { setRd(+b.dataset.rd); }); });
+  setRd(2);
+
+  /* 4 · quiz */
+  var OPT = ['Quem lê', 'O que está acontecendo', 'A regra da casa', 'O limite'];
+  var RQ = [
+    { ask: '“Resuma as respostas da pesquisa de satisfação do evento para a diretoria.”', got: 'O resumo diz que “a logística foi o ponto mais fraco” e recomenda rever o conteúdo das palestras.', a: 2, fix: 'Aqui, reclamação de “logística” quase sempre é sobre a sala e o som, e não sobre o conteúdo. Leia as duas coisas separadas.', why: 'É a regra que todo mundo da área aplica sem pensar e ninguém escreveu. Sem ela, qualquer leitor novo, pessoa ou IA, junta as duas coisas.' },
+    { ask: '“Monte a análise das vendas do trimestre para a reunião de segunda.”', got: 'Três páginas, oito gráficos e uma introdução sobre o mercado. A reunião tem dez minutos para o assunto.', a: 3, fix: 'É para dez minutos de reunião: uma página, os três números que mudaram e uma recomendação.', why: 'Sem limite, ela escolhe o tamanho pelo que parece caprichado. Resposta longa costuma ser sinal de limite que faltou.' },
+    { ask: '“Escreva um e-mail explicando a meta nova de ticket médio.”', got: 'O e-mail começa explicando o que é ticket médio e por que metas são importantes para o crescimento da empresa.', a: 0, fix: 'Quem lê são gerentes de loja que acompanham ticket médio todo dia. Eles querem saber o número novo e o que muda na rotina.', why: 'Sem saber quem lê, ela escreve para o leitor médio, e explica o que o seu leitor já sabe de cor.' },
+    { ask: '“Responda ao cliente que reclamou do atraso da entrega.”', got: 'Um pedido de desculpas caprichado, que não diz quando a entrega chega nem por que atrasou.', a: 1, fix: 'O pedido saiu do depósito ontem e chega na quinta. Atrasou porque um item veio com defeito do fornecedor e foi trocado.', why: 'Sem os fatos, ela só pode ser educada. O que resolve a reclamação é a informação, e ela estava com você.' }
+  ];
+  var rqList = document.getElementById('rqList'), rqScore = document.getElementById('rqScore'), rqAns = {};
+  RQ.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'rq-item';
+    d.innerHTML = '<p class="rq-ask">' + q.ask + '</p><p class="rq-got">' + q.got + '</p><div class="rq-opts" role="group" aria-label="Qual campo faltou">' + OPT.map(function (o, k) { return '<button type="button" data-v="' + k + '" aria-pressed="false">' + o + '</button>'; }).join('') + '</div><div class="rq-fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.rq-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.v === q.a; rqAns[i] = ok;
+      fb.hidden = false; fb.className = 'rq-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Faltou ' + OPT[q.a].toLowerCase() + '. ') + '</b>' + q.why + '<br><b>A linha que resolvia:</b> <code>' + q.fix + '</code>';
+      var n = Object.keys(rqAns).length, c = Object.keys(rqAns).filter(function (k) { return rqAns[k]; }).length;
+      rqScore.textContent = n + ' de 4 respondidas · ' + c + ' certas' + (n === 4 ? ' · repare que em nenhum dos quatro a ferramenta era o problema.' : '');
+    }); });
+    rqList.appendChild(d);
+  });
+
+  /* 5 · calculadora */
+  var rcN = document.getElementById('rcN'), rcP = document.getElementById('rcP'), rcMode = 'cab';
+  var rcBtns = document.querySelectorAll('[data-rc]');
+  function renderRc() {
+    var n = +rcN.value, p = +rcP.value, tot = n * 46;
+    document.getElementById('rcNo').textContent = n; document.getElementById('rcPo').textContent = p;
+    var big = document.getElementById('rcBig'), dots = document.getElementById('rcDots'), ver = document.getElementById('rcVer');
+    if (rcMode === 'cab') {
+      document.getElementById('rcLab').textContent = 'Vezes por ano que alguém precisa lembrar';
+      big.textContent = tot.toLocaleString('pt-BR');
+      var k = Math.min(tot, 320), h = ''; for (var i = 0; i < k; i++) h += '<i></i>'; dots.innerHTML = h;
+      ver.className = 'verdict no'; ver.innerHTML = '<b>' + p + (p === 1 ? ' pessoa digita' : ' pessoas digitam') + ' a mesma regra, cada uma do seu jeito.</b> No dia em que alguém esquece, a resposta volta genérica e ninguém sabe por quê.';
+    } else {
+      document.getElementById('rcLab').textContent = 'Vezes que a regra precisa ser escrita';
+      big.textContent = '1';
+      dots.innerHTML = '<i class="rc-one"></i>';
+      ver.className = 'verdict ok'; ver.innerHTML = '<b>Escrita uma vez, no lugar que o pedido lê.</b> As ' + tot.toLocaleString('pt-BR') + ' vezes seguintes não dependem de ninguém lembrar. É o <a href="./ai-first--captura.html">pilar 1</a> fazendo o trabalho do pilar 2.';
+    }
+  }
+  rcBtns.forEach(function (b) { b.addEventListener('click', function () { rcMode = b.dataset.rc; pressGroup(rcBtns, function (x) { return x === b; }); renderRc(); }); });
+  [rcN, rcP].forEach(function (i) { i.addEventListener('input', renderRc); });
+  renderRc();
+
+  /* 6 · checklist */
+  var CK = [
+    'Eu disse para quem o resultado vai?',
+    'Eu escrevi os fatos concretos: datas, números, o que mudou e por quê?',
+    'Eu escrevi alguma regra de como aqui se faz, e de como não se faz?',
+    'Eu disse o formato e o tamanho?',
+    'Eu escrevi alguma coisa que só quem trabalha aqui saberia?'
+  ];
+  var ckList = document.getElementById('ckList'), ckVal = {};
+  CK.forEach(function (c, i) {
+    var r = document.createElement('div'); r.className = 'ck-row';
+    r.innerHTML = '<span>' + c + '</span><div class="seg" role="group" aria-label="Resposta"><button type="button" data-v="s" aria-pressed="false">Sim</button><button type="button" data-v="n" aria-pressed="false">Não</button></div>';
+    var bs = r.querySelectorAll('button');
+    bs.forEach(function (b) { b.addEventListener('click', function () { pressGroup(bs, function (x) { return x === b; }); ckVal[i] = b.dataset.v; r.classList.toggle('ck-no', b.dataset.v === 'n'); renderCk(); }); });
+    ckList.appendChild(r);
+  });
+  function renderCk() {
+    var n = Object.keys(ckVal).length, no = Object.keys(ckVal).filter(function (k) { return ckVal[k] === 'n'; }).length, v = document.getElementById('ckVer');
+    if (!n) { v.className = 'verdict ok'; v.innerHTML = 'Responda as cinco perguntas.'; return; }
+    if (no) { v.className = 'verdict no'; v.innerHTML = '<b>' + no + (no === 1 ? ' campo faltando.' : ' campos faltando.') + '</b> Antes de trocar de ferramenta, acrescente ' + (no === 1 ? 'esse' : 'esses') + ' e rode de novo numa conversa nova.'; }
+    else if (n < 5) { v.className = 'verdict ok'; v.innerHTML = 'Até aqui, tudo lá. Faltam ' + (5 - n) + '.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>O pedido tinha o contexto da casa.</b> Se ainda assim voltou ruim, o problema está em outro lugar.'; }
+  }
+  renderCk();
+
+  /* 7 · abas */
+  var TB = [
+    { t: 'Pergunte o que falta', w: 'quando você ainda não sabe o que é contexto da casa naquela tarefa', p: 'Vou te pedir <i>um comunicado para as lojas</i>. Antes de escrever qualquer coisa, me faça no máximo três perguntas, só as que você não consegue responder com o que eu dei, sobre:\n- quem vai ler, e o que essa pessoa já sabe\n- o que está acontecendo, com os fatos concretos\n- como aqui se faz isso, e como não se faz\n- o formato e o tamanho\n\nEspere as respostas. Depois, antes de gerar, me diga em uma linha qual regra da casa você vai seguir.' },
+    { t: 'O pedido com os quatro campos', w: 'como molde para um pedido de toda semana', p: 'Você escreve para <i>quem lê, e o que essa pessoa já sabe</i>.\n\nO que está acontecendo: <i>os fatos, com data, número e motivo</i>.\n\nAqui, <i>este tipo de texto</i> sempre <i>o que a casa sempre faz</i>, e nunca <i>o que a casa nunca faz</i>.\n\n<i>A tarefa, começando por um verbo</i>. No máximo <i>o tamanho</i>.' },
+    { t: 'Achar a regra que ninguém escreveu', w: 'para descobrir as regras da casa que você aplica sem perceber', p: 'Vou colar <i>três textos da minha área que ficaram bons</i> e <i>um que foi devolvido</i>. Compare os quatro e liste as regras que os bons seguem e o devolvido quebra: tom, ordem, o que sempre aparece, o que nunca aparece.\n\nPara cada regra: a regra em uma frase, e o trecho que a revela. Não invente regra que os textos não sustentam. Se algo estiver ambíguo, diga.\n\nNo fim, separe as três regras que eu deveria escrever uma vez e colar em todo pedido deste tipo.' }
+  ];
+  var tbTabs = document.getElementById('tbTabs'), tbPane = document.getElementById('tbPane'), tbBtns = [];
+  TB.forEach(function (x, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = x.t;
+    b.addEventListener('click', function () { showTb(i); }); tbTabs.appendChild(b); tbBtns.push(b);
+  });
+  function showTb(i) {
+    tbBtns.forEach(function (b, k) { b.setAttribute('aria-selected', String(k === i)); });
+    var x = TB[i];
+    tbPane.innerHTML = '<p class="hint">Use ' + x.w + '.</p><div class="copy"><div class="copy-head"><span class="eyebrow">' + (i + 1) + ' de ' + TB.length + ' · ' + x.t + '</span><button type="button" class="btn" id="tbCopy">Copiar</button></div><pre id="tbText">' + x.p + '</pre></div>';
+    document.getElementById('tbCopy').addEventListener('click', function () { copyText(document.getElementById('tbText').innerText, this); });
+  }
+  showTb(0);
+})();
+</script>
+</body>
+</html>

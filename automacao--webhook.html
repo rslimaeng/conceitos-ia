@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao--webhook">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Webhook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito da família Automação. Peças: linha do dia comparando perguntar × ser avisado (com controle deslizante e contadores), campainha em passos com diagrama, pacote que chega clicável, simulador dos dois endereços, tempo de resposta com limite, mini-balcão ao vivo, quiz, lista de conferência para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de Rafael, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--accent-soft); border-radius: 4px; padding: 1px 5px; overflow-wrap: anywhere; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 34ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.fam { font-size: .92rem; color: var(--text-muted); }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---- só desta peça ---- */
+.wh-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.wh-scroll svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.mk-m { fill: var(--text-muted); }
+.mk-a { fill: var(--accent); }
+
+/* 1 · linha do dia */
+.wh-ctrl { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+.wh-range { display: grid; grid-template-columns: auto minmax(140px, 260px) 70px; gap: 12px; align-items: center; }
+.wh-range input { width: 100%; accent-color: var(--accent); }
+.wh-range output { font-family: var(--font-mono); }
+.wh-lane { font: 600 12px var(--font-mono); letter-spacing: .08em; fill: var(--text); }
+.wh-sub { font: 400 12px var(--font-body); fill: var(--text-muted); }
+.wh-axis { stroke: var(--border-strong); stroke-width: 1; }
+.wh-hour { font: 400 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.wh-ev { stroke: var(--atencao); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.wh-evl { font: 500 11px var(--font-mono); fill: var(--atencao-texto); text-anchor: middle; }
+.wh-ask { fill: var(--bg-elev); stroke: var(--text-dim); stroke-width: 1.3; }
+.wh-ask.hit { fill: var(--accent); stroke: var(--accent); }
+.wh-push { fill: var(--accent); }
+.wh-cursor { stroke: var(--text); stroke-width: 1; }
+.wh-count { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.wh-cc { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 10px; }
+.wh-cc.focal { border-color: var(--accent); background: var(--accent-soft); }
+.wh-mini { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.wh-mini div { border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); }
+.wh-mini span { display: block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.wh-mini b { font-family: var(--font-mono); font-weight: 500; font-size: 1.2rem; }
+.wh-mini b.bad { color: var(--atencao-texto); }
+
+/* 2 · campainha */
+.wh-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease, stroke .25s ease; }
+.wh-box .t { font: 600 13px var(--font-mono); letter-spacing: .08em; fill: var(--text); text-anchor: middle; }
+.wh-box .s { font: 400 13px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.wh-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.wh-arr { stroke: var(--text-muted); stroke-width: 1.6; fill: none; transition: stroke .25s ease; }
+.wh-arr.dash { stroke-dasharray: 5 4; }
+.wh-arr.on { stroke: var(--accent); stroke-width: 2.8; }
+.wh-lbl { font: 500 12px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.wh-lbl.on { fill: var(--accent); }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.caption p { color: var(--text-muted); }
+
+/* 3 · o pacote */
+.wh-pkg { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.wh-json { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; font-family: var(--font-mono); font-size: .86rem; line-height: 1.9; }
+.wh-json .ind { padding-left: 22px; }
+.wh-json .ind2 { padding-left: 44px; }
+.wh-k { font-family: var(--font-mono); font-size: .86rem; border: 1px dashed var(--border-strong); background: var(--bg); border-radius: 4px; padding: 0 6px; }
+.wh-k[aria-pressed="true"] { border-style: solid; border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.wh-v { color: var(--ok-texto); }
+.wh-pdet { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; min-height: 220px; align-content: start; }
+.wh-pdet h3 { font-size: 1.2rem; }
+.wh-path { font-family: var(--font-mono); font-size: 1rem; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 8px 12px; overflow-wrap: anywhere; }
+
+/* 4 · dois endereços */
+.wh-urls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.wh-panel { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.wh-url { font-family: var(--font-mono); font-size: .86rem; border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; overflow-wrap: anywhere; background: var(--bg); }
+.wh-url b { color: var(--accent); font-weight: 500; }
+.wh-sw { display: grid; gap: 6px; }
+.wh-res { display: grid; gap: 10px; align-content: start; }
+.wh-lamp { display: flex; gap: 10px; align-items: center; font-family: var(--font-mono); font-size: .9rem; }
+.wh-lamp i { width: 14px; height: 14px; border-radius: 50%; background: var(--border-strong); display: inline-block; }
+.wh-lamp.on i { background: var(--ok); }
+
+/* 5 · responder */
+.wh-resp { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.wh-tchart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
+.wh-tchart svg { width: 100%; height: auto; display: block; }
+.wh-bw { fill: var(--accent-soft); stroke: var(--accent); }
+.wh-bw.over { fill: var(--atencao-soft); stroke: var(--atencao); }
+.wh-bf { fill: var(--text-muted); }
+.wh-lim { stroke: var(--atencao); stroke-width: 1.5; stroke-dasharray: 4 3; }
+.wh-tl { font: 500 12px var(--font-mono); fill: var(--text); }
+.wh-tll { font: 500 11px var(--font-mono); fill: var(--atencao-texto); text-anchor: middle; }
+.wh-mini-api { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 10px; }
+.wh-mini-api label { font-size: .95rem; }
+.wh-mini-api input[type=text] { font: inherit; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg); width: 100%; }
+.wh-mini-api pre { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 6 · quiz */
+.wh-quiz { display: grid; gap: 12px; }
+.wh-q { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.wh-q .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.wh-q .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 14px; font-size: .95rem; }
+.wh-q .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.wh-q .fb { font-size: .95rem; border-radius: 6px; padding: 10px 14px; border: 1px solid; }
+.wh-q .fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.wh-q .fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.wh-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 7 · lista de conferência */
+.wh-check { display: grid; gap: 8px; }
+.wh-item { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 12px 14px; }
+.wh-item input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--ok); }
+.wh-item b { font-weight: 600; }
+.wh-item span { color: var(--text-muted); font-size: .95rem; }
+.wh-item.done { border-color: var(--ok); background: var(--ok-soft); }
+.wh-prog { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 8 · para levar */
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+@media (max-width: 860px) {
+  .wh-count, .wh-pkg, .wh-urls, .wh-resp, .take { grid-template-columns: 1fr; }
+  .wh-range { grid-template-columns: 1fr 60px; }
+  .wh-range label { grid-column: 1 / -1; }
+  .gloss { grid-template-columns: 1fr; gap: 2px 0; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .wh-mini { grid-template-columns: 1fr 1fr; } }
+@media (prefers-reduced-motion: reduce) { .wh-box rect, .wh-arr { transition: none; } }
+</style>
+
+<div class="page">
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--api.html">← 7.1 API</a><a href="./automacao--json.html">7.3 JSON →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html" aria-current="page"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a></div>
+  </nav>
+  <span class="eyebrow">7.2 · 2 de 3</span>
+  <h1>Webhook</h1>
+  <p class="sub">Em vez de perguntar toda hora se chegou, você é avisado quando acontece</p>
+  <p class="lead">Existem dois jeitos de saber que um pagamento foi aprovado. Um é abrir o sistema de meia em meia hora e conferir. O outro é o sistema te chamar no instante em que aprova. <strong>Webhook é o segundo jeito:</strong> você dá ao outro sistema um endereço seu, e ele bate nesse endereço, com os dados na mão, toda vez que algo acontece.</p>
+  <p class="fam">Família <a href="./automacao.html">Automação</a> · nesta família também: <a href="./automacao--api.html">API</a> · <a href="./automacao--json.html">JSON</a></p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-perguntar">Perguntar ou ser avisado</a><a href="#s-campainha">A campainha</a><a href="#s-pacote">O que chega</a><a href="#s-enderecos">Dois endereços</a><a href="#s-responder">Responder o aviso</a><a href="#s-quiz">Relógio ou aviso</a><a href="#s-ligar">Antes de ligar</a><a href="#s-levar">Para levar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-perguntar" aria-labelledby="h-perguntar">
+  <span class="eyebrow">Perguntar ou ser avisado</span>
+  <h2 id="h-perguntar">Um dia de trabalho, dos dois jeitos</h2>
+  <p class="intro">Num dia de oito horas chegam cinco pagamentos. Na linha de cima, a sua automação pergunta de tempos em tempos "chegou alguma coisa?". Na de baixo, ela é avisada. <strong>Mude o intervalo das perguntas e rode o dia.</strong> Os pontos vazios são perguntas que voltaram com "nada novo".</p>
+  <div class="wh-ctrl">
+    <div class="wh-range"><label for="whInt">Perguntar a cada</label><input type="range" id="whInt" min="5" max="120" step="5" value="30"><output id="whIntO" for="whInt">30 min</output></div>
+    <button type="button" class="btn primary" id="whRun">Rodar o dia</button>
+  </div>
+  <div class="wh-scroll" role="region" tabindex="0" aria-label="Linha do dia. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="wh-dt">
+      <title id="wh-dt">Linha de um dia com cinco pagamentos: em cima, perguntas em intervalo fixo, a maioria sem novidade; embaixo, um aviso para cada pagamento, na hora</title>
+      <text class="wh-lane" x="10" y="62">PERGUNTAR</text><text class="wh-sub" x="10" y="80">de tempos em tempos</text>
+      <text class="wh-lane" x="10" y="152">SER AVISADO</text><text class="wh-sub" x="10" y="170">webhook</text>
+      <line class="wh-axis" x1="150" y1="70" x2="880" y2="70"/>
+      <line class="wh-axis" x1="150" y1="160" x2="880" y2="160"/>
+      <g id="whEvents"></g><g id="whAsks"></g><g id="whPush"></g><g id="whHours"></g>
+      <line class="wh-cursor" id="whCur" x1="150" y1="30" x2="150" y2="200" style="opacity:0"/>
+    </svg>
+  </div>
+  <div class="wh-count" aria-live="polite">
+    <div class="wh-cc"><span class="eyebrow">Perguntar</span><div class="wh-mini"><div><span>perguntas</span><b id="whA">—</b></div><div><span>à toa</span><b class="bad" id="whW">—</b></div><div><span>atraso médio</span><b id="whD">—</b></div></div></div>
+    <div class="wh-cc focal"><span class="eyebrow">Ser avisado</span><div class="wh-mini"><div><span>avisos</span><b>5</b></div><div><span>à toa</span><b>0</b></div><div><span>atraso</span><b>na hora</b></div></div></div>
+  </div>
+  <p class="punch">Perguntar menos vezes economiza pedidos e <em>aumenta o atraso</em>. Perguntar mais reduz o atraso e desperdiça pedidos. Ser avisado sai da troca.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-campainha" aria-labelledby="h-campainha">
+  <span class="eyebrow">A campainha</span>
+  <h2 id="h-campainha">Você dá o endereço; o outro lado toca quando acontece</h2>
+  <p class="intro">Webhook é a campainha da sua casa: fica esperando, e quando alguém aperta, você sabe na hora. <strong>O que você entrega ao outro sistema é um endereço de internet que é seu.</strong> Siga um aviso do começo ao fim.</p>
+  <div class="stepbar">
+    <span class="eyebrow" id="whLab">Passo 1 de 6</span>
+    <div class="nav"><button type="button" class="btn" id="whPrev">← Anterior</button><button type="button" class="btn primary" id="whNext">Próximo →</button></div>
+  </div>
+  <div class="wh-scroll" role="region" tabindex="0" aria-label="Diagrama do aviso. Role para os lados se a tela for estreita.">
+    <svg viewBox="0 0 900 290" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="wh-ct">
+      <title id="wh-ct">O outro sistema chama o seu endereço quando algo acontece; o endereço acorda o seu fluxo e responde que recebeu</title>
+      <defs>
+        <marker id="wh-mm" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="mk-m"/></marker>
+        <marker id="wh-ma" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="mk-a"/></marker>
+      </defs>
+      <g class="wh-box" data-b="1"><rect x="20" y="80" width="200" height="130" rx="10"/><text class="t" x="120" y="118">O OUTRO SISTEMA</text><text class="s" x="120" y="144">loja, pagamento,</text><text class="s" x="120" y="164">formulário, agenda</text></g>
+      <g class="wh-box" data-b="2"><rect x="350" y="80" width="200" height="130" rx="10"/><text class="t" x="450" y="118">O SEU ENDEREÇO</text><text class="s" x="450" y="144">a campainha:</text><text class="s" x="450" y="164">espera ser chamada</text></g>
+      <g class="wh-box" data-b="3"><rect x="680" y="80" width="200" height="130" rx="10"/><text class="t" x="780" y="118">O SEU FLUXO</text><text class="s" x="780" y="144">acorda com o que</text><text class="s" x="780" y="164">chegou e trabalha</text></g>
+      <path class="wh-arr dash" data-a="0" d="M780,78 V40 H120 V76" marker-end="url(#wh-mm)"/>
+      <text class="wh-lbl" data-l="0" x="450" y="32">uma vez: você cadastra o seu endereço lá</text>
+      <path class="wh-arr" data-a="1" d="M222,125 H346" marker-end="url(#wh-mm)"/>
+      <text class="wh-lbl" data-l="1" x="284" y="115">aviso + dados</text>
+      <path class="wh-arr" data-a="2" d="M552,125 H676" marker-end="url(#wh-mm)"/>
+      <text class="wh-lbl" data-l="2" x="614" y="115">acorda</text>
+      <path class="wh-arr" data-a="3" d="M348,180 H224" marker-end="url(#wh-mm)"/>
+      <text class="wh-lbl" data-l="3" x="284" y="202">"recebi"</text>
+      <path class="wh-arr" data-a="4" d="M780,212 V260 H880" marker-end="url(#wh-mm)"/>
+      <text class="wh-lbl" data-l="4" x="780" y="280">segue: planilha, e-mail, API</text>
+    </svg>
+  </div>
+  <div class="caption" id="whCap" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-pacote" aria-labelledby="h-pacote">
+  <span class="eyebrow">O que chega</span>
+  <h2 id="h-pacote">O aviso chega num pacote, e os seus dados estão num compartimento</h2>
+  <p class="intro">Quando alguém preenche o formulário de contato, o seu endereço recebe um pacote com várias partes. <strong>O que a pessoa preencheu não fica solto: fica dentro de uma parte chamada corpo.</strong> Clique nas partes para ver o que cada uma traz e como se chega nela.</p>
+  <div class="wh-pkg">
+    <div class="wh-json" role="group" aria-label="O pacote que chegou">
+      <div>{</div>
+      <div class="ind"><button type="button" class="wh-k" data-k="headers" aria-pressed="false">"headers"</button>: { "content-type": <span class="wh-v">"application/json"</span> },</div>
+      <div class="ind"><button type="button" class="wh-k" data-k="query" aria-pressed="false">"query"</button>: { },</div>
+      <div class="ind"><button type="button" class="wh-k" data-k="body" aria-pressed="true">"body"</button>: {</div>
+      <div class="ind2"><button type="button" class="wh-k" data-k="nome" aria-pressed="false">"nome"</button>: <span class="wh-v">"Ana Souza"</span>,</div>
+      <div class="ind2"><button type="button" class="wh-k" data-k="email" aria-pressed="false">"email"</button>: <span class="wh-v">"ana@exemplo.com"</span>,</div>
+      <div class="ind2"><button type="button" class="wh-k" data-k="assunto" aria-pressed="false">"assunto"</button>: <span class="wh-v">"orçamento"</span></div>
+      <div class="ind">}</div>
+      <div>}</div>
+    </div>
+    <div class="wh-pdet" id="whPkg" aria-live="polite"></div>
+  </div>
+  <p class="hint">O formato do pacote está explicado na página <a href="./automacao--json.html">JSON</a>. O caminho com pontos, <code>body.nome</code>, é a mesma ideia de pasta dentro de pasta.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-enderecos" aria-labelledby="h-enderecos">
+  <span class="eyebrow">Dois endereços</span>
+  <h2 id="h-enderecos">O endereço de teste não é o de verdade</h2>
+  <p class="intro">Muitas ferramentas de automação dão dois endereços para a mesma campainha. <strong>Um serve para testar enquanto você monta; o outro, para o uso de verdade.</strong> O erro mais comum é cadastrar o de teste no outro sistema e esquecer de trocar. Ligue e desligue as duas chaves e toque a campainha.</p>
+  <div class="wh-urls">
+    <div class="wh-panel">
+      <div class="wh-url"><span class="eyebrow">Endereço de teste</span><br>https://sua-ferramenta.exemplo/<b>webhook-test</b>/contato</div>
+      <div class="wh-url"><span class="eyebrow">Endereço de produção</span><br>https://sua-ferramenta.exemplo/<b>webhook</b>/contato</div>
+      <div class="wh-sw"><span class="eyebrow">O outro sistema está chamando</span>
+        <div class="seg" role="group" aria-label="Qual endereço foi cadastrado"><button type="button" data-u="teste" aria-pressed="true">o de teste</button><button type="button" data-u="prod" aria-pressed="false">o de produção</button></div></div>
+      <div class="wh-sw"><span class="eyebrow">Você clicou em "escutar teste"</span>
+        <div class="seg" role="group" aria-label="Escutando teste"><button type="button" data-l="sim" aria-pressed="false">sim</button><button type="button" data-l="nao" aria-pressed="true">não</button></div></div>
+      <div class="wh-sw"><span class="eyebrow">O fluxo está ativado</span>
+        <div class="seg" role="group" aria-label="Fluxo ativado"><button type="button" data-a="sim" aria-pressed="true">sim</button><button type="button" data-a="nao" aria-pressed="false">não</button></div></div>
+      <button type="button" class="btn primary" id="whRing">Tocar a campainha</button>
+    </div>
+    <div class="wh-res" aria-live="polite">
+      <div class="wh-lamp" id="whLampT"><i></i>teste: <span></span></div>
+      <div class="wh-lamp" id="whLampP"><i></i>produção: <span></span></div>
+      <div class="verdict" id="whRingV" hidden></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-responder" aria-labelledby="h-responder">
+  <span class="eyebrow">Responder o aviso</span>
+  <h2 id="h-responder">Quem tocou a campainha pode estar esperando uma resposta</h2>
+  <p class="intro">Na maior parte das vezes basta dizer "recebi". Às vezes, quem chamou precisa de conteúdo de volta: o chat espera o texto para mostrar, o site espera a confirmação. <strong>E quem espera desiste depois de um tempo</strong>, em geral perto de trinta segundos. Escolha o jeito de responder e o tempo que o seu fluxo leva.</p>
+  <div class="seg" role="group" aria-label="Jeito de responder">
+    <button type="button" data-r="ja" aria-pressed="true">"Recebi", na hora</button>
+    <button type="button" data-r="fim" aria-pressed="false">Espera o fluxo inteiro</button>
+    <button type="button" data-r="escolhe" aria-pressed="false">Responde num ponto escolhido</button>
+  </div>
+  <div class="wh-resp">
+    <div class="wh-tchart">
+      <div class="wh-range"><label for="whDur">O fluxo leva</label><input type="range" id="whDur" min="1" max="60" value="8"><output id="whDurO" for="whDur">8 s</output></div>
+      <svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="wh-rt">
+        <title id="wh-rt">Tempo que quem chamou fica esperando, comparado ao limite de cerca de trinta segundos</title>
+        <text class="wh-tl" x="0" y="50">quem chamou</text>
+        <text class="wh-tl" x="0" y="110">o seu fluxo</text>
+        <rect class="wh-bw" id="whBW" x="110" y="34" width="10" height="24" rx="4"/>
+        <rect class="wh-bf" id="whBF" x="110" y="94" width="10" height="24" rx="4"/>
+        <line class="wh-lim" x1="350" y1="20" x2="350" y2="140"/>
+        <text class="wh-tll" x="350" y="160">limite ≈ 30 s</text>
+      </svg>
+      <div class="verdict" id="whRespV"></div>
+    </div>
+    <div class="wh-mini-api">
+      <span class="eyebrow">Um mini-balcão: recebe um nome, devolve uma saudação</span>
+      <label for="whName">O nome que chega</label>
+      <input type="text" id="whName" value="Ana" maxlength="40" autocomplete="off">
+      <span class="hint">Chega no corpo do aviso:</span>
+      <pre id="whIn"></pre>
+      <span class="hint">Sai como resposta, para quem chamou:</span>
+      <pre id="whOut"></pre>
+      <p class="hint">Com isso, o seu fluxo deixa de só receber e passa a atender: vira um balcão, a mesma ideia da página <a href="./automacao--api.html">API</a>, do lado de quem responde.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-quiz" aria-labelledby="h-quiz">
+  <span class="eyebrow">Relógio ou aviso</span>
+  <h2 id="h-quiz">Gatilho agendado ou webhook?</h2>
+  <p class="intro">Toda automação começa com um gatilho. <strong>Agendado</strong> é o relógio: roda num horário fixo. <strong>Webhook</strong> é o aviso: roda quando outro sistema chama. A pergunta que decide é "o que dispara isto: uma hora do dia, ou algo que aconteceu lá fora?".</p>
+  <div class="wh-quiz" id="whQuiz"></div>
+  <p class="wh-score" id="whScore" aria-live="polite"></p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-ligar" aria-labelledby="h-ligar">
+  <span class="eyebrow">Antes de ligar</span>
+  <h2 id="h-ligar">Seis conferências antes de deixar a campainha ligada</h2>
+  <p class="intro">Quase todo problema com webhook aparece depois que tudo funcionou no teste. <strong>Marque o que já conferiu</strong>, e copie a lista para usar no seu próximo fluxo.</p>
+  <div class="wh-check" id="whCheck"></div>
+  <p class="wh-prog" id="whProg" aria-live="polite"></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Lista pronta · antes de ligar um webhook</span><button type="button" class="btn" id="whCopy">Copiar</button></div>
+    <pre id="whList"></pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Quem sabe primeiro, avisa</h3><p>Em vez de perguntar toda hora, dê o seu endereço a quem sabe primeiro. O aviso chega na hora, e nenhuma pergunta vai à toa.</p></div>
+    <div class="take-card"><h3>O endereço é seu, e é segredo</h3><p>Quem tiver o endereço toca a campainha. Proteja com senha e não o mostre em print.</p></div>
+    <div class="take-card"><h3>Teste não é produção</h3><p>Cadastre o endereço de produção no outro sistema e confira que o fluxo está ativado.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Webhook</dt><dd>Um endereço seu que outro sistema chama quando algo acontece, levando os dados junto.</dd>
+    <dt>Perguntar de tempos em tempos (polling)</dt><dd>Consultar outro sistema em intervalo fixo para saber se há novidade. Funciona, mas atrasa e desperdiça pedidos.</dd>
+    <dt>Gatilho</dt><dd>O que faz uma automação começar: um horário, um clique, um aviso.</dd>
+    <dt>Corpo (body)</dt><dd>A parte do pacote que traz os dados do aviso: o que foi preenchido, pago ou marcado.</dd>
+    <dt>Endereço de teste</dt><dd>Endereço que só recebe enquanto você está escutando, para montar o fluxo.</dd>
+    <dt>Endereço de produção</dt><dd>Endereço que recebe sempre, desde que o fluxo esteja ativado.</dd>
+    <dt>Tempo limite (timeout)</dt><dd>Quanto quem chamou espera pela resposta antes de desistir.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O dia com cinco pagamentos, os intervalos e os atrasos são ilustrativos: mostram a forma, não a medida. O limite de espera varia de sistema para sistema; trinta segundos é uma ordem de grandeza comum. Nomes de botões e endereços variam entre ferramentas; a ideia de um endereço de teste e outro de produção é o que se repete.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <a class="famfoot-prev" href="./automacao--api.html"><span>← anterior</span><b>7.1 · API</b></a>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao--json.html"><span>próxima →</span><b>7.3 · JSON</b></a>
+</nav>
+<!-- /rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, txt) { var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt) e.textContent = txt; return e; }
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* 1 · linha do dia */
+  var DAY = 480, EV = [37, 142, 178, 305, 411];
+  function X(m) { return 150 + m / DAY * 730; }
+  var gE = document.getElementById('whEvents'), gA = document.getElementById('whAsks'), gP = document.getElementById('whPush'), gH = document.getElementById('whHours');
+  for (var h = 0; h <= 8; h++) { gH.appendChild(el('text', { 'class': 'wh-hour', x: X(h * 60), y: 222 }, (8 + h) + 'h')); }
+  EV.forEach(function (m) {
+    gE.appendChild(el('line', { 'class': 'wh-ev', x1: X(m), y1: 40, x2: X(m), y2: 190 }));
+    gE.appendChild(el('text', { 'class': 'wh-evl', x: X(m), y: 34 }, 'pago'));
+    gP.appendChild(el('path', { 'class': 'wh-push', d: 'M' + X(m) + ',150 l-6,-12 h12 z', 'data-m': m }));
+  });
+  var inp = document.getElementById('whInt'), cur = document.getElementById('whCur'), timer = null;
+  function stats(I) {
+    var asks = [], seen = 0, delays = [];
+    for (var t = I; t <= DAY; t += I) {
+      var news = EV.filter(function (e) { return e > t - I && e <= t; });
+      news.forEach(function (e) { delays.push(t - e); });
+      asks.push({ t: t, hit: news.length > 0 });
+    }
+    return { asks: asks, wasted: asks.filter(function (a) { return !a.hit; }).length, delay: delays.length ? Math.round(delays.reduce(function (a, b) { return a + b; }, 0) / delays.length) : 0 };
+  }
+  function draw(upTo) {
+    var I = +inp.value; document.getElementById('whIntO').textContent = I + ' min';
+    var s = stats(I); gA.innerHTML = '';
+    var shown = s.asks.filter(function (a) { return a.t <= upTo; });
+    shown.forEach(function (a) { gA.appendChild(el('circle', { 'class': 'wh-ask' + (a.hit ? ' hit' : ''), cx: X(a.t), cy: 70, r: I < 15 ? 3.5 : 6 })); });
+    gP.querySelectorAll('path').forEach(function (p) { p.style.opacity = +p.dataset.m <= upTo ? 1 : 0; });
+    var done = upTo >= DAY;
+    document.getElementById('whA').textContent = shown.length;
+    document.getElementById('whW').textContent = shown.filter(function (a) { return !a.hit; }).length;
+    document.getElementById('whD').textContent = done ? (s.delay + ' min') : '…';
+    cur.style.opacity = done ? 0 : 1; cur.setAttribute('x1', X(upTo)); cur.setAttribute('x2', X(upTo));
+  }
+  inp.addEventListener('input', function () { if (timer) { clearInterval(timer); timer = null; } draw(DAY); });
+  document.getElementById('whRun').addEventListener('click', function () {
+    if (timer) clearInterval(timer);
+    if (reduce) { draw(DAY); return; }
+    var m = 0; timer = setInterval(function () { m += 6; draw(Math.min(m, DAY)); if (m >= DAY) { clearInterval(timer); timer = null; } }, 30);
+  });
+  draw(DAY);
+
+  /* 2 · campainha */
+  var ST = [
+    { t: 'Uma vez só: você entrega o seu endereço', b: [3, 1], a: [0], d: 'A sua ferramenta de automação cria um endereço único. Você copia e cola no outro sistema, no campo de avisos. É como deixar o número da campainha com o porteiro.' },
+    { t: 'Algo acontece do lado de lá', b: [1], a: [], d: 'Um pagamento é aprovado, alguém preenche o formulário, uma reunião é marcada. Você não está olhando, e não precisa estar.' },
+    { t: 'O outro sistema toca a campainha', b: [1, 2], a: [1], d: 'Ele manda um pedido para o seu endereço, com os dados do que aconteceu dentro. Na hora, sem ninguém perguntar.' },
+    { t: 'O seu fluxo acorda com o que chegou', b: [3], a: [2], d: 'O aviso vira o primeiro passo do fluxo. Os dados que vieram no pacote ficam disponíveis para os passos seguintes.' },
+    { t: 'O endereço responde "recebi"', b: [2], a: [3], d: 'Quem tocou fica sabendo que o aviso chegou. Se ninguém responder, muitos sistemas tentam de novo mais tarde, e o aviso pode chegar duas vezes.' },
+    { t: 'O fluxo segue o trabalho', b: [3], a: [4], d: 'Registrar na planilha, avisar a equipe, ou pedir mais detalhes ao outro sistema pela <a href="./automacao--api.html">API</a>: o aviso costuma ser curto, e a busca completa vem depois.' }
+  ];
+  var sc = 1, SN = ST.length;
+  var bx = document.querySelectorAll('.wh-box'), ar = document.querySelectorAll('.wh-arr'), lb = document.querySelectorAll('.wh-lbl');
+  function go(n) {
+    sc = Math.max(1, Math.min(SN, n)); var s = ST[sc - 1];
+    bx.forEach(function (g) { g.classList.toggle('on', s.b.indexOf(+g.dataset.b) > -1); });
+    ar.forEach(function (p) { var on = s.a.indexOf(+p.dataset.a) > -1; p.classList.toggle('on', on); p.setAttribute('marker-end', on ? 'url(#wh-ma)' : 'url(#wh-mm)'); });
+    lb.forEach(function (t) { t.classList.toggle('on', s.a.indexOf(+t.dataset.l) > -1); });
+    document.getElementById('whCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+    document.getElementById('whLab').textContent = 'Passo ' + sc + ' de ' + SN;
+    document.getElementById('whPrev').disabled = sc === 1;
+    document.getElementById('whNext').textContent = sc === SN ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  document.getElementById('whPrev').addEventListener('click', function () { go(sc - 1); });
+  document.getElementById('whNext').addEventListener('click', function () { go(sc === SN ? 1 : sc + 1); });
+  go(1);
+
+  /* 3 · o pacote */
+  var PK = {
+    headers: { t: 'Cabeçalho', p: 'headers', d: 'A etiqueta do pacote: em que formato ele veio, de onde, e às vezes uma senha que prova quem mandou. Aqui ele diz que o conteúdo está em JSON.' },
+    query: { t: 'Parâmetros do endereço', p: 'query', d: 'O que veio grudado no endereço, depois do ponto de interrogação. Neste aviso veio vazio, porque os dados foram no corpo. Dado sensível nunca deveria vir aqui: endereço fica registrado em todo lugar.' },
+    body: { t: 'Corpo', p: 'body', d: 'O compartimento que traz os dados do aviso: o que a pessoa preencheu. <b>É aqui que os seus dados estão</b>, e não soltos no pacote.' },
+    nome: { t: 'Um campo do corpo', p: 'body.nome', d: 'Para usar o nome num passo seguinte, você vai de fora para dentro: primeiro o corpo, depois o nome. Quem procura só <code>nome</code>, sem o <code>body</code> antes, não acha nada.' },
+    email: { t: 'Um campo do corpo', p: 'body.email', d: 'Mesmo caminho: corpo, depois e-mail. Se o outro sistema mudar o nome do campo, o seu fluxo deixa de achar, sem aviso.' },
+    assunto: { t: 'Um campo do corpo', p: 'body.assunto', d: 'É com campos assim que o fluxo decide o que fazer: se o assunto é orçamento, vai para vendas; se é reclamação, vai para uma pessoa.' }
+  };
+  var kBtns = document.querySelectorAll('.wh-k'), kDet = document.getElementById('whPkg');
+  function showK(k) {
+    pressGroup(kBtns, function (x) { return x.dataset.k === k; });
+    var p = PK[k];
+    kDet.innerHTML = '<span class="eyebrow">' + p.t + '</span><div class="wh-path">' + p.p + '</div><p>' + p.d + '</p>';
+  }
+  kBtns.forEach(function (b) { b.addEventListener('click', function () { showK(b.dataset.k); }); });
+  showK('body');
+
+  /* 4 · dois endereços */
+  var U = { u: 'teste', l: 'nao', a: 'sim' };
+  [['u', 'u'], ['l', 'l'], ['a', 'a']].forEach(function (pair) {
+    var bs = document.querySelectorAll('.wh-sw [data-' + pair[0] + ']');
+    bs.forEach(function (b) { b.addEventListener('click', function () { pressGroup(bs, function (x) { return x === b; }); U[pair[1]] = b.dataset[pair[0]]; lamps(); }); });
+  });
+  function lamps() {
+    var t = U.l === 'sim', p = U.a === 'sim';
+    var lt = document.getElementById('whLampT'), lp = document.getElementById('whLampP');
+    lt.classList.toggle('on', t); lt.querySelector('span').textContent = t ? 'escutando, só para o próximo toque' : 'surdo';
+    lp.classList.toggle('on', p); lp.querySelector('span').textContent = p ? 'recebendo sempre' : 'desligado, porque o fluxo não está ativado';
+    document.getElementById('whRingV').hidden = true;
+  }
+  document.getElementById('whRing').addEventListener('click', function () {
+    var v = document.getElementById('whRingV'), ok, msg;
+    if (U.u === 'teste') {
+      ok = U.l === 'sim';
+      msg = ok ? '<b>Chegou, desta vez.</b> O endereço de teste recebe um toque e volta a ficar surdo. Serve para montar; se ficou cadastrado no outro sistema, amanhã o aviso se perde.' : '<b>Não chegou.</b> O outro sistema está chamando o endereço de teste, e ninguém está escutando. É o defeito clássico: funcionou no teste, parou em produção.';
+    } else {
+      ok = U.a === 'sim';
+      msg = ok ? '<b>Chegou, e vai continuar chegando.</b> Endereço de produção cadastrado e fluxo ativado: é a combinação certa.' : '<b>Não chegou.</b> O endereço de produção só recebe com o fluxo ativado. Ative o fluxo.';
+    }
+    v.hidden = false;
+    v.className = 'verdict ' + (U.u === 'prod' && ok ? 'ok' : 'no');
+    v.innerHTML = msg;
+  });
+  lamps();
+
+  /* 5 · responder */
+  var R = 'ja', dur = document.getElementById('whDur');
+  var rBtns = document.querySelectorAll('[data-r]');
+  function resp() {
+    var d = +dur.value; document.getElementById('whDurO').textContent = d + ' s';
+    var sx = 240 / 30;
+    var wait = R === 'ja' ? 0.5 : (R === 'fim' ? d : Math.min(d, Math.max(1, Math.round(d * 0.3))));
+    var shown = Math.min(wait, 48);
+    var bw = document.getElementById('whBW'); bw.setAttribute('width', Math.max(6, shown * sx));
+    bw.setAttribute('class', 'wh-bw' + (wait > 30 ? ' over' : ''));
+    document.getElementById('whBF').setAttribute('width', Math.max(6, Math.min(d, 48) * sx));
+    var v = document.getElementById('whRespV');
+    if (R === 'ja') { v.className = 'verdict ok'; v.innerHTML = '<b>Quem chamou é liberado na hora.</b> O fluxo continua trabalhando sozinho. Ótimo para registrar um formulário; não serve quando quem chamou precisa do resultado.'; }
+    else if (wait > 30) { v.className = 'verdict no'; v.innerHTML = '<b>Quem chamou desistiu antes.</b> O fluxo terminou, mas a resposta chegou tarde. Para trabalho longo, responda "recebi" na hora e avise o resultado depois, por outro caminho.'; }
+    else if (R === 'fim') { v.className = 'verdict ok'; v.innerHTML = '<b>Quem chamou recebe o resultado do último passo.</b> Funciona enquanto o fluxo couber no tempo de espera.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Você escolhe onde e o quê responder.</b> A resposta sai no meio do fluxo, com o conteúdo que você montou, e o resto continua. Depois da resposta não dá para responder de novo.'; }
+  }
+  rBtns.forEach(function (b) { b.addEventListener('click', function () { pressGroup(rBtns, function (x) { return x === b; }); R = b.dataset.r; resp(); }); });
+  dur.addEventListener('input', resp);
+  resp();
+  var nm = document.getElementById('whName');
+  function mini() {
+    var n = nm.value.trim() || '(vazio)';
+    document.getElementById('whIn').textContent = JSON.stringify({ body: { nome: n } }, null, 2);
+    document.getElementById('whOut').textContent = JSON.stringify({ saudacao: 'Olá, ' + n + ', seja bem-vindo!' }, null, 2);
+  }
+  nm.addEventListener('input', mini); mini();
+
+  /* 6 · quiz */
+  var OP = ['Agendado', 'Webhook'];
+  var Q = [
+    { s: 'Mandar o resumo de vendas da semana toda segunda, às 8h.', a: 0, why: 'O que dispara é uma hora do dia. Ninguém lá fora precisa avisar nada.' },
+    { s: 'Registrar na planilha cada formulário de contato assim que for enviado.', a: 1, why: 'O que dispara é algo que aconteceu lá fora. Com o relógio, o contato esperaria até a próxima rodada.' },
+    { s: 'Avisar o financeiro no instante em que um pagamento for aprovado.', a: 1, why: 'O sistema de pagamento sabe primeiro. Deixe que ele avise.' },
+    { s: 'Conferir o estoque uma vez por dia, num sistema antigo que não sabe mandar aviso.', a: 0, why: 'Quando o outro lado não sabe avisar, resta perguntar. Uma vez por dia, no horário certo, é o relógio.' },
+    { s: 'Um chat no site precisa da resposta enquanto a pessoa espera digitando.', a: 1, why: 'É webhook, e com resposta: quem chamou espera o conteúdo de volta, dentro do tempo limite.' }
+  ];
+  var qz = document.getElementById('whQuiz'), sco = document.getElementById('whScore'), got = {};
+  Q.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'wh-q';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Tipo de gatilho">' + OP.map(function (o, k) { return '<button type="button" data-k="' + k + '" aria-pressed="false">' + o + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.k === q.a; got[i] = ok;
+      fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + OP[q.a].toLowerCase() + '. ') + '</b>' + q.why;
+      var n = Object.keys(got).length, c = Object.keys(got).filter(function (k) { return got[k]; }).length;
+      sco.textContent = n + ' de ' + Q.length + ' respondidas · ' + c + ' certas' + (n === Q.length ? ' · a pergunta de bolso: o que dispara isto, uma hora do dia ou algo lá fora?' : '');
+    }); });
+    qz.appendChild(d);
+  });
+
+  /* 7 · lista de conferência */
+  var CK = [
+    ['O endereço cadastrado lá é o de produção', 'o de teste funciona uma vez e para.'],
+    ['O fluxo está ativado', 'sem isso, o endereço de produção não recebe nada.'],
+    ['Eu abri um aviso de verdade e vi onde os dados chegam', 'quase sempre dentro do corpo, e o formato varia de sistema para sistema.'],
+    ['O endereço pede uma senha no cabeçalho', 'o endereço vaza fácil: registro, print, tela compartilhada.'],
+    ['Nada sensível vai no endereço', 'dado pessoal vai no corpo, nunca depois do ponto de interrogação.'],
+    ['A resposta sai antes do tempo limite', 'trabalho longo responde "recebi" na hora e continua sozinho.']
+  ];
+  var ckEl = document.getElementById('whCheck'), prog = document.getElementById('whProg');
+  CK.forEach(function (c, i) {
+    var l = document.createElement('label'); l.className = 'wh-item';
+    l.innerHTML = '<input type="checkbox" data-i="' + i + '"><span><b>' + c[0] + '</b><br><span>Por quê: ' + c[1] + '</span></span>';
+    l.querySelector('input').addEventListener('change', function (e) { l.classList.toggle('done', e.target.checked); count(); });
+    ckEl.appendChild(l);
+  });
+  function count() {
+    var n = ckEl.querySelectorAll('input:checked').length;
+    prog.textContent = n + ' de ' + CK.length + ' conferidas' + (n === CK.length ? ' · pode deixar a campainha ligada.' : '');
+  }
+  count();
+  document.getElementById('whList').textContent = 'Antes de ligar um webhook\n\n' + CK.map(function (c) { return '[ ] ' + c[0] + ' (' + c[1] + ')'; }).join('\n');
+  document.getElementById('whCopy').addEventListener('click', function () {
+    var btn = this, txt = document.getElementById('whList').textContent;
+    var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  });
+})();
+</script>
+
+</html>
