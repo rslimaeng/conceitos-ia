@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--pasta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasta com dono</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.1. Peças: sem dono × com dono (árvore da pasta de atas com os quatro erros), bruta limpa × bruta intacta numa disputa de prazo, controle deslizante das pastas que nascem com o projeto, stepper com diagrama do caminho de uma ata pelos estágios e quem mexe em cada um, montador de nome com data que ordena a pasta ao vivo, quiz de onde mora cada arquivo, grade clicável das 22 atas, blocos para copiar (COMO-EDITAR e o pedido do primeiro dia). */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+code, .mono { font-family: var(--font-mono); font-size: .86em; }
+
+/* 1 e 3 · árvore de pasta */
+.pt-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.pt-tree { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 1px; font-family: var(--font-mono); font-size: .84rem; }
+.pt-row { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; padding: 3px 0; }
+.pt-row.d1 { padding-left: 20px; }
+.pt-row.d2 { padding-left: 40px; }
+.pt-row .nm { color: var(--text); overflow-wrap: anywhere; }
+.pt-row.dir .nm { font-weight: 500; color: var(--accent); }
+.pt-row .nt { font-family: var(--font-body); font-size: .82rem; color: var(--text-dim); }
+.pt-row .tag { font-family: var(--font-mono); font-size: 10.5px; border-radius: 4px; padding: 0 6px; border: 1px solid var(--border-strong); color: var(--text-dim); }
+.pt-row.err .nm, .pt-row.err .nt { color: var(--atencao-texto); }
+.pt-row.err .tag { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.pt-row.vazia .nm { color: var(--text-dim); font-style: italic; }
+.pt-row.vazia .tag { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.pt-row.ok .tag { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.pt-row.novo .nm { color: var(--accent); font-weight: 500; }
+.pt-row.novo .tag { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.pt-side { display: grid; gap: 12px; }
+.pt-errs { margin: 0; padding-left: 22px; display: grid; gap: 6px; color: var(--text-muted); font-size: .93rem; }
+.pt-errs b { color: var(--atencao-texto); font-weight: 600; }
+
+/* 2 · a bruta */
+.br-tx { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; font-family: var(--font-mono); font-size: .84rem; display: grid; gap: 6px; }
+.br-tx .t { color: var(--text-dim); margin-right: 8px; }
+.br-tx mark { background: var(--accent-soft); color: var(--accent); padding: 0 3px; border-radius: 3px; }
+.br-tx .cut { font-family: var(--font-body); font-size: .88rem; color: var(--text-dim); font-style: italic; }
+.card ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; display: grid; gap: 4px; }
+.card.nao { border-color: var(--atencao); }
+.card.sim { border-color: var(--ok); }
+
+/* 3 · pastas que nascem */
+.pp-out { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.pp-num { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; }
+.pp-num .big.warn { color: var(--atencao-texto); }
+
+/* 4 · estágios (svg) */
+.scroll svg.wide { min-width: 640px; }
+.st-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.st-box .l { font: 500 12.5px var(--font-mono); fill: var(--text); }
+.st-box .s { font: 400 11.5px var(--font-body); fill: var(--text-dim); }
+.st-box.circ rect { stroke: var(--ok); stroke-width: 1.6; }
+.st-box.agora rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.st-box.agora .l { fill: var(--accent); }
+.st-flow { stroke: var(--border-strong); stroke-width: 1.5; fill: none; }
+.st-flow.dash { stroke-dasharray: 5 4; }
+.st-mk { fill: var(--border-strong); }
+.st-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.st-badge { font: 500 11px var(--font-mono); fill: var(--ok-texto); letter-spacing: .1em; }
+.st-tok rect { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.3; }
+.st-tok text { font: 500 11px var(--font-mono); fill: var(--text); }
+.st-who { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.st-chip { font-family: var(--font-mono); font-size: 12px; border-radius: 999px; padding: 2px 10px; border: 1px solid var(--border-strong); color: var(--text-dim); background: var(--bg-elev); }
+.st-chip.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+
+/* 5 · nome com data */
+.nm-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 18px; align-items: start; }
+.nm-form { display: grid; gap: 10px; }
+.nm-form label { display: grid; gap: 4px; font-size: .92rem; }
+.nm-form input, .nm-form select { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.nm-out { display: grid; gap: 12px; }
+.nm-list { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; }
+.nm-list.sim { border-color: var(--ok); }
+.nm-list.nao { border-color: var(--atencao); }
+.nm-list ol { margin: 0; padding-left: 22px; font-family: var(--font-mono); font-size: .8rem; display: grid; gap: 3px; color: var(--text-muted); }
+.nm-list li { overflow-wrap: anywhere; }
+.nm-list li.new { color: var(--accent); font-weight: 500; }
+
+/* 7 · as 22 atas */
+.at-grid { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 6px; max-width: 620px; }
+.at-grid button { aspect-ratio: 1; border: 1px solid var(--ok); background: var(--ok-soft); color: var(--ok-texto); border-radius: 4px; font-family: var(--font-mono); font-size: .72rem; padding: 0; }
+.at-grid button.val { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.at-grid button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+.at-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .88rem; color: var(--text-muted); }
+.at-leg span::before { content: ""; display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; border: 1px solid var(--ok); background: var(--ok-soft); }
+.at-leg span.val::before { border-color: var(--atencao); background: var(--atencao-soft); }
+.panel code { font-size: .8rem; overflow-wrap: anywhere; }
+.nums { display: flex; flex-wrap: wrap; gap: 10px; }
+.nums div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; display: grid; gap: 2px; min-width: 120px; }
+.nums b { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 400; color: var(--accent); line-height: 1.1; }
+.nums small { color: var(--text-muted); font-size: .85rem; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .pt-grid, .pp-out, .nm-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 420px) { .at-grid { gap: 4px; } .at-grid button { font-size: .62rem; } }
+@media (prefers-reduced-motion: reduce) { .st-box rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code.html">← Visão geral</a><a href="./claude-code--claude-md.html">8.2 CLAUDE.md →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html" aria-current="page"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.1 · 1 de 7</span>
+  <h1>Pasta com dono</h1>
+  <p class="sub">Quando cada arquivo tem o seu lugar, a própria pasta diz ao Claude onde ler, onde gravar e onde não mexer</p>
+  <p class="lead">No chat não existe pasta: existe o que você sobe, e o resultado sai na tela para você copiar para o Word. No Claude Code, ele <strong>lê sozinho</strong> o que está na pasta e <strong>grava</strong> o resultado lá: a transcrição da semana entra na pasta, a ata sai na pasta. Por isso a forma da pasta vira instrução. <strong>Pasta com dono é a pasta em que cada arquivo tem um lugar e um momento de mudar</strong>, e em que dá para saber, só olhando, o que é prova, o que é rascunho e o que já foi aprovado.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-atas">A pasta de atas</a><a href="#s-bruta">A bruta fica quieta</a><a href="#s-papel">Numeradas por papel</a><a href="#s-estagios">Estágios, não versões</a><a href="#s-nome">A data abre o nome</a><a href="#s-onde">Onde mora este arquivo</a><a href="#s-vinte">Vinte e duas atas</a><a href="#s-comeco">Quatro pastas no primeiro dia</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-atas" aria-labelledby="h-atas">
+  <span class="eyebrow">A pasta de atas</span>
+  <h2 id="h-atas">A mesma pasta, sem dono e com dono</h2>
+  <p class="intro">Uma pasta de atas de reunião semanal, como costuma ficar depois de um mês, e a mesma pasta arrumada. <strong>Os arquivos são quase os mesmos. O que muda é que, na segunda, o lugar responde as perguntas que na primeira alguém precisa lembrar.</strong></p>
+  <div class="seg" role="group" aria-label="Qual pasta">
+    <button type="button" data-pt="antes" aria-pressed="true">Sem dono</button>
+    <button type="button" data-pt="depois" aria-pressed="false">Com dono</button>
+  </div>
+  <div class="pt-grid">
+    <div class="pt-tree" id="ptTree" aria-live="polite"></div>
+    <div class="pt-side" id="ptSide" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-bruta" aria-labelledby="h-bruta">
+  <span class="eyebrow">A bruta fica quieta</span>
+  <h2 id="h-bruta">A transcrição é a prova: tudo sai dela, e ela não muda</h2>
+  <p class="intro">A transcrição bruta é o registro do que foi dito. A ata, o resumo e a síntese saem dela, e <strong>toda dúvida volta a ela</strong>. Por isso ela mora separada do que se produz a partir dela, e ninguém edita, nem para “limpar”. Um mês depois da reunião:</p>
+  <p class="card focal">O coordenador diz que nunca aceitou entregar a fase 2 em 30 de outubro. A ata diz que aceitou. Quem tem razão?</p>
+  <div class="seg" role="group" aria-label="Como a transcrição foi guardada">
+    <button type="button" data-br="limpa" aria-pressed="true">Transcrição limpa à mão</button>
+    <button type="button" data-br="bruta" aria-pressed="false">Bruta intacta, síntese ao lado</button>
+  </div>
+  <div id="brOut" aria-live="polite"></div>
+  <p class="intro">A mesma regra vale para a pasta de conhecimento, onde ficam as sínteses: <strong>ela sintetiza, e a fonte bruta fica fora</strong>. A síntese aponta para a transcrição por um link; não copia a transcrição para dentro. O manual dessa pasta diz, em duas listas, o que entra e o que não entra.</p>
+  <div class="two">
+    <div class="card sim"><span class="eyebrow">Entra na pasta de conhecimento</span><ul><li>a síntese de cada reunião</li><li>as decisões</li><li>a relação entre as informações: que decisão saiu de que reunião</li></ul></div>
+    <div class="card nao"><span class="eyebrow">Não entra</span><ul><li>cópia da transcrição, inteira ou em pedaços</li><li>o documento formal original</li><li>a planilha técnica</li></ul></div>
+  </div>
+  <p class="hint">Copiar a transcrição para dentro da pasta de conhecimento cria duas cópias, e a de dentro envelhece. Mais sobre essa pasta em <a href="./claude-code--obsidian.html">Obsidian</a>. Por que fato, jeito da casa e passo a passo vão para gavetas diferentes: <a href="./ai-first--captura.html">as três gavetas do registro</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-papel" aria-labelledby="h-papel">
+  <span class="eyebrow">Numeradas por papel</span>
+  <h2 id="h-papel">Pastas numeradas pelo papel, que só nascem quando o projeto pede</h2>
+  <p class="intro">Um projeto com várias frentes usa sempre a mesma ordem. O número na frente faz a pasta se ordenar sozinha: primeiro o que se lê para se situar, depois o projeto, as frentes e as reuniões.</p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Pasta</th><th>Guarda</th></tr>
+      <tr><td><code>00-*</code> na raiz</td><td>o índice, as decisões e as pendências; a memória do projeto também fica aqui</td></tr>
+      <tr><td><code>01-projeto/</code></td><td>escopo, cronograma, equipe, critérios de aceite</td></tr>
+      <tr><td><code>02-modulos/</code></td><td>uma pasta por frente de trabalho</td></tr>
+      <tr><td><code>03-reunioes/</code></td><td>a síntese de cada reunião</td></tr>
+    </table>
+  </div>
+  <p class="intro">E uma regra que evita pasta vazia: <strong>as pastas nascem quando o projeto pedir</strong>. A estrutura cresce com o trabalho, não antes dele. Arraste o tempo do projeto.</p>
+  <div class="field">
+    <label for="ppRange">Tempo de projeto</label>
+    <div class="row"><input type="range" id="ppRange" min="0" max="3" step="1" value="0"><output id="ppOut" for="ppRange"></output></div>
+  </div>
+  <div class="pp-out">
+    <div class="pt-tree" id="ppTree" aria-live="polite"></div>
+    <div class="pt-side">
+      <div class="pp-num"><span class="eyebrow">Pastas e arquivos vazios nesta pasta</span><span class="big">0</span></div>
+      <div class="pp-num"><span class="eyebrow">Se tudo tivesse nascido no primeiro dia</span><span class="big warn" id="ppVazio"></span><p class="hint" id="ppWhy"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-estagios" aria-labelledby="h-estagios">
+  <span class="eyebrow">Estágios, não versões</span>
+  <h2 id="h-estagios">Aprovar é mover o arquivo de pasta, e só uma pasta circula</h2>
+  <p class="intro">Um documento que alguém precisa aprovar não ganha <code>_v2</code>, <code>_final</code>, <code>_final-revisado</code>. <strong>Ele passa por pastas, e a pasta diz em que estado ele está.</strong> Siga uma ata, e veja em cada passo quem pode mexer.</p>
+  <div class="stepbar"><span class="eyebrow" id="stLab">Passo 1 de 6</span><div class="nav"><button type="button" class="btn" id="stPrev">← Anterior</button><button type="button" class="btn primary" id="stNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="wide" viewBox="0 0 760 310" role="img" aria-labelledby="st-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="st-t">Seis pastas: modelo, fontes, em validação e aprovadas em linha, com _versoes-anteriores abaixo de modelo e evidencias abaixo de aprovadas. Um arquivo percorre as pastas passo a passo.</title>
+      <defs><marker id="mkst" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0,0.5 L10,4.5 L0,8.5 z" class="st-mk"/></marker></defs>
+      <text class="st-zl" x="20" y="26">O CAMINHO DE UMA ATA</text>
+      <text class="st-badge" x="575" y="26">SÓ ESTA CIRCULA</text>
+      <g class="st-box" data-st="0"><rect x="20" y="40" width="165" height="96" rx="8"/><text class="l" x="32" y="64">modelo/</text><text class="s" x="32" y="82">o padrão de toda ata</text></g>
+      <g class="st-box" data-st="1"><rect x="205" y="40" width="165" height="96" rx="8"/><text class="l" x="217" y="64">fontes/</text><text class="s" x="217" y="82">o conteúdo, em texto</text></g>
+      <g class="st-box" data-st="2"><rect x="390" y="40" width="165" height="96" rx="8"/><text class="l" x="402" y="64">em-validacao/</text><text class="s" x="402" y="82">espera o seu OK</text></g>
+      <g class="st-box circ" data-st="3"><rect x="575" y="40" width="165" height="96" rx="8"/><text class="l" x="587" y="64">aprovadas/</text><text class="s" x="587" y="82">o que foi validado</text></g>
+      <g class="st-box" data-st="4"><rect x="20" y="196" width="165" height="96" rx="8"/><text class="l" x="32" y="220">_versoes-anteriores/</text><text class="s" x="32" y="238">o padrão antigo</text></g>
+      <g class="st-box" data-st="5"><rect x="575" y="196" width="165" height="96" rx="8"/><text class="l" x="587" y="220">evidencias/</text><text class="s" x="587" y="238">a prova visual</text></g>
+      <path class="st-flow" d="M185,88 L203,88" marker-end="url(#mkst)"/>
+      <path class="st-flow" d="M370,88 L388,88" marker-end="url(#mkst)"/>
+      <path class="st-flow" d="M555,88 L573,88" marker-end="url(#mkst)"/>
+      <path class="st-flow dash" d="M102,136 L102,194" marker-end="url(#mkst)"/>
+      <path class="st-flow dash" d="M657,136 L657,194" marker-end="url(#mkst)"/>
+      <g class="st-tok" id="stTok" transform="translate(32,94)"><rect x="0" y="0" width="141" height="28" rx="4"/><text x="8" y="18" id="stTokT">ata-modelo.docx</text></g>
+    </svg>
+  </div>
+  <div class="st-who"><span class="hint">Quem mexe nesta pasta:</span><span class="st-chip" id="stClaude">o Claude grava</span><span class="st-chip" id="stVoce">você move</span></div>
+  <div class="caption" id="stCap" aria-live="polite"></div>
+  <p class="hint">O modelo tem página própria: <a href="./claude-code--modelo.html">modelo</a>. A lista de quem é quem, que mora em <code>fontes/</code> e vale para todas as atas: <a href="./claude-code--referencia.html">arquivo de referência</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-nome" aria-labelledby="h-nome">
+  <span class="eyebrow">A data abre o nome</span>
+  <h2 id="h-nome">O nome começa pela data, para a pasta se ordenar sozinha</h2>
+  <p class="intro">O formato: <code>&lt;aaaa-mm-dd&gt;_ATA_&lt;Tipo&gt;_&lt;assunto&gt;</code>. A evidência do mesmo dia usa a mesma raiz e um número no fim. <strong>Com o ano primeiro, a ordem alfabética é a ordem do tempo</strong>, e a evidência fica encostada na ata que ela prova. Monte um nome e veja onde ele cai nas duas pastas.</p>
+  <div class="nm-grid">
+    <div class="nm-form">
+      <label>Data da reunião<input type="date" id="nmData" value="2026-09-28"></label>
+      <label>Documento<select id="nmDoc"><option value="ATA">ATA</option><option value="EVIDENCIA">EVIDENCIA</option></select></label>
+      <label>Tipo de reunião<select id="nmTipo"><option>Semanal</option><option>Extraordinaria</option><option>Comite</option><option>Kickoff</option></select></label>
+      <label>Assunto<input id="nmAss" value="orçamento da fase 2"></label>
+      <label>Número (só na evidência)<input type="number" id="nmNN" min="1" max="99" value="1"></label>
+    </div>
+    <div class="nm-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O nome · ao vivo</span><button type="button" class="btn" data-copy="nmOut">Copiar</button></div>
+        <pre id="nmOut"></pre>
+      </div>
+      <div class="two">
+        <div class="nm-list sim"><span class="eyebrow">Nome pela data</span><ol id="nmSim"></ol></div>
+        <div class="nm-list nao"><span class="eyebrow">Nome livre</span><ol id="nmNao"></ol></div>
+      </div>
+    </div>
+  </div>
+  <p class="hint">Sem acento e sem espaço no nome: o arquivo abre igual em qualquer computador, e o Claude não tropeça na hora de achar.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-onde" aria-labelledby="h-onde">
+  <span class="eyebrow">Onde mora este arquivo</span>
+  <h2 id="h-onde">Oito arquivos de uma semana de reunião. Para que pasta vai cada um?</h2>
+  <p class="intro">A pergunta que decide não é “que tipo de arquivo é”, é <strong>“em que estado ele está, e quem pode mexer nele”</strong>.</p>
+  <div class="qz" id="ondeQuiz"></div>
+  <p class="qz-score" id="ondeScore" aria-live="polite"></p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-vinte" aria-labelledby="h-vinte">
+  <span class="eyebrow">Vinte e duas atas</span>
+  <h2 id="h-vinte">Dois meses de reuniões com várias instituições, numa pasta só</h2>
+  <p class="intro">A pasta de atas de um projeto real, com reuniões semanais entre várias instituições, depois de cerca de dois meses. <strong>Nenhuma ata tem versão no nome, e dá para dizer o estado de cada uma sem abrir nenhuma.</strong> Clique numa ata.</p>
+  <div class="nums">
+    <div><b>22</b><small>atas no mesmo padrão</small></div>
+    <div><b>21</b><small>em <code>aprovadas/</code></small></div>
+    <div><b>1</b><small>em <code>em-validacao/</code></small></div>
+    <div><b>1</b><small>lista de pessoas para todas</small></div>
+    <div><b>1</b><small>receita de uma página</small></div>
+  </div>
+  <div class="at-grid" id="atGrid" role="group" aria-label="As 22 atas"></div>
+  <div class="at-leg"><span>em aprovadas/</span><span class="val">em em-validacao/</span></div>
+  <div class="panel" id="atPanel" aria-live="polite"></div>
+  <p class="intro">A receita mora dentro da pasta. <strong>Toda pasta com trabalho repetitivo tem um <code>COMO-EDITAR.md</code></strong>: o padrão, o que tem em cada subpasta, os passos para gerar e as regras que vieram das primeiras atas. Quem chega, pessoa ou Claude, lê ali como se faz. O desta pasta cabe numa página.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Um COMO-EDITAR.md de uma página · para adaptar</span><button type="button" class="btn" data-copy="ceTxt">Copiar</button></div>
+<pre id="ceTxt"><b># COMO-EDITAR · atas</b>
+
+<b>## O padrão</b>
+Toda ata segue o arquivo em modelo/. Mudou o formato? Mude o modelo, não a ata.
+
+<b>## O que tem em cada pasta</b>
+- modelo/: a ata de exemplo
+- fontes/: o conteúdo de cada ata, em texto, e o pessoas.md, que vale para todas
+- em-validacao/: onde as atas novas são gravadas
+- aprovadas/: só o que foi aprovado. É a única pasta que circula
+- evidencias/: o print da chamada, com a raiz do nome da ata e _01 no fim
+- _versoes-anteriores/: o modelo antigo
+
+<b>## Para gerar uma ata</b>
+1. Leia a transcrição em reunioes/brutas/. Não edite.
+2. Escreva fontes/&lt;data&gt;-&lt;assunto&gt;.md, conferindo cada nome no pessoas.md.
+3. Gere .docx e .pdf no formato do modelo e grave em em-validacao/.
+4. Avise quem aprova. Não mova nada para aprovadas/.
+
+<b>## Regras que vieram das primeiras atas</b>
+- <i>[cada correção que valeu para todas as atas, uma por linha]</i></pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-comeco" aria-labelledby="h-comeco">
+  <span class="eyebrow">Quatro pastas no primeiro dia</span>
+  <h2 id="h-comeco">Quatro pastas, um modelo e três regras no manual</h2>
+  <p class="intro">Não se desenha a estrutura inteira antes de trabalhar. <strong>Três passos bastam para a ata da semana que vem</strong>, e o resto nasce quando o projeto pedir.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · as pastas</span><h3>Quatro, e nenhuma a mais</h3><p><code>reunioes/brutas/</code>, <code>reunioes/leituras/</code>, <code>atas/em-validacao/</code> e <code>atas/aprovadas/</code>.</p></div>
+    <div class="card"><span class="eyebrow">02 · o modelo</span><h3>A sua ata de hoje</h3><p>Ponha em <code>modelo/</code> a ata desta semana, do jeito que ela precisa sair. É dela que o formato sai daqui para a frente.</p></div>
+    <div class="card focal"><span class="eyebrow">03 · o manual</span><h3>Três regras no CLAUDE.md</h3><p>A bruta não se edita. Ata nova vai para <code>em-validacao/</code>. Só você move para <code>aprovadas/</code>.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido para colar no Claude Code, dentro da pasta</span><button type="button" class="btn" data-copy="coPrompt">Copiar</button></div>
+<pre id="coPrompt">Vamos organizar esta pasta para as atas da reunião <b>[semanal da equipe]</b>. Faça só isto:
+1. Crie quatro pastas: reunioes/brutas/, reunioes/leituras/, atas/em-validacao/ e atas/aprovadas/. Não crie nenhuma outra.
+2. Crie atas/modelo/ e ponha lá o arquivo <b>[nome da ata desta semana]</b>, que é o formato que toda ata deve seguir.
+3. Acrescente ao CLAUDE.md desta pasta estas três regras, com estas palavras:
+   - A transcrição em reunioes/brutas/ não se edita. Ela é a prova do que foi dito.
+   - Ata nova vai para atas/em-validacao/. Nunca grave em atas/aprovadas/.
+   - Só eu movo uma ata para atas/aprovadas/.
+Antes de mexer em qualquer coisa, me mostre a lista do que vai criar e espere o meu OK.</pre>
+  </div>
+  <p class="hint">Por que essas três vão no manual, e não no pedido de cada semana: <a href="./claude-code--claude-md.html">o manual de chegada</a>. Quando o mesmo nome errar duas vezes, a lista de pessoas entra em <code>fontes/</code>: <a href="./claude-code--referencia.html">arquivo de referência</a>.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>O lugar diz o estado</h3><p>Aprovar é mover de pasta. Se o nome precisa de <code>_v2</code>, falta um estágio.</p></div>
+    <div class="take-card"><h3>A bruta não se mexe</h3><p>Tudo sai dela e toda dúvida volta a ela. A síntese mora em outro lugar e aponta para ela.</p></div>
+    <div class="take-card"><h3>A pasta nasce com o trabalho</h3><p>Quatro pastas no primeiro dia. As outras, quando alguma coisa precisar morar nelas.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Transcrição bruta</dt><dd>O texto da reunião como o gravador entregou. É a prova do que foi dito: não se edita, nem para limpar.</dd>
+    <dt>Síntese</dt><dd>O que se produz a partir da bruta: a ata, o resumo, a decisão. Mora em outra pasta e aponta para a fonte.</dd>
+    <dt>Estágio</dt><dd>Uma pasta que diz o estado do documento: em validação, aprovado, antigo. Mudar de estado é mudar de pasta.</dd>
+    <dt>COMO-EDITAR.md</dt><dd>A receita que mora dentro da pasta: o padrão, o que tem em cada subpasta e os passos para gerar.</dd>
+    <dt>Pasta de conhecimento</dt><dd>Onde ficam as sínteses, as decisões e as pendências, ligadas entre si. Não guarda cópia da fonte.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os nomes de pasta são de um jeito que funciona, não uma exigência da ferramenta: o que importa é cada arquivo ter um lugar e um dono. A transcrição, os nomes de arquivo, as datas e os assuntos são inventados. Os números da pasta de atas (22 atas, 21 aprovadas, 1 em validação) foram medidos num projeto real, sem nome, e mostram a forma do problema, não uma meta de tamanho. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--claude-md.html">o manual de chegada</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">arquivo de referência</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code.html"><span>← anterior</span><b>Visão geral · Claude Code</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--claude-md.html"><span>próxima →</span><b>8.2 · CLAUDE.md</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Mora em ' + lab + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  /* linha de árvore: [profundidade, nome, classe, nota, etiqueta] */
+  function tree(rows) {
+    return rows.map(function (r) {
+      return '<div class="pt-row d' + r[0] + (r[2] ? ' ' + r[2] : '') + '"><span class="nm">' + r[1] + '</span>' + (r[4] ? '<span class="tag">' + r[4] + '</span>' : '') + (r[3] ? '<span class="nt">' + r[3] + '</span>' : '') + '</div>';
+    }).join('');
+  }
+
+  /* 1 · sem dono × com dono */
+  var PT = {
+    antes: {
+      rows: [
+        [0, 'atas/', 'dir'],
+        [1, 'Reuniao semanal 21 set.txt', 'err', 'a bruta no meio das atas', '1'],
+        [1, 'transcricao-reuniao-14-09.docx', 'err', 'editada à mão para “limpar”', '2'],
+        [1, 'ata-final.docx', 'err', '', '3'],
+        [1, 'ata-final-v2.docx', 'err', '', '3'],
+        [1, 'ata-final-v3-revisada.docx', 'err', 'qual destas foi enviada?', '3'],
+        [1, 'modelo-ata-antigo.docx', 'err', 'ainda vale?', '1'],
+        [1, 'print chamada.png', '', ''],
+        [1, 'cronograma/', 'vazia', 'vazia desde o primeiro dia', '4'],
+        [1, 'riscos/', 'vazia', 'vazia', '4'],
+        [1, 'equipe/', 'vazia', 'vazia', '4']
+      ],
+      side: '<div class="verdict no"><b>Qual ata foi para o comitê?</b> A pasta não sabe. A v3-revisada é a mais nova no nome, mas nada garante que foi ela. Alguém precisa lembrar.</div>' +
+        '<ol class="pt-errs"><li><b>Tudo junto.</b> Bruta, rascunho e aprovado na mesma pasta: o Claude não sabe o que é prova e o que é versão.</li><li><b>A bruta editada.</b> Para “limpar” a transcrição. A prova some.</li><li><b>Versão no nome.</b> <span class="mono">_final</span>, <span class="mono">_v2</span>, <span class="mono">_v3-revisada</span>. Falta um estágio.</li><li><b>A estrutura inteira no primeiro dia.</b> Pasta vazia confunde mais do que ajuda.</li></ol>'
+    },
+    depois: {
+      rows: [
+        [0, 'reunioes/', 'dir'],
+        [1, 'brutas/', 'dir', 'intocadas: a prova'],
+        [2, '2026-09-14_transcricao.txt', ''],
+        [2, '2026-09-21_transcricao.txt', ''],
+        [1, 'leituras/', 'dir', 'o que foi dito, separado do que é dedução'],
+        [0, 'atas/', 'dir'],
+        [1, 'COMO-EDITAR.md', 'ok', '', 'a receita'],
+        [1, 'modelo/', 'dir', 'o padrão'],
+        [2, 'ata-modelo.docx', ''],
+        [1, 'fontes/', 'dir', 'o conteúdo, em texto'],
+        [2, '2026-09-14-cronograma.md', ''],
+        [2, 'pessoas.md', 'ok', 'vale para todas', 'referência'],
+        [1, 'em-validacao/', 'dir', 'espera o seu OK'],
+        [2, '2026-09-21_ATA_Semanal_orcamento.docx', ''],
+        [1, 'aprovadas/', 'dir', 'a única que circula'],
+        [2, '2026-09-14_ATA_Semanal_cronograma.docx', 'ok', '', 'enviada'],
+        [2, '2026-09-14_ATA_Semanal_cronograma.pdf', 'ok', '', 'enviada'],
+        [1, 'evidencias/', 'dir'],
+        [2, '2026-09-14_EVIDENCIA_Semanal_cronograma_01.png', ''],
+        [1, '_versoes-anteriores/', 'dir', 'o padrão antigo, fora do caminho']
+      ],
+      side: '<div class="verdict ok"><b>Qual ata foi para o comitê?</b> A que está em <span class="mono">aprovadas/</span>. Só essa pasta circula, e o que está nela passou pelo seu OK.</div>' +
+        '<div class="card"><h3>E quando você pede “a ata da semana”</h3><p>O Claude lê a bruta sem editar, escreve o conteúdo em <span class="mono">fontes/</span> conferindo os nomes no <span class="mono">pessoas.md</span>, segue o <span class="mono">modelo/</span> e grava em <span class="mono">em-validacao/</span>. Ninguém precisou dizer onde fica cada coisa: a pasta disse.</p></div>'
+    }
+  };
+  var ptBtns = document.querySelectorAll('[data-pt]');
+  function setPt(k) { pressGroup(ptBtns, function (x) { return x.dataset.pt === k; }); document.getElementById('ptTree').innerHTML = tree(PT[k].rows); document.getElementById('ptSide').innerHTML = PT[k].side; }
+  ptBtns.forEach(function (b) { b.addEventListener('click', function () { setPt(b.dataset.pt); }); });
+  setPt('antes');
+
+  /* 2 · a bruta */
+  var BR = {
+    limpa: '<div class="br-tx"><span class="eyebrow">reuniao-14-09-limpa.docx · editada à mão</span><p>Cronograma da fase 2: discutido. Entrega prevista para o fim de outubro.</p><p>Relatório mensal: o analista envia na próxima semana.</p><p class="cut">Retirados na limpeza: cumprimentos, repetições e “conversa paralela”.</p></div><div class="verdict no"><b>Ninguém consegue provar.</b> A troca que decidia a dúvida era curta, parecia conversa paralela, e saiu na limpeza. Sobrou a ata contra a memória de cada um, e a ata foi feita a partir do texto limpo.</div>',
+    bruta: '<div class="br-tx"><span class="eyebrow">reunioes/brutas/2026-09-14_transcricao.txt · intocada</span><p><span class="t">[00:41:52]</span>Coordenador: então o cronograma da fase 2 fica como?</p><p><span class="t">[00:42:05]</span>Analista: A gente fecha a entrega dia <mark>30 de outubro</mark>, pode ser?</p><p><span class="t">[00:42:10]</span>Coordenador: Pode. <mark>Trinta de outubro.</mark></p><p><span class="t">[00:42:14]</span>Analista: Beleza. E o relatório, eu mando semana que vem.</p></div><div class="verdict ok"><b>A dúvida volta à fonte, e a fonte não mudou.</b> Uma busca por “outubro” na bruta acha o minuto 42, com quem perguntou e quem respondeu. A ata foi escrita a partir daqui, e daqui se confere.</div>'
+  };
+  var brBtns = document.querySelectorAll('[data-br]');
+  function setBr(k) { pressGroup(brBtns, function (x) { return x.dataset.br === k; }); document.getElementById('brOut').innerHTML = BR[k]; }
+  brBtns.forEach(function (b) { b.addEventListener('click', function () { setBr(b.dataset.br); }); });
+  setBr('limpa');
+
+  /* 3 · pastas que nascem quando o projeto pede */
+  var PP = [
+    { lab: 'Primeiro dia', vaz: 5, why: 'Decisões, pendências e três frentes, todas vazias: cinco lugares que ainda não têm o que guardar.', rows: [
+      [0, '00-aqui-paramos.md', 'novo', 'onde o trabalho está', 'nasceu'], [0, '01-projeto/', 'dir novo', 'o escopo que chegou com o projeto', 'nasceu'], [0, '03-reunioes/', 'dir novo', 'a primeira reunião já aconteceu', 'nasceu'] ] },
+    { lab: 'Semana 3', vaz: 3, why: 'Ainda faltam duas frentes e a lista de pendências.', rows: [
+      [0, '00-aqui-paramos.md', ''], [0, '00-decisoes.md', 'novo', 'a primeira decisão que alguém vai querer achar depois', 'nasceu'], [0, '01-projeto/', 'dir'], [0, '02-modulos/', 'dir novo', '', 'nasceu'], [1, 'levantamento/', 'dir novo', 'a primeira frente começou', 'nasceu'], [0, '03-reunioes/', 'dir'] ] },
+    { lab: 'Mês 2', vaz: 1, why: 'Só a última frente continuaria vazia, esperando.', rows: [
+      [0, '00-aqui-paramos.md', ''], [0, '00-decisoes.md', ''], [0, '00-fios-em-aberto.md', 'novo', 'as pendências passaram de cinco', 'nasceu'], [0, '01-projeto/', 'dir'], [0, '02-modulos/', 'dir'], [1, 'levantamento/', 'dir'], [1, 'capacitacao/', 'dir novo', 'a segunda frente começou', 'nasceu'], [0, '03-reunioes/', 'dir'] ] },
+    { lab: 'Mês 4', vaz: 0, why: 'Tudo chegou. A diferença foi o caminho: em nenhum dia houve pasta vazia confundindo quem chegava.', rows: [
+      [0, '00-aqui-paramos.md', ''], [0, '00-decisoes.md', ''], [0, '00-fios-em-aberto.md', ''], [0, '01-projeto/', 'dir'], [0, '02-modulos/', 'dir'], [1, 'levantamento/', 'dir'], [1, 'capacitacao/', 'dir'], [1, 'avaliacao/', 'dir novo', 'a terceira frente começou', 'nasceu'], [0, '03-reunioes/', 'dir'] ] }
+  ];
+  var ppR = document.getElementById('ppRange');
+  function renderPp() {
+    var s = PP[+ppR.value];
+    document.getElementById('ppOut').textContent = s.lab;
+    document.getElementById('ppTree').innerHTML = tree(s.rows);
+    document.getElementById('ppVazio').textContent = s.vaz;
+    document.getElementById('ppWhy').textContent = s.why;
+  }
+  ppR.addEventListener('input', renderPp);
+  renderPp();
+
+  /* 4 · estágios */
+  var BOX = [[20, 40], [205, 40], [390, 40], [575, 40], [20, 196], [575, 196]];
+  var ST = [
+    { b: 0, tok: 'ata-modelo.docx', c: 0, v: 1, t: 'O padrão existe antes da primeira ata', d: 'Em <code>modelo/</code> fica a ata de exemplo, com a cara que toda ata precisa ter. O Claude segue o modelo em vez de adivinhar o formato a cada semana. Quem mexe aqui é você, e raramente.' },
+    { b: 1, tok: '2026-09-21-….md', c: 1, v: 1, t: 'A reunião vira texto que dá para revisar', d: 'A partir da bruta, o Claude escreve o conteúdo da ata em texto simples, em <code>fontes/</code>. É aqui que se corrige um fato, porque texto se lê e se compara. A lista de quem é quem também mora aqui, e vale para todas as atas.' },
+    { b: 2, tok: '2026-09-21_ATA….docx', c: 1, v: 0, t: 'O Claude gera a ata e grava aqui, e só aqui', d: 'O documento sai em .docx e .pdf, no formato do modelo, dentro de <code>em-validacao/</code>. Ele nunca grava direto em <code>aprovadas/</code>: essa regra está escrita no manual da pasta.' },
+    { b: 3, tok: '2026-09-21_ATA….docx', c: 0, v: 1, t: 'Aprovar é mover', d: 'Você lê e, se está bom, move o arquivo para <code>aprovadas/</code>. Não existe <code>_v2</code> nem <code>_final</code>: o lugar diz o estado. É a única pasta que circula; o que vai por e-mail sai daqui, e de nenhum outro lugar.' },
+    { b: 5, tok: '…_EVIDENCIA_01.png', c: 0, v: 1, t: 'A prova visual, com a mesma raiz de nome', d: 'O print da chamada, a foto da sala. O nome começa pela mesma data, tipo e assunto da ata, com um número no fim. Pela ordem do nome, a evidência fica ao lado da ata que ela prova.' },
+    { b: 4, tok: 'modelo-antigo.docx', c: 0, v: 1, t: 'Quando o padrão muda, o antigo sai do caminho', d: 'O comitê pediu um campo novo. O modelo antigo vai para <code>_versoes-anteriores/</code>: guardado, e fora do caminho. O Claude para de tomá-lo como padrão, e ninguém precisa refazer as atas antigas.' }
+  ];
+  var stBoxes = document.querySelectorAll('.st-box'), stTok = document.getElementById('stTok');
+  stepper(ST.length, document.getElementById('stPrev'), document.getElementById('stNext'), document.getElementById('stLab'), 'Passo', function (k) {
+    var s = ST[k - 1], p = BOX[s.b];
+    stBoxes.forEach(function (g) { g.classList.toggle('agora', +g.dataset.st === s.b); });
+    stTok.setAttribute('transform', 'translate(' + (p[0] + 12) + ',' + (p[1] + 54) + ')');
+    document.getElementById('stTokT').textContent = s.tok;
+    document.getElementById('stClaude').className = 'st-chip' + (s.c ? ' on' : '');
+    document.getElementById('stVoce').className = 'st-chip' + (s.v ? ' on' : '');
+    document.getElementById('stCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 5 · nome com data */
+  var nmD = document.getElementById('nmData'), nmDoc = document.getElementById('nmDoc'), nmT = document.getElementById('nmTipo'), nmA = document.getElementById('nmAss'), nmN = document.getElementById('nmNN');
+  var SIM = ['2026-08-31_ATA_Kickoff_abertura.docx', '2026-09-07_ATA_Semanal_equipe.docx', '2026-09-14_ATA_Semanal_cronograma.docx', '2026-09-14_EVIDENCIA_Semanal_cronograma_01.png', '2026-09-21_ATA_Semanal_orcamento.docx'];
+  var NAO = ['ata kickoff 31-08.docx', 'Ata equipe (7 set).docx', 'ata-cronograma-final.docx', 'print chamada.png', 'orçamento ata 21-09 v2.docx'];
+  function slug(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'assunto'; }
+  function listHtml(arr, novo) { return arr.map(function (x) { return '<li' + (x === novo ? ' class="new"' : '') + '>' + esc(x) + '</li>'; }).join(''); }
+  function nm() {
+    var d = /^\d{4}-\d{2}-\d{2}$/.test(nmD.value) ? nmD.value : 'aaaa-mm-dd';
+    var ev = nmDoc.value === 'EVIDENCIA', nn = Math.max(1, Math.min(99, parseInt(nmN.value, 10) || 1));
+    var name = d + '_' + nmDoc.value + '_' + nmT.value + '_' + slug(nmA.value) + (ev ? '_' + (nn < 10 ? '0' : '') + nn + '.png' : '.docx');
+    document.getElementById('nmOut').textContent = name;
+    var dd = d === 'aaaa-mm-dd' ? '' : ' ' + d.slice(8, 10) + '-' + d.slice(5, 7);
+    var livre = ev ? 'print ' + nmA.value.trim() + '.png' : 'ata ' + nmA.value.trim() + dd + '.docx';
+    var a = SIM.concat([name]).sort(), b = NAO.concat([livre]).sort(function (x, y) { return x.localeCompare(y, 'pt', { sensitivity: 'base' }); });
+    document.getElementById('nmSim').innerHTML = listHtml(a, name);
+    document.getElementById('nmNao').innerHTML = listHtml(b, livre);
+  }
+  [nmD, nmA, nmN].forEach(function (i) { i.addEventListener('input', nm); });
+  [nmD, nmDoc, nmT].forEach(function (i) { i.addEventListener('change', nm); });
+  nm();
+
+  /* 6 · onde mora */
+  quiz(document.getElementById('ondeQuiz'), document.getElementById('ondeScore'), [
+    { s: 'A transcrição da reunião de ontem, do jeito que o gravador entregou.', a: 'bru', why: 'É a prova do que foi dito. Fica separada, e ninguém edita.' },
+    { s: 'A ata que o Claude acabou de gerar, que você ainda não leu.', a: 'val', why: 'Tudo o que o Claude gera cai aqui primeiro, esperando o seu OK.' },
+    { s: 'A ata que você leu, corrigiu uma vírgula e liberou para o comitê.', a: 'apr', why: 'Aprovar é mover. É a única pasta que circula.' },
+    { s: 'O print da chamada com os participantes da reunião.', a: 'evi', why: 'Prova visual, com a mesma raiz de nome da ata e um número no fim.' },
+    { s: 'O conteúdo da ata em texto simples, que você revisa antes de virar documento.', a: 'fon', why: 'O conteúdo revisável de cada ata mora em fontes/, com a data no nome.' },
+    { s: 'A lista de quem é quem, com todos os jeitos como cada nome aparece na transcrição.', a: 'fon', why: 'Uma lista só, em fontes/, que vale para todas as atas. Veja <a href="./claude-code--referencia.html">arquivo de referência</a>.' },
+    { s: 'A ata de exemplo, com a cara que toda ata precisa ter.', a: 'mod', why: 'O padrão que toda ata segue. Veja <a href="./claude-code--modelo.html">modelo</a>.' },
+    { s: 'O modelo que valia até agosto, antes de o comitê pedir um campo novo.', a: 'ver', why: 'Guardado e fora do caminho, para o Claude não tomá-lo como padrão.' }
+  ], [['bru', 'brutas/'], ['fon', 'fontes/'], ['mod', 'modelo/'], ['val', 'em-validacao/'], ['apr', 'aprovadas/'], ['evi', 'evidencias/'], ['ver', '_versoes-anteriores/']], 'repare que a pergunta nunca foi o tipo do arquivo: foi o estado dele.');
+
+  /* 7 · as 22 atas (datas e assuntos inventados; os totais são os medidos) */
+  var ASS = ['abertura', 'cronograma', 'equipe', 'orcamento', 'levantamento', 'capacitacao', 'riscos', 'comunicacao'];
+  var AT = [], dt = new Date(Date.UTC(2026, 6, 6)), passo = [2, 2, 3];
+  for (var i = 0; i < 22; i++) {
+    var iso = dt.toISOString().slice(0, 10);
+    AT.push({ d: iso, tipo: i === 0 ? 'Kickoff' : 'Semanal', a: ASS[i % ASS.length], val: i === 21 });
+    dt = new Date(dt.getTime() + passo[i % 3] * 86400000);
+  }
+  var atGrid = document.getElementById('atGrid');
+  AT.forEach(function (a, i) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = i + 1; b.dataset.at = i;
+    b.setAttribute('aria-pressed', 'false'); b.setAttribute('aria-label', 'Ata ' + (i + 1)); if (a.val) b.className = 'val';
+    b.addEventListener('click', function () { setAt(i); });
+    atGrid.appendChild(b);
+  });
+  function setAt(i) {
+    var a = AT[i], raiz = a.d + '_ATA_' + a.tipo + '_' + a.a, pasta = a.val ? 'em-validacao/' : 'aprovadas/';
+    pressGroup(atGrid.querySelectorAll('button'), function (x) { return +x.dataset.at === i; });
+    document.getElementById('atPanel').innerHTML = '<span class="eyebrow">Ata ' + (i + 1) + ' de 22 · ' + (a.val ? 'esperando o OK' : 'aprovada') + '</span>' +
+      '<h3>' + (a.val ? 'Ainda em ' : 'Em ') + '<code>' + pasta + '</code></h3>' +
+      '<ul><li><code>' + pasta + raiz + '.docx</code></li><li><code>' + pasta + raiz + '.pdf</code></li><li><code>fontes/' + a.d + '-' + a.a + '.md</code>, o conteúdo em texto</li><li><code>fontes/pessoas.md</code>, a mesma para as 22</li></ul>' +
+      '<p class="hint">' + (a.val ? 'É a única das 22 que ainda não circula. Quando você aprovar, ela muda de pasta, e o nome continua o mesmo.' : 'Para saber o estado, bastou olhar a pasta. O nome não diz final, v2 nem revisada.') + '</p>';
+  }
+  setAt(21);
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

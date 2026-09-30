@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--handoff">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handoff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.4. Peças: o dia de uma conversa (controle deslizante com a frente mudando), decisor compactar ou conversa nova, handoff que narra × handoff que decide com o que a próxima conversa usa, montador do prompt de continuidade com copiar, teste do gatilho da skill de fim de sessão, tabela das quatro situações. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+code { font-family: var(--font-mono); font-size: .88em; }
+/* 1 · três gestos */
+.hf-num { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+/* 2 · o dia de uma conversa */
+.cv { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 14px; }
+.cv-row { display: grid; grid-template-columns: repeat(14, minmax(0, 1fr)); gap: 4px; }
+.cv-b { height: 34px; border-radius: 4px; border: 1px solid var(--accent); background: var(--accent-soft); transition: opacity .25s ease; }
+.cv-b.off { opacity: 0; }
+.cv-b.w0 { opacity: .22; }
+.cv-b.w1 { opacity: .45; }
+.cv-b.w2 { opacity: .72; }
+.cv-b.w3 { opacity: 1; }
+.cv-b.nf { border-color: var(--atencao); background: var(--atencao-soft); }
+.cv-b.cut { box-shadow: inset 3px 0 0 var(--atencao); }
+.cv-scale { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+.cv-act { display: inline-block; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; border-radius: 4px; padding: 3px 10px; border: 1px solid; width: fit-content; }
+.cv-act.ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.cv-act.mid { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.cv-act.go { border-color: var(--text); background: var(--text); color: var(--bg); }
+.cv-act.no { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+
+/* 4 · narra × decide */
+.hd-doc { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 6px; font-size: .95rem; }
+.hd-doc h3 { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); margin-top: 6px; }
+.hd-l { padding: 2px 8px; border-radius: 4px; border-left: 3px solid transparent; color: var(--text-muted); transition: background .2s ease; }
+.hd-doc.mark .hd-l.use { background: var(--ok-soft); border-left-color: var(--ok); color: var(--ok-texto); }
+.hd-doc.mark .hd-l:not(.use) { opacity: .55; }
+.hd-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+
+/* 5 · montador */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.mt-form { display: grid; gap: 10px; }
+.mt-form label { display: grid; gap: 4px; font-size: .92rem; }
+.mt-form label small { color: var(--text-dim); font-size: .82rem; }
+.mt-form input, .mt-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+
+/* 6 · gatilho */
+.gt-test { display: grid; gap: 10px; }
+.gt-test input { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 12px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.gt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gt-chips button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 4px 12px; font-size: .88rem; color: var(--text-muted); }
+.gt-chips button:hover { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 860px) {
+  .two, .three, .take, .mt-grid { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .cv-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .cv-b, .hd-l { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--onde-paramos.html">← 8.3 Onde paramos</a><a href="./claude-code--referencia.html">8.5 Referência →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html" aria-current="page"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.4 · 4 de 7</span>
+  <h1>Handoff</h1>
+  <p class="sub">Fechar a sessão deixando por escrito o que a próxima precisa saber, antes de a conversa degradar</p>
+  <p class="lead">A conversa acaba; o trabalho, não. Handoff é o gesto de encerrar escrevendo: <strong>o que foi decidido, onde o trabalho está, qual é o próximo passo e o que ainda espera decisão</strong>. No chat, vira um bloco para colar na conversa nova. No Claude Code, vira um arquivo que a próxima conversa lê sozinha. Nos dois casos, você troca de conversa na hora certa, e não quando ela já piorou.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-fechar">Fechar escrevendo</a><a href="#s-cansa">A conversa que cansa</a><a href="#s-frente">Frente, não tamanho</a><a href="#s-decide">Decisão, não narrativa</a><a href="#s-continuidade">O prompt de continuidade</a><a href="#s-gatilhos">Os gatilhos de fim de dia</a><a href="#s-tropecos">Três tropeços do handoff</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-fechar" aria-labelledby="h-fechar">
+  <span class="eyebrow">Fechar escrevendo</span>
+  <h2 id="h-fechar">A sessão termina, e o que ela decidiu fica num lugar que a próxima lê</h2>
+  <p class="intro">O modelo não lembra de nada entre uma conversa e outra. Quem lembra é o que ficou escrito. <strong>O handoff é a última coisa que a sessão faz: reescrever o estado do trabalho para quem vem depois</strong>, que pode ser você amanhã, uma conversa nova, ou um colega.</p>
+  <div class="three">
+    <div class="card"><span class="hf-num">01 · decide</span><h3>Se é hora de trocar</h3><p>Nem toda conversa longa pede conversa nova. O critério é a frente de trabalho, e ele está logo abaixo.</p></div>
+    <div class="card focal"><span class="hf-num">02 · escreve</span><h3>O estado, não a história</h3><p>Quatro respostas curtas. Quem lê não precisa saber como se chegou até ali; precisa saber onde está.</p></div>
+    <div class="card"><span class="hf-num">03 · guarda</span><h3>Fora da conversa</h3><p>Num bloco que você cola, ou num arquivo da pasta. Handoff que fica só na conversa some com ela.</p></div>
+  </div>
+  <p class="hint">No Claude Code, esse gesto pode ser uma skill de fim de sessão: ela decide se é hora de trocar e escreve o handoff na memória do projeto, o arquivo que conta <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-cansa" aria-labelledby="h-cansa">
+  <span class="eyebrow">A conversa que cansa</span>
+  <h2 id="h-cansa">Quem só usa o chat vai até a conversa piorar, e aí recomeça do zero</h2>
+  <p class="intro">Numa conversa longa, o que foi combinado no começo disputa espaço com tudo o que veio depois. Ninguém avisa: a resposta só fica um pouco pior a cada volta. <strong>O handoff troca de conversa antes disso, e sem perder nada.</strong> Arraste pelo dia de uma conversa sobre o relatório mensal de vendas.</p>
+  <div class="cv">
+    <div class="field">
+      <label for="cvRange">Onde a conversa está</label>
+      <div class="row"><input type="range" id="cvRange" min="1" max="6" value="1"><output id="cvOut" for="cvRange">1 de 6</output></div>
+    </div>
+    <div class="cv-row" id="cvRow" role="img" aria-label="Blocos da conversa: os do começo ficam mais claros à medida que a conversa cresce; os da frente nova aparecem em outra cor"></div>
+    <div class="cv-scale" aria-hidden="true"><span>o combinado do começo</span><span>a mensagem de agora</span></div>
+    <div class="caption" id="cvCap" aria-live="polite"></div>
+  </div>
+  <p class="hint">A forma, não a medida: nenhuma ferramenta mostra quanto o começo ainda pesa. Por que a conversa longa perde o combinado está explicado em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>; aqui a pergunta é outra: <strong>em que ponto trocar</strong>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-frente" aria-labelledby="h-frente">
+  <span class="eyebrow">Frente, não tamanho</span>
+  <h2 id="h-frente">Compactar ou abrir conversa nova</h2>
+  <p class="intro"><strong>Compactar</strong> é pedir para a conversa se resumir dentro dela mesma, para liberar espaço e seguir no mesmo lugar. Serve quando o trabalho continua o mesmo; o resumo pode perder detalhe, por isso o que importa precisa estar escrito antes. <strong>Conversa nova com handoff</strong> é fechar esta, escrever o estado e abrir outra limpa. A regra que decide entre os dois: <strong>o critério é a mudança de frente, não o tamanho da conversa.</strong></p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Situação</th><th>O que fazer</th></tr>
+      <tr><td>Mesma frente, conversa longa</td><td>Compactar a conversa</td></tr>
+      <tr><td>Mudou de frente</td><td><b>Conversa nova + handoff escrito</b></td></tr>
+      <tr><td>Trabalho pesado pela frente, na mesma frente</td><td>Compactar antes de começar</td></tr>
+      <tr><td>Pausa entre um dia e outro</td><td><b>Conversa nova + handoff escrito</b></td></tr>
+    </table>
+  </div>
+  <p class="intro">Agora decida você. Seis situações de uma semana comum.</p>
+  <div class="qz" id="frQuiz"></div>
+  <p class="qz-score" id="frScore" aria-live="polite"></p>
+  <p class="punch">Frente nova numa conversa velha <em>arrasta contexto que não serve mais.</em></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-decide" aria-labelledby="h-decide">
+  <span class="eyebrow">Decisão, não narrativa</span>
+  <h2 id="h-decide">Quatro coisas que a próxima conversa precisa, e nenhuma delas é a história</h2>
+  <p class="intro">Todo handoff responde quatro perguntas: <strong>o que foi decidido nesta sessão · o estado atual, pronto e pela metade · o próximo passo concreto · os fios em aberto, que esperam decisão</strong>. Abaixo, dois handoffs da mesma sessão. Alterne entre eles e ligue o marcador para ver o que a próxima conversa realmente usa.</p>
+  <div class="hd-bar">
+    <div class="seg" role="group" aria-label="Qual handoff">
+      <button type="button" data-hd="narra" aria-pressed="true">O que narra</button>
+      <button type="button" data-hd="decide" aria-pressed="false">O que decide</button>
+    </div>
+    <button type="button" class="btn" id="hdMark" aria-pressed="false">Marcar o que a próxima usa</button>
+  </div>
+  <div class="hd-doc" id="hdDoc" aria-live="polite"></div>
+  <div class="verdict" id="hdVer" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-continuidade" aria-labelledby="h-continuidade">
+  <span class="eyebrow">O prompt de continuidade</span>
+  <h2 id="h-continuidade">No chat, hoje, sem instalar nada</h2>
+  <p class="intro">Quem não usa o Claude Code faz o mesmo gesto com um <strong>prompt de continuidade</strong>: um bloco único, pronto para colar na conversa nova, com contexto, decisões, estado e próximos passos, sem a narrativa da conversa. Preencha e veja o bloco se montar.</p>
+  <div class="mt-grid">
+    <div class="mt-form">
+      <label>Contexto em uma frase<input id="mtCtx" value="Relatório mensal de vendas da regional, para a diretoria."></label>
+      <label>Decidido <small>uma decisão por linha</small><textarea id="mtDec" rows="3">Valores sempre com a planilha de origem ao lado.
+Comparar com o mesmo mês do ano anterior, não com o mês passado.
+Tom direto, sem adjetivo.</textarea></label>
+      <label>Estado <small>o que está pronto e o que está pela metade</small><textarea id="mtEst" rows="3">Pronto: as tabelas por região e o resumo de uma página.
+Pela metade: a seção de devoluções, falta o número de outubro.</textarea></label>
+      <label>Próximo passo <small>a primeira ação da conversa nova</small><input id="mtProx" value="Fechar a seção de devoluções com o número de outubro."></label>
+      <label>Em aberto <small>o que espera decisão de alguém</small><textarea id="mtAb" rows="2">Incluir ou não a regional nova, que abriu no meio do mês.</textarea></label>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">Para colar na conversa nova · ao vivo</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+      <pre id="mtOut"></pre>
+    </div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Ou peça para ela escrever · no fim da conversa longa</span><button type="button" class="btn" data-copy="mtAsk">Copiar</button></div>
+<pre id="mtAsk">Escreva um prompt de continuidade para eu colar numa conversa nova. Quatro blocos: o que decidimos, o estado atual (pronto e pela metade), o próximo passo concreto, e o que está em aberto esperando decisão. Sem narrar a conversa: só o que a próxima precisa para continuar. Se alguma decisão não ficou clara, liste como pergunta em vez de decidir por mim.</pre>
+  </div>
+  <p class="hint">Se for ela quem escreve, leia antes de colar. Quem resume é a conversa que já está cheia, e o começo costuma sair numa frase genérica: confira se as decisões do início estão lá.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-gatilhos" aria-labelledby="h-gatilhos">
+  <span class="eyebrow">Os gatilhos de fim de dia</span>
+  <h2 id="h-gatilhos">Uma skill que avisa antes, e as frases que a chamam</h2>
+  <p class="intro">No Claude Code, o handoff pode morar numa <a href="./assistente--skill.html">skill</a>. Duas coisas fazem ela funcionar. A primeira está no começo do texto dela: <strong>avisar sozinha quando for hora de trocar de sessão, antes de perder qualidade, e nunca deixar a conversa degradar em silêncio.</strong> A segunda é a descrição, que é o que o Claude lê para decidir quando usá-la: ela traz os gatilhos com as palavras do dia a dia.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A descrição da skill · o exemplo real, adaptado</span><button type="button" class="btn" data-copy="gtDesc">Copiar</button></div>
+<pre id="gtDesc"><b>name:</b> fim-de-sessao
+<b>description:</b> Encerrar uma sessão de trabalho com handoff em arquivo, ou decidir entre compactar e abrir conversa nova. Use quando eu sinalizar que vou parar, trocar de frente de trabalho, ou perguntar se devo compactar; quando a sessão estiver longa e a próxima etapa for uma frente diferente; ou quando eu pedir um resumo para retomar depois. Gatilhos: "vamos parar por aqui", "faz o handoff", "registra onde paramos", "devo compactar?", "abre conversa nova?", "prompt de continuidade", "amanhã eu continuo".</pre>
+  </div>
+  <div class="gt-test">
+    <label for="gtIn">Escreva como você encerraria o dia, e veja se a descrição reconhece</label>
+    <input id="gtIn" value="Por hoje chega, amanhã eu continuo">
+    <div class="gt-chips" role="group" aria-label="Exemplos de frase">
+      <button type="button" data-gt="Faz o handoff que eu vou almoçar">faz o handoff</button>
+      <button type="button" data-gt="Agora vamos para a proposta do cliente">agora vamos para a proposta</button>
+      <button type="button" data-gt="Deixa eu pensar e te respondo">deixa eu pensar</button>
+      <button type="button" data-gt="Essa conversa tá enorme, devo compactar?">devo compactar?</button>
+    </div>
+    <div class="verdict" id="gtVer" aria-live="polite"></div>
+  </div>
+  <p class="hint">A simulação procura frases e palavras em comum, que é uma versão tosca do que o Claude faz. A lição é a mesma: <strong>se você encerra o dia de um jeito que a descrição não conhece, acrescente o seu jeito à descrição.</strong> “Agora vamos para a proposta” não é despedida, mas é troca de frente, e ela devia reconhecer.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-tropecos" aria-labelledby="h-tropecos">
+  <span class="eyebrow">Três tropeços do handoff</span>
+  <h2 id="h-tropecos">Contar a história, deixar na conversa, trocar pelo tamanho</h2>
+  <div class="three">
+    <div class="card"><h3>Handoff que conta a história</h3><p>“Começamos olhando a planilha, depois tentamos…” A próxima sessão não precisa saber como se chegou; precisa saber onde está.</p></div>
+    <div class="card"><h3>Handoff que fica na conversa</h3><p>Escrito lá dentro e nunca copiado para fora. Some com a conversa, justamente quando ia ser usado.</p></div>
+    <div class="card"><h3>Trocar por tamanho, não por frente</h3><p>Conversa curta com assunto novo pede conversa nova; conversa longa no mesmo assunto, muitas vezes, só pede compactar.</p></div>
+  </div>
+  <div class="two">
+    <div class="panel"><span class="eyebrow">Hoje · no chat</span><h3>O prompt de continuidade</h3><p>Ao fim de uma conversa longa, peça o bloco da seção acima: decisões, estado, próximo passo e o que está em aberto, sem narrar a conversa. Cole na conversa nova e comece dali.</p></div>
+    <div class="panel"><span class="eyebrow">Depois · no Claude Code</span><h3>O mesmo pedido, gravando num arquivo</h3><p>O bloco vai para o <code>00-aqui-paramos.md</code> da pasta do projeto. A conversa seguinte lê o arquivo ao abrir, e você pode abrir e corrigir o que ela acha que é o estado. Como esse arquivo é montado: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">No Claude Code · o pedido de fim de sessão</span><button type="button" class="btn" data-copy="trAsk">Copiar</button></div>
+<pre id="trAsk">Vamos parar por aqui. Reescreva o 00-aqui-paramos.md com quatro blocos: o que decidimos nesta sessão, o estado atual (pronto e pela metade), o próximo passo concreto com o arquivo onde ele acontece, e os fios em aberto que esperam decisão minha. Reescreva, não acrescente embaixo: é um retrato, não um diário. Me mostre antes de gravar.</pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Troque pela frente</h3><p>Assunto novo é conversa nova, mesmo curta. Mesmo assunto, mesmo longa, muitas vezes basta compactar.</p></div>
+    <div class="take-card"><h3>Escreva o estado, não a história</h3><p>Decidido, estado, próximo passo, em aberto. O resto é narrativa, e a próxima conversa não usa.</p></div>
+    <div class="take-card"><h3>Fora da conversa</h3><p>Num bloco que você cola ou num arquivo da pasta. O que fica só na conversa some com ela.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Handoff</dt><dd>O registro que uma sessão deixa para a próxima: o que foi decidido, onde o trabalho está, o próximo passo e o que espera decisão.</dd>
+    <dt>Compactar</dt><dd>Pedir para a conversa se resumir dentro dela mesma, para liberar espaço e continuar no mesmo lugar. Pode perder detalhe.</dd>
+    <dt>Frente</dt><dd>Uma linha de trabalho com começo e fim: o relatório, a proposta, a apresentação. Mudar de frente é o sinal para trocar de conversa.</dd>
+    <dt>Prompt de continuidade</dt><dd>O handoff em forma de bloco, pronto para colar no começo de uma conversa nova no chat.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os comandos e o nome dos recursos mudam entre ferramentas e versões; o critério da frente e as quatro respostas continuam. O relatório, os números e as frases de exemplo são inventados; a tabela das quatro situações e os gatilhos da skill vêm de trabalho real, sem nome. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--pasta.html">a pasta</a>, <a href="./claude-code--claude-md.html">CLAUDE.md</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--referencia.html">referência e leitura de fonte</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--onde-paramos.html"><span>← anterior</span><b>8.3 · Onde paramos</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--referencia.html"><span>próxima →</span><b>8.5 · Referência e leitura de fonte</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Melhor: ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 2 · o dia de uma conversa */
+  var CV = [
+    { n: 2, t: 'Mensagem 1 · o combinado', d: 'O formato do relatório, a planilha de origem, e a regra de que valor sem fonte não entra. Tudo é recente, então tudo pesa.', a: 'Seguir', k: 'ok' },
+    { n: 4, t: 'Mensagem 10 · o primeiro rascunho', d: 'As tabelas por região saem certas. A conversa ainda é curta, e o combinado está perto.', a: 'Seguir', k: 'ok' },
+    { n: 7, t: 'Mensagem 25 · a terceira rodada de ajustes', d: 'Ainda o mesmo relatório. O combinado continua lá, mas agora no meio de muita correção.', a: 'Seguir, de olho', k: 'ok' },
+    { n: 10, t: 'Mensagem 40 · mesma frente, conversa comprida', d: 'Um valor saiu sem a planilha ao lado. A frente é a mesma: dá para compactar e seguir, desde que as decisões já estejam escritas em algum lugar.', a: 'Compactar', k: 'mid' },
+    { n: 11, f: 1, t: 'Mensagem 45 · o relatório fechou; agora é a apresentação', d: 'Mudou de frente. Este é o ponto de trocar: o handoff leva as decisões do relatório, e a apresentação nasce numa conversa limpa, sem arrastar trinta rodadas de ajuste de tabela.', a: 'Conversa nova + handoff', k: 'go' },
+    { n: 14, f: 1, t: 'Mensagem 70 · quem seguiu na mesma conversa', d: 'A apresentação herdou o tom de relatório, a regra da fonte quase não pesa mais, e você corrige a mesma coisa pela terceira vez. É aqui que quem só usa o chat desiste e recomeça do zero, sem nada escrito.', a: 'Passou do ponto', k: 'no' }
+  ];
+  var cvRow = document.getElementById('cvRow'), cvR = document.getElementById('cvRange');
+  for (var i = 0; i < 14; i++) { var sp = document.createElement('span'); sp.className = 'cv-b off'; cvRow.appendChild(sp); }
+  function cv() {
+    var s = CV[+cvR.value - 1], bs = cvRow.children;
+    for (var j = 0; j < bs.length; j++) {
+      var on = j < s.n, age = s.n - j, w = age > 9 ? 0 : age > 6 ? 1 : age > 3 ? 2 : 3;
+      bs[j].className = 'cv-b ' + (on ? 'w' + w : 'off') + (s.f && j >= 10 && on ? ' nf' : '') + (s.f && j === 10 && on ? ' cut' : '');
+    }
+    document.getElementById('cvOut').textContent = cvR.value + ' de 6';
+    document.getElementById('cvCap').innerHTML = '<span class="cv-act ' + s.k + '">' + s.a + '</span><h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  }
+  cvR.addEventListener('input', cv);
+  cv();
+
+  /* 3 · decisor */
+  quiz(document.getElementById('frQuiz'), document.getElementById('frScore'), [
+    { s: 'Você está ajustando o mesmo relatório há duas horas. A conversa está enorme, mas o assunto não mudou.', a: 'cmp', why: 'Mesma frente, conversa longa: compactar resolve. Só confira antes se as decisões do começo estão escritas em algum lugar.' },
+    { s: 'A ata da reunião ficou pronta. Agora você quer montar a proposta para o cliente, que saiu dessa reunião.', a: 'nova', why: 'Mudou de frente. A proposta não precisa das rodadas de ajuste da ata; precisa das decisões dela. Isso é o handoff.' },
+    { s: 'Sexta, fim do dia. Você volta ao mesmo trabalho na segunda de manhã.', a: 'nova', why: 'Pausa entre dias. Na segunda, você não vai lembrar onde parou; a conversa de sexta também não vai ajudar. Escreva agora.' },
+    { s: 'Mesmo projeto, e agora vem a parte pesada: comparar cinco contratos longos, cláusula por cláusula.', a: 'cmp', why: 'Trabalho pesado pela frente, na mesma frente: compacte antes de começar, para os contratos entrarem numa conversa com espaço.' },
+    { s: 'A conversa tem dez mensagens, mas o assunto passou do orçamento para a contratação de uma pessoa.', a: 'nova', why: 'Curta, e mesmo assim é para trocar. O critério é a frente, não o tamanho: o orçamento vai contaminar a vaga.' },
+    { s: 'Conversa curta, mesmo assunto, e as respostas estão saindo do jeito que você quer.', a: 'seg', why: 'Nada a fazer. Handoff não é ritual de cada hora: é para quando a frente muda ou o dia acaba.' }
+  ], [['seg', 'Seguir aqui'], ['cmp', 'Compactar'], ['nova', 'Conversa nova + handoff']], 'repare que nenhuma resposta dependeu só do tamanho.');
+
+  /* 4 · narra × decide */
+  var HD = {
+    narra: [
+      ['h', 'Resumo da sessão'],
+      ['', 'Começamos a sessão abrindo a planilha de vendas da regional e olhando os números do mês.'],
+      ['', 'Primeiro tentamos comparar com o mês passado, mas os números ficaram estranhos por causa do feriado.'],
+      ['u', 'Então decidimos comparar com o mesmo mês do ano anterior.'],
+      ['', 'Depois discutimos bastante o tom do texto; a primeira versão estava cheia de adjetivos.'],
+      ['', 'Refizemos as tabelas por região três vezes até ficarem boas.'],
+      ['', 'No meio, surgiu a dúvida sobre a regional nova, que abriu no meio do mês.'],
+      ['', 'Também falamos das devoluções, que subiram em relação ao ano passado.'],
+      ['', 'No fim, o resumo de uma página ficou bem melhor que no começo.'],
+      ['', 'Foi uma sessão produtiva.']
+    ],
+    decide: [
+      ['h', 'Decidido'],
+      ['u', 'Comparar com o mesmo mês do ano anterior, não com o mês passado.'],
+      ['u', 'Valores sempre com a planilha de origem ao lado. Tom direto, sem adjetivo.'],
+      ['h', 'Estado'],
+      ['u', 'Pronto: tabelas por região e resumo de uma página.'],
+      ['u', 'Pela metade: seção de devoluções, falta o número de outubro.'],
+      ['h', 'Próximo passo'],
+      ['u', 'Fechar a seção de devoluções com o número de outubro.'],
+      ['h', 'Em aberto'],
+      ['u', 'Incluir ou não a regional nova, que abriu no meio do mês. Espera a gerência.']
+    ]
+  };
+  var hdBtns = document.querySelectorAll('[data-hd]'), hdDoc = document.getElementById('hdDoc'), hdMark = document.getElementById('hdMark'), hdCur = 'narra';
+  function hd() {
+    var L = HD[hdCur], lines = L.filter(function (r) { return r[0] !== 'h'; }), used = lines.filter(function (r) { return r[0] === 'u'; }).length;
+    hdDoc.innerHTML = L.map(function (r) { return r[0] === 'h' ? '<h3>' + r[1] + '</h3>' : '<p class="hd-l' + (r[0] === 'u' ? ' use' : '') + '">' + r[1] + '</p>'; }).join('');
+    var on = hdMark.getAttribute('aria-pressed') === 'true';
+    hdDoc.classList.toggle('mark', on);
+    var v = document.getElementById('hdVer');
+    if (!on) { v.className = 'verdict ' + (hdCur === 'narra' ? 'no' : 'ok'); v.innerHTML = hdCur === 'narra' ? '<b>Parece completo.</b> Tem tudo o que aconteceu. Ligue o marcador para ver quanto disso serve amanhã.' : '<b>Parece curto.</b> Tem só o que a próxima conversa vai usar. Ligue o marcador para conferir.'; return; }
+    v.className = 'verdict ' + (used === lines.length ? 'ok' : 'no');
+    v.innerHTML = '<b>' + used + ' de ' + lines.length + ' linhas servem para continuar.</b> ' + (hdCur === 'narra' ? 'E faltam o estado das devoluções e o próximo passo: a conversa nova teria de perguntar, ou adivinhar. A dúvida da regional aparece, mas não diz que espera decisão.' : 'Nenhuma conta como se chegou; todas dizem onde está.');
+  }
+  hdBtns.forEach(function (b) { b.addEventListener('click', function () { hdCur = b.dataset.hd; pressGroup(hdBtns, function (x) { return x === b; }); hd(); }); });
+  hdMark.addEventListener('click', function () { hdMark.setAttribute('aria-pressed', String(hdMark.getAttribute('aria-pressed') !== 'true')); hdMark.textContent = hdMark.getAttribute('aria-pressed') === 'true' ? 'Desligar o marcador' : 'Marcar o que a próxima usa'; hd(); });
+  hd();
+
+  /* 5 · montador */
+  var mt = ['mtCtx', 'mtDec', 'mtEst', 'mtProx', 'mtAb'].map(function (id) { return document.getElementById(id); });
+  function lst(t) { var a = t.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); return a.length ? a.map(function (x) { return '- ' + esc(x); }).join('\n') : '<i>[vazio: preencha ou apague o bloco]</i>'; }
+  function mont() {
+    document.getElementById('mtOut').innerHTML = '<b>Prompt de continuidade</b> · cole no começo da conversa nova\n\n<b>Contexto:</b> ' + (esc(mt[0].value.trim()) || '<i>[uma frase]</i>') +
+      '\n\n<b>Decidido</b> (não refaça):\n' + lst(mt[1].value) +
+      '\n\n<b>Estado:</b>\n' + lst(mt[2].value) +
+      '\n\n<b>Próximo passo:</b> ' + (esc(mt[3].value.trim()) || '<i>[a primeira ação]</i>') +
+      '\n\n<b>Em aberto</b> (não decida por mim):\n' + lst(mt[4].value) +
+      '\n\nComece pelo próximo passo. Se algo aqui parecer errado ou faltar, pergunte antes de seguir.';
+  }
+  mt.forEach(function (x) { x.addEventListener('input', mont); });
+  mont();
+
+  /* 6 · gatilho */
+  var GT = ['vamos parar por aqui', 'faz o handoff', 'registra onde paramos', 'devo compactar', 'abre conversa nova', 'prompt de continuidade', 'amanha eu continuo', 'vou parar', 'retomar depois', 'trocar de frente', 'resumo para retomar'];
+  var GW = ['parar', 'handoff', 'paramos', 'compactar', 'conversa nova', 'continuidade', 'continuo', 'retomar', 'amanha', 'frente'];
+  var gtIn = document.getElementById('gtIn');
+  function nrm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  function gt() {
+    var t = nrm(gtIn.value), v = document.getElementById('gtVer');
+    var ph = GT.filter(function (p) { return t.indexOf(p) > -1; }), ws = GW.filter(function (w) { return t.indexOf(w) > -1; });
+    if (!t) { v.className = 'verdict no'; v.innerHTML = '<b>Escreva uma frase.</b>'; return; }
+    if (ph.length) { v.className = 'verdict ok'; v.innerHTML = '<b>Abriria.</b> A frase está na descrição: “' + esc(ph[0]) + '”.'; }
+    else if (ws.length) { v.className = 'verdict ok'; v.innerHTML = '<b>Provavelmente abriria.</b> Palavra em comum com a descrição: “' + esc(ws[0]) + '”.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Provavelmente não abriria.</b> Nenhuma palavra em comum. Se é assim que você encerra ou troca de assunto, essa frase entra na descrição.'; }
+  }
+  gtIn.addEventListener('input', gt);
+  document.querySelectorAll('[data-gt]').forEach(function (b) { b.addEventListener('click', function () { gtIn.value = b.dataset.gt; gt(); }); });
+  gt();
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

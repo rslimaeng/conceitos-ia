@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8 (visão geral, a mãe). Peças: stepper com diagrama da ordem de leitura ao abrir uma conversa, chat × pasta na rotina da ata ao longo de três semanas com contadores, quiz de oito incômodos → tipo de arquivo, bloco para copiar do primeiro dia. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Mapa da família: um cartão por filha, na página mãe. Gerado por familias.py. */
+.fmap { display: grid; gap: 14px; }
+.fmap.c1 { grid-template-columns: minmax(0, 1fr); }
+.fmap.c2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.fmap.c3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.fmap-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
+.fmap-card.metodo { border-style: dashed; }
+.fmap-card .fmap-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.fmap-card h3 { font-size: 1.15rem; line-height: 1.25; }
+.fmap-card p { font-size: .95rem; color: var(--text-muted); }
+.fmap-card ul { margin: 0; padding-left: 18px; font-size: .9rem; color: var(--text-muted); display: grid; gap: 2px; }
+.fmap-card .fmap-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fmap-card a.fmap-go { color: var(--accent); font-weight: 500; text-decoration: none; font-size: .95rem; margin-top: 4px; }
+.fmap-card a.fmap-go:hover { text-decoration: underline; }
+@media (max-width: 860px) { .fmap.c2, .fmap.c3 { grid-template-columns: minmax(0, 1fr); } }
+/* /Mapa da família */
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · a ordem de chegada (svg) */
+.scroll svg.wide { min-width: 640px; }
+.or-row rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.or-row .n { font: 500 11px var(--font-mono); fill: var(--text-dim); }
+.or-row .f { font: 500 12.5px var(--font-mono); fill: var(--text-muted); }
+.or-row .w { font: 400 11.5px var(--font-body); fill: var(--text-dim); }
+.or-row.lido rect { fill: var(--ok-soft); stroke: var(--ok); }
+.or-row.lido .f, .or-row.lido .n { fill: var(--ok-texto); }
+.or-row.agora rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.or-row.agora .f, .or-row.agora .n { fill: var(--accent); }
+.or-box { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.3; }
+.or-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.or-line { font: 400 12.5px var(--font-body); fill: var(--text); transition: opacity .3s ease; }
+.or-line.fim { fill: var(--atencao-texto); }
+.or-line.off { opacity: 0; }
+.or-arr { stroke: var(--accent); stroke-width: 2; fill: none; transition: opacity .3s ease; }
+.or-arr.back { stroke: var(--atencao); stroke-dasharray: 6 4; }
+.or-arr.off { opacity: 0; }
+.or-mk { fill: var(--accent); }
+.or-mk2 { fill: var(--atencao); }
+.caption .go { font-size: .92rem; color: var(--text-muted); }
+
+/* 2 · a segunda-feira */
+.sg-ctrl { display: flex; flex-wrap: wrap; gap: 12px; }
+.sg-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.sg-list { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.sg-list.chat { border-color: var(--atencao); }
+.sg-list.pasta { border-color: var(--ok); }
+.sg-list ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .95rem; display: grid; gap: 6px; }
+.sg-list li.rep { color: var(--atencao-texto); }
+.sg-list li.arq { color: var(--ok-texto); }
+.sg-list code, .sg-mono { font-family: var(--font-mono); font-size: .85em; }
+.sg-nums { display: grid; gap: 12px; }
+.sg-num { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; }
+.sg-num .big.warn { color: var(--atencao-texto); }
+.sg-num .big.good { color: var(--ok-texto); }
+
+/* 4 · três arquivos primeiro */
+.card code { font-family: var(--font-mono); font-size: .85em; }
+.card .go { font-size: .92rem; }
+.later { display: flex; flex-wrap: wrap; gap: 8px; }
+.later a { border: 1px dashed var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: transparent; text-decoration: none; }
+.later a:hover { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .sg-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .or-row rect, .or-line, .or-arr { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--pasta.html">8.1 Pasta com dono →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html" aria-current="page">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">Visão geral</span>
+  <h1>Claude Code</h1>
+  <p class="sub">O modelo não lembra de nada entre uma conversa e outra. Quem lembra é a pasta.</p>
+  <p class="lead">No chat, cada conversa começa do zero: você sobe o arquivo de novo, explica de novo quem é, corrige de novo o mesmo nome. O Claude Code é <a href="./llm-e-harness.html">o mesmo modelo com outro aplicativo em volta</a>: ele trabalha dentro de uma pasta do seu computador, lê o que está lá e grava o resultado lá. <strong>O que você quer que continue valendo amanhã precisa estar escrito num arquivo que ele lê na hora certa.</strong> Esta família mostra que arquivos são esses, quem escreve cada um e quando cada um é lido.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#mapa">O mapa da família</a><a href="#s-ordem">A ordem de chegada</a><a href="#s-segunda">Segunda-feira, duas vezes</a><a href="#s-resolve">Que arquivo resolve</a><a href="#s-tres">Três arquivos primeiro</a>
+  </nav>
+</header>
+
+<!-- mapa -->
+<section class="sec" id="mapa" aria-labelledby="h-mapa">
+  <span class="eyebrow">O mapa da família</span>
+  <h2 id="h-mapa">Sete arquivos, cada um com página própria</h2>
+  <p class="intro">Esta página é a visão geral: o modelo não lembra de nada entre uma conversa e outra, <strong>quem lembra é a pasta</strong>. Cada página abaixo é um tipo de arquivo, com um dono e uma hora de ser lido. Comece pelas três primeiras.</p>
+  <div class="fmap c3">
+    <div class="fmap-card"><span class="fmap-n">8.1 · Pasta com dono · 1 de 7</span><h3>Pasta com dono</h3><p>Cada arquivo tem um dono e uma hora de mudar: a transcrição não se mexe, o documento avança por estágio, e o nome começa pela data.</p><span class="fmap-lab">Lá você encontra</span><ul><li>estágios, não versões</li><li>onde mora este arquivo</li><li>vinte e duas atas</li></ul><a class="fmap-go" href="./claude-code--pasta.html">abrir 8.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.2 · CLAUDE.md · 2 de 7</span><h3>CLAUDE.md</h3><p>O manual que ele lê antes da sua primeira mensagem, em camadas. Nasce do erro, e cada linha passa pela pergunta “se eu tirar, ele erra?”.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três camadas</li><li>se eu tirar, ele erra?</li><li>o primeiro manual em cinco linhas</li></ul><a class="fmap-go" href="./claude-code--claude-md.html">abrir 8.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.3 · Onde paramos · 3 de 7</span><h3>Onde paramos</h3><p>A memória do projeto num arquivo: lida no começo, reescrita no fim. Um retrato, não um diário.</p><span class="fmap-lab">Lá você encontra</span><ul><li>retrato ou diário</li><li>o próximo passo com arquivo</li><li>a sua primeira memória</li></ul><a class="fmap-go" href="./claude-code--onde-paramos.html">abrir 8.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.4 · Handoff · 4 de 7</span><h3>Handoff</h3><p>Trocar de conversa quando muda a frente, não quando a conversa fica grande, deixando o que foi decidido por escrito.</p><span class="fmap-lab">Lá você encontra</span><ul><li>compactar ou conversa nova</li><li>decisão, não narrativa</li><li>o prompt de continuidade</li></ul><a class="fmap-go" href="./claude-code--handoff.html">abrir 8.4 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.5 · Referência · 5 de 7</span><h3>Referência e leitura de fonte</h3><p>O que é fato fica escrito uma vez, e a transcrição é lida antes de virar documento. O Claude não adivinha.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a lista de pessoas</li><li>dito, implícito, deduzido</li><li>quem esteve</li></ul><a class="fmap-go" href="./claude-code--referencia.html">abrir 8.5 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.6 · Modelo · 6 de 7</span><h3>Modelo e padrão visual</h3><p>O formato mora num arquivo: ele segue o modelo em vez de adivinhar, e a correção de formato é feita uma vez.</p><span class="fmap-lab">Lá você encontra</span><ul><li>duas semanas de atas</li><li>quantas houver</li><li>a prova é abrir</li></ul><a class="fmap-go" href="./claude-code--modelo.html">abrir 8.6 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">8.7 · Obsidian · 7 de 7</span><h3>Obsidian</h3><p>A pasta de conhecimento que sintetiza e liga o que o trabalho produz. Vem depois das três primeiras.</p><span class="fmap-lab">Lá você encontra</span><ul><li>de onde veio a decisão</li><li>síntese dentro, bruta fora</li><li>depois de cada reunião</li></ul><a class="fmap-go" href="./claude-code--obsidian.html">abrir 8.7 →</a></div>
+  </div>
+</section>
+<!-- /mapa -->
+
+<!-- 1 -->
+<section class="sec" id="s-ordem" aria-labelledby="h-ordem">
+  <span class="eyebrow">A ordem de chegada</span>
+  <h2 id="h-ordem">Antes da sua primeira palavra, ele já leu quatro coisas</h2>
+  <p class="intro">Toda conversa aberta numa pasta de projeto começa do mesmo jeito. <strong>Cada tipo de arquivo tem a sua vez, e é a vez que decide o que ele sabe quando você pede.</strong> Avance e veja a mesa da conversa enchendo, na ordem.</p>
+  <div class="stepbar"><span class="eyebrow" id="orLab">Passo 1 de 6</span><div class="nav"><button type="button" class="btn" id="orPrev">← Anterior</button><button type="button" class="btn primary" id="orNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="wide" viewBox="0 0 760 380" role="img" aria-labelledby="or-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="or-t">Seis arquivos em fila à esquerda: o manual do usuário, o manual da pasta, a memória, as etiquetas das skills, o pedido com os arquivos da tarefa e o handoff. À direita, a mesa da conversa recebe uma linha a cada passo; no último, uma seta volta da conversa para a memória.</title>
+      <defs>
+        <marker id="mkor" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="or-mk"/></marker>
+        <marker id="mkor2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="or-mk2"/></marker>
+      </defs>
+      <text class="or-zl" x="20" y="22">O QUE ELE LÊ, NA ORDEM</text>
+      <text class="or-zl" x="430" y="22">A MESA DA CONVERSA</text>
+      <g class="or-row" data-or="0"><rect x="20" y="34" width="370" height="46" rx="6"/><text class="n" x="34" y="62">1</text><text class="f" x="66" y="54">~/.claude/CLAUDE.md</text><text class="w" x="66" y="71">o manual do usuário · toda conversa, em qualquer pasta</text></g>
+      <g class="or-row" data-or="1"><rect x="20" y="90" width="370" height="46" rx="6"/><text class="n" x="34" y="118">2</text><text class="f" x="66" y="110">CLAUDE.md da pasta e das de cima</text><text class="w" x="66" y="127">o manual do lugar · toda conversa aberta ali</text></g>
+      <g class="or-row" data-or="2"><rect x="20" y="146" width="370" height="46" rx="6"/><text class="n" x="34" y="174">3</text><text class="f" x="66" y="166">00-aqui-paramos.md</text><text class="w" x="66" y="183">a memória · toda conversa, porque o manual manda</text></g>
+      <g class="or-row" data-or="3"><rect x="20" y="202" width="370" height="46" rx="6"/><text class="n" x="34" y="230">4</text><text class="f" x="66" y="222">skills: nome e descrição</text><text class="w" x="66" y="239">as etiquetas · o conteúdo só quando o pedido bate</text></g>
+      <g class="or-row" data-or="4"><rect x="20" y="258" width="370" height="46" rx="6"/><text class="n" x="34" y="286">5</text><text class="f" x="66" y="278">o pedido + os arquivos da tarefa</text><text class="w" x="66" y="295">pessoas, modelo, fontes · só o que a tarefa pede</text></g>
+      <g class="or-row" data-or="5"><rect x="20" y="314" width="370" height="46" rx="6"/><text class="n" x="30" y="342">fim</text><text class="f" x="66" y="334">o handoff</text><text class="w" x="66" y="351">a memória reescrita · ao fechar a sessão</text></g>
+      <rect class="or-box" x="430" y="34" width="310" height="326" rx="8"/>
+      <text class="or-line" data-ln="0" x="446" y="72">quem você é e como gosta de trabalhar</text>
+      <text class="or-line" data-ln="1" x="446" y="122">como se trabalha nesta pasta</text>
+      <text class="or-line" data-ln="2" x="446" y="172">onde o trabalho parou; o próximo passo</text>
+      <text class="or-line" data-ln="3" x="446" y="222">a lista das receitas, só as etiquetas</text>
+      <text class="or-line" data-ln="4" x="446" y="272">o pedido, e só os arquivos que ele pede</text>
+      <text class="or-line fim" data-ln="5" x="446" y="322">ao fechar: o estado novo volta ao arquivo</text>
+      <path class="or-arr" id="orArr" d="M390,57 C410,57 410,68 428,68" marker-end="url(#mkor)"/>
+      <path class="or-arr back off" id="orBack" d="M430,318 C404,318 418,169 393,169" marker-end="url(#mkor2)"/>
+    </svg>
+  </div>
+  <div class="caption" id="orCap" aria-live="polite"></div>
+  <p class="hint">Os nomes <span class="sg-mono">CLAUDE.md</span> e <span class="sg-mono">~/.claude/</span> são da ferramenta. O nome <span class="sg-mono">00-aqui-paramos.md</span> é de um jeito que funciona: qualquer nome serve, desde que o manual mande ler.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-segunda" aria-labelledby="h-segunda">
+  <span class="eyebrow">Segunda-feira, duas vezes</span>
+  <h2 id="h-segunda">A ata da reunião semanal, três semanas seguidas, no chat e na pasta</h2>
+  <p class="intro">A mesma rotina: toda segunda, a transcrição da reunião vira ata. <strong>No chat, o que você ensinou fica na conversa e morre com ela. Na pasta, cada correção vira arquivo, uma vez.</strong> Troque o modo e avance as semanas.</p>
+  <div class="sg-ctrl">
+    <div class="seg" role="group" aria-label="Onde a rotina acontece">
+      <button type="button" data-sgm="chat" aria-pressed="true">Só no chat</button>
+      <button type="button" data-sgm="pasta" aria-pressed="false">Com a pasta</button>
+    </div>
+    <div class="seg" role="group" aria-label="Semana">
+      <button type="button" data-sgw="0" aria-pressed="true">Semana 1</button>
+      <button type="button" data-sgw="1" aria-pressed="false">Semana 2</button>
+      <button type="button" data-sgw="2" aria-pressed="false">Semana 3</button>
+    </div>
+  </div>
+  <div class="sg-grid">
+    <div class="sg-list" id="sgList" aria-live="polite"></div>
+    <div class="sg-nums">
+      <div class="sg-num"><span class="eyebrow">Explicações repetidas até aqui</span><span class="big" id="sgRep"></span></div>
+      <div class="sg-num"><span class="eyebrow">Erros que voltaram</span><span class="big" id="sgVolta"></span></div>
+    </div>
+  </div>
+  <p class="punch">Na primeira semana a pasta dá mais trabalho que o chat. <em>Da segunda em diante, é o chat que dá.</em></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-resolve" aria-labelledby="h-resolve">
+  <span class="eyebrow">Que arquivo resolve</span>
+  <h2 id="h-resolve">Oito incômodos de quem usa só o chat, e o arquivo que acaba com cada um</h2>
+  <p class="intro">Cada página desta família é um tipo de arquivo, com um dono e uma hora de ser lido. <strong>O jeito de saber qual você precisa é olhar o incômodo, não a ferramenta.</strong> Escolha o arquivo para cada situação.</p>
+  <div class="qz" id="rsQuiz"></div>
+  <p class="qz-score" id="rsScore" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-tres" aria-labelledby="h-tres">
+  <span class="eyebrow">Três arquivos primeiro</span>
+  <h2 id="h-tres">Pasta, manual e memória. O resto espera o trabalho pedir</h2>
+  <p class="intro">Não se monta tudo no primeiro dia. <strong>Três peças já mudam a segunda-feira:</strong> um lugar para cada coisa, um manual que ele lê sozinho e um arquivo que diz onde o trabalho parou.</p>
+  <div class="three">
+    <div class="card focal"><span class="eyebrow">01 · a pasta</span><h3>Um lugar para cada coisa</h3><p>A transcrição bruta de um lado, o que ele produz do outro. Pasta nasce quando o trabalho pede, não antes.</p><p class="go"><a href="./claude-code--pasta.html">Pasta com dono →</a></p></div>
+    <div class="card focal"><span class="eyebrow">02 · o manual</span><h3>Umas cinco linhas de <code>CLAUDE.md</code></h3><p>O papel dele ali, o que tem em cada pasta, duas regras que não mudam e a linha que manda ler a memória.</p><p class="go"><a href="./claude-code--claude-md.html">O manual de chegada →</a></p></div>
+    <div class="card focal"><span class="eyebrow">03 · a memória</span><h3>Estado, decidido, próximo passo, em aberto</h3><p>Quatro blocos num arquivo que ele lê no começo e reescreve no fim. Um retrato, não um diário.</p><p class="go"><a href="./claude-code--onde-paramos.html">Onde paramos →</a></p></div>
+  </div>
+  <p class="hint">Depois, quando o trabalho pedir:</p>
+  <div class="later"><a href="./claude-code--referencia.html">a lista de referência, quando o mesmo nome errar duas vezes</a><a href="./claude-code--modelo.html">o modelo, quando o formato variar</a><a href="./claude-code--handoff.html">o handoff, quando a conversa ficar longa</a><a href="./assistente--skill.html">a skill, quando o passo a passo se repetir</a><a href="./claude-code--obsidian.html">o Obsidian, quando houver umas dez sínteses</a></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido do primeiro dia · para colar no Claude Code</span><button type="button" class="btn" data-copy="trPrompt">Copiar</button></div>
+<pre id="trPrompt">Vou usar esta pasta para <b>[o trabalho, por exemplo: as atas da reunião semanal]</b>. Monte o mínimo, e nada além:
+1. Uma pasta para o material bruto (as transcrições) e outra para o que você produz. Não crie pasta vazia pensando no futuro.
+2. Um CLAUDE.md curto, de umas cinco linhas: o seu papel aqui, o que tem em cada pasta, duas regras que não mudam, e a linha "antes de começar, leia o 00-aqui-paramos.md".
+3. Um 00-aqui-paramos.md com quatro blocos: Estado, Decidido, Próximo passo, Em aberto.
+Antes de criar, me mostre o que vai escrever em cada arquivo e espere o meu OK.</pre>
+  </div>
+  <p class="hint">O teste de trinta segundos: abra uma conversa nova na mesma pasta e pergunte só <i>“onde paramos e qual é o próximo passo?”</i>. Se ele responder sem você explicar nada, a pasta está lembrando. No chat, a mesma ideia mora em outros lugares: <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Quem lembra é a pasta</h3><p>O modelo começa cada conversa do zero. O que precisa valer amanhã vai para um arquivo que ele lê.</p></div>
+    <div class="take-card"><h3>Cada arquivo tem a sua hora</h3><p>Manual e memória, sempre. Etiqueta de skill, sempre; o conteúdo, só quando bate. O resto, só quando a tarefa pede.</p></div>
+    <div class="take-card"><h3>Comece por três</h3><p>Pasta, manual e memória. Referência, modelo, skill e Obsidian entram quando o trabalho pedir.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Claude Code</dt><dd>O Claude trabalhando dentro de uma pasta do seu computador: lê os arquivos, grava o resultado, roda comandos. O mesmo modelo do chat, com outro aplicativo em volta.</dd>
+    <dt>CLAUDE.md</dt><dd>O manual de chegada: um arquivo de texto lido antes da sua primeira mensagem, em toda conversa. Existe o do usuário e o de cada pasta, e eles se somam.</dd>
+    <dt>Memória</dt><dd>Um arquivo na raiz do projeto com o estado do trabalho e o próximo passo. Lido no começo porque o manual manda; reescrito no fim.</dd>
+    <dt>Handoff</dt><dd>O gesto de fechar a sessão escrevendo o que a próxima precisa saber: decidido, estado, próximo passo, em aberto.</dd>
+    <dt>Skill</dt><dd>O passo a passo de uma tarefa, guardado com uma etiqueta. Só a etiqueta fica sempre à vista.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A ordem de leitura, os nomes de arquivo e os comandos mudam entre versões da ferramenta; a ideia de um arquivo com dono e hora de ser lido continua. A rotina da ata é um exemplo montado; os tamanhos citados foram medidos em projetos reais, sem nome, e mostram a forma do problema, não uma meta de tamanho. Família <a href="./claude-code.html">Claude Code</a>; filhas: <a href="./claude-code--pasta.html">pasta com dono</a>, <a href="./claude-code--claude-md.html">o manual de chegada</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">arquivo de referência</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <span></span>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--pasta.html"><span>próxima →</span><b>8.1 · Pasta com dono</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · a ordem de chegada */
+  var OR = [
+    { t: 'O manual do usuário', d: 'Lido antes da sua primeira palavra, em qualquer pasta que você abrir. Diz quem você é, como gosta de receber o trabalho e o que não se faz nunca. No chat, é a explicação que você digitaria no começo de toda conversa.', go: 'Na família: <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
+    { t: 'O manual da pasta, e os das pastas de cima', d: 'Depois vem o CLAUDE.md da pasta onde a conversa abriu, e os das pastas acima dela. As camadas se somam: o do projeto herda o da área e não repete o que já está lá. Cada uma carrega só o que é verdade nela.', go: 'Na família: <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
+    { t: 'A memória, lida porque o manual manda', d: 'O arquivo que diz onde o trabalho está e qual é o próximo passo. Ele não é lido por conta própria: uma linha do manual manda ler. Sem essa linha, o arquivo fica esquecido na pasta. Uma memória boa cabe em umas sessenta linhas; uma que nunca foi podada chegou a 2.396.', go: 'Na família: <a href="./claude-code--onde-paramos.html">onde paramos</a>.' },
+    { t: 'As etiquetas das skills, e só elas', d: 'De cada skill instalada entram o nome e a descrição. O passo a passo continua fechado até o pedido bater com a descrição. É por isso que dá para ter muitas sem pesar a conversa.', go: 'Mais em: <a href="./assistente--skill.html">skill</a>.' },
+    { t: 'O pedido, e os arquivos que ele pede', d: 'Só agora chega o que você escreveu. Com ele, o Claude abre na pasta o que a tarefa precisa: a transcrição, a lista de pessoas, o modelo da ata, a pasta de conhecimento. O resto fica fechado.', go: 'Na família: <a href="./claude-code--pasta.html">pasta com dono</a> · <a href="./claude-code--referencia.html">arquivo de referência</a> · <a href="./claude-code--modelo.html">modelo</a> · <a href="./claude-code--obsidian.html">Obsidian</a>.' },
+    { t: 'No fim, a memória é reescrita', d: 'Ao fechar a sessão, o handoff grava na memória o que foi decidido, o estado e o próximo passo. É isso que a conversa de amanhã vai ler no passo 3. O que esta conversa aprendeu não morre com ela.', go: 'Na família: <a href="./claude-code--handoff.html">handoff</a>.' }
+  ];
+  var orRows = document.querySelectorAll('.or-row'), orLines = document.querySelectorAll('.or-line');
+  var orArr = document.getElementById('orArr'), orBack = document.getElementById('orBack');
+  function cls(el, base, on) { el.setAttribute('class', base + (on ? '' : ' off')); }
+  stepper(OR.length, document.getElementById('orPrev'), document.getElementById('orNext'), document.getElementById('orLab'), 'Passo', function (k) {
+    var i = k - 1, s = OR[i];
+    orRows.forEach(function (g) { var r = +g.dataset.or; g.setAttribute('class', 'or-row' + (r === i ? ' agora' : (r < i ? ' lido' : ''))); });
+    orLines.forEach(function (t) { var l = +t.dataset.ln; t.setAttribute('class', 'or-line' + (l === 5 ? ' fim' : '') + (l <= i ? '' : ' off')); });
+    if (i < 5) { var cy = 57 + i * 56, ly = 68 + i * 50; orArr.setAttribute('d', 'M390,' + cy + ' C410,' + cy + ' 410,' + ly + ' 428,' + ly); }
+    cls(orArr, 'or-arr', i < 5); cls(orBack, 'or-arr back', i === 5);
+    document.getElementById('orCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p><p class="go">' + s.go + '</p>';
+  });
+
+  /* 2 · a segunda-feira */
+  var SG = {
+    chat: [
+      { f: [['Sobe a transcrição da reunião', ''], ['Cola a ata da semana passada como exemplo', ''], ['Explica o formato: um ponto por linha, pendências no fim', ''], ['Corrige o nome da diretora, que a transcrição escreveu errado', '']], rep: 0, volta: 0, n: 'Saiu boa. Tudo o que você ensinou mora nesta conversa.' },
+      { f: [['Conversa nova. Sobe a transcrição', ''], ['Cola a ata de exemplo, de novo', 'rep'], ['Explica o formato, de novo', 'rep'], ['Corrige o nome da diretora, de novo', 'rep']], rep: 3, volta: 1, n: 'Nada do que você ensinou na semana 1 chegou até aqui.' },
+      { f: [['Conversa nova. Procura a conversa antiga para lembrar o que ficou pendente', 'rep'], ['Cola exemplo e formato, de novo', 'rep'], ['Corrige o nome da diretora pela terceira vez', 'rep'], ['A ata sai com cinco decisões espremidas em quatro cards', 'rep']], rep: 7, volta: 3, n: 'O trabalho não ficou mais fácil com o tempo. Ficou igual, toda semana.' }
+    ],
+    pasta: [
+      { f: [['Põe a transcrição em <code>reunioes/brutas/</code>', ''], ['A ata de hoje, do jeito certo, vira o <code>modelo/</code>', 'arq'], ['O formato vira duas linhas no <code>CLAUDE.md</code>', 'arq'], ['O nome certo da diretora entra na lista de pessoas', 'arq']], rep: 0, volta: 0, n: 'Dá mais trabalho que o chat: cada correção vai para um arquivo. Uma vez.' },
+      { f: [['Põe a transcrição em <code>reunioes/brutas/</code>', ''], ['Pede só: “a ata da semana”', ''], ['Ele lê sozinho o manual, a memória, a lista de pessoas e o modelo', 'arq'], ['A ata cai em <code>atas/em-validacao/</code>; você confere e move', '']], rep: 0, volta: 0, n: 'Nenhuma explicação repetida. O que você ensinou está nos arquivos.' },
+      { f: [['Pede só: “a ata da semana”', ''], ['O que ficou pendente está no <code>00-aqui-paramos.md</code>, reescrito na semana passada', 'arq'], ['Aparece um erro novo: vira uma linha num arquivo, uma vez', 'arq'], ['Você move a ata para <code>atas/aprovadas/</code>', '']], rep: 0, volta: 0, n: 'O erro novo entra na pasta e não volta na semana 4.' }
+    ]
+  };
+  var sgM = 'chat', sgW = 0, sgMB = document.querySelectorAll('[data-sgm]'), sgWB = document.querySelectorAll('[data-sgw]');
+  function renderSg() {
+    var s = SG[sgM][sgW];
+    pressGroup(sgMB, function (x) { return x.dataset.sgm === sgM; });
+    pressGroup(sgWB, function (x) { return +x.dataset.sgw === sgW; });
+    var L = document.getElementById('sgList');
+    L.className = 'sg-list ' + sgM;
+    L.innerHTML = '<span class="eyebrow">' + (sgM === 'chat' ? 'Só no chat' : 'Com a pasta') + ' · semana ' + (sgW + 1) + '</span><ol>' + s.f.map(function (x) { return '<li' + (x[1] ? ' class="' + x[1] + '"' : '') + '>' + x[0] + '</li>'; }).join('') + '</ol><p class="hint">' + s.n + '</p>';
+    var r = document.getElementById('sgRep'), v = document.getElementById('sgVolta');
+    r.textContent = s.rep; v.textContent = s.volta;
+    r.className = 'big ' + (s.rep ? 'warn' : 'good'); v.className = 'big ' + (s.volta ? 'warn' : 'good');
+  }
+  sgMB.forEach(function (b) { b.addEventListener('click', function () { sgM = b.dataset.sgm; renderSg(); }); });
+  sgWB.forEach(function (b) { b.addEventListener('click', function () { sgW = +b.dataset.sgw; renderSg(); }); });
+  renderSg();
+
+  /* 3 · que arquivo resolve */
+  quiz(document.getElementById('rsQuiz'), document.getElementById('rsScore'), [
+    { s: 'Em toda conversa nova eu explico quem sou, o que é o projeto e que quero frase curta.', a: 'man', why: 'O que vale sempre, escrito uma vez, lido antes da primeira mensagem. Veja <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
+    { s: 'Corrigi o nome da diretora pela terceira vez, em três atas diferentes.', a: 'ref', why: 'Fato do projeto não é regra: vai numa lista de pessoas, corrigido uma vez e consultado sempre. Veja <a href="./claude-code--referencia.html">arquivo de referência</a>.' },
+    { s: 'Amanhã eu não vou lembrar onde parei nem qual era o próximo passo.', a: 'mem', why: 'O estado do trabalho mora num arquivo que ele lê no começo e reescreve no fim. Veja <a href="./claude-code--onde-paramos.html">onde paramos</a>.' },
+    { s: 'A conversa ficou enorme, as respostas pioraram, e eu vou mudar de assunto.', a: 'hand', why: 'Troca-se de conversa antes de degradar, deixando por escrito o que a próxima precisa. Veja <a href="./claude-code--handoff.html">handoff</a>.' },
+    { s: 'A ata sai cada semana num formato: uma hora quatro cards, outra hora cinco.', a: 'mod', why: 'O formato deixa de ser pedido e vira referência: a ata de exemplo na pasta, corrigida uma vez. Veja <a href="./claude-code--modelo.html">modelo</a>.' },
+    { s: 'Todo fim de mês eu colo o mesmo passo a passo de fechar o relatório.', a: 'sk', why: 'Receita de uma tarefa, que só precisa abrir quando a tarefa aparece. Veja <a href="./assistente--skill.html">skill</a>.' },
+    { s: 'Tem ata-final, ata-final-v2 e ata-revisada, e ninguém sabe qual foi enviada.', a: 'pas', why: 'Versão no nome é sintoma de pasta sem estágios. Aprovar é mover de pasta. Veja <a href="./claude-code--pasta.html">pasta com dono</a>.' },
+    { s: 'Pedi para nunca mandar a ata sem a lista de pendências, e na conversa seguinte ela esqueceu.', a: 'man', why: 'Correção que vale para sempre vira linha no manual. Na conversa, ela morre com a conversa. Veja <a href="./claude-code--claude-md.html">o manual de chegada</a>.' }
+  ], [['man', 'Manual'], ['mem', 'Memória'], ['hand', 'Handoff'], ['ref', 'Referência'], ['mod', 'Modelo'], ['sk', 'Skill'], ['pas', 'Pasta']], 'cada incômodo tinha um arquivo, e nenhum deles era “um prompt melhor”.');
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--claude-md">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CLAUDE.md</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.2. Peças: camadas que se somam (svg liga-desliga, com a repetição que vira conflito), quiz do usuário ou da pasta, as cinco partes clicáveis de um manual de projeto, intenção × comportamento, quiz "se eu tirar, ele erra?", medidor do manual que só cresce (controle deslizante), montador do primeiro CLAUDE.md com copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · camadas (svg) */
+.cm-lay { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.cm-l rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.6; transition: fill .25s ease, stroke .25s ease, opacity .25s ease; }
+.cm-l .h { font: 500 13px var(--font-mono); fill: var(--accent); letter-spacing: .06em; }
+.cm-l .d { font: 400 14px var(--font-body); fill: var(--text); }
+.cm-l.off rect { fill: var(--bg); stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.cm-l.off .h, .cm-l.off .d { fill: var(--text-dim); }
+.cm-l.warn rect { fill: var(--atencao-soft); stroke: var(--atencao); }
+.cm-l.warn .h { fill: var(--atencao-texto); }
+.cm-conv rect { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.3; }
+.cm-conv text { font: 400 14px var(--font-body); fill: var(--text); text-anchor: middle; }
+.cm-conv .n { font: 500 13px var(--font-mono); fill: var(--accent); }
+.cm-arr { stroke: var(--accent); stroke-width: 2; fill: none; }
+.cm-mk { fill: var(--accent); }
+.cm-know { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.cm-know li { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 10px; font-size: .92rem; color: var(--text-muted); }
+.cm-know li span { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); padding-top: 3px; }
+.cm-know li.dup { color: var(--atencao-texto); }
+.cm-know li.dup span { color: var(--atencao-texto); }
+.cm-toggle[aria-pressed="true"] { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+
+/* 3 · as cinco partes */
+.cm-parts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.cm-file { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px; display: grid; gap: 6px; }
+.cm-file button { text-align: left; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 2px 8px; align-items: baseline; border: 1px solid var(--border); background: var(--bg); border-radius: 6px; padding: 9px 12px; }
+.cm-file button b { font-family: var(--font-mono); font-size: .8rem; font-weight: 500; color: var(--accent); }
+.cm-file button span { font-size: .95rem; }
+.cm-file button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.cm-sample { font-family: var(--font-mono); font-size: .82rem; line-height: 1.6; background: var(--bg); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; color: var(--text); }
+
+/* 4 · intenção × comportamento */
+.cm-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cm-rule { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.cm-rule q { font-size: 1.02rem; quotes: "“" "”"; }
+.cm-rule .ck { font-size: .9rem; border-radius: 6px; padding: 6px 10px; border: 1px solid; }
+.cm-rule .ck.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.cm-rule .ck.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+
+/* 6 · rodapé */
+.cm-foot { font-family: var(--font-mono); font-size: .85rem; background: var(--bg-elev); border: 1px solid var(--border-strong); border-left: 3px solid var(--accent); border-radius: 6px; padding: 12px 16px; }
+
+/* 7 · medidor */
+.cm-meter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.cm-meter .card { justify-items: start; }
+.cm-bar .v { fill: var(--accent); transition: width .3s ease; }
+.cm-bar .o { fill: var(--atencao); transition: width .3s ease, x .3s ease; }
+.cm-bar .s { fill: var(--border-strong); transition: width .3s ease, x .3s ease; }
+.cm-bar .base { fill: var(--bg); stroke: var(--border); }
+.cm-bar text { font: 400 12px var(--font-mono); fill: var(--text-dim); }
+.cm-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .88rem; color: var(--text-muted); }
+.cm-leg i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.cm-leg .lv { background: var(--accent); }
+.cm-leg .lo { background: var(--atencao); }
+.cm-leg .ls { background: var(--border-strong); }
+
+/* 8 · montador */
+.cm-build { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.cm-form { display: grid; gap: 10px; }
+.cm-form label { display: grid; gap: 4px; font-size: .92rem; }
+.cm-form input[type=text], .cm-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.cm-form .chk { display: flex; gap: 8px; align-items: center; }
+.cm-form .chk input { accent-color: var(--accent); width: 18px; height: 18px; }
+.cm-out { display: grid; gap: 10px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take, .cm-lay, .cm-parts, .cm-rules, .cm-meter, .cm-build { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .cm-l rect, .cm-bar .v, .cm-bar .o, .cm-bar .s { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--pasta.html">← 8.1 Pasta com dono</a><a href="./claude-code--onde-paramos.html">8.3 Onde paramos →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html" aria-current="page"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.2 · 2 de 7</span>
+  <h1>CLAUDE.md</h1>
+  <p class="sub">O manual que o Claude lê antes da sua primeira mensagem, em toda conversa</p>
+  <p class="lead">No chat, cada conversa começa do zero: você reexplica quem é, o que é o projeto e como quer o resultado. O CLAUDE.md é essa explicação <strong>escrita uma vez</strong>, num arquivo de texto dentro da pasta. A frase que você digitava toda vez passa a ser lida sozinha. E o manual bom não nasce pronto: <strong>ele cresce com os erros que você corrigiu duas vezes, e emagrece quando você poda</strong>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-camadas">Três camadas</a><a href="#s-corte">Usuário ou pasta</a><a href="#s-partes">Por dentro do manual</a><a href="#s-linha">Duas correções</a><a href="#s-tirar">Se eu tirar</a><a href="#s-historia">Como é, não como foi</a><a href="#s-poda">252 para 83</a><a href="#s-comecar">Cinco linhas</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-camadas" aria-labelledby="h-camadas">
+  <span class="eyebrow">Três camadas</span>
+  <h2 id="h-camadas">O Claude lê três manuais, de cima para baixo, e soma os três</h2>
+  <p class="intro">Existe um manual seu, que vale em qualquer pasta. Um da pasta-mãe, que vale para tudo dentro de uma área (um cliente, uma frente de trabalho). E um de cada projeto. Abrindo a conversa dentro do projeto, <strong>os três entram juntos, antes de você digitar nada</strong>. Por isso o do projeto herda os de cima e não precisa repeti-los. Ligue e desligue as camadas; depois, faça o do projeto repetir uma regra do seu com outra redação.</p>
+  <div class="cm-lay">
+    <div class="chart">
+      <div class="seg" role="group" aria-label="Camadas ligadas">
+        <button type="button" data-ly="0" aria-pressed="true">Do usuário</button>
+        <button type="button" data-ly="1" aria-pressed="true">Da pasta-mãe</button>
+        <button type="button" data-ly="2" aria-pressed="true">Do projeto</button>
+      </div>
+      <svg viewBox="0 0 460 330" role="img" aria-labelledby="cm-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="cm-t">Três camadas empilhadas, da mais larga à mais estreita: o manual do usuário, o da pasta-mãe e o do projeto; as três descem juntas para a conversa, que começa com a soma delas</title>
+        <defs><marker id="mkcm" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="cm-mk"/></marker></defs>
+        <g class="cm-l" data-l="0"><rect x="10" y="10" width="440" height="66" rx="8"/><text class="h" x="26" y="37">DO USUÁRIO · ~/.claude/CLAUDE.md</text><text class="d" x="26" y="60">vale em qualquer pasta · no exemplo, 84 linhas</text></g>
+        <g class="cm-l" data-l="1"><rect x="40" y="92" width="380" height="66" rx="8"/><text class="h" x="56" y="119">DA PASTA-MÃE · area-comercial/</text><text class="d" x="56" y="142">tudo dentro da área · 270 linhas</text></g>
+        <g class="cm-l" data-l="2"><rect x="70" y="174" width="320" height="66" rx="8"/><text class="h" x="86" y="201">DO PROJETO · propostas/</text><text class="d" x="86" y="224">só este projeto · 102 linhas</text></g>
+        <path class="cm-arr" d="M230,242 L230,262" marker-end="url(#mkcm)"/>
+        <g class="cm-conv"><rect x="90" y="266" width="280" height="56" rx="8"/><text x="230" y="289">a conversa começa com</text><text class="n" x="230" y="311" id="cmSum">3 camadas · 456 linhas</text></g>
+      </svg>
+      <button type="button" class="btn cm-toggle" id="cmDup" aria-pressed="false">O do projeto repete uma regra do seu, com outra redação</button>
+    </div>
+    <div class="panel" aria-live="polite">
+      <span class="eyebrow">O que ele sabe antes da sua primeira mensagem</span>
+      <ul class="cm-know" id="cmKnow"></ul>
+      <div class="verdict" id="cmVer"></div>
+    </div>
+  </div>
+  <p class="hint">Os tamanhos são de uma área de trabalho real (84, 270 e 102 linhas); os nomes de pasta e as regras são exemplos. A mesma lógica de camadas que se somam aparece no chat e nos projetos da ferramenta: <a href="./assistente--onde-a-regra-mora.html#s-pilha">onde a regra mora</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-corte" aria-labelledby="h-corte">
+  <span class="eyebrow">Usuário ou pasta</span>
+  <h2 id="h-corte">Cada camada só carrega o que é verdade nela</h2>
+  <p class="intro">O corte é uma pergunta: <strong>isso vale em qualquer pasta, ou só aqui?</strong> O jeito de trabalhar (escopo da entrega, mudança pequena, dizer o que é dado e o que é opinião) vai no seu. O que só é verdade num lugar (o modelo, o caminho, o que ler primeiro, o que não se pode tocar) vai no da pasta.</p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Vai no do usuário</th><th>Vai no da pasta</th></tr>
+      <tr><td>disposição que vale em qualquer pasta: o que entregar e o que não, mudar só o que foi pedido, sinalizar a confiança</td><td>o que só é verdade ali: o modelo, o contrato, o caminho dos arquivos, o que nunca muda, o que ler primeiro</td></tr>
+    </table>
+  </div>
+  <div class="qz" id="crQuiz"></div>
+  <p class="qz-score" id="crScore" aria-live="polite"></p>
+  <p class="punch">Duplicata não reforça. <em>Dilui, e cobra espaço em toda conversa.</em></p>
+  <p class="hint">Um trecho real de um manual de área, do tipo que só vale ali: pedido ambíguo de lugar (“arruma isso”, “limpa isso”) se resolve na pasta do projeto ativo; se lá já está em ordem, diga que está em ordem e pare.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-partes" aria-labelledby="h-partes">
+  <span class="eyebrow">Por dentro do manual</span>
+  <h2 id="h-partes">O que um manual de projeto costuma ter, em 102 linhas</h2>
+  <p class="intro">Um exemplo curto e bom, medido: <strong>102 linhas, cinco partes</strong>. Clique em cada uma. O conteúdo abaixo é de um projeto inventado (as propostas comerciais de uma área); a forma é a do exemplo real.</p>
+  <div class="cm-parts">
+    <div class="cm-file" id="ptFile" role="group" aria-label="As cinco partes">
+      <button type="button" data-pt="0" aria-pressed="true"><b>01</b><span>Propósito e escopo</span></button>
+      <button type="button" data-pt="1" aria-pressed="false"><b>02</b><span>O que ler antes de qualquer ação</span></button>
+      <button type="button" data-pt="2" aria-pressed="false"><b>03</b><span>Como o trabalho anda aqui</span></button>
+      <button type="button" data-pt="3" aria-pressed="false"><b>04</b><span>A pasta de conhecimento</span></button>
+      <button type="button" data-pt="4" aria-pressed="false"><b>05</b><span>Vínculos</span></button>
+    </div>
+    <div class="panel" id="ptPanel" aria-live="polite"></div>
+  </div>
+  <h3>Três hábitos que aparecem em todos os bons</h3>
+  <div class="three">
+    <div class="card focal"><span class="eyebrow">abre</span><h3>Dizendo de quem herda</h3><p>“Herda o manual da pasta-mãe (convenções, papel, restrições). Este arquivo só carrega o que é específico deste projeto.” Quem lê sabe na primeira linha o que não vai encontrar ali.</p></div>
+    <div class="card"><span class="eyebrow">fecha</span><h3>Com versão e motivo</h3><p>O rodapé diz a versão, a data e por que o arquivo nasceu ou mudou. Um exemplo real, adaptado: “criado para fechar a lacuna: era o único projeto da área sem manual local”.</p></div>
+    <div class="card"><span class="eyebrow">manda</span><h3>Ler a memória primeiro</h3><p>A ordem de leitura está escrita, e a memória vem antes de tudo. É a linha que faz o estado do trabalho chegar na conversa: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-linha" aria-labelledby="h-linha">
+  <span class="eyebrow">Duas correções</span>
+  <h2 id="h-linha">O manual nasce do erro: uma linha entra quando você corrigiu a mesma coisa duas vezes</h2>
+  <p class="intro">No chat, a correção fica na conversa e morre com ela. Por isso o mesmo erro volta amanhã. <strong>Corrigiu duas vezes a mesma coisa, vira uma linha.</strong> E a linha descreve comportamento, não intenção; de preferência, com um número que dá para contar. Troque a redação e veja o que o Claude consegue conferir sozinho, no fim de uma sessão longa.</p>
+  <div class="seg" role="group" aria-label="Como a linha foi escrita">
+    <button type="button" data-rw="int" aria-pressed="true">Escrita como intenção</button>
+    <button type="button" data-rw="com" aria-pressed="false">Escrita como comportamento</button>
+  </div>
+  <div class="cm-rules" id="rwOut" aria-live="polite"></div>
+  <p class="punch">O que ele consegue contar, ele cumpre no fim do dia. <em>O que precisa interpretar, não.</em></p>
+  <p class="hint">Como transformar a correção numa linha (os seis desvios com nome, a linha que dá para apagar amanhã) está em <a href="./ai-first--memoria.html#s-linha">toda correção vira regra</a>. Aqui o assunto é o arquivo onde essa linha mora.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-tirar" aria-labelledby="h-tirar">
+  <span class="eyebrow">Se eu tirar</span>
+  <h2 id="h-tirar">Cada linha passa por uma pergunta: se eu tirar, ele erra?</h2>
+  <p class="intro">Se não erra, a linha sai. Se é algo que muda toda semana, não é manual: é estado, e vai para a memória. Dez linhas candidatas de um manual de projeto. <strong>O manual de usuário deste exemplo já diz “responda em português, frases curtas”.</strong></p>
+  <div class="qz" id="trQuiz"></div>
+  <p class="qz-score" id="trScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-historia" aria-labelledby="h-historia">
+  <span class="eyebrow">Como é, não como foi</span>
+  <h2 id="h-historia">O manual diz como é. A história mora em outro lugar</h2>
+  <p class="intro">Três regras de manutenção, escritas no manual de uma área real, que dizem <strong>quem muda o quê sem perguntar</strong> e onde fica o registro da mudança.</p>
+  <div class="two">
+    <div class="card"><span class="eyebrow">corrige sem perguntar</span><h3>Fato datado errado</h3><p>Caminho de arquivo que não existe mais, contador, versão, prazo sem dia. É manutenção: quem achou, corrige.</p></div>
+    <div class="card focal"><span class="eyebrow">só sinaliza</span><h3>Contradição sobre uma decisão</h3><p>Se o manual diz uma coisa e o trabalho mostra outra sobre algo que alguém decidiu, não se resolve sozinho. O Claude aponta e você decide.</p></div>
+  </div>
+  <p class="cm-foot">v4 · da v3 para a v4: entra a seção 10, padrão visual, que aponta para o documento da área; nada das seções 1 a 9 mudou</p>
+  <p class="hint">Um rodapé real, adaptado. Quem abre o arquivo depois sabe o que mudou sem comparar versões.</p>
+  <div class="two">
+    <div class="card"><h3>O que nunca entra: a história</h3><p>“Na sessão de março revisamos os módulos 1 a 3.” Isso é como foi. A cronologia fica na memória do projeto ou no histórico de versões, nunca no manual, porque o manual é lido inteiro em toda conversa.</p></div>
+    <div class="card"><h3>O que sobe da memória para o manual</h3><p>A lição que vale para sempre. Uma regra que nasceu numa sessão e continua valendo em todas as próximas deixa de ser estado e vira linha do manual, com versão no rodapé.</p></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-poda" aria-labelledby="h-poda">
+  <span class="eyebrow">252 para 83</span>
+  <h2 id="h-poda">O manual que só cresce passa a obedecer a regra velha</h2>
+  <p class="intro">Acrescentar é fácil; ninguém sente falta de uma linha nova. O problema aparece quando a regra nova convive com a velha que ela substituiu, e as duas estão lá. <strong>Mova os meses e troque o hábito.</strong></p>
+  <div class="chart">
+    <div class="seg" role="group" aria-label="Hábito">
+      <button type="button" data-hb="add" aria-pressed="true">Só acrescenta</button>
+      <button type="button" data-hb="poda" aria-pressed="false">Poda uma vez por mês</button>
+    </div>
+    <div class="field">
+      <label for="pdMes">Meses de uso</label>
+      <div class="row"><input type="range" id="pdMes" min="0" max="12" step="1" value="6"><output id="pdMesOut" for="pdMes">6</output></div>
+    </div>
+    <svg class="cm-bar" viewBox="0 0 360 64" role="img" aria-labelledby="pd-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="pd-t">Barra do tamanho do manual, dividida em regras em uso, regras velhas que continuam no arquivo e história de sessões</title>
+      <rect class="base" x="0" y="8" width="360" height="30" rx="4"/>
+      <rect class="v" id="pdV" x="0" y="8" width="0" height="30"/>
+      <rect class="o" id="pdO" x="0" y="8" width="0" height="30"/>
+      <rect class="s" id="pdS" x="0" y="8" width="0" height="30"/>
+      <text x="0" y="58">0</text><text x="180" y="58" text-anchor="middle">150 linhas</text><text x="360" y="58" text-anchor="end">300</text>
+    </svg>
+    <div class="cm-leg"><span><i class="lv"></i>regras em uso</span><span><i class="lo"></i>regras velhas que ninguém tirou</span><span><i class="ls"></i>história de sessões</span></div>
+    <div class="cm-meter">
+      <div class="card"><span class="eyebrow">linhas</span><span class="big" id="pdLin">0</span></div>
+      <div class="card"><span class="eyebrow">pares em conflito</span><span class="big" id="pdCon">0</span></div>
+      <div class="card"><span class="eyebrow">lidas sem mudar nada</span><span class="big" id="pdAll">0</span></div>
+    </div>
+    <div class="verdict" id="pdVer" aria-live="polite"></div>
+    <p class="hint">Simulação ilustrativa: os números de linha por mês são inventados. A forma do problema não é.</p>
+  </div>
+  <div class="two">
+    <div class="card focal"><span class="eyebrow">a poda que funcionou</span><span class="big">252 → 83</span><p>Um manual foi de 252 para 83 linhas (menos 63%) numa revisão feita só para isso. O próprio arquivo registra o motivo logo depois da regra de não repetir: foi por isso que ele encolheu.</p></div>
+    <div class="card"><span class="eyebrow">o manual que virou diário</span><span class="big">583</span><p>O manual de um projeto de desenvolvimento de software tem 583 linhas. A seção 4 se chama “Sessões executadas, cronologia”, com um subtítulo por rodada de trabalho. Toda conversa aberta ali lê a história inteira antes de começar.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A poda do mês, pedida ao próprio Claude</span><button type="button" class="btn" data-copy="pdPrompt">Copiar</button></div>
+<pre id="pdPrompt">Leia o CLAUDE.md desta pasta inteiro. Para cada linha, me diga:
+1. Se é regra, estado do trabalho ou história.
+2. Se repete algo que já está no meu manual de usuário ou no da pasta-mãe.
+3. Se, sem ela, você faria alguma coisa diferente. Seja honesto: se faria igual, diga.
+4. Se contradiz outra linha do mesmo arquivo.
+Não apague nada. Me mostre a lista e eu decido o que sai, o que fica e o que vai para a memória.</pre>
+  </div>
+  <h3>Seis tropeços que fazem o manual pesar</h3>
+  <div class="three">
+    <div class="card"><h3>Tudo num arquivo só</h3><p>Um manual gigante pesa em toda conversa, inclusive nas que não precisam daquilo. O que é de um projeto vai no projeto (<a href="./claude-code--pasta.html">a pasta</a>).</p></div>
+    <div class="card"><h3>Adjetivo no lugar de regra</h3><p>“Seja preciso” não muda nada. “Nome de pessoa sai só da lista de pessoas” muda.</p></div>
+    <div class="card"><h3>O mesmo em duas camadas</h3><p>Quando as duas versões divergirem, você não controla qual delas ele obedece.</p></div>
+    <div class="card"><h3>Acrescentar e nunca tirar</h3><p>A regra nova não apaga a velha. Se as duas estão lá, as duas são lidas.</p></div>
+    <div class="card"><h3>Estado no manual</h3><p>“Estamos na fase 2”, “falta revisar o módulo 3”. Muda toda semana: é da memória.</p></div>
+    <div class="card"><h3>Corrigir só no pedido</h3><p>Funciona hoje e volta amanhã, porque a correção não foi para onde é lida.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-comecar" aria-labelledby="h-comecar">
+  <span class="eyebrow">Cinco linhas</span>
+  <h2 id="h-comecar">O primeiro manual cabe em cinco linhas</h2>
+  <p class="intro">Comece pequeno: o papel do Claude ali, as pastas, duas regras que não mudam e a linha que manda ler a memória. <strong>O resto entra quando você corrigir alguma coisa pela segunda vez.</strong> Preencha e copie.</p>
+  <div class="cm-build">
+    <div class="cm-form">
+      <label>Nome do projeto<input type="text" id="bdNome" value="Relatório semanal de vendas"></label>
+      <label>O papel do Claude aqui<input type="text" id="bdPapel" value="quem monta o relatório de toda segunda a partir da planilha do sistema"></label>
+      <label>As pastas, uma por linha<textarea id="bdPastas" rows="3">dados/: a planilha exportada, não se edita
+relatorios/: um arquivo por semana
+modelos/: o relatório em branco</textarea></label>
+      <label>Regra 1<input type="text" id="bdR1" value="Todo número do relatório diz de qual aba da planilha saiu."></label>
+      <label>Regra 2<input type="text" id="bdR2" value="Relatório tem no máximo uma página; comparação é sempre com a semana anterior."></label>
+      <label class="chk"><input type="checkbox" id="bdMem" checked> Mandar ler a memória antes de começar</label>
+    </div>
+    <div class="cm-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">CLAUDE.md · ao vivo</span><button type="button" class="btn" data-copy="bdOut">Copiar</button></div>
+        <pre id="bdOut"></pre>
+      </div>
+      <div class="verdict" id="bdVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · sem manual</span><h3>Pergunte o que ele sabe</h3><p>Abra o Claude Code na pasta, sem CLAUDE.md, e pergunte o que ele sabe sobre ela. É a linha de base.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · cinco linhas</span><h3>Salve o arquivo acima</h3><p>Na raiz da pasta, com o nome CLAUDE.md, exatamente assim, em maiúsculas.</p></div>
+    <div class="card"><span class="eyebrow">03 · conversa nova</span><h3>Faça a mesma pergunta</h3><p>A diferença entre as duas respostas é o manual trabalhando.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A rotina do manual</span><button type="button" class="btn" data-copy="bdRot">Copiar</button></div>
+<pre id="bdRot">Durante a semana: um arquivo aberto ao lado. Toda correção que eu fizer pela segunda vez, anoto.
+No fim da semana: cada anotação vira uma linha do CLAUDE.md, com verbo e comportamento ("nome de pessoa sai só da lista de pessoas"), nunca adjetivo ("cuidado com os nomes").
+Uma vez por mês: leio o manual inteiro com uma pergunta por linha: se eu tirar, ele erra? Se não erra, sai.
+Toda mudança: versão, data e motivo no rodapé.</pre>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Escrito uma vez, lido sempre</h3><p>O manual é a explicação que você repetia no começo de toda conversa. As camadas se somam: o do projeto herda e não repete.</p></div>
+    <div class="take-card"><h3>Nasce do erro</h3><p>Corrigiu duas vezes, vira linha. Com verbo, comportamento e, se der, um número que dá para contar.</p></div>
+    <div class="take-card"><h3>Tirar também é escrever</h3><p>Se eu tirar, ele erra? Se não, sai. A história e o estado moram em outro lugar.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>CLAUDE.md</dt><dd>Arquivo de texto que o Claude Code lê antes da primeira mensagem, em toda conversa aberta naquela pasta.</dd>
+    <dt>Camada</dt><dd>Cada um dos manuais que se somam: o do usuário (vale em qualquer pasta), o da pasta-mãe e o do projeto.</dd>
+    <dt>Limiar contável</dt><dd>Regra escrita com um número que dá para conferir: “mais de 3 arquivos” em vez de “mudança grande”.</dd>
+    <dt>Poda</dt><dd>A revisão do manual inteiro com a pergunta “se eu tirar, ele erra?”, para cortar o que não muda comportamento.</dd>
+    <dt>Memória</dt><dd>O arquivo com o estado do trabalho, reescrito toda sessão. O manual manda ler; o manual não é ela.</dd>
+  </dl>
+  <p class="foot">Simplificação didática: o nome dos arquivos e onde cada camada fica podem mudar entre versões da ferramenta; a soma de cima para baixo continua. Os tamanhos (84, 270 e 102 linhas; 252 para 83; 583) foram medidos em projetos reais, sem nome; mostram a forma do problema, não uma meta de tamanho. Pastas, regras e projetos dos exemplos são inventados. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--pasta.html">pasta</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">referência</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--pasta.html"><span>← anterior</span><b>8.1 · Pasta com dono</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--onde-paramos.html"><span>próxima →</span><b>8.3 · Onde paramos</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · camadas */
+  var LY = [
+    { tag: 'usuário', n: 84, lines: ['Responda em português, em frases curtas.', 'Mudança em mais de 3 arquivos: mostre o plano e espere o ok.', 'Diga o que é dado e o que é opinião.'] },
+    { tag: 'pasta-mãe', n: 270, lines: ['Nome de cliente só pelo código da planilha de clientes.', 'Documento novo nasce em rascunhos/.', 'O padrão visual é o modelo da área.'] },
+    { tag: 'projeto', n: 102, lines: ['Proposta usa o modelo de modelos/, nunca uma proposta antiga como base.', 'Preço sai só da tabela de preços vigente.', 'Antes de começar, leia o 00-aqui-paramos.md.'] }
+  ];
+  var DUP = 'Escreva de forma completa e detalhada, em português.';
+  var lyOn = [true, true, true], dup = false;
+  var lyBtns = document.querySelectorAll('[data-ly]'), lyG = document.querySelectorAll('.cm-l'), dupBtn = document.getElementById('cmDup');
+  function renderLy() {
+    var html = '', total = 0, cnt = 0;
+    LY.forEach(function (l, i) {
+      lyG[i].classList.toggle('off', !lyOn[i]);
+      lyG[i].classList.toggle('warn', i === 2 && lyOn[2] && dup);
+      if (!lyOn[i]) return;
+      cnt++; total += l.n;
+      l.lines.forEach(function (t, j) {
+        var c = (dup && lyOn[2] && i === 0 && j === 0) ? ' class="dup"' : '';
+        html += '<li' + c + '><span>' + l.tag + '</span>' + esc(t) + '</li>';
+      });
+      if (i === 2 && dup) { html += '<li class="dup"><span>projeto</span>' + esc(DUP) + '</li>'; total += 1; }
+    });
+    pressGroup(lyBtns, function (b) { return lyOn[+b.dataset.ly]; });
+    dupBtn.setAttribute('aria-pressed', String(dup));
+    document.getElementById('cmKnow').innerHTML = html || '<li><span>nada</span>Nenhuma camada: ele começa do zero, como no chat.</li>';
+    document.getElementById('cmSum').textContent = cnt ? cnt + (cnt === 1 ? ' camada · ' : ' camadas · ') + total + ' linhas' : 'nada: você reexplica tudo';
+    var v = document.getElementById('cmVer');
+    if (!cnt) { v.className = 'verdict no'; v.innerHTML = '<b>Página em branco.</b> Quem você é, onde está e como quer o resultado: tudo volta a ser digitado na primeira mensagem.'; }
+    else if (dup && lyOn[0] && lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Duas versões da mesma regra.</b> Frases curtas ou completa e detalhada? As duas entram na mesma conversa, e você não controla qual ele segue.'; }
+    else if (dup && lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Sem conflito à vista, por enquanto.</b> Com a camada do usuário desligada a repetição não briga com nada. Ligue de volta e veja.'; }
+    else if (!lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Falta o do projeto.</b> Ele sabe quem você é e as regras da área, mas não sabe qual modelo usar, de onde sai o preço nem que precisa ler a memória.'; }
+    else if (cnt === 3) { v.className = 'verdict ok'; v.innerHTML = '<b>A soma das três.</b> Nenhuma linha repetida: o do projeto só carrega o que é do projeto e herda o resto.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Uma camada a menos.</b> O que estava nela some da conversa, e ninguém avisa: ele simplesmente não sabe.'; }
+  }
+  lyBtns.forEach(function (b) { b.addEventListener('click', function () { var i = +b.dataset.ly; lyOn[i] = !lyOn[i]; renderLy(); }); });
+  dupBtn.addEventListener('click', function () { dup = !dup; renderLy(); });
+  renderLy();
+
+  /* 2 · usuário ou pasta */
+  quiz(document.getElementById('crQuiz'), document.getElementById('crScore'), [
+    { s: '“Diga o que é dado e o que é opinião.”', a: 'usr', why: 'É um jeito de trabalhar que vale em qualquer pasta. No do usuário, uma vez só.' },
+    { s: '“Preço sai só da tabela de preços vigente, na pasta referencias/.”', a: 'pas', why: 'O caminho e a tabela só existem naquele projeto.' },
+    { s: '“Mudança em mais de 3 arquivos: mostre o plano e espere o ok.”', a: 'usr', why: 'Disposição sua, em qualquer trabalho. Repetir no projeto não reforça: dilui.' },
+    { s: '“Ata aprovada não se edita; correção vira ata nova.”', a: 'pas', why: 'É o combinado daquela pasta de atas. Em outra pasta pode nem existir ata.' },
+    { s: '“Responda em português, em frases curtas.”', a: 'usr', why: 'Vale para tudo que você faz. Se estiver também no do projeto, é duplicata.' },
+    { s: '“O que ler primeiro: o modelo do relatório, depois a memória.”', a: 'pas', why: 'A ordem de leitura é do projeto: cada pasta tem os seus arquivos.' }
+  ], [['usr', 'Do usuário'], ['pas', 'Da pasta']], 'a pergunta é sempre a mesma: vale em qualquer pasta, ou só aqui?');
+
+  /* 3 · as cinco partes */
+  var PT = [
+    { t: 'Propósito e escopo', d: 'O que é o projeto, em poucas linhas ou numa tabela: para quem, até quando, em que estado.', s: 'Projeto: propostas comerciais da área\nPara quem: clientes novos e renovações\nVigência: 2026\nEstado: em uso' },
+    { t: 'O que ler antes de qualquer ação', d: 'A lista, em ordem, começando pela memória. É o que faz a conversa chegar sabendo onde o trabalho parou.', s: 'Antes de qualquer ação, leia, nesta ordem:\n1. 00-aqui-paramos.md (onde paramos)\n2. modelos/proposta.md\n3. referencias/tabela-de-precos.md' },
+    { t: 'Como o trabalho anda aqui', d: 'O que é particular deste projeto e já causou erro. É a parte que mais cresce com as correções, e a que mais precisa de poda.', s: 'Proposta nasce em rascunhos/ e só vai para enviadas/\ndepois do ok da coordenadora.\n(Uma versão de rascunho já foi para o cliente:\né por isso que esta linha existe.)' },
+    { t: 'A pasta de conhecimento', d: 'O que tem em cada subpasta, em uma linha cada. Quem abre sabe onde procurar sem listar tudo.', s: 'referencias/  tabela de preços e política de desconto\nmodelos/      a proposta em branco\nrascunhos/    o que está em andamento\nenviadas/     o que já saiu; não se edita' },
+    { t: 'Vínculos', d: 'Onde estão o manual da pasta-mãe, a memória, as decisões e as referências. O manual aponta; não copia.', s: 'Manual da área: ../CLAUDE.md\nMemória: 00-aqui-paramos.md\nDecisões: 00-decisoes.md\nPendências: 00-fios-em-aberto.md' }
+  ];
+  var ptBtns = document.querySelectorAll('[data-pt]');
+  function setPt(k) {
+    pressGroup(ptBtns, function (b) { return +b.dataset.pt === k; });
+    var p = PT[k];
+    document.getElementById('ptPanel').innerHTML = '<span class="eyebrow">parte ' + (k + 1) + ' de 5</span><h3>' + p.t + '</h3><p>' + p.d + '</p><pre class="cm-sample">' + esc(p.s) + '</pre>';
+  }
+  ptBtns.forEach(function (b) { b.addEventListener('click', function () { setPt(+b.dataset.pt); }); });
+  setPt(0);
+
+  /* 4 · intenção × comportamento */
+  var RW = [
+    { i: 'Cuidado com os nomes.', c: 'Nome de pessoa sai só da lista de pessoas.', ni: 'Cuidado quanto? Ele acha que teve cuidado, e inventa um sobrenome.', nc: 'Dá para conferir: o nome está ou não está na lista.' },
+    { i: 'Não faça mudança grande sem avisar.', c: 'Mudança em mais de 3 arquivos: mostre o plano e espere o ok.', ni: 'Grande para quem? Na hora ele acha que sete arquivos é pouco.', nc: 'Ele conta os arquivos. Quatro, para e pergunta.' },
+    { i: 'Seja conciso nos resumos.', c: 'Resumo de reunião: no máximo 10 linhas, decisões primeiro.', ni: 'Conciso é interpretação. No fim da tarde, o resumo tem duas páginas.', nc: 'Dez linhas se contam, e a ordem se vê.' },
+    { i: 'Seja preciso com os números.', c: 'Todo número do relatório diz de qual aba da planilha saiu.', ni: 'Ele acredita que foi preciso. Você não tem como conferir.', nc: 'Número sem aba é defeito visível, na hora.' }
+  ];
+  var rwBtns = document.querySelectorAll('[data-rw]');
+  function setRw(k) {
+    pressGroup(rwBtns, function (b) { return b.dataset.rw === k; });
+    document.getElementById('rwOut').innerHTML = RW.map(function (r) {
+      var com = k === 'com';
+      return '<div class="cm-rule"><q>' + (com ? r.c : r.i) + '</q><span class="ck ' + (com ? 'ok' : 'no') + '">' + (com ? 'Dá para conferir. ' : 'Não dá para conferir. ') + (com ? r.nc : r.ni) + '</span></div>';
+    }).join('');
+  }
+  rwBtns.forEach(function (b) { b.addEventListener('click', function () { setRw(b.dataset.rw); }); });
+  setRw('int');
+
+  /* 5 · se eu tirar */
+  quiz(document.getElementById('trQuiz'), document.getElementById('trScore'), [
+    { s: '“Seja sempre preciso e cuidadoso.”', a: 'sai', why: 'Tirando, ele faz igual. Adjetivo não muda comportamento.' },
+    { s: '“Mudança em mais de 3 arquivos: mostre o plano e espere o ok.”', a: 'fica', why: 'Sem ela, ele sai mexendo. Tem limiar contável e muda o que acontece.' },
+    { s: '“Estamos na fase 2 do projeto.”', a: 'mem', why: 'É estado: na semana que vem é mentira. Vai para a memória, que é reescrita toda sessão.' },
+    { s: '“Em março a sessão revisou os módulos 1 a 3 e ajustou o modelo.”', a: 'sai', why: 'É história: como foi, não como é. Fica no histórico; se algo dali ainda importa, é o estado, e o estado vai reescrito na memória.' },
+    { s: '“Responda em português, em frases curtas.”', a: 'sai', why: 'Já está no manual do usuário. Aqui é duplicata: não reforça, dilui, e um dia diverge.' },
+    { s: '“Falta revisar o módulo 3.”', a: 'mem', why: 'Pendência da semana. Quando o módulo for revisado, a linha vira mentira no manual.' },
+    { s: '“Proposta usa o modelo de modelos/, nunca uma proposta antiga como base.”', a: 'fica', why: 'Sem ela, ele copia a proposta do ano passado, com o preço do ano passado.' },
+    { s: '“Use a sua criatividade.”', a: 'sai', why: 'Não diz o que fazer. Tirando, nada muda.' },
+    { s: '“Nome de pessoa sai só da lista de pessoas.”', a: 'fica', why: 'Nasceu de um erro corrigido duas vezes, e sem ela o erro volta.' },
+    { s: '“Próxima reunião com a diretoria: dia 14.”', a: 'mem', why: 'Data da semana é estado. Depois do dia 14, ninguém tira do manual.' }
+  ], [['fica', 'Fica no manual'], ['sai', 'Sai'], ['mem', 'Vai para a memória']], 'o manual diz como se trabalha aqui; o que muda toda semana é da memória.');
+
+  /* 7 · medidor */
+  var hb = 'add', mes = document.getElementById('pdMes'), hbBtns = document.querySelectorAll('[data-hb]');
+  function calc(m, h) {
+    if (h === 'poda') return { v: Math.min(30 + 6 * m, 80), o: 0, s: 0 };
+    return { v: Math.min(30 + 6 * m, 80), o: 4 * m, s: 12 * m };
+  }
+  function renderPd() {
+    var m = +mes.value, r = calc(m, hb), tot = r.v + r.o + r.s, k = 360 / 300;
+    document.getElementById('pdMesOut').textContent = m;
+    pressGroup(hbBtns, function (b) { return b.dataset.hb === hb; });
+    var V = document.getElementById('pdV'), O = document.getElementById('pdO'), S = document.getElementById('pdS');
+    V.setAttribute('width', Math.min(r.v * k, 360));
+    O.setAttribute('x', Math.min(r.v * k, 360)); O.setAttribute('width', Math.max(0, Math.min(r.o * k, 360 - r.v * k)));
+    S.setAttribute('x', Math.min((r.v + r.o) * k, 360)); S.setAttribute('width', Math.max(0, Math.min(r.s * k, 360 - (r.v + r.o) * k)));
+    document.getElementById('pdLin').textContent = tot;
+    var con = Math.floor(r.o / 8);
+    document.getElementById('pdCon').textContent = con;
+    document.getElementById('pdAll').textContent = r.o + r.s;
+    var v = document.getElementById('pdVer');
+    if (hb === 'poda') { v.className = 'verdict ok'; v.innerHTML = '<b>' + tot + ' linhas, todas em uso.</b> A regra nova entra e a velha que ela substitui sai no mesmo mês. A história ficou no histórico, e o estado, na memória.'; }
+    else if (m === 0) { v.className = 'verdict ok'; v.innerHTML = '<b>Começo limpo.</b> Trinta linhas, todas em uso. Mova os meses.'; }
+    else if (con === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Ainda sem briga à vista</b>, mas já há ' + r.o + ' linhas velhas e ' + r.s + ' de história lidas em toda conversa, sem mudar nada.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + con + (con === 1 ? ' par' : ' pares') + ' de regras em conflito.</b> Exemplo: “relatório vai em PDF” (mês 2) e, mais abaixo, “relatório vai em planilha, o PDF foi abandonado” (mês 7). As duas continuam lá, e ele pode seguir a velha.'; }
+  }
+  mes.addEventListener('input', renderPd);
+  hbBtns.forEach(function (b) { b.addEventListener('click', function () { hb = b.dataset.hb; renderPd(); }); });
+  renderPd();
+
+  /* 8 · montador */
+  var bd = ['bdNome', 'bdPapel', 'bdPastas', 'bdR1', 'bdR2'].map(function (id) { return document.getElementById(id); }), bdMem = document.getElementById('bdMem');
+  function dataHoje() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
+  function renderBd() {
+    var nome = bd[0].value.trim() || 'Meu projeto', papel = bd[1].value.trim(), pastas = bd[2].value.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    var out = '<b># CLAUDE.md · ' + esc(nome) + '</b>\n\n';
+    out += 'Aqui, você é ' + (papel ? esc(papel) : '<i>[o papel do Claude nesta pasta]</i>') + '.\n\n';
+    out += '<b>## As pastas</b>\n' + (pastas.length ? pastas.map(function (p) { return '- ' + esc(p); }).join('\n') : '<i>[uma pasta por linha]</i>') + '\n\n';
+    out += '<b>## Regras que não mudam</b>\n1. ' + (bd[3].value.trim() ? esc(bd[3].value.trim()) : '<i>[regra 1]</i>') + '\n2. ' + (bd[4].value.trim() ? esc(bd[4].value.trim()) : '<i>[regra 2]</i>') + '\n\n';
+    if (bdMem.checked) out += '<b>## Antes de começar</b>\nLeia o 00-aqui-paramos.md: é onde está o estado do trabalho. Ao terminar, reescreva.\n\n';
+    out += '---\nv1 · ' + dataHoje() + ' · primeira versão: papel, pastas e duas regras.';
+    document.getElementById('bdOut').innerHTML = out;
+    var v = document.getElementById('bdVer'), vago = /\b(seja|cuidado|sempre bem|capricha|atenção)\b/i;
+    if (!bdMem.checked) { v.className = 'verdict no'; v.innerHTML = '<b>Sem a linha da memória</b>, o arquivo do estado fica esquecido na pasta: ninguém manda ler. Veja <a href="./claude-code--onde-paramos.html">onde paramos</a>.'; }
+    else if (vago.test(bd[3].value) || vago.test(bd[4].value)) { v.className = 'verdict no'; v.innerHTML = '<b>Uma das regras parece adjetivo.</b> Troque por comportamento: o que ele faz, com um número ou um lugar que dê para conferir.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Pronto para salvar.</b> Pequeno de propósito: o resto entra quando você corrigir alguma coisa pela segunda vez.'; }
+  }
+  bd.forEach(function (i) { i.addEventListener('input', renderBd); });
+  bdMem.addEventListener('change', renderBd);
+  renderBd();
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

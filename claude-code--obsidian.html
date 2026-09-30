@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--obsidian">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obsidian</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.7. Peças: grafo clicável de pessoas, reuniões, decisões e pendências, quiz vai no vault ou fica fora (8 itens), montador ao vivo do cabeçalho com copiar, quiz do marcador certo com o marcador desenhado, stepper do fluxo depois da reunião com os arquivos que mudam, tabela de fontes brutas, bloco para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · o grafo */
+.gr-h { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; text-anchor: middle; }
+.gr-e { stroke: var(--border-strong); stroke-width: 1.3; fill: none; transition: stroke .25s ease, opacity .25s ease; }
+.gr-e.on { stroke: var(--accent); stroke-width: 2.4; }
+.gr-e.dim { opacity: .35; }
+.gr-n { cursor: pointer; transition: opacity .25s ease; }
+.gr-n rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.3; transition: fill .25s ease; }
+.gr-n text { font: 400 12px var(--font-body); fill: var(--text); text-anchor: middle; }
+.gr-n.k-r rect { stroke: var(--accent); }
+.gr-n.k-d rect { stroke: var(--ok); }
+.gr-n.k-f rect { stroke: var(--atencao); }
+.gr-n.k-p rect { stroke: var(--text-dim); stroke-dasharray: 4 3; }
+.gr-n.nb.k-r rect, .gr-n.nb.k-p rect { fill: var(--accent-soft); }
+.gr-n.nb.k-d rect { fill: var(--ok-soft); }
+.gr-n.nb.k-f rect { fill: var(--atencao-soft); }
+.gr-n.sel rect { fill: var(--text); stroke: var(--text); }
+.gr-n.sel text { fill: var(--bg); font-weight: 600; }
+.gr-n.dim { opacity: .35; }
+.gr-n:focus-visible { outline: none; }
+.gr-n:focus-visible rect { stroke-width: 3; }
+
+/* 2 · o que está fora */
+.fx-tab { font-size: .85rem; }
+
+/* 3 · cabeçalho */
+.hd-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.hd-form { display: grid; gap: 10px; }
+.hd-form label { display: grid; gap: 4px; font-size: .92rem; }
+.hd-form input, .hd-form select { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.hd-out { display: grid; gap: 10px; }
+.lk { font-family: var(--font-mono); font-size: .88rem; background: var(--bg); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 8px 12px; overflow-wrap: anywhere; }
+
+/* 4 · marcadores */
+.co { border-left: 4px solid var(--border-strong); background: var(--bg-elev); border-radius: 4px; padding: 10px 14px; display: grid; gap: 4px; margin-top: 8px; color: var(--text); }
+.co b { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.co code { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); }
+.co-decisao { border-left-color: var(--accent); background: var(--accent-soft); }
+.co-decisao b { color: var(--accent); }
+.co-pendencia { border-left-color: var(--text-dim); }
+.co-pendencia b { color: var(--text-muted); }
+.co-risco { border-left-color: var(--atencao); background: var(--atencao-soft); }
+.co-risco b { color: var(--atencao-texto); }
+.co-hipotese { border-left-style: dashed; border-left-color: var(--accent); }
+.co-hipotese b { color: var(--accent); }
+.co-criterio { border-left-color: var(--ok); background: var(--ok-soft); }
+.co-criterio b { color: var(--ok-texto); }
+.co-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.co-row .co { margin-top: 0; font-size: .85rem; }
+
+/* 5 · depois da reunião */
+.fl-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.fl-tree { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 5px; font-family: var(--font-mono); font-size: .82rem; }
+.fl-dir { color: var(--text-dim); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; margin-top: 6px; }
+.fl-dir.out { color: var(--atencao-texto); }
+.fl-f { display: flex; justify-content: space-between; gap: 8px; border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; color: var(--text-muted); background: var(--bg); overflow-wrap: anywhere; transition: background .25s ease, border-color .25s ease; }
+.fl-f .st { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
+.fl-f.ghost { border-style: dashed; opacity: .5; }
+.fl-f.novo { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.fl-f.mud { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.fl-f.novo .st, .fl-f.mud .st { color: inherit; }
+.fl-snip { font-family: var(--font-mono); font-size: .8rem; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; margin: 4px 0 0; color: var(--text-muted); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .hd-grid, .fl-wrap { grid-template-columns: 1fr; }
+  .co-row { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) { .co-row { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .gr-e, .gr-n, .gr-n rect, .fl-f { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--modelo.html">← 8.6 Modelo</a><a href="./claude-code.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html" aria-current="page"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.7 · 7 de 7</span>
+  <h1>Obsidian</h1>
+  <p class="sub">A pasta de conhecimento que sintetiza, e onde o trabalho acumula em vez de ficar espalhado. Não é o primeiro passo.</p>
+  <p class="lead">O Obsidian é um aplicativo gratuito que abre uma pasta de arquivos de texto e mostra como eles se ligam. Num jeito de trabalhar que funciona, cada projeto tem uma <strong>pasta de conhecimento</strong> (em inglês, <em>vault</em>) aberta nele: a síntese das reuniões, as decisões, as pendências, o estado de cada frente. <strong>O Claude escreve nessa pasta pelos arquivos; você navega por ela no Obsidian.</strong></p>
+  <p class="verdict no"><b>Não comece por aqui.</b> A recomendação desta família é a ordem: primeiro a <a href="./claude-code--pasta.html">pasta com dono</a>, o <a href="./claude-code--claude-md.html">CLAUDE.md</a> e a <a href="./claude-code--onde-paramos.html">memória do projeto</a>. O vault vem depois, quando já existe trabalho para ligar. Sem os três, ele é só mais uma pasta.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-abre">O que o Obsidian abre</a><a href="#s-grafo">De onde veio a decisão</a><a href="#s-fora">Síntese dentro, bruta fora</a><a href="#s-cabecalho">O cabeçalho de cada nota</a><a href="#s-marcadores">Cinco marcadores</a><a href="#s-depois">Depois de cada reunião</a><a href="#s-dez">Dez sínteses primeiro</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-abre" aria-labelledby="h-abre">
+  <span class="eyebrow">O que o Obsidian abre</span>
+  <h2 id="h-abre">Os mesmos arquivos de texto, vistos como uma rede em vez de uma lista</h2>
+  <p class="intro">No explorador de arquivos, a pasta é uma lista de nomes. No Obsidian, cada arquivo que cita outro vira uma ligação, e você anda de um para o outro com um clique. <strong>Nada muda nos arquivos</strong>: continuam sendo texto simples, que o Claude lê e escreve como qualquer outro. O Obsidian só dá a você um jeito melhor de ler o que já está lá.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">quem escreve</span><h3>O Claude, pelos arquivos</h3><p>Depois de cada reunião, ele cria a síntese, atualiza as decisões e as pendências. Não precisa do Obsidian aberto para isso.</p></div>
+    <div class="card focal"><span class="eyebrow">quem navega</span><h3>Você, no Obsidian</h3><p>Abre uma decisão, vê de que reunião ela veio. Abre uma pessoa, vê em que reuniões ela apareceu.</p></div>
+    <div class="card"><span class="eyebrow">o que ganha</span><h3>Histórico navegável</h3><p>O que o Claude produz deixa de ficar espalhado em conversas e vira um lugar onde o trabalho acumula.</p></div>
+  </div>
+  <p class="hint">Quem usa só o chat tem o histórico dentro de conversas soltas: para achar de onde veio uma decisão, rola a tela ou pergunta de novo. A ordem completa, do primeiro arquivo ao vault, está na <a href="./claude-code.html">página da família</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-grafo" aria-labelledby="h-grafo">
+  <span class="eyebrow">De onde veio a decisão</span>
+  <h2 id="h-grafo">Clique numa decisão e veja a reunião de onde ela saiu e o que ela abriu</h2>
+  <p class="intro">Três semanas de um projeto, desenhadas como o Obsidian mostra: pessoas, reuniões, decisões e pendências, cada uma um arquivo, ligadas pelas citações entre eles. <strong>A ligação não é desenhada à mão</strong>: ela existe porque a síntese da reunião cita a decisão, e a decisão cita a pendência. Clique em qualquer nó.</p>
+  <div class="scroll">
+    <svg viewBox="0 0 800 330" role="img" aria-labelledby="gr-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+      <title id="gr-t">Grafo de um vault: duas pessoas ligadas a três reuniões, as reuniões ligadas a quatro decisões, e as decisões ligadas a três pendências</title>
+      <text class="gr-h" x="90" y="18">PESSOAS</text><text class="gr-h" x="290" y="18">REUNIÕES</text><text class="gr-h" x="500" y="18">DECISÕES</text><text class="gr-h" x="700" y="18">PENDÊNCIAS</text>
+      <g id="grE"></g>
+      <g id="grN"></g>
+    </svg>
+  </div>
+  <div class="caption" id="grCap" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-fora" aria-labelledby="h-fora">
+  <span class="eyebrow">Síntese dentro, bruta fora</span>
+  <h2 id="h-fora">O vault guarda o que foi entendido. O original fica fora, e recebe um link.</h2>
+  <p class="intro">É a regra mais importante desta página. A transcrição inteira, o contrato assinado, a planilha técnica: <strong>nada disso é copiado para dentro</strong>. Se fosse, haveria duas cópias, e a do vault envelheceria sem ninguém perceber. O vault aponta para o original com um link e guarda só a síntese. Classifique.</p>
+  <div class="qz" id="fxQuiz"></div>
+  <p class="qz-score" id="fxScore" aria-live="polite"></p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">parte 1</span><h3>O que vai no vault</h3><p>Síntese, decisão, pendência, e a relação entre as informações: o que uma coisa tem a ver com a outra.</p></div>
+    <div class="card"><span class="eyebrow">parte 2</span><h3>O que NÃO vai</h3><p>Cópia de transcrição, documento formal original, planilha técnica. Escrito com essas palavras, em lista.</p></div>
+    <div class="card focal"><span class="eyebrow">parte 3</span><h3>Fontes brutas, fora do vault</h3><p>Uma tabela que diz onde está cada original, sem copiar nenhum.</p></div>
+  </div>
+  <div class="tablewrap"><table class="vtable fx-tab">
+    <tr><th>Fonte</th><th>Onde está</th><th>A síntese no vault</th></tr>
+    <tr><td>Transcrição de 19/08</td><td>pasta de reuniões, fora do vault</td><td>[[2026-08-19-sintese]]</td></tr>
+    <tr><td>Contrato assinado</td><td>pasta de contratos, fora do vault</td><td>[[01-escopo]]</td></tr>
+    <tr><td>Planilha de pedidos</td><td>pasta de dados, fora do vault</td><td>[[compras]]</td></tr>
+  </table></div>
+  <p class="hint">No exemplo real, o vault de um projeto de desenvolvimento tem um CLAUDE.md próprio, de 184 linhas, com estas três partes. Vale copiar a estrutura. A mesma regra, vista do lado da pasta do projeto: <a href="./claude-code--pasta.html">a bruta não se mexe e fica separada da síntese</a>. E por que escrever as coisas num lugar só: <a href="./ai-first--captura.html">o que não vira registro não existe</a>.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-cabecalho" aria-labelledby="h-cabecalho">
+  <span class="eyebrow">O cabeçalho de cada nota</span>
+  <h2 id="h-cabecalho">Quatro linhas no topo dizem se o arquivo está vivo</h2>
+  <p class="intro">Todo arquivo do vault começa com um bloco curto entre dois tracejados: <strong>o estado, as etiquetas, a data da última atualização e os arquivos relacionados</strong>. Sem ele, uma pendência de março e uma de ontem parecem iguais. Monte o seu.</p>
+  <div class="hd-grid">
+    <div class="hd-form">
+      <label>Estado<select id="hdSt"><option value="ativo" selected>ativo</option><option value="rascunho">rascunho</option><option value="obsoleto">obsoleto</option></select></label>
+      <label>Etiquetas, separadas por vírgula<input id="hdTags" value="reuniao, compras"></label>
+      <label>Última atualização<input id="hdDate" type="date" value="2026-08-19"></label>
+      <label>Arquivos relacionados, separados por vírgula<input id="hdRel" value="00-decisoes, 2026-08-12-sintese"></label>
+    </div>
+    <div class="hd-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O topo do arquivo · ao vivo</span><button type="button" class="btn" data-copy="hdOut">Copiar</button></div>
+        <pre id="hdOut"></pre>
+      </div>
+      <div class="verdict" id="hdVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="card"><span class="eyebrow">link para dentro do vault</span><h3>Colchetes duplos</h3><p class="lk">[[2026-08-19-sintese]]</p><p>Só o nome do arquivo. É esse tipo de link que o Obsidian desenha como ligação, e que continua valendo se o arquivo mudar de pasta.</p></div>
+    <div class="card"><span class="eyebrow">link para fora do vault</span><h3>Texto e caminho</h3><p class="lk">[transcrição de 19/08](../reunioes/2026-08-19.md)</p><p>Para a fonte bruta, que mora fora. O caminho mostra que o arquivo não é parte da síntese.</p></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-marcadores" aria-labelledby="h-marcadores">
+  <span class="eyebrow">Cinco marcadores</span>
+  <h2 id="h-marcadores">Decisão, pendência, risco, hipótese e critério não podem ter a mesma cara</h2>
+  <p class="intro">Numa síntese corrida, “fechamos que…” e “achamos que…” ficam iguais. O vault usa <strong>marcadores com significado</strong>: uma linha como <code>&gt; [!decisao]</code> vira uma caixa com cor e título próprios, e o tipo da frase salta aos olhos. Cada um tem um uso só.</p>
+  <div class="co-row">
+    <div class="co co-decisao"><b>decisão</b><span>tomada, sempre com o porquê</span></div>
+    <div class="co co-pendencia"><b>pendência</b><span>fio em aberto</span></div>
+    <div class="co co-risco"><b>risco</b><span>o que pode atrapalhar</span></div>
+    <div class="co co-hipotese"><b>hipótese</b><span>a validar</span></div>
+    <div class="co co-criterio"><b>critério</b><span>de aceite, que se confere</span></div>
+  </div>
+  <p class="intro">Escolha o marcador de cada frase, tirada de uma reunião.</p>
+  <div class="qz" id="coQuiz"></div>
+  <p class="qz-score" id="coScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-depois" aria-labelledby="h-depois">
+  <span class="eyebrow">Depois de cada reunião</span>
+  <h2 id="h-depois">Quatro passos, sempre na mesma ordem, e cada um mexe num arquivo</h2>
+  <p class="intro">O fluxo está escrito no CLAUDE.md do vault, então o Claude o segue sem você pedir passo a passo. Na raiz ficam os arquivos de índice: <code>00-home.md</code> (o painel), <code>00-decisoes.md</code>, <code>00-fios-em-aberto.md</code>, e a pasta <code>03-reunioes/</code> com uma síntese por reunião. <strong>Avance e veja quais arquivos mudam em cada passo.</strong></p>
+  <div class="stepbar"><span class="eyebrow" id="flLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
+  <div class="fl-wrap">
+    <div class="fl-tree" id="flTree">
+      <span class="fl-dir out">fora do vault</span>
+      <span class="fl-f" data-fl="bruta">reunioes/2026-08-19.md<span class="st"></span></span>
+      <span class="fl-dir">vault</span>
+      <span class="fl-f" data-fl="home">00-home.md<span class="st"></span></span>
+      <span class="fl-f" data-fl="dec">00-decisoes.md<span class="st"></span></span>
+      <span class="fl-f" data-fl="fios">00-fios-em-aberto.md<span class="st"></span></span>
+      <span class="fl-f" data-fl="mod">02-modulos/compras.md<span class="st"></span></span>
+      <span class="fl-f" data-fl="s12">03-reunioes/2026-08-12-sintese.md<span class="st"></span></span>
+      <span class="fl-f" data-fl="s19">03-reunioes/2026-08-19-sintese.md<span class="st"></span></span>
+    </div>
+    <div class="caption" id="flCap" aria-live="polite"></div>
+  </div>
+  <p class="hint">Atualizar a memória do projeto e esquecer o vault é o descuido mais comum. Por isso o vault entra no checklist de encerramento de cada sessão: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-dez" aria-labelledby="h-dez">
+  <span class="eyebrow">Dez sínteses primeiro</span>
+  <h2 id="h-dez">O vault aparece quando já existe o que ligar</h2>
+  <p class="intro">Com três arquivos, o grafo não mostra nada que você já não saiba. <strong>Com umas dez sínteses de reunião, as ligações começam a aparecer sozinhas</strong>, e é aí que o Obsidian paga o tempo de instalar.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · antes</span><h3>Pasta, manual e memória</h3><p>Não comece por aqui. Comece pela <a href="./claude-code--pasta.html">pasta</a>, pelo <a href="./claude-code--claude-md.html">CLAUDE.md</a> e pela <a href="./claude-code--onde-paramos.html">memória</a>.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · com umas dez sínteses</span><h3>Abra a pasta no Obsidian</h3><p>Aponte o aplicativo para a pasta que já existe e olhe as ligações. Nada precisa ser movido.</p></div>
+    <div class="card"><span class="eyebrow">03 · aí sim</span><h3>Cabeçalho e marcadores</h3><p>Com o valor visível, adote o cabeçalho em todo arquivo e os cinco marcadores nas sínteses.</p></div>
+  </div>
+  <div class="three">
+    <div class="card"><h3>Copiar a transcrição para dentro</h3><p>Duas cópias, e a do vault envelhece. A síntese aponta para a bruta; não a carrega.</p></div>
+    <div class="card"><h3>Arquivo sem cabeçalho</h3><p>Perde o estado e a data. Ninguém sabe o que está vivo e o que ficou para trás.</p></div>
+    <div class="card"><h3>Esquecer o vault no fim da sessão</h3><p>A memória do projeto foi atualizada, as decisões no vault não. Na semana seguinte, as duas discordam.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O começo do CLAUDE.md do vault · para copiar quando chegar a hora</span><button type="button" class="btn" data-copy="dzPrompt">Copiar</button></div>
+<pre id="dzPrompt"><b># Pasta de conhecimento</b>
+
+<b>O que vai no vault:</b> síntese de reunião, decisão com o porquê, pendência, relação entre frentes.
+<b>O que NÃO vai:</b> transcrição inteira, documento formal original, planilha técnica. Ficam fora e recebem um link.
+
+Todo arquivo começa com cabeçalho: status, tags, last-update, related.
+Link para arquivo do vault: [[Nome do arquivo]]. Para arquivo fora: [texto](caminho).
+Marcadores: [!decisao] com o porquê, [!pendencia], [!risco], [!hipotese], [!criterio].
+
+<b>Depois de cada reunião, nesta ordem:</b>
+1. criar a síntese em 03-reunioes/, com link para a transcrição
+2. atualizar 00-decisoes.md
+3. atualizar 00-fios-em-aberto.md
+4. atualizar o que a reunião afetou</pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Sintetiza, não copia</h3><p>O vault guarda o que foi entendido e aponta para o original. Duas cópias da mesma fonte sempre acabam discordando.</p></div>
+    <div class="take-card"><h3>O link é a história</h3><p>Decisão que cita a reunião e a pendência vira um caminho que se percorre com um clique.</p></div>
+    <div class="take-card"><h3>Vem depois</h3><p>Pasta, manual e memória primeiro. O vault paga quando já existe o que ligar.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Obsidian</dt><dd>Aplicativo que abre uma pasta de arquivos de texto e mostra as ligações entre eles. Os arquivos continuam sendo seus, em texto simples.</dd>
+    <dt>Vault</dt><dd>A pasta de conhecimento aberta no Obsidian: sínteses, decisões, pendências, estado das frentes.</dd>
+    <dt>Cabeçalho</dt><dd>O bloco no topo de cada arquivo com estado, etiquetas, data da última atualização e relacionados.</dd>
+    <dt>[[Nome]]</dt><dd>Link para outro arquivo do vault. É o que vira ligação no grafo.</dd>
+    <dt>Marcador</dt><dd>Uma linha como <code>&gt; [!risco]</code> que vira uma caixa com cor e título próprios, para o tipo da frase saltar aos olhos.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As reuniões, as decisões, as datas e os papéis desta página são exemplos montados para ilustrar; o tamanho citado foi medido em um projeto real, sem nome, e mostra a forma do problema, não uma meta de tamanho. Os nomes dos marcadores são os do exemplo: o Obsidian aceita os que você definir. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--claude-md.html">CLAUDE.md</a>, <a href="./claude-code--pasta.html">pasta com dono</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">arquivo de referência</a>, <a href="./claude-code--modelo.html">modelo e padrão visual</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--modelo.html"><span>← anterior</span><b>8.6 · Modelo e padrão visual</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code.html"><span>volta ao começo ↺</span><b>Visão geral · Claude Code</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  /* 1 · o grafo */
+  var NODES = {
+    P1: { k: 'p', x: 90, y: 110, l: 'a coordenadora', d: 'Uma pessoa também é um arquivo. Aberta, ela mostra as três reuniões em que apareceu, sem ninguém ter feito essa lista.' },
+    P2: { k: 'p', x: 90, y: 230, l: 'o analista', d: 'Entrou no projeto na segunda semana: aparece só a partir da reunião de 12/08. O grafo mostra isso sem precisar de uma linha do tempo.' },
+    R1: { k: 'r', x: 290, y: 60, l: 'reunião 05/08', d: 'A síntese da primeira reunião. Dela saíram duas decisões; quem estava na sala está ligado a ela.' },
+    R2: { k: 'r', x: 290, y: 170, l: 'reunião 12/08', d: 'A síntese de 12/08 cita a decisão D3. É essa citação que desenha a ligação.' },
+    R3: { k: 'r', x: 290, y: 280, l: 'reunião 19/08', d: 'A reunião que fechou o critério de aceite, e com isso fechou uma pendência aberta na semana anterior.' },
+    D1: { k: 'd', x: 500, y: 50, l: 'D1 · ata em 2 dias', d: 'Veio da reunião de 05/08 e abriu uma pendência: quem aprova a ata? Sem o link, essa pergunta ficaria solta numa conversa.' },
+    D2: { k: 'd', x: 500, y: 125, l: 'D2 · reunião na terça', d: 'Uma decisão que não abriu nada. Continua ligada à reunião de onde veio, para quem perguntar “quando foi que mudou?”.' },
+    D3: { k: 'd', x: 500, y: 200, l: 'D3 · piloto em compras', d: 'Veio da reunião de 12/08, com o porquê: é a área de menor volume. E abriu duas pendências: levantar o volume de pedidos e definir o critério de aceite.' },
+    D4: { k: 'd', x: 500, y: 280, l: 'D4 · aceite: 20 pedidos', d: 'Fechada em 19/08. Ela responde a pendência F3, que ganha data de fechamento: a pendência não some, fica registrada como resolvida.' },
+    F1: { k: 'f', x: 700, y: 70, l: 'F1 · quem aprova a ata', d: 'Aberta pela decisão D1. Clicando nela, você chega à decisão, e da decisão, à reunião.' },
+    F2: { k: 'f', x: 700, y: 170, l: 'F2 · volume de pedidos', d: 'Aberta pela decisão D3, ainda em aberto. É o tipo de fio que o índice 00-fios-em-aberto.md lista.' },
+    F3: { k: 'f', x: 700, y: 270, l: 'F3 · critério de aceite', d: 'Aberta por D3 e fechada por D4. As duas pontas da história ficam ligadas a ela.' }
+  };
+  var EDGES = [['P1', 'R1'], ['P1', 'R2'], ['P1', 'R3'], ['P2', 'R2'], ['P2', 'R3'], ['R1', 'D1'], ['R1', 'D2'], ['R2', 'D3'], ['R3', 'D4'], ['D1', 'F1'], ['D3', 'F2'], ['D3', 'F3'], ['D4', 'F3']];
+  var KIND = { p: 'Pessoa', r: 'Reunião', d: 'Decisão', f: 'Pendência' };
+  var grE = document.getElementById('grE'), grN = document.getElementById('grN'), W = 150, H = 34;
+  var edgeEls = EDGES.map(function (e) {
+    var a = NODES[e[0]], b = NODES[e[1]], p = document.createElementNS(SVGNS, 'path');
+    var x1 = a.x + W / 2, x2 = b.x - W / 2, mx = (x1 + x2) / 2;
+    p.setAttribute('d', 'M' + x1 + ',' + a.y + ' C' + mx + ',' + a.y + ' ' + mx + ',' + b.y + ' ' + x2 + ',' + b.y);
+    p.setAttribute('class', 'gr-e'); grE.appendChild(p); return p;
+  });
+  var nodeEls = {};
+  Object.keys(NODES).forEach(function (id) {
+    var n = NODES[id], g = document.createElementNS(SVGNS, 'g'), r = document.createElementNS(SVGNS, 'rect'), t = document.createElementNS(SVGNS, 'text');
+    g.setAttribute('class', 'gr-n k-' + n.k); g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button'); g.setAttribute('aria-label', KIND[n.k] + ': ' + n.l);
+    r.setAttribute('x', n.x - W / 2); r.setAttribute('y', n.y - H / 2); r.setAttribute('width', W); r.setAttribute('height', H); r.setAttribute('rx', 6);
+    t.setAttribute('x', n.x); t.setAttribute('y', n.y + 4); t.textContent = n.l;
+    g.appendChild(r); g.appendChild(t); grN.appendChild(g); nodeEls[id] = g;
+    g.addEventListener('click', function () { selectNode(id); });
+  });
+  function selectNode(id) {
+    var nb = {};
+    EDGES.forEach(function (e, i) { var on = e[0] === id || e[1] === id; edgeEls[i].setAttribute('class', 'gr-e' + (on ? ' on' : ' dim')); if (on) { nb[e[0]] = 1; nb[e[1]] = 1; } });
+    Object.keys(nodeEls).forEach(function (k) { var c = 'gr-n k-' + NODES[k].k + (k === id ? ' sel' : (nb[k] ? ' nb' : ' dim')); nodeEls[k].setAttribute('class', c); });
+    var n = NODES[id], names = Object.keys(nb).filter(function (k) { return k !== id; }).map(function (k) { return NODES[k].l; });
+    document.getElementById('grCap').innerHTML = '<span class="eyebrow">' + KIND[n.k] + ' · ' + names.length + (names.length === 1 ? ' ligação' : ' ligações') + '</span><h3>' + n.l + '</h3><p>' + n.d + '</p><p class="hint">Ligado a: ' + names.join(' · ') + '</p>';
+  }
+  selectNode('D3');
+
+  /* 2 · dentro ou fora */
+  quiz(document.getElementById('fxQuiz'), document.getElementById('fxScore'), [
+    { s: 'A transcrição inteira da reunião de 19/08.', a: 'out', why: 'É a prova do que foi dito, e fica intocada fora do vault. A síntese aponta para ela com um link.' },
+    { s: 'A síntese da reunião, com um título curto por tema.', a: 'in', why: 'É exatamente para isso que o vault existe: o que foi entendido, não o que foi gravado.' },
+    { s: 'A planilha técnica com o levantamento de pedidos.', a: 'out', why: 'Planilha técnica fica onde nasceu. O vault guarda a conclusão tirada dela e o caminho até o arquivo.' },
+    { s: 'A decisão de começar o piloto por compras, com o porquê.', a: 'in', why: 'Decisão com o porquê vai no vault, e é o tipo de arquivo que mais ganha com as ligações.' },
+    { s: 'O contrato assinado, em PDF.', a: 'out', why: 'Documento formal original não se copia: a cópia pode divergir do assinado. Entra na tabela de fontes brutas.' },
+    { s: 'A frase “o atraso no cadastro trava a segunda área”.', a: 'in', why: 'Relação entre duas frentes é síntese: não está em nenhum documento original, só no entendimento do projeto.' },
+    { s: 'A gravação em vídeo da chamada.', a: 'out', why: 'Fonte bruta, fora do vault. Se alguém discordar da síntese, é para ela que se volta.' },
+    { s: 'A pendência “levantar o volume de pedidos”, com quem faz e até quando.', a: 'in', why: 'Pendência é fio em aberto do projeto: mora no vault, em 00-fios-em-aberto.md.' }
+  ], [['in', 'Vai no vault'], ['out', 'Fica fora, com link']], 'o que vai no vault é sempre algo que alguém entendeu; o que fica fora é o que alguém gravou, assinou ou mediu.');
+
+  /* 3 · cabeçalho */
+  var hdSt = document.getElementById('hdSt'), hdTags = document.getElementById('hdTags'), hdDate = document.getElementById('hdDate'), hdRel = document.getElementById('hdRel');
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function list(v) { return v.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function hd() {
+    var tags = list(hdTags.value), rel = list(hdRel.value);
+    var out = '<b>---</b>\n<b>status:</b> ' + esc(hdSt.value) + '\n<b>tags:</b> [' + tags.map(function (t) { return esc(t.replace(/\s+/g, '-')); }).join(', ') + ']\n<b>last-update:</b> ' + esc(hdDate.value || 'AAAA-MM-DD') + '\n<b>related:</b>' + (rel.length ? rel.map(function (r) { return '\n  - "[[' + esc(r) + ']]"'; }).join('') : ' []') + '\n<b>---</b>';
+    document.getElementById('hdOut').innerHTML = out;
+    var v = document.getElementById('hdVer');
+    if (!hdDate.value) { v.className = 'verdict no'; v.innerHTML = '<b>Sem data.</b> É a linha que diz se o arquivo é de ontem ou de março. Sem ela, não dá para saber o que está vivo.'; }
+    else if (hdSt.value === 'obsoleto') { v.className = 'verdict ok'; v.innerHTML = '<b>Obsoleto não se apaga.</b> O arquivo fica, marcado: quem chegar por um link antigo sabe que não vale mais.'; }
+    else if (!rel.length) { v.className = 'verdict no'; v.innerHTML = '<b>Sem relacionados.</b> O arquivo fica solto no grafo. Quase toda síntese tem pelo menos a reunião anterior ou o arquivo de decisões.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Completo.</b> ' + rel.length + (rel.length === 1 ? ' ligação nova' : ' ligações novas') + ' no grafo, e as aspas fazem o link valer dentro do cabeçalho.'; }
+  }
+  [hdTags, hdDate, hdRel].forEach(function (i) { i.addEventListener('input', hd); });
+  hdSt.addEventListener('change', hd); hdDate.addEventListener('change', hd);
+  hd();
+
+  /* 4 · marcadores */
+  var CO = { decisao: 'decisão', pendencia: 'pendência', risco: 'risco', hipotese: 'hipótese', criterio: 'critério' };
+  function co(k, t) { return '<div class="co co-' + k + '"><code>&gt; [!' + k + ']</code><b>' + CO[k] + '</b><span>' + t + '</span></div>'; }
+  quiz(document.getElementById('coQuiz'), document.getElementById('coScore'), [
+    { s: '“Fechamos: o piloto começa pela área de compras, porque é a de menor volume.”', a: 'decisao', why: 'A sala fechou, e o porquê veio junto. Decisão sem o porquê vira briga na primeira dúvida.' + co('decisao', 'O piloto começa por compras. Por quê: é a área de menor volume.') },
+    { s: '“Falta alguém levantar quantos pedidos a área faz por mês.”', a: 'pendencia', why: 'É um fio em aberto: alguém precisa fazer algo. Vai também para o índice de pendências.' + co('pendencia', 'Levantar o volume mensal de pedidos. Quem: o analista. Até: 26/08.') },
+    { s: '“Se o cadastro de fornecedores atrasar, a segunda área não entra na data.”', a: 'risco', why: 'Ainda não aconteceu, e pode atrapalhar. O “se” é a marca do risco.' + co('risco', 'Cadastro atrasado segura a entrada da segunda área.') },
+    { s: '“Achamos que metade do retrabalho vem de pedido sem código de item.”', a: 'hipotese', why: '“Achamos” não é “fechamos”. Hipótese é o que ainda precisa de conferência, e fica marcada para não virar fato por repetição.' + co('hipotese', 'Metade do retrabalho vem de pedido sem código de item. Validar com a planilha de pedidos.') },
+    { s: '“O piloto passa se 20 pedidos seguidos saírem sem retrabalho.”', a: 'criterio', why: 'Dá para conferir com um número. É o que diz, no fim, se o piloto deu certo.' + co('criterio', '20 pedidos seguidos sem retrabalho.') }
+  ], [['decisao', 'Decisão'], ['pendencia', 'Pendência'], ['risco', 'Risco'], ['hipotese', 'Hipótese'], ['criterio', 'Critério']], 'numa síntese corrida, as cinco frases teriam a mesma cara.');
+
+  /* 5 · depois da reunião */
+  var FL = [
+    { s: { bruta: 'novo', s19: 'ghost' }, t: 'A reunião aconteceu', d: 'A transcrição chega na pasta de reuniões, fora do vault, e não se mexe mais. No vault, a síntese de 19/08 ainda não existe.', sn: '' },
+    { s: { bruta: '', s19: 'novo' }, t: '1 · Criar a síntese da reunião', d: 'Um arquivo novo em 03-reunioes/, com cabeçalho, um título curto por tema e o link para a transcrição, que continua fora.', sn: 'fonte: [transcrição de 19/08](../reunioes/2026-08-19.md)\n## Critério de aceite\n- fechado em 20 pedidos sem retrabalho' },
+    { s: { s19: 'novo', dec: 'mud' }, t: '2 · Atualizar as decisões', d: 'A decisão nova entra em 00-decisoes.md com número, o porquê e o link para a reunião de onde veio. É essa linha que desenha a ligação no grafo.', sn: '> [!decisao] D4 · aceite: 20 pedidos sem retrabalho\n> Por quê: é o volume de duas semanas da área.\n> Veio de [[2026-08-19-sintese]]' },
+    { s: { s19: 'novo', dec: 'mud', fios: 'mud' }, t: '3 · Atualizar as pendências', d: 'A pendência que a reunião respondeu ganha data de fechamento; a que ela abriu, um número novo. Fio fechado não se apaga.', sn: 'F3 · critério de aceite · fechado em 19/08 por [[00-decisoes]] D4\nF4 · validar o critério com a diretoria · aberto' },
+    { s: { s19: 'novo', dec: 'mud', fios: 'mud', mod: 'mud', home: 'mud' }, t: '4 · Atualizar o que a reunião afetou', d: 'O arquivo da frente de compras recebe o critério, e o painel 00-home.md, o novo estado. A reunião anterior não muda: ela continua dizendo o que disse.', sn: '02-modulos/compras.md · critério: [[00-decisoes]] D4\n00-home.md · compras: piloto com critério definido' }
+  ];
+  var LAB = { novo: 'novo', mud: 'mudou', ghost: 'ainda não existe', '': '' };
+  var flFiles = document.querySelectorAll('.fl-f');
+  stepper(FL.length, document.getElementById('flPrev'), document.getElementById('flNext'), document.getElementById('flLab'), 'Passo', function (k) {
+    var s = FL[k - 1], n = 0;
+    flFiles.forEach(function (f) { var st = s.s[f.dataset.fl] || ''; f.className = 'fl-f' + (st ? ' ' + st : ''); f.querySelector('.st').textContent = LAB[st]; if (st === 'novo' || st === 'mud') n++; });
+    document.getElementById('flCap').innerHTML = '<span class="eyebrow">' + n + (n === 1 ? ' arquivo tocado' : ' arquivos tocados') + ' até aqui</span><h3>' + s.t + '</h3><p>' + s.d + '</p>' + (s.sn ? '<pre class="fl-snip">' + esc(s.sn) + '</pre>' : '');
+  });
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

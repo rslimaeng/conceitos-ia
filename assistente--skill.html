@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 4.3. Peças: stepper com diagrama da etiqueta que abre o conteúdo, instrução × skill no pedido errado, pasta com gavetas por exemplo, quiz da gaveta, montador de etiqueta com teste de acionamento, tabelas de comparação, prova pela citação. */
+/* Layout: página de conceito, família 4.3. Peças: stepper com diagrama da etiqueta que abre o conteúdo, instrução × skill no pedido errado, pasta com gavetas por exemplo, quiz da gaveta, montador de etiqueta com teste de acionamento, tabelas de comparação, prova pela citação, o esqueleto em quatro partes, skill com a receita copiada × skill fina. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -252,7 +252,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">Um procedimento escrito, com etiqueta, que a IA só abre quando a tarefa bate com a etiqueta</p>
   <p class="lead">A instrução diz quem você é e vale sempre. A skill diz <strong>como uma tarefa específica se faz</strong>: os passos, as exceções, o material que se consulta. Ela fica guardada e fechada; na mesa fica só o nome e uma frase dizendo quando usar. O nome do recurso muda de ferramenta para ferramenta (no Claude, por exemplo, aparece como Skills ou Habilidades); <strong>o mecanismo da etiqueta que abre o conteúdo é o que interessa</strong>.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-etiqueta">Quando ela abre</a><a href="#s-hora">A hora errada</a><a href="#s-pasta">A pasta</a><a href="#s-gaveta">Qual gaveta</a><a href="#s-descricao">A etiqueta</a><a href="#s-parentes">Os parentes</a><a href="#s-prova">A prova</a><a href="#s-nasce">Como nasce</a>
+    <a href="#s-etiqueta">Quando ela abre</a><a href="#s-hora">A hora errada</a><a href="#s-pasta">A pasta</a><a href="#s-gaveta">Qual gaveta</a><a href="#s-descricao">A etiqueta</a><a href="#s-parentes">Os parentes</a><a href="#s-prova">A prova</a><a href="#s-nasce">Como nasce</a><a href="#s-esqueleto">O esqueleto</a>
   </nav>
 </header>
 
@@ -408,6 +408,30 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
     <div class="card"><h3>Procedimento não vira alçada</h3><p>Uma skill que monta a pauta não passa a aprovar parada de máquina. O documento continua sendo lido; quem assina continua sendo quem assinava.</p></div>
     <div class="card"><h3>A primeira versão nunca é a boa</h3><p>Toda vez que você mexer na saída à mão, diga o que mudou e peça para atualizar a skill. Umas três correções depois, ela faz do seu jeito.</p></div>
   </div>
+</section>
+
+<!-- 8b -->
+<section class="sec" id="s-esqueleto" aria-labelledby="h-esqueleto">
+  <span class="eyebrow">O esqueleto</span>
+  <h2 id="h-esqueleto">Uma skill de confiança diz onde para, o que não muda e o que não é dela</h2>
+  <p class="intro">O passo a passo diz como fazer. Uma skill que roda toda semana precisa de mais quatro partes, e é nelas que moram as correções que você não quer fazer de novo. <strong>Clique em cada parte.</strong></p>
+  <div class="pa-wrap">
+    <div class="pa-folder" data-name="status-semanal/SKILL.md">
+      <button type="button" data-es="0" aria-pressed="true"><b>Antes de qualquer coisa</b><small>o que ler primeiro, e a lista fechada do que entra</small></button>
+      <button type="button" data-es="1" aria-pressed="false"><b>Os pontos de parada</b><small>onde ela para e espera o seu OK</small></button>
+      <button type="button" data-es="2" aria-pressed="false"><b>O que não pode regredir</b><small>o formato que você já aprovou</small></button>
+      <button type="button" data-es="3" aria-pressed="false"><b>O que não é dela</b><small>o que ela nunca decide sozinha</small></button>
+    </div>
+    <div class="panel" id="esPanel" aria-live="polite"></div>
+  </div>
+  <h3>Skill fina: a receita mora num lugar só</h3>
+  <p class="intro">Quando a pasta já tem um arquivo com a receita (um passo a passo que qualquer pessoa da equipe segue à mão), a skill não copia os passos: <strong>aponta para ele</strong>. Compare.</p>
+  <div class="seg" role="group" aria-label="Onde a receita mora">
+    <button type="button" data-fn="gorda" aria-pressed="true">A receita copiada na skill</button>
+    <button type="button" data-fn="fina" aria-pressed="false">A skill que aponta</button>
+  </div>
+  <div id="fnOut" aria-live="polite"></div>
+  <p class="hint">No Claude Code, a skill é uma pasta dentro do projeto ou da sua pasta de usuário, lida pelo mesmo mecanismo da etiqueta. Como ela conversa com o manual, a memória e a pasta está na família <a href="./claude-code.html">Claude Code</a>.</p>
 </section>
 
 <!-- 9 -->
@@ -581,6 +605,26 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
   function setPv(k) { pressGroup(pvBtns, function (x) { return x.dataset.pv === k; }); pvOut.innerHTML = PV[k]; }
   pvBtns.forEach(function (b) { b.addEventListener('click', function () { setPv(b.dataset.pv); }); });
   setPv('sem');
+
+  /* 8b · esqueleto e skill fina */
+  var ES = [
+    { t: 'Antes de qualquer coisa', d: 'Os arquivos que ela lê primeiro, na ordem, e a confirmação da lista do que entra nesta rodada.', ex: '“Leia a memória do projeto e as atas da semana. Confirme comigo quais atas entram antes de começar.”', por: 'Sem isso, ela junta o que achar na pasta, inclusive o rascunho da semana passada.' },
+    { t: 'Os pontos de parada', d: 'Os lugares onde ela para e mostra o que fez antes de seguir. Sem eles, vai da transcrição ao documento que circula sem ninguém olhar.', ex: '“Pare depois do rascunho e me mostre. Só gere o PDF com o meu OK.”', por: 'Erro pego no rascunho custa uma frase. Pego no documento que já saiu, custa uma retratação.' },
+    { t: 'O que não pode regredir', d: 'As decisões de formato que você já aprovou. É a lista que impede a versão nova de desfazer a correção antiga.', ex: '“Um ponto por linha. Uma caixa por decisão, quantas houver. O título da semana sempre com a data.”', por: 'Cada correção que você fez vira uma linha aqui, e deixa de depender da sua memória.' },
+    { t: 'O que não é dela', d: 'O que ela nunca decide sozinha: prazo, envio, aprovação, publicação. Ela prepara; quem assina continua sendo você.', ex: '“Não envie o e-mail. Não mova nada para a pasta de aprovados. Não mude o prazo.”', por: 'Procedimento não vira alçada. Escrever isso evita a skill “eficiente” que manda o documento antes da hora.' }
+  ];
+  var esBtns = document.querySelectorAll('[data-es]'), esPanel = document.getElementById('esPanel');
+  function setEs(k) { pressGroup(esBtns, function (x) { return +x.dataset.es === k; }); var e = ES[k]; esPanel.innerHTML = '<span class="eyebrow">parte ' + (k + 1) + ' de 4</span><h3>' + e.t + '</h3><p>' + e.d + '</p><p class="sk-cmd">' + e.ex + '</p><p class="hint">' + e.por + '</p>'; }
+  esBtns.forEach(function (b) { b.addEventListener('click', function () { setEs(+b.dataset.es); }); });
+  setEs(0);
+  var FN = {
+    gorda: '<div class="sk-mail bad"><span class="eyebrow">Duas cópias da mesma receita</span><ul><li>A skill tem os 8 passos do relatório semanal</li><li>O arquivo de instruções da pasta tem os mesmos 8 passos, para quem faz à mão</li><li>Em março alguém muda o passo 5 no arquivo da pasta. A skill continua com o passo 5 antigo</li></ul><p class="hint">As duas cópias divergem em silêncio, e ninguém sabe qual vale.</p></div>',
+    fina: '<div class="sk-mail good"><span class="eyebrow">Uma receita, dois leitores</span><ul><li>Os 8 passos moram só no arquivo de instruções da pasta</li><li>A skill diz: “a receita está lá; leia antes de começar”, e guarda só o que é dela: quando parar, o que não regride, o que não é dela</li><li>Em março o passo 5 muda num lugar só, e a pessoa e a skill leem o mesmo</li></ul><p class="hint">A skill fica curta, e a receita tem um dono.</p></div>'
+  };
+  var fnBtns = document.querySelectorAll('[data-fn]'), fnOut = document.getElementById('fnOut');
+  function setFn(k) { pressGroup(fnBtns, function (x) { return x.dataset.fn === k; }); fnOut.innerHTML = FN[k]; }
+  fnBtns.forEach(function (b) { b.addEventListener('click', function () { setFn(b.dataset.fn); }); });
+  setFn('gorda');
 })();
 </script>
 </body>

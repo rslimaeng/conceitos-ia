@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--referencia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Referência e leitura de fonte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.5. Peças: onde a correção do nome vai (conversa × lista, três reuniões), a lista de pessoas ligada e desligada sobre um trecho de transcrição, caça ao erro no resumo automático contra a bruta, quiz dito × implícito × dedução, conferência dos participantes contra o print da chamada, stepper com diagrama do ponto de parada, blocos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+code { font-family: var(--font-mono); font-size: .88em; }
+.tag { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; border-radius: 4px; padding: 1px 7px; border: 1px solid; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
+.tag.ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.tag.no { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.tag.mid { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.conf { font-family: var(--font-mono); font-size: .85em; color: var(--atencao-texto); background: var(--atencao-soft); border-radius: 3px; padding: 0 4px; }
+
+/* 1 · onde a correção vai */
+.cr-list { display: grid; gap: 8px; }
+.cr-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.cr-row small { display: block; color: var(--text-muted); font-size: .88rem; }
+.cr-row.no { border-color: var(--atencao); }
+.cr-row.ok { border-color: var(--ok); }
+
+/* 2 · lista de pessoas */
+.tr { background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 8px; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.7; display: grid; gap: 2px; }
+.tr .who { color: var(--text-dim); }
+.tr mark { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.at { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; }
+.at.bad { border-color: var(--atencao); }
+.at.good { border-color: var(--ok); }
+.at p { font-size: .95rem; }
+.at .why { display: block; font-size: .84rem; color: var(--text-muted); }
+
+/* 3 · resumo × bruta */
+.rs-item { text-align: left; display: grid; gap: 6px; width: 100%; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.rs-item:hover { border-color: var(--accent); }
+.rs-item.no { border-color: var(--atencao); background: var(--atencao-soft); }
+.rs-item.ok { border-color: var(--ok); background: var(--ok-soft); }
+.rs-item .fb { font-size: .88rem; color: var(--text-muted); }
+.rs-item.no .fb { color: var(--atencao-texto); }
+.rs-item.ok .fb { color: var(--ok-texto); }
+.rs-list { display: grid; gap: 8px; }
+
+/* 4 · nota */
+.nt-parts { margin: 0; padding-left: 20px; color: var(--text-muted); display: grid; gap: 4px; }
+.nt-parts b { color: var(--text); font-weight: 600; }
+
+/* 5 · quem esteve */
+.qe-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.qe-ata { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; }
+.qe-ata ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .95rem; }
+.qe-call { background: var(--text); border-radius: 8px; padding: 12px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.qe-call button { border: 1px solid var(--text-muted); background: var(--text); color: var(--bg); border-radius: 6px; padding: 10px 4px; display: grid; gap: 4px; justify-items: center; font-size: .78rem; line-height: 1.2; text-align: center; }
+.qe-call button b { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--text-muted); color: var(--bg); font-family: var(--font-mono); font-size: .8rem; font-weight: 500; }
+.qe-call button.ok { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.qe-call button.ok b { background: var(--ok); color: var(--bg-elev); }
+.qe-call button.no { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.qe-call button.no b { background: var(--atencao); color: var(--bg-elev); }
+.qe-side { display: grid; gap: 10px; }
+.qe-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* 6 · ponto de parada (svg) */
+.rf-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.rf-box text { font: 400 12.5px var(--font-body); fill: var(--text-muted); }
+.rf-box .h { font: 600 12px var(--font-mono); letter-spacing: .06em; fill: var(--text); }
+.rf-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.rf-box.on .h { fill: var(--accent); }
+.rf-box.stop rect { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 2; }
+.rf-box.stop .h, .rf-box.stop text { fill: var(--ok-texto); }
+.rf-box.bad rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-width: 2; }
+.rf-box.bad .h, .rf-box.bad text { fill: var(--atencao-texto); }
+.rf-arr { stroke: var(--accent); stroke-width: 2; fill: none; }
+.rf-arr.bad { stroke: var(--atencao); stroke-dasharray: 6 5; }
+.rf-mk { fill: var(--accent); }
+.rf-mkb { fill: var(--atencao); }
+.rf-lab { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.rf-lab.bad { fill: var(--atencao-texto); }
+.rf-hide { opacity: 0; transition: opacity .3s ease; }
+.rf-show { opacity: 1; transition: opacity .3s ease; }
+
+@media (max-width: 860px) {
+  .two, .three, .take, .qe-grid { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .qe-call { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (prefers-reduced-motion: reduce) { .rf-hide, .rf-show, .rf-box rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--handoff.html">← 8.4 Handoff</a><a href="./claude-code--modelo.html">8.6 Modelo →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html" aria-current="page"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.5 · 5 de 7</span>
+  <h1>Referência e leitura de fonte</h1>
+  <p class="sub">O Claude não adivinha: o que é fato fica escrito uma vez, e a transcrição é lida antes de virar documento</p>
+  <p class="lead">A ata de reunião é onde isso mais aparece. A transcrição erra o nome, a IA repete o erro com toda a segurança, você corrige na conversa, e na reunião seguinte o erro volta. <strong>Duas peças acabam com isso: um arquivo de referência</strong>, com o que é fato no projeto (quem é quem, e como o nome aparece escrito errado), <strong>e um rito de leitura</strong>: ler a transcrição antes de produzir qualquer coisa, separando o que foi dito do que é dedução.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-duas">Fato e rito</a><a href="#s-lista">A lista de pessoas</a><a href="#s-bruta">Bruta ou resumo</a><a href="#s-camadas">Dito, implícito, deduzido</a><a href="#s-quem">Quem falou, quem esteve</a><a href="#s-parada">A nota antes da ata</a><a href="#s-atalhos">Quatro atalhos caros</a><a href="#s-primeira">A primeira lista</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-duas" aria-labelledby="h-duas">
+  <span class="eyebrow">Fato e rito</span>
+  <h2 id="h-duas">O nome corrigido uma vez, e não em cada reunião</h2>
+  <p class="intro">O erro mais caro de quem gera ata pelo chat é o <strong>nome</strong> e o <strong>assunto no lugar errado</strong>. Corrigido na conversa, ele vale só naquela conversa. <strong>Corrigido na lista de pessoas, vale para todas as reuniões de todos os projetos que usam a lista.</strong> Escolha onde corrigir e acompanhe três reuniões.</p>
+  <div class="two">
+    <div class="card"><span class="eyebrow">Peça 1 · o que é fato</span><h3>O arquivo de referência</h3><p>O que é verdade no projeto, escrito uma vez e consultado sempre. O exemplo central é a lista de pessoas: quem é quem, com todas as formas como o nome já apareceu nas transcrições. É a gaveta do fato de que fala <a href="./ai-first--captura.html">o que não vira registro não existe</a>.</p></div>
+    <div class="card"><span class="eyebrow">Peça 2 · como se lê</span><h3>A leitura de fonte</h3><p>O rito de ler a transcrição antes de produzir qualquer coisa, separando o que foi dito do que é dedução, e cruzando com o arquivo de referência.</p></div>
+  </div>
+  <p class="hint">A transcrição da reunião de segunda escreveu “Maria Isa” no lugar de Marisa. Você percebeu e corrigiu.</p>
+  <div class="seg" role="group" aria-label="Onde a correção foi feita">
+    <button type="button" data-cr="conv" aria-pressed="true">Corrigi na conversa</button>
+    <button type="button" data-cr="lista" aria-pressed="false">Corrigi na lista</button>
+  </div>
+  <div class="cr-list" id="crOut" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-lista" aria-labelledby="h-lista">
+  <span class="eyebrow">A lista de pessoas</span>
+  <h2 id="h-lista">Quatro colunas, e o que não se sabe fica em branco com aviso</h2>
+  <p class="intro">A primeira coluna é a que faz o trabalho: <strong>todas as grafias que já apareceram</strong>. O que não se sabe entra como <span class="conf">[a confirmar]</span>, <strong>nunca um sobrenome inventado</strong>. E quando duas fontes divergem, <strong>a divergência fica anotada na lista, não na ata.</strong></p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Como aparece nas transcrições</th><th>Nome completo</th><th>Função</th><th>Nota</th></tr>
+      <tr><td>Marisa · “Maria Isa” · “Mariza”</td><td>Marisa Teodoro</td><td>coordenação do projeto</td><td>grafia confirmada no convite e no print da chamada</td></tr>
+      <tr><td>Jonas · “Jhonas” · “Jonas V.”</td><td>Jonas Vilela</td><td>analista financeiro</td><td>sobrenome pelo print da chamada</td></tr>
+      <tr><td>Teca · “Tereca”</td><td>Teresa <span class="conf">[a confirmar]</span></td><td>compras</td><td>apelido; o sobrenome não apareceu em fonte nenhuma</td></tr>
+      <tr><td>Aldo · “seu Aldo”</td><td>Aldo Pimentel</td><td>fornecedor de logística</td><td>divergência: o convite diz “Aldo P. Menezes”; perguntar na próxima</td></tr>
+    </table>
+  </div>
+  <p class="intro">Agora o trecho de uma transcrição automática, com os nomes como o áudio entendeu. Ligue e desligue a lista e compare as duas atas.</p>
+  <div class="tr" aria-label="Trecho da transcrição automática">
+    <span><span class="who">eu ·</span> <mark>Maria Isa</mark>, confirma a data do lote dois?</span>
+    <span><span class="who">outro ·</span> Confirmo, passa pro dia quatorze.</span>
+    <span><span class="who">eu ·</span> <mark>Jhonas</mark>, e o orçamento?</span>
+    <span><span class="who">outro ·</span> Ainda não foi aprovado.</span>
+    <span><span class="who">outro ·</span> Aqui é a <mark>Tereca</mark>, das compras: eu levanto três cotações até sexta.</span>
+    <span><span class="who">outro ·</span> <mark>Seu Aldo</mark> falando: a coleta na quinta está confirmada.</span>
+    <span><span class="who">outro ·</span> E o <mark>Rojério</mark> manda a planilha revisada.</span>
+  </div>
+  <div class="seg" role="group" aria-label="A lista de pessoas">
+    <button type="button" data-ls="off" aria-pressed="true">Sem a lista</button>
+    <button type="button" data-ls="on" aria-pressed="false">Com a lista</button>
+  </div>
+  <div id="lsOut" aria-live="polite"></div>
+  <p class="hint">Sem a lista, ela não deixa o espaço em branco: completa com um sobrenome plausível, no mesmo tom de quando acerta. É o mecanismo de <a href="./limites-da-ia--alucinacao.html">alucinação</a>. No exemplo real, uma lista assim serve a 22 atas, com uma tabela por instituição; duas linhas que eram a mesma pessoa, escrita de dois jeitos, viraram uma, e é assim que o nome certo entra em todas as atas seguintes.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-bruta" aria-labelledby="h-bruta">
+  <span class="eyebrow">Bruta ou resumo</span>
+  <h2 id="h-bruta">Só a transcrição bruta é fonte; o resumo automático é leitura de máquina</h2>
+  <p class="intro">Muita ferramenta de transcrição entrega um resumo pronto no topo, já em tópicos. Parece mais confiável porque está organizado. Só que ele foi feito a partir do áudio cortado, e <strong>o corte atinge justamente o que mais importa: nome próprio, número e termo técnico.</strong> Clique em cada linha do resumo para conferir contra a bruta. Três delas estão erradas.</p>
+  <div class="seg" role="group" aria-label="O que ver">
+    <button type="button" data-rs="res" aria-pressed="true">O resumo automático</button>
+    <button type="button" data-rs="bru" aria-pressed="false">A transcrição bruta</button>
+  </div>
+  <div id="rsOut" aria-live="polite"></div>
+  <p class="qz-score" id="rsScore" aria-live="polite"></p>
+  <p class="hint">Na ata, cada decisão leva o trecho da bruta de onde saiu. É o mesmo gesto de pedir a fonte descrito em <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>: a citação não impede o erro, mas dá endereço a ele.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-camadas" aria-labelledby="h-camadas">
+  <span class="eyebrow">Dito, implícito, deduzido</span>
+  <h2 id="h-camadas">A nota de leitura separa três camadas que nunca se misturam</h2>
+  <p class="intro">Antes da ata, a leitura sai numa nota, num arquivo ao lado da bruta (algo como <code>reuniao-do-lote--leitura.md</code>, na mesma pasta; <a href="./claude-code--pasta.html">a pasta</a> diz onde cada coisa mora). <strong>O que foi dito, com dono · o que está implícito · o que é dedução.</strong> Separadas, dias depois ainda dá para saber quem afirmou o quê.</p>
+  <div class="two">
+    <div class="panel">
+      <h3>O que a nota de leitura tem</h3>
+      <ol class="nt-parts">
+        <li><b>O que foi lido</b>: qual arquivo, qual trecho</li>
+        <li><b>O que a captura estragou</b>: nome, número, trecho inaudível</li>
+        <li><b>O que foi dito</b>, com quem disse</li>
+        <li><b>O que está implícito</b>: a conversa assume, ninguém falou</li>
+        <li><b>O que é dedução</b>: conclusão de quem leu</li>
+        <li><b>Onde o resumo automático diverge da bruta</b></li>
+        <li><b>O que a fonte não responde</b></li>
+      </ol>
+    </div>
+    <div class="card focal"><h3>Por que três camadas, e não uma</h3><p>Misturadas, a dedução de quem leu vira fala de alguém na ata. “O atraso vem do orçamento” parece fato, mas ninguém disse. Separada, ela aparece como o que é: uma hipótese que alguém precisa confirmar.</p></div>
+  </div>
+  <p class="intro">Classifique sete linhas da nota da mesma reunião.</p>
+  <div class="qz" id="ntQuiz"></div>
+  <p class="qz-score" id="ntScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-quem" aria-labelledby="h-quem">
+  <span class="eyebrow">Quem falou, quem esteve</span>
+  <h2 id="h-quem">A transcrição não diz quem esteve, e às vezes nem quem falou</h2>
+  <p class="intro">Muita transcrição marca só “eu” e “os outros”. <strong>Fala de terceiro só ganha nome quando a própria bruta permite cruzar</strong>: um vocativo respondido (“Jhonas, e o orçamento?”, e a resposta vem na linha seguinte) ou uma autoapresentação (“Aqui é a Tereca, das compras”). Deduzir quem falou pelo assunto e escrever como fato é o erro. E <strong>quem esteve e não falou não aparece na transcrição</strong>: por isso a lista de participantes se confere no print da chamada, antes de gerar a ata.</p>
+  <p class="intro">No exemplo real, a ata saiu com 8 participantes; o print da chamada mostrava 10. Confira você: clique em cada quadro do print.</p>
+  <div class="qe-grid">
+    <div class="qe-ata">
+      <span class="eyebrow">A ata · participantes</span>
+      <ol id="qeAta"></ol>
+    </div>
+    <div class="qe-side">
+      <div class="qe-head"><span class="eyebrow">O print da chamada</span><button type="button" class="btn" id="qeAll">Conferir todos</button></div>
+      <div class="qe-call" id="qeCall" role="group" aria-label="Participantes no print da chamada"></div>
+    </div>
+  </div>
+  <div class="verdict" id="qeVer" aria-live="polite"></div>
+  <p class="hint">Desde então, a regra: se houver evidência da reunião (o print, a lista de presença), os participantes se conferem nela antes de gerar a ata.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-parada" aria-labelledby="h-parada">
+  <span class="eyebrow">A nota antes da ata</span>
+  <h2 id="h-parada">Erro pego na nota custa uma frase; na ata que circulou, uma retratação</h2>
+  <p class="intro">A nota de leitura é um <strong>ponto de parada</strong>: você confere antes de a ata existir. Avance e compare os dois caminhos.</p>
+  <div class="stepbar"><span class="eyebrow" id="rfLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="rfPrev">← Anterior</button><button type="button" class="btn primary" id="rfNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 760 280" role="img" aria-labelledby="rf-t" xmlns="http://www.w3.org/2000/svg" style="min-width:620px">
+      <title id="rf-t">A transcrição bruta e a lista de pessoas alimentam a nota de leitura; você confere a nota; só então a ata é gerada. O atalho direto da bruta para a ata leva o erro até quem lê a ata.</title>
+      <defs>
+        <marker id="mkrf" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="rf-mk"/></marker>
+        <marker id="mkrfb" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="rf-mkb"/></marker>
+      </defs>
+      <g class="rf-box" data-rf="bruta"><rect x="20" y="40" width="190" height="70" rx="8"/><text class="h" x="36" y="66">TRANSCRIÇÃO BRUTA</text><text x="36" y="90">o áudio, com os nomes errados</text></g>
+      <g class="rf-box" data-rf="lista"><rect x="20" y="140" width="190" height="70" rx="8"/><text class="h" x="36" y="166">LISTA DE PESSOAS</text><text x="36" y="190">o fato, escrito uma vez</text></g>
+      <g class="rf-box" data-rf="nota"><rect x="285" y="80" width="200" height="90" rx="8"/><text class="h" x="301" y="106">NOTA DE LEITURA</text><text x="301" y="130">dito · implícito · dedução</text><text x="301" y="152">onde o resumo diverge</text></g>
+      <g class="rf-box" data-rf="ata"><rect x="555" y="80" width="185" height="90" rx="8"/><text class="h" x="571" y="106">ATA</text><text x="571" y="130">o que circula para</text><text x="571" y="152">quem não estava</text></g>
+      <path class="rf-arr rf-hide" id="rfA1" d="M210,80 C245,80 250,110 279,112" marker-end="url(#mkrf)"/>
+      <path class="rf-arr rf-hide" id="rfA2" d="M210,175 C245,175 250,145 279,142" marker-end="url(#mkrf)"/>
+      <path class="rf-arr rf-hide" id="rfA3" d="M485,125 L549,125" marker-end="url(#mkrf)"/>
+      <text class="rf-lab rf-hide" id="rfStop" x="385" y="200" text-anchor="middle">PARADA · VOCÊ CONFERE</text>
+      <path class="rf-arr bad rf-hide" id="rfA4" d="M115,40 C115,10 640,10 645,74" marker-end="url(#mkrfb)"/>
+      <text class="rf-lab bad rf-hide" id="rfShort" x="380" y="30" text-anchor="middle">O ATALHO · DIRETO DA BRUTA PARA A ATA</text>
+      <text class="rf-lab bad rf-hide" id="rfOut" x="647" y="200" text-anchor="middle">ERRO LIDO POR QUEM</text>
+      <text class="rf-lab bad rf-hide" id="rfOut2" x="647" y="216" text-anchor="middle">NÃO ESTAVA NA REUNIÃO</text>
+    </svg>
+  </div>
+  <div class="caption" id="rfCap" aria-live="polite"></div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-atalhos" aria-labelledby="h-atalhos">
+  <span class="eyebrow">Quatro atalhos caros</span>
+  <h2 id="h-atalhos">Cada um economiza cinco minutos e custa uma ata</h2>
+  <div class="two">
+    <div class="card"><h3>Corrigir o nome na conversa, ou dentro da skill</h3><p>A correção não viaja para o próximo projeto. Nome é fato: mora na lista, e a skill de ata só manda consultar.</p></div>
+    <div class="card"><h3>Gerar a ata direto da transcrição</h3><p>Sem a nota no meio, o erro só aparece quando alguém de fora lê.</p></div>
+    <div class="card"><h3>Confiar no resumo automático</h3><p>Porque ele “já está estruturado”. Está, e errou justamente o nome e o número.</p></div>
+    <div class="card"><h3>Deduzir quem falou pelo assunto</h3><p>“Quem falaria de orçamento é o financeiro.” Pode ser. Na nota, isso é dedução; na ata, vira fala de alguém.</p></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-primeira" aria-labelledby="h-primeira">
+  <span class="eyebrow">A primeira lista</span>
+  <h2 id="h-primeira">Três passos para a próxima ata já sair diferente</h2>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · a lista</span><h3>Crie a lista de pessoas</h3><p>Com as pessoas das reuniões da semana e as grafias erradas que você já corrigiu alguma vez. Quatro colunas, e <span class="conf">[a confirmar]</span> onde faltar.</p></div>
+    <div class="card"><span class="eyebrow">02 · a regra</span><h3>Uma linha no manual</h3><p>No CLAUDE.md, que o Claude lê em toda conversa (<a href="./claude-code--claude-md.html">CLAUDE.md</a>), a linha que manda o nome sair só da lista.</p></div>
+    <div class="card focal"><span class="eyebrow">03 · a parada</span><h3>Primeiro a nota, depois a ata</h3><p>Antes da próxima ata, peça só a nota de leitura. Confira. Só então peça a ata.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A linha do CLAUDE.md · passo 2</span><button type="button" class="btn" data-copy="pcLinha">Copiar</button></div>
+<pre id="pcLinha">Nome de pessoa sai só da pessoas.md. O que não estiver lá entra como [a confirmar], nunca com sobrenome deduzido. Se duas fontes divergirem sobre um nome, anote a divergência na pessoas.md, não na ata.</pre>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido da nota · passo 3 · funciona também no chat</span><button type="button" class="btn" data-copy="pcNota">Copiar</button></div>
+<pre id="pcNota">Leia a transcrição bruta anexada (ignore o resumo automático do topo) e a lista de pessoas. Ainda não faça a ata. Faça uma nota de leitura com:
+1. O que a captura estragou: nomes, números e trechos que o áudio cortou.
+2. O que foi dito, com quem disse. Só atribua fala a alguém quando a própria transcrição permitir: vocativo respondido ou autoapresentação. Se não der, escreva "não identificado".
+3. O que está implícito: o que a conversa assume sem ninguém dizer.
+4. O que é dedução sua, separado do resto.
+5. Onde o resumo automático diverge da transcrição.
+6. O que a transcrição não responde.
+Nomes só pela lista; o que não estiver nela, [a confirmar]. Pare aí e espere eu conferir.</pre>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>O fato mora num arquivo</h3><p>O nome corrigido na lista vale para todas as reuniões. Corrigido na conversa, vale para aquela conversa.</p></div>
+    <div class="take-card"><h3>A bruta é a fonte</h3><p>O resumo automático é leitura de máquina, e erra justamente o nome, o número e a decisão.</p></div>
+    <div class="take-card"><h3>A nota antes da ata</h3><p>Dito, implícito e dedução separados, conferidos por você. O erro pego ali custa uma frase.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Arquivo de referência</dt><dd>O que é fato no projeto, escrito uma vez e consultado sempre. O exemplo central é a lista de pessoas.</dd>
+    <dt>Transcrição bruta</dt><dd>O texto do áudio, fala por fala, sem resumo. A única parte da transcrição que conta como fonte.</dd>
+    <dt>Nota de leitura</dt><dd>O arquivo que fica ao lado da bruta, com o que foi dito, o que está implícito e o que é dedução, separados.</dd>
+    <dt>[a confirmar]</dt><dd>A marca do que a lista não sabe. Fica no lugar do sobrenome que a IA inventaria.</dd>
+    <dt>Ponto de parada</dt><dd>O momento em que o trabalho espera você conferir antes de seguir.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As pessoas, a reunião e as falas são inventadas, e qualquer semelhança de nome é coincidência. Os números (22 atas, 8 participantes na ata contra 10 no print) foram medidos em trabalho real, sem nome; mostram a forma do problema, não uma meta. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--pasta.html">a pasta</a>, <a href="./claude-code--claude-md.html">CLAUDE.md</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--handoff.html"><span>← anterior</span><b>8.4 · Handoff</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--modelo.html"><span>próxima →</span><b>8.6 · Modelo e padrão visual</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  var CF = '<span class="conf">[a confirmar]</span>';
+
+  /* 1 · onde a correção vai */
+  var CR = {
+    conv: [
+      ['no', 'Projeto A · reunião de segunda', 'Você corrige “Maria Isa” para Marisa na conversa. A ata sai certa.', 'certo, desta vez'],
+      ['no', 'Projeto A · reunião de quarta', 'Conversa nova, transcrição nova, o mesmo “Maria Isa”. Você corrige de novo.', 'errou de novo'],
+      ['no', 'Projeto B · reunião de sexta', 'Outro projeto, a mesma coordenadora. A correção de segunda nunca chegou aqui.', 'errou de novo']
+    ],
+    lista: [
+      ['ok', 'Projeto A · reunião de segunda', 'Você acrescenta “Maria Isa” na primeira coluna da lista, na linha de Marisa Teodoro.', 'certo'],
+      ['ok', 'Projeto A · reunião de quarta', 'A transcrição erra igual. A ata consulta a lista e sai certa sem você dizer nada.', 'certo'],
+      ['ok', 'Projeto B · reunião de sexta', 'Outro projeto, a mesma lista. A correção de segunda já estava lá.', 'certo']
+    ]
+  };
+  var crBtns = document.querySelectorAll('[data-cr]'), crOut = document.getElementById('crOut');
+  function setCr(k) {
+    pressGroup(crBtns, function (x) { return x.dataset.cr === k; });
+    crOut.innerHTML = CR[k].map(function (r, i) { var ok = r[0] === 'ok' || (k === 'conv' && i === 0); return '<div class="cr-row ' + (ok ? 'ok' : 'no') + '"><div><b>' + r[1] + '</b><small>' + r[2] + '</small></div><span class="tag ' + (ok ? 'ok' : 'no') + '">' + r[3] + '</span></div>'; }).join('');
+  }
+  crBtns.forEach(function (b) { b.addEventListener('click', function () { setCr(b.dataset.cr); }); });
+  setCr('conv');
+
+  /* 2 · lista ligada e desligada */
+  var LS = {
+    off: '<div class="at bad"><span class="eyebrow">A ata · sem a lista</span>' +
+      '<p>Maria Isabel Souza (coordenação) confirmou o lote dois para o dia 14.<span class="tag no">sobrenome inventado</span><span class="why">“Maria Isa” virou Maria Isabel, e ganhou um sobrenome que ninguém disse.</span></p>' +
+      '<p>Jhonas informou que o orçamento ainda não foi aprovado.<span class="tag no">grafia repetida</span><span class="why">O erro da transcrição passou direto.</span></p>' +
+      '<p>Tereza Campos (compras) levantará três cotações até sexta.<span class="tag no">sobrenome inventado</span><span class="why">Plausível, fluente, e falso.</span></p>' +
+      '<p>Aldo Menezes confirmou a coleta na quinta.<span class="tag no">escolheu sozinha</span><span class="why">Das duas grafias, ficou com uma, sem avisar que havia divergência.</span></p>' +
+      '<p>Rojério enviará a planilha revisada.<span class="tag no">não conferido</span></p></div>',
+    on: '<div class="at good"><span class="eyebrow">A ata · com a lista</span>' +
+      '<p>Marisa Teodoro confirmou o lote dois para o dia 14.<span class="tag ok">pela lista</span></p>' +
+      '<p>Jonas Vilela informou que o orçamento ainda não foi aprovado.<span class="tag ok">pela lista</span></p>' +
+      '<p>Teresa ' + CF + ' (compras) levantará três cotações até sexta.<span class="tag mid">a lista não sabe</span><span class="why">O buraco fica à vista, e alguém confirma.</span></p>' +
+      '<p>Aldo Pimentel confirmou a coleta na quinta.<span class="tag ok">pela lista</span><span class="why">A divergência de sobrenome está anotada na lista, não aqui.</span></p>' +
+      '<p>Rogério ' + CF + ' enviará a planilha revisada.<span class="tag mid">fora da lista</span><span class="why">Nome novo: entra na lista depois de confirmado.</span></p></div>'
+  };
+  var lsBtns = document.querySelectorAll('[data-ls]'), lsOut = document.getElementById('lsOut');
+  function setLs(k) { pressGroup(lsBtns, function (x) { return x.dataset.ls === k; }); lsOut.innerHTML = LS[k]; }
+  lsBtns.forEach(function (b) { b.addEventListener('click', function () { setLs(b.dataset.ls); }); });
+  setLs('off');
+
+  /* 3 · resumo × bruta */
+  var RS = [
+    { r: 'Lote dois: prazo mantido para o dia 4.', ok: false, k: 'número e decisão', b: '“Confirmo, passa pro dia quatorze.” O corte do áudio comeu o “-orze”, e o resumo leu “passa” como “mantido”.' },
+    { r: 'Orçamento aprovado pela coordenação.', ok: false, k: 'decisão invertida', b: '“Ainda não foi aprovado.” O resumo pegou o assunto e inverteu a conclusão.' },
+    { r: 'Compras levanta três cotações até sexta.', ok: true, b: '“Eu levanto três cotações até sexta.” Confere.' },
+    { r: 'Coleta confirmada para quinta.', ok: true, b: '“A coleta na quinta está confirmada.” Confere.' },
+    { r: 'Participantes: Marisa, Jonas e Teresa.', ok: false, k: 'nome', b: 'Seu Aldo e Rogério também aparecem na bruta, e o print da chamada ainda mostra quem não falou. O resumo listou quem ele reconheceu.' }
+  ];
+  var BRUTA = '<div class="tr" aria-label="Transcrição bruta">' + ['<span class="who">eu ·</span> Maria Isa, confirma a data do lote dois?', '<span class="who">outro ·</span> Confirmo, passa pro dia quatorze.', '<span class="who">eu ·</span> Jhonas, e o orçamento?', '<span class="who">outro ·</span> Ainda não foi aprovado.', '<span class="who">outro ·</span> Aqui é a Tereca, das compras: eu levanto três cotações até sexta.', '<span class="who">outro ·</span> Seu Aldo falando: a coleta na quinta está confirmada.', '<span class="who">outro ·</span> E o Rojério manda a planilha revisada.'].map(function (x) { return '<span>' + x + '</span>'; }).join('') + '</div>';
+  var rsSeen = {}, rsBtns = document.querySelectorAll('[data-rs]'), rsOut = document.getElementById('rsOut'), rsScore = document.getElementById('rsScore');
+  function rsCount() {
+    var errs = RS.filter(function (x) { return !x.ok; }).length, found = Object.keys(rsSeen).filter(function (k) { return !RS[k].ok; }).length;
+    rsScore.textContent = Object.keys(rsSeen).length + ' de ' + RS.length + ' linhas conferidas · ' + found + ' de ' + errs + ' erros achados' + (found === errs ? ' · nome, número e decisão: os três lugares onde o resumo mais erra.' : '');
+  }
+  function setRs(k) {
+    pressGroup(rsBtns, function (x) { return x.dataset.rs === k; });
+    if (k === 'bru') { rsOut.innerHTML = BRUTA; return; }
+    rsOut.innerHTML = '<div class="rs-list">' + RS.map(function (x, i) {
+      var s = rsSeen[i];
+      return '<button type="button" class="rs-item' + (s ? (x.ok ? ' ok' : ' no') : '') + '" data-ri="' + i + '"><span>' + x.r + (s ? '<span class="tag ' + (x.ok ? 'ok">confere' : 'no">' + x.k) + '</span>' : '') + '</span>' + (s ? '<span class="fb">Na bruta: ' + x.b + '</span>' : '<span class="fb">Clique para conferir contra a bruta</span>') + '</button>';
+    }).join('') + '</div>';
+    rsOut.querySelectorAll('[data-ri]').forEach(function (b) { b.addEventListener('click', function () { rsSeen[b.dataset.ri] = 1; setRs('res'); rsCount(); }); });
+  }
+  rsBtns.forEach(function (b) { b.addEventListener('click', function () { setRs(b.dataset.rs); }); });
+  setRs('res'); rsCount();
+
+  /* 4 · dito, implícito, dedução */
+  quiz(document.getElementById('ntQuiz'), document.getElementById('ntScore'), [
+    { s: 'Marisa: o lote dois passa para o dia 14.', a: 'dito', why: 'Tem dono (o vocativo respondido) e tem a frase na bruta.' },
+    { s: 'Ninguém perguntou por que o lote atrasou: o grupo já sabia do motivo.', a: 'impl', why: 'Ninguém disse, mas a conversa assume. Vai para o implícito, e a ata não afirma o motivo.' },
+    { s: 'O atraso do lote provavelmente vem do orçamento parado.', a: 'ded', why: 'É a conclusão de quem leu, juntando duas falas. Pode estar certa; na ata, não pode aparecer como fala de ninguém.' },
+    { s: 'Teresa, das compras, fica de levantar três cotações até sexta.', a: 'dito', why: 'Autoapresentação: ela disse quem era e o que faria.' },
+    { s: 'A coleta de quinta foi tratada como certa, mesmo com o lote mudando de data.', a: 'impl', why: 'Ninguém ligou uma coisa à outra em voz alta. A conversa assumiu, e é exatamente o tipo de coisa que alguém precisa confirmar.' },
+    { s: 'Jonas parecia contra a nova data.', a: 'ded', why: 'Tom de voz lido por quem leu. Jonas não disse nada sobre a data.' },
+    { s: 'Quem decide o prazo é a Marisa.', a: 'ded', why: 'Ela confirmou a data; ninguém disse que a decisão é dela. Quem decide é a pergunta que a fonte não responde.' }
+  ], [['dito', 'Dito, com dono'], ['impl', 'Implícito'], ['ded', 'Dedução']], 'três das sete são dedução, e todas soariam como fato numa ata.');
+
+  /* 5 · quem esteve */
+  var QE = [
+    ['MT', 'Marisa Teodoro', 1], ['JV', 'Jonas Vilela', 1], ['TE', 'Teresa', 1], ['AP', 'Aldo Pimentel', 1], ['RS', 'Rogério Sales', 1],
+    ['LN', 'Lívia Nunes', 0], ['PD', 'Paulo Dantas', 1], ['BR', 'Beatriz Rocha', 1], ['HC', 'Hélio Campos', 0], ['SF', 'Sônia Freitas', 1]
+  ];
+  document.getElementById('qeAta').innerHTML = QE.filter(function (p) { return p[2]; }).map(function (p) { return '<li>' + p[1] + '</li>'; }).join('');
+  var qeCall = document.getElementById('qeCall'), qeSeen = {};
+  qeCall.innerHTML = QE.map(function (p, i) { return '<button type="button" data-qe="' + i + '" aria-pressed="false"><b>' + p[0] + '</b>' + p[1] + '</button>'; }).join('');
+  function qe() {
+    var n = Object.keys(qeSeen).length, miss = Object.keys(qeSeen).filter(function (k) { return !QE[k][2]; });
+    qeCall.querySelectorAll('[data-qe]').forEach(function (b) { var i = b.dataset.qe; if (qeSeen[i]) { b.className = QE[i][2] ? 'ok' : 'no'; b.setAttribute('aria-pressed', 'true'); b.setAttribute('aria-label', QE[i][1] + (QE[i][2] ? ': está na ata' : ': faltava na ata')); } });
+    var v = document.getElementById('qeVer');
+    if (n < QE.length) { v.className = 'verdict ' + (miss.length ? 'no' : 'ok'); v.innerHTML = '<b>' + n + ' de ' + QE.length + ' conferidos.</b> ' + (miss.length ? 'Fora da ata até agora: ' + miss.map(function (k) { return QE[k][1]; }).join(', ') + '.' : 'Até aqui, todos estão na ata.'); }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Faltavam ' + miss.length + ': ' + miss.map(function (k) { return QE[k][1]; }).join(' e ') + '.</b> Estiveram na chamada e não falaram, então não existem na transcrição. Só a evidência da reunião mostra quem estava.'; }
+  }
+  qeCall.querySelectorAll('[data-qe]').forEach(function (b) { b.addEventListener('click', function () { qeSeen[b.dataset.qe] = 1; qe(); }); });
+  document.getElementById('qeAll').addEventListener('click', function () { QE.forEach(function (p, i) { qeSeen[i] = 1; }); qe(); });
+  qe();
+
+  /* 6 · ponto de parada */
+  var RF = [
+    { on: ['bruta', 'lista'], a: [], t: 'Duas entradas', d: 'A transcrição bruta, com “Maria Isa” e “dia quatro” do jeito que o áudio entendeu. E a lista de pessoas, com o fato escrito uma vez.' },
+    { on: ['nota'], a: ['rfA1', 'rfA2'], t: 'A leitura sai numa nota, não numa ata', d: 'Dito, implícito e dedução separados; o que a captura estragou; onde o resumo automático diverge. Nomes pela lista, com [a confirmar] onde ela não sabe.' },
+    { on: [], stop: 1, a: ['rfA1', 'rfA2', 'rfStop'], t: 'A parada: você confere', d: 'É aqui que você vê “Teresa [a confirmar]” e sabe o sobrenome, ou percebe que “o atraso vem do orçamento” é dedução. Corrigir custa uma frase na nota.' },
+    { on: ['ata'], stop: 1, a: ['rfA1', 'rfA2', 'rfStop', 'rfA3'], t: 'Só então, a ata', d: 'Gerada da nota já conferida. O que ela afirma tem dono; o que é hipótese vai como pergunta, não como decisão.' },
+    { bad: 1, a: ['rfA4', 'rfShort', 'rfOut', 'rfOut2'], t: 'O atalho', d: 'Direto da bruta para a ata: parece economizar um passo. O nome errado e a dedução sem dono só aparecem quando alguém que não estava na reunião lê, e aí o conserto é uma retratação para todos que receberam.' }
+  ];
+  var ALLA = ['rfA1', 'rfA2', 'rfA3', 'rfA4', 'rfStop', 'rfShort', 'rfOut', 'rfOut2'];
+  var rfBoxes = document.querySelectorAll('.rf-box');
+  function rfVis(id, on) { var el = document.getElementById(id); el.setAttribute('class', el.getAttribute('class').replace(/ ?rf-(hide|show)/g, '') + (on ? ' rf-show' : ' rf-hide')); }
+  stepper(RF.length, document.getElementById('rfPrev'), document.getElementById('rfNext'), document.getElementById('rfLab'), 'Passo', function (k) {
+    var s = RF[k - 1];
+    rfBoxes.forEach(function (g) {
+      var n = g.dataset.rf, c = 'rf-box';
+      if (s.bad && (n === 'bruta' || n === 'ata')) c += ' bad';
+      else if (s.stop && n === 'nota') c += ' stop';
+      else if (s.on && s.on.indexOf(n) > -1) c += ' on';
+      g.setAttribute('class', c);
+    });
+    ALLA.forEach(function (id) { rfVis(id, s.a.indexOf(id) > -1); });
+    document.getElementById('rfCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

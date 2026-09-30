@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--modelo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modelo e padrão visual</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.6. Peças: duas semanas de atas pedindo o formato × apontando o modelo, os blocos da ata clicáveis, simulador conteúdo × forma (corrigir uma ata ou mudar todas), tokens por papel com troca de cor na marca, controle deslizante de caixas fixas × uma por decisão, caça aos defeitos que só aparecem abrindo o arquivo, trava do gerador contra código interno, bloco para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · duas semanas de atas */
+.ma { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; font-size: .92rem; }
+.ma.bad { border-color: var(--atencao); }
+.ma.good { border-color: var(--ok); }
+.ma h3 { font-size: 1.1rem; }
+.ma-blk { display: grid; gap: 4px; }
+.ma-lab { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.ma ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.ma p { color: var(--text-muted); }
+.ma-boxes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.ma-boxes.flex { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+.ma-box { border: 1px solid var(--border-strong); border-radius: 4px; padding: 6px 7px; font-size: .78rem; line-height: 1.3; color: var(--text-muted); background: var(--bg); }
+.ma-box.squeeze { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.ma-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px 10px; font-size: .8rem; color: var(--text-muted); }
+.ma-cols b { font-family: var(--font-mono); font-size: 10px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.flag { font-size: .82rem; color: var(--atencao-texto); background: var(--atencao-soft); border-radius: 4px; padding: 2px 8px; width: fit-content; }
+.flag.ok { color: var(--ok-texto); background: var(--ok-soft); }
+
+/* 2 · blocos da ata */
+.bl-wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.bl-list { display: grid; gap: 6px; counter-reset: bl; }
+.bl-list button { text-align: left; display: flex; gap: 10px; align-items: baseline; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 8px 12px; font-size: .95rem; }
+.bl-list button span { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); min-width: 2ch; }
+.bl-list button.rule { border-left: 3px solid var(--accent); }
+.bl-list button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+
+/* 3 · conteúdo × forma */
+.cf { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 1fr); gap: 12px; align-items: stretch; }
+.cf-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px; display: grid; gap: 6px; align-content: start; }
+.cf-col .eyebrow { margin-bottom: 4px; }
+.cf-f { font-family: var(--font-mono); font-size: .8rem; border: 1px solid var(--border); border-radius: 4px; padding: 5px 8px; background: var(--bg); color: var(--text-muted); transition: background .25s ease, border-color .25s ease; overflow-wrap: anywhere; }
+.cf-f.mud { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.cf-gen { display: grid; place-content: center; text-align: center; gap: 6px; }
+.cf-gen .big { font-size: 1.5rem; }
+.cf-col.mud { border-color: var(--accent); background: var(--accent-soft); }
+.cf-count { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+
+/* 4 · tokens por papel */
+.tk-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 18px; align-items: start; }
+.tk-peca { --papel-destaque: var(--ok-texto); --papel-destaque-fundo: var(--ok-soft); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 10px; }
+.tk-peca.trocou { --papel-destaque: var(--accent); --papel-destaque-fundo: var(--accent-soft); }
+.tk-peca [data-role] { border-radius: 4px; outline: 2px solid transparent; outline-offset: 3px; transition: outline-color .2s ease; }
+.tk-peca [data-role].on { outline-color: var(--text); }
+.tk-tit { font-size: 1.15rem; color: var(--accent); font-weight: 500; }
+.tk-th { display: grid; grid-template-columns: 1fr 1fr; background: var(--accent); color: var(--bg-elev); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; }
+.tk-row { display: grid; grid-template-columns: 1fr 1fr; font-size: .88rem; padding: 4px 10px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.tk-dest { color: var(--papel-destaque); background: var(--papel-destaque-fundo); padding: 8px 10px; font-size: .9rem; transition: color .3s ease, background .3s ease; }
+.tk-risco { color: var(--atencao-texto); background: var(--atencao-soft); border-left: 3px solid var(--atencao); padding: 8px 10px; font-size: .9rem; }
+.tk-apoio { color: var(--text-dim); font-size: .82rem; }
+.tk-num { color: var(--papel-destaque); font-family: var(--font-mono); font-size: 1.6rem; transition: color .3s ease; }
+
+/* 5 · quantas houver */
+.qh { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.qh .ma-boxes { min-height: 64px; }
+.ma-box.empty { border-style: dashed; color: var(--text-dim); background: transparent; text-align: center; }
+
+/* 6 · abrir o arquivo */
+.ab-page { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 4px; padding: 20px 22px; display: grid; gap: 10px; max-width: 620px; font-size: .88rem; }
+#s-abrir > *, .ab-page > * { min-width: 0; }
+.ab-page h3 { font-size: 1.05rem; color: var(--accent); }
+.ab-src { font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-muted); margin: 0; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 4px; padding: 16px 18px; max-width: 620px; }
+.ab-cut { overflow: hidden; border-right: 2px dashed var(--border-strong); }
+.ab-cut table { border-collapse: collapse; width: 118%; }
+.ab-cut th, .ab-cut td { border: 1px solid var(--border); padding: 4px 6px; text-align: left; font-size: .8rem; }
+.ab-cut th { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.ab-fix { table-layout: fixed; }
+.ab-plain { border-right: 0; }
+.ab-plain table { width: 100%; }
+.ab-over { white-space: nowrap; overflow: visible; }
+.ab-break { border-top: 2px dashed var(--border-strong); position: relative; margin-top: 4px; padding-top: 14px; }
+.ab-break::before { content: 'fim da página 1'; position: absolute; top: -10px; right: 0; background: var(--bg-elev); font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); padding: 0 6px; }
+.df { cursor: pointer; border-radius: 4px; outline: 2px dashed transparent; outline-offset: 2px; display: block; }
+.df:hover { outline-color: var(--border-strong); }
+.df.found { outline: 2px solid var(--atencao); background: var(--atencao-soft); }
+.ab-line { color: var(--text-muted); }
+.ab-found { display: grid; gap: 6px; }
+.ab-found li { font-size: .92rem; color: var(--text-muted); }
+.ab-found ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+.gate { display: grid; gap: 10px; }
+.gate input { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.gate mark { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .bl-wrap, .cf, .tk-wrap, .qh { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .ma-boxes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ma-cols { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .cf-f, .tk-dest, .tk-num, .tk-peca [data-role] { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--referencia.html">← 8.5 Referência</a><a href="./claude-code--obsidian.html">8.7 Obsidian →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html" aria-current="page"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.6 · 6 de 7</span>
+  <h1>Modelo e padrão visual</h1>
+  <p class="sub">O formato mora num arquivo: o Claude segue o modelo em vez de adivinhar a cada pedido.</p>
+  <p class="lead">O <strong>modelo</strong> é um documento de verdade que mostra como a saída tem de ficar: a ata de exemplo, a planilha com as colunas certas, a apresentação com os slides certos. O <strong>padrão visual</strong> diz as cores, as fontes e a logo. Os dois são arquivos guardados na pasta do projeto. Com eles ali, você para de descrever o formato em cada conversa, e <strong>a correção de formato passa a ser feita uma vez, no arquivo</strong>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-semanas">Duas semanas de atas</a><a href="#s-ata">A ata de referência</a><a href="#s-forma">Texto de um lado, forma do outro</a><a href="#s-cor">Cor com função</a><a href="#s-caixas">Quantas houver</a><a href="#s-abrir">Tabela cortada</a><a href="#s-melhor">A melhor ata que você já fez</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-semanas" aria-labelledby="h-semanas">
+  <span class="eyebrow">Duas semanas de atas</span>
+  <h2 id="h-semanas">No chat, o formato é pedido de novo toda semana, e sai de um jeito diferente</h2>
+  <p class="intro">Na primeira semana você pede “um ponto por linha, quatro cards para as decisões, participantes em lista”. Na segunda, esquece metade, ou pede igual e ela entende diferente. <strong>Com o modelo na pasta, o pedido encolhe para “no formato do modelo”, e as duas semanas saem iguais.</strong> Alterne.</p>
+  <div class="seg" role="group" aria-label="Como o formato chega">
+    <button type="button" data-sm="chat" aria-pressed="true">Pedindo o formato no chat</button>
+    <button type="button" data-sm="modelo" aria-pressed="false">Apontando o modelo</button>
+  </div>
+  <p class="hint" id="smAsk" aria-live="polite"></p>
+  <div class="two" id="smOut" aria-live="polite"></div>
+  <p class="punch">A correção de formato feita no chat vale para aquela conversa. <em>Feita no modelo, vale para todas as próximas.</em></p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-ata" aria-labelledby="h-ata">
+  <span class="eyebrow">A ata de referência</span>
+  <h2 id="h-ata">O modelo é uma ata real, guardada em <code>modelo/</code>, com os blocos em ordem</h2>
+  <p class="intro">Não é uma descrição do formato: é o próprio documento. No exemplo, uma ata de verdade, recebida de um parceiro do projeto e lida inteira. Ao lado dela, um arquivo curto chamado <code>COMO-EDITAR.md</code> lista os blocos na ordem e guarda <strong>as regras de formato que vieram do uso</strong>, como as três marcadas com a barra. Clique nos blocos.</p>
+  <div class="bl-wrap">
+    <div class="bl-list" id="blList" role="group" aria-label="Blocos da ata"></div>
+    <div class="panel" id="blPanel" aria-live="polite"></div>
+  </div>
+  <p class="hint">No exemplo real, o formato foi ajustado <strong>uma vez</strong>, no piloto, e todas as atas seguintes saíram no formato ajustado. Onde as pastas <code>modelo/</code> e <code>fontes/</code> moram no projeto: <a href="./claude-code--pasta.html">pasta com dono</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-forma" aria-labelledby="h-forma">
+  <span class="eyebrow">Texto de um lado, forma do outro</span>
+  <h2 id="h-forma">Corrigir uma ata é corrigir o texto. Mudar o formato de todas é mudar o gerador.</h2>
+  <p class="intro">O conteúdo de cada ata é um arquivo de texto simples em <code>fontes/</code>, que qualquer um revisa. Um gerador lê esse texto e monta o <code>.docx</code> e o <code>.pdf</code> no formato do modelo. <strong>Como as duas coisas estão separadas, cada tipo de correção tem um lugar só.</strong> Escolha uma correção e veja o que muda.</p>
+  <div class="seg" role="group" aria-label="Tipo de correção">
+    <button type="button" data-cf="txt" aria-pressed="true">Um nome errado na ata de 19/08</button>
+    <button type="button" data-cf="fmt" aria-pressed="false">Participantes em três colunas, em todas</button>
+  </div>
+  <div class="cf" id="cfOut">
+    <div class="cf-col"><span class="eyebrow">fontes/ · o texto</span><span class="cf-f" data-f="s1">2026-08-05-reuniao.md</span><span class="cf-f" data-f="s2">2026-08-12-reuniao.md</span><span class="cf-f" data-f="s3">2026-08-19-reuniao.md</span></div>
+    <div class="cf-col cf-gen" id="cfGen"><span class="eyebrow">o gerador</span><span class="big">→</span><span class="hint">aplica o formato do modelo</span></div>
+    <div class="cf-col"><span class="eyebrow">atas prontas</span><span class="cf-f" data-f="o1">2026-08-05 .docx · .pdf</span><span class="cf-f" data-f="o2">2026-08-12 .docx · .pdf</span><span class="cf-f" data-f="o3">2026-08-19 .docx · .pdf</span></div>
+  </div>
+  <p class="cf-count" id="cfCount" aria-live="polite"></p>
+  <div class="caption" id="cfCap" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-cor" aria-labelledby="h-cor">
+  <span class="eyebrow">Cor com função</span>
+  <h2 id="h-cor">No padrão visual, cada cor tem o nome do que ela faz, não o nome da cor</h2>
+  <p class="intro">Em vez de “azul-escuro” e “laranja”, o arquivo diz <strong>cabeçalho</strong>, <strong>destaque</strong>, <strong>risco</strong>. Cada nome aponta para uma cor da marca. Assim, quem monta a peça escolhe pela função (“isto é um risco”), e se a marca trocar a cor, ela muda em todo lugar de uma vez. Clique num papel para ver onde ele aparece; depois troque a cor do destaque.</p>
+  <div class="seg" role="group" aria-label="Papel da cor">
+    <button type="button" data-tk="cab" aria-pressed="true">Cabeçalho</button>
+    <button type="button" data-tk="dest" aria-pressed="false">Destaque</button>
+    <button type="button" data-tk="risco" aria-pressed="false">Risco</button>
+    <button type="button" data-tk="apoio" aria-pressed="false">Texto de apoio</button>
+  </div>
+  <div class="tk-wrap">
+    <div class="tk-peca" id="tkPeca">
+      <p class="tk-tit" data-role="cab">Piloto de compras · semana 3</p>
+      <div class="tk-th" data-role="cab"><span>Frente</span><span>Situação</span></div>
+      <div class="tk-row"><span>Cotação</span><span>no prazo</span></div>
+      <div class="tk-row"><span>Cadastro</span><span>uma semana atrás</span></div>
+      <p class="tk-num" data-role="dest">18 de 20</p>
+      <p class="tk-dest" data-role="dest">Pedidos fechados sem retrabalho nesta semana</p>
+      <p class="tk-risco" data-role="risco">Risco: o cadastro atrasado segura a segunda área</p>
+      <p class="tk-apoio" data-role="apoio">Fonte: ata de 19/08 · planilha de pedidos</p>
+    </div>
+    <div class="panel" id="tkPanel" aria-live="polite"></div>
+  </div>
+  <div class="stepbar"><button type="button" class="btn" id="tkSwap">Trocar a cor do destaque na marca</button><span class="hint" id="tkSwapNote" aria-live="polite"></span></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Como o arquivo de padrão visual escreve isso</span><button type="button" class="btn" data-copy="tkFile">Copiar</button></div>
+<pre id="tkFile"><b>--cabecalho:</b> var(--azul-da-marca);     /* título e cabeçalho de tabela */
+<b>--destaque:</b>  var(--verde-da-marca);    /* o número que a peça quer mostrar */
+<b>--risco:</b>     var(--laranja-da-marca);  /* só para risco, nunca para enfeite */
+<b>--apoio:</b>     var(--cinza-da-marca);    /* fonte, rodapé, legenda */
+<i>/* não veio da marca: decisão nossa, marcada como tal */</i>
+<b>--fundo-de-tabela:</b> var(--cinza-claro-da-marca);</pre>
+  </div>
+  <p class="hint">No exemplo real, um padrão visual de 135 linhas vale para toda apresentação e toda planilha de um cliente. Ele separa o que veio da marca do que foi decidido por quem montou, e tem uma seção de <strong>decisões que ainda estão em aberto</strong>: o que o manual da marca não respondeu e alguém precisa decidir.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-caixas" aria-labelledby="h-caixas">
+  <span class="eyebrow">Quantas houver</span>
+  <h2 id="h-caixas">Modelo rígido onde a realidade varia estoura na primeira semana diferente</h2>
+  <p class="intro">Um modelo com quatro caixas de decisão funciona na semana que teve quatro decisões. <strong>Na semana que teve sete, a IA espreme três numa caixa só, ou corta.</strong> O modelo certo não diz “quatro caixas”: diz “uma caixa por decisão, quantas houver”. Mova o controle.</p>
+  <div class="field">
+    <label for="qhN">Decisões que a sala fechou nesta semana</label>
+    <div class="row"><input type="range" id="qhN" min="3" max="7" step="1" value="5"><output id="qhOut" for="qhN">5</output></div>
+  </div>
+  <div class="qh">
+    <div class="ma" id="qhRig"></div>
+    <div class="ma good" id="qhFlex"></div>
+  </div>
+  <p class="hint">Vale para tudo que varia de uma vez para outra: número de participantes, de riscos, de frentes. O modelo fixa a <strong>forma de cada item</strong>, não a quantidade.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-abrir" aria-labelledby="h-abrir">
+  <span class="eyebrow">Tabela cortada</span>
+  <h2 id="h-abrir">O texto pode estar certo e a página, quebrada: a prova é abrir</h2>
+  <p class="intro">A regra das atas do exemplo manda abrir as páginas antes de entregar: <strong>tabela cortada, cabeçalho órfão no fim da página, célula estourando</strong>. Nenhum desses defeitos aparece lendo o texto. Veja a mesma ata dos dois jeitos e, no arquivo aberto, clique nos cinco defeitos.</p>
+  <div class="seg" role="group" aria-label="Como conferir">
+    <button type="button" data-ab="txt" aria-pressed="false">Ler o texto</button>
+    <button type="button" data-ab="pag" aria-pressed="true">Abrir o arquivo</button>
+  </div>
+  <div id="abTxt" hidden>
+<pre class="ab-src">## Participantes
+- Coordenadora do projeto · Instituição A · gestão
+- Analista de compras · Instituição B · operação
+
+## Decisões
+1. O piloto começa pela área de compras
+2. A ata sai em até dois dias úteis
+3. Critério de aceite: 20 pedidos sem retrabalho
+4. Reunião passa para terça-feira
+5. Cadastro de fornecedores entra na semana 4
+
+## Riscos
+- Cadastro atrasado segura a segunda área
+
+## Encaminhamentos
+- Enviar a planilha de pedidos
+- Validar o critério com a diretoria
+- Marcar a reunião de terça
+- Revisar o cadastro</pre>
+    <p class="verdict ok"><b>No texto, tudo certo.</b> Cinco decisões, um risco, quatro encaminhamentos, cada um na sua linha. Quem confere só isto aprova.</p>
+  </div>
+  <div id="abPag">
+    <div class="ab-page">
+      <h3>Ata · reunião semanal · 19/08</h3>
+      <span class="ma-lab">Participantes</span>
+      <div class="df" role="button" tabindex="0" data-df="0"><div class="ab-cut"><table><tr><th>Nome</th><th>Instituição</th><th>Time</th><th>Contato</th></tr><tr><td>Coordenadora do projeto</td><td>Instituição A</td><td>gestão</td><td>ramal 2210</td></tr><tr><td>Analista de compras</td><td>Instituição B</td><td>operação</td><td>ramal 3104</td></tr></table></div></div>
+      <span class="ma-lab">Decisões</span>
+      <div class="df" role="button" tabindex="0" data-df="1"><div class="ma-boxes"><div class="ma-box">Piloto começa por compras</div><div class="ma-box">Ata em até dois dias</div><div class="ma-box">Aceite: 20 pedidos</div><div class="ma-box squeeze">Reunião na terça · Cadastro na semana 4</div></div></div>
+      <div class="df" role="button" tabindex="0" data-df="2"><div class="ab-cut ab-plain"><table class="ab-fix"><tr><th>Encaminhamento</th><th>Prazo</th></tr><tr><td class="ab-over">Validar_o_critério_de_aceite_com_a_diretoria</td><td>26/08</td></tr></table></div></div>
+      <div class="df" role="button" tabindex="0" data-df="3"><p class="ab-line">Enviar a planilha de pedidos · Validar o critério · Marcar a reunião de terça · Revisar o cadastro</p></div>
+      <div class="df" role="button" tabindex="0" data-df="4"><div class="ab-break"><span class="ma-lab">Riscos</span></div></div>
+      <p class="hint">(página 2 começa com “Cadastro atrasado segura a segunda área”)</p>
+    </div>
+  </div>
+  <div class="ab-found">
+    <p class="qz-score" id="abScore" aria-live="polite"></p>
+    <ol id="abList"></ol>
+  </div>
+  <div class="gate">
+    <span class="eyebrow">A trava do gerador · código interno não sai</span>
+    <p class="intro">A ata circula para fora do projeto. Por isso o gerador do exemplo <strong>se recusa a gerar</strong> se encontrar no texto um código interno, desses que só a equipe entende (D4, F12, CT-07). Não depende de alguém lembrar de conferir: a régua está no gerador. Escreva um encaminhamento e teste.</p>
+    <input id="gtIn" aria-label="Texto de um encaminhamento" value="Validar o critério de aceite (D4) com a diretoria até 26/08">
+    <div class="verdict" id="gtOut" aria-live="polite"></div>
+  </div>
+  <p class="hint">Abrir o arquivo é a conferência entre a fase de gerar e a de entregar. Mais sobre conferir entre as fases em <a href="./ai-first--execucao.html">quebrar em fases e conferir entre elas</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-melhor" aria-labelledby="h-melhor">
+  <span class="eyebrow">A melhor ata que você já fez</span>
+  <h2 id="h-melhor">Comece guardando um documento, não escrevendo uma descrição</h2>
+  <p class="intro">O erro mais comum é <strong>descrever o formato no pedido</strong> em vez de mostrar o modelo. A descrição sempre deixa uma brecha que o exemplo fecha sozinho. Os outros dois erros já apareceram acima: o modelo rígido e aceitar o arquivo sem abrir.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · guarde</span><h3>A melhor ata que você já fez</h3><p>Ponha em <code>modelo/</code>, do jeito que ela tem de sair. Um documento real, não um esqueleto em branco.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · escreva ao lado</span><h3>Cinco linhas do que não pode mudar</h3><p>“Um ponto por linha.” “Uma caixa por decisão, quantas houver.” “Participantes em três colunas.”</p></div>
+    <div class="card"><span class="eyebrow">03 · compare</span><h3>Peça a próxima no formato do modelo</h3><p>Abra o arquivo que voltou ao lado do modelo. O que ficou diferente vira linha nova no passo 2.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido do passo 3 · para copiar</span><button type="button" class="btn" data-copy="mlPrompt">Copiar</button></div>
+<pre id="mlPrompt">Gere a ata da reunião de hoje no formato de modelo/.
+Antes de gerar, leia o modelo e o arquivo de regras ao lado dele, e me diga em lista os blocos na ordem em que vão aparecer.
+Regras que não mudam:
+- um ponto por linha, nunca vários na mesma linha;
+- uma caixa por decisão, quantas houver;
+- decisão é o que a sala fechou, não o que a conversa destacou como achado.
+Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozinho no fim da página ou célula estourando.</pre>
+  </div>
+  <p class="hint">Formato certo em cima de conteúdo errado é só um erro bem diagramado. Antes do formato vem o conteúdo apoiado na fonte: <a href="./claude-code--referencia.html">arquivo de referência</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Mostre, não descreva</h3><p>Um documento real em <code>modelo/</code> fecha as brechas que a descrição do formato deixa aberta em cada pedido.</p></div>
+    <div class="take-card"><h3>Um lugar para cada correção</h3><p>Texto errado se corrige no texto; formato errado, no modelo ou no gerador. Uma vez, e vale para todas.</p></div>
+    <div class="take-card"><h3>Abra antes de aceitar</h3><p>Tabela cortada e cabeçalho órfão não aparecem no texto. Só na página.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Modelo</dt><dd>O documento de referência que mostra como a saída tem de ficar. Um arquivo real, guardado na pasta, que o Claude segue.</dd>
+    <dt>Padrão visual</dt><dd>O arquivo com as cores, as fontes e a logo, cada cor com o nome do que ela faz na peça.</dd>
+    <dt>Token</dt><dd>O nome de uma cor pelo papel (cabeçalho, destaque, risco), que aponta para a cor da marca. Troca-se num lugar e muda em todos.</dd>
+    <dt>Gerador</dt><dd>O passo que lê o texto de <code>fontes/</code> e monta o <code>.docx</code> e o <code>.pdf</code> no formato do modelo.</dd>
+    <dt>Cabeçalho órfão</dt><dd>O título de um bloco que fica sozinho no fim de uma página, com o conteúdo na página seguinte.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As atas, as datas, as decisões e os papéis desta página são exemplos montados para ilustrar; os tamanhos citados foram medidos em projetos reais, sem nome, e mostram a forma do problema, não uma meta de tamanho. Os nomes das cores no arquivo de padrão visual são ilustrativos. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--claude-md.html">CLAUDE.md</a>, <a href="./claude-code--pasta.html">pasta com dono</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">arquivo de referência</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--referencia.html"><span>← anterior</span><b>8.5 · Referência e leitura de fonte</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--obsidian.html"><span>próxima →</span><b>8.7 · Obsidian</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · duas semanas */
+  var DEC5 = ['Piloto começa por compras', 'Ata em até dois dias', 'Aceite: 20 pedidos', 'Reunião na terça', 'Cadastro na semana 4'];
+  function boxes(list, cap) {
+    var h = '<div class="ma-boxes' + (cap ? '' : ' flex') + '">';
+    if (cap) {
+      for (var i = 0; i < cap; i++) {
+        if (i < cap - 1 || list.length <= cap) h += '<div class="ma-box' + (list[i] ? '' : ' empty') + '">' + (list[i] || '—') + '</div>';
+        else h += '<div class="ma-box squeeze">' + list.slice(i).join(' · ') + '</div>';
+      }
+    } else { list.forEach(function (d) { h += '<div class="ma-box">' + d + '</div>'; }); }
+    return h + '</div>';
+  }
+  var cols = '<div class="ma-cols"><b>Nome</b><b>Instituição</b><b>Time</b><span>Coordenadora</span><span>Instituição A</span><span>gestão</span><span>Analista</span><span>Instituição B</span><span>operação</span></div>';
+  function blk(lab, body) { return '<div class="ma-blk"><span class="ma-lab">' + lab + '</span>' + body + '</div>'; }
+  var SM = {
+    chat: {
+      ask: 'Pedido da semana 1: “Faça a ata. Um ponto por linha, quatro cards para as decisões, participantes em lista.” Pedido da semana 2: “Faça a ata igual à da semana passada.”',
+      a: '<div class="ma"><span class="flag ok">semana 1 · 05/08</span><h3>Ata da reunião semanal</h3>' + blk('Participantes', '<ul><li>Coordenadora · Instituição A</li><li>Analista · Instituição B</li></ul>') + blk('Decisões', boxes(['Piloto começa por compras', 'Ata em até dois dias', 'Aceite: 20 pedidos'], 4)) + blk('Encaminhamentos', '<ul><li>Enviar a planilha</li><li>Marcar a reunião</li></ul>') + '</div>',
+      b: '<div class="ma bad"><span class="flag">semana 2 · 12/08</span><h3>Resumo do encontro</h3>' + blk('Principais pontos', '<p>Enviar a planilha de pedidos; validar o critério; marcar a reunião de terça; revisar o cadastro.</p>') + blk('Decisões', boxes(DEC5, 4)) + '<span class="flag">sem participantes · quatro pontos numa linha · cinco decisões em quatro cards</span></div>'
+    },
+    modelo: {
+      ask: 'Pedido das duas semanas: “Gere a ata de hoje no formato de modelo/.” O formato não está no pedido: está no arquivo.',
+      a: '<div class="ma good"><span class="flag ok">semana 1 · 05/08</span><h3>Ata · reunião semanal · 05/08</h3>' + blk('Participantes', cols) + blk('Decisões', boxes(['Piloto começa por compras', 'Ata em até dois dias', 'Aceite: 20 pedidos'])) + blk('Encaminhamentos', '<ul><li>Enviar a planilha</li><li>Marcar a reunião</li></ul>') + '</div>',
+      b: '<div class="ma good"><span class="flag ok">semana 2 · 12/08</span><h3>Ata · reunião semanal · 12/08</h3>' + blk('Participantes', cols) + blk('Decisões', boxes(DEC5)) + blk('Encaminhamentos', '<ul><li>Enviar a planilha de pedidos</li><li>Validar o critério</li><li>Marcar a reunião de terça</li><li>Revisar o cadastro</li></ul>') + '</div>'
+    }
+  };
+  var smBtns = document.querySelectorAll('[data-sm]');
+  function setSm(k) { pressGroup(smBtns, function (x) { return x.dataset.sm === k; }); document.getElementById('smAsk').textContent = SM[k].ask; document.getElementById('smOut').innerHTML = SM[k].a + SM[k].b; }
+  smBtns.forEach(function (b) { b.addEventListener('click', function () { setSm(b.dataset.sm); }); });
+  setSm('chat');
+
+  /* 2 · blocos da ata */
+  var BL = [
+    { n: 'Título', d: 'O tipo de reunião e a data, sempre na mesma forma. É o que faz a pasta de atas ser lida de relance.' },
+    { n: 'Data', d: 'Dia da reunião, não dia em que a ata foi feita. A mesma data abre o nome do arquivo, para a pasta ordenar sozinha.' },
+    { n: 'Participantes', r: 'Participantes em três colunas: nome · instituição · time.', d: 'Numa reunião com várias instituições, a lista corrida esconde quem representa quem. A tabela de três colunas mostra na hora.' },
+    { n: 'Pauta', d: 'O que estava previsto, antes do que aconteceu. Serve para ver o que ficou de fora.' },
+    { n: 'Síntese das discussões', r: 'Um título curto por tema, com bullets embaixo. Nunca um blocão de texto corrido.', d: 'O blocão corrido obriga a ler tudo para achar um assunto. Com o título por tema, quem só quer saber de compras pula direto.' },
+    { n: 'Decisões', r: 'Decisão é o que a sala fechou, não o que a síntese destacou como achado.', d: 'A IA tende a promover a decisão tudo o que soou importante. A regra separa o que foi fechado do que foi só comentado com ênfase.' },
+    { n: 'Riscos', d: 'O que pode atrapalhar, com quem está olhando. Fica separado das decisões para não se perder entre elas.' },
+    { n: 'Encaminhamentos', d: 'Quem faz o quê, até quando. Um por linha: é daqui que sai a cobrança da semana seguinte.' },
+    { n: 'Rodapé com a fonte', d: 'De qual gravação ou transcrição a ata saiu. É o caminho de volta quando alguém discorda do que está escrito.' }
+  ];
+  var blList = document.getElementById('blList'), blCur = 5;
+  blList.innerHTML = BL.map(function (b, i) { return '<button type="button" data-bl="' + i + '" aria-pressed="false"' + (b.r ? ' class="rule"' : '') + '><span>' + (i + 1) + '</span>' + b.n + '</button>'; }).join('');
+  var blBtns = blList.querySelectorAll('button');
+  function setBl(i) {
+    blCur = i; pressGroup(blBtns, function (x) { return +x.dataset.bl === i; });
+    var b = BL[i];
+    document.getElementById('blPanel').innerHTML = '<span class="eyebrow">bloco ' + (i + 1) + ' de 9</span><h3>' + b.n + '</h3><p>' + b.d + '</p>' + (b.r ? '<p class="verdict ok"><b>Regra que veio do uso:</b> ' + b.r + '</p>' : '<p class="hint">Sem regra extra: o próprio modelo mostra como fica.</p>');
+  }
+  blBtns.forEach(function (b) { b.addEventListener('click', function () { setBl(+b.dataset.bl); }); });
+  setBl(5);
+
+  /* 3 · conteúdo × forma */
+  var CF = {
+    txt: { m: ['s3', 'o3'], gen: false, c: '1 arquivo de texto editado · o gerador não mudou · 1 ata refeita', t: 'Corrigir uma ata é corrigir o texto', d: 'O nome errado está no texto da reunião de 19/08. Você corrige ali, roda o gerador, e só aquela ata sai de novo. As outras duas nem são tocadas, e o formato de nenhuma muda.' },
+    fmt: { m: ['o1', 'o2', 'o3'], gen: true, c: '0 arquivo de texto editado · o gerador mudou uma vez · 3 atas refeitas', t: 'Mudar o formato de todas é mudar o gerador', d: 'Nenhum texto de reunião muda: quem estava na sala continua o mesmo. Muda a regra de como a lista vira tabela. Uma alteração, e as três atas saem com participantes em três colunas.' }
+  };
+  var cfBtns = document.querySelectorAll('[data-cf]');
+  function setCf(k) {
+    var s = CF[k]; pressGroup(cfBtns, function (x) { return x.dataset.cf === k; });
+    document.querySelectorAll('.cf-f').forEach(function (f) { f.classList.toggle('mud', s.m.indexOf(f.dataset.f) > -1); });
+    document.getElementById('cfGen').classList.toggle('mud', s.gen);
+    document.getElementById('cfCount').textContent = s.c;
+    document.getElementById('cfCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  }
+  cfBtns.forEach(function (b) { b.addEventListener('click', function () { setCf(b.dataset.cf); }); });
+  setCf('txt');
+
+  /* 4 · tokens */
+  var TK = {
+    cab: { n: 'Cabeçalho', w: 'o título da peça e a faixa do cabeçalho da tabela', m: 'Vem da marca: é a cor principal.', r: 'Diz “aqui começa uma coisa nova”. Por isso não se usa para enfeitar texto no meio.' },
+    dest: { n: 'Destaque', w: 'o número grande e a frase que a peça quer que você leve', m: 'Vem da marca: é a cor de apoio.', r: 'Se tudo é destaque, nada é. Um ou dois por peça.' },
+    risco: { n: 'Risco', w: 'a faixa de risco, e mais nada', m: 'Vem da marca: é a cor de alerta.', r: 'Reservada. Quem lê aprende que essa cor quer dizer “atenção”, e a regra só funciona se ela nunca aparecer como enfeite.' },
+    apoio: { n: 'Texto de apoio', w: 'a linha da fonte, no rodapé', m: 'Não veio da marca: o manual não dizia. Foi decidido por quem montou, e está marcado como decisão.', r: 'Fica mais apagado de propósito: é para quem quer conferir, não para quem está lendo de passagem.' }
+  };
+  var tkBtns = document.querySelectorAll('[data-tk]'), tkEls = document.querySelectorAll('#tkPeca [data-role]');
+  function setTk(k) {
+    pressGroup(tkBtns, function (x) { return x.dataset.tk === k; });
+    var n = 0; tkEls.forEach(function (e) { var on = e.dataset.role === k; e.classList.toggle('on', on); if (on) n++; });
+    var t = TK[k];
+    document.getElementById('tkPanel').innerHTML = '<span class="eyebrow">papel · ' + n + (n === 1 ? ' lugar' : ' lugares') + ' nesta peça</span><h3>' + t.n + '</h3><p><b>Onde aparece:</b> ' + t.w + '.</p><p>' + t.r + '</p><p class="hint">' + t.m + '</p>';
+  }
+  tkBtns.forEach(function (b) { b.addEventListener('click', function () { setTk(b.dataset.tk); }); });
+  setTk('cab');
+  var tkSwap = document.getElementById('tkSwap'), tkPeca = document.getElementById('tkPeca');
+  function swapNote() {
+    var on = tkPeca.classList.contains('trocou');
+    document.getElementById('tkSwapNote').textContent = on ? 'Uma linha mudou no arquivo de padrão visual; os 2 lugares de destaque mudaram juntos, sem ninguém editar a peça.' : 'O destaque aponta para a cor de apoio da marca.';
+    tkSwap.textContent = on ? 'Voltar a cor do destaque' : 'Trocar a cor do destaque na marca';
+  }
+  tkSwap.addEventListener('click', function () { tkPeca.classList.toggle('trocou'); swapNote(); });
+  swapNote();
+
+  /* 5 · quantas houver */
+  var DEC7 = ['Piloto começa por compras', 'Ata em até dois dias', 'Aceite: 20 pedidos', 'Reunião na terça', 'Cadastro na semana 4', 'Planilha única de pedidos', 'Diretoria valida o aceite'];
+  var qhN = document.getElementById('qhN');
+  function qh() {
+    var n = +qhN.value, list = DEC7.slice(0, n);
+    document.getElementById('qhOut').textContent = n;
+    var rig = document.getElementById('qhRig');
+    rig.className = 'ma ' + (n === 4 ? 'good' : 'bad');
+    var msg = n === 4 ? '<span class="flag ok">Nesta semana, coube.</span>' : (n > 4 ? '<span class="flag">' + (n - 3) + ' decisões espremidas na última caixa</span>' : '<span class="flag">' + (4 - n) + ' caixa vazia, e alguém vai querer preencher</span>');
+    rig.innerHTML = '<span class="eyebrow">modelo · 4 caixas fixas</span>' + boxes(list, 4) + msg;
+    document.getElementById('qhFlex').innerHTML = '<span class="eyebrow">modelo · uma caixa por decisão</span>' + boxes(list) + '<span class="flag ok">' + n + ' decisões, ' + n + ' caixas</span>';
+  }
+  qhN.addEventListener('input', qh);
+  qh();
+
+  /* 6 · abrir o arquivo */
+  var DF = [
+    { t: 'Tabela cortada', d: 'A quarta coluna saiu da margem. No texto ela nem existia como problema: a largura só aparece na página.' },
+    { t: 'Cinco decisões em quatro caixas', d: 'O modelo tinha quatro caixas fixas, e as duas últimas decisões dividem uma. No texto, eram cinco linhas separadas.' },
+    { t: 'Célula estourando', d: 'Uma palavra comprida atravessa a borda da célula e invade a vizinha.' },
+    { t: 'Quatro pontos numa linha só', d: 'Os encaminhamentos viraram uma frase corrida. Ninguém cobra item que não tem linha própria.' },
+    { t: 'Cabeçalho órfão no fim da página', d: '“Riscos” ficou sozinho no pé da página 1; o risco em si foi para a página 2, onde ninguém lê o título.' }
+  ];
+  var found = {}, abList = document.getElementById('abList');
+  function abRender() {
+    var n = Object.keys(found).length;
+    document.getElementById('abScore').textContent = n + ' de 5 defeitos achados' + (n === 5 ? ' · nenhum deles aparecia no texto' : ' · clique no que parece estranho na página');
+    abList.innerHTML = Object.keys(found).sort().map(function (k) { return '<li><b>' + DF[k].t + '.</b> ' + DF[k].d + '</li>'; }).join('');
+  }
+  document.querySelectorAll('.df').forEach(function (b) { b.addEventListener('click', function () { found[b.dataset.df] = true; b.classList.add('found'); abRender(); }); });
+  abRender();
+  var abBtns = document.querySelectorAll('[data-ab]');
+  function setAb(k) { pressGroup(abBtns, function (x) { return x.dataset.ab === k; }); document.getElementById('abTxt').hidden = k !== 'txt'; document.getElementById('abPag').hidden = k !== 'pag'; }
+  abBtns.forEach(function (b) { b.addEventListener('click', function () { setAb(b.dataset.ab); }); });
+  setAb('pag');
+
+  /* 6b · trava do gerador */
+  var gtIn = document.getElementById('gtIn'), gtOut = document.getElementById('gtOut');
+  var CODE = /\b([A-Z]{1,3}-?\d{1,3})\b/g;
+  function gt() {
+    var v = gtIn.value, hits = v.match(CODE) || [];
+    if (hits.length) { gtOut.className = 'verdict no'; gtOut.innerHTML = '<b>O gerador recusou.</b> Código interno no texto: ' + hits.map(function (h) { return '<mark>' + esc(h) + '</mark>'; }).join(' ') + '. Troque pelo que ele quer dizer (“o critério de aceite combinado em 12/08”) e gere de novo.'; }
+    else { gtOut.className = 'verdict ok'; gtOut.innerHTML = '<b>Gerou.</b> Nenhum código interno: quem está fora do projeto entende a frase.'; }
+  }
+  gtIn.addEventListener('input', gt);
+  gt();
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

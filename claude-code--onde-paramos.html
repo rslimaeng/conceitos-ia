@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--onde-paramos">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde paramos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.3. Peças: stepper com diagrama da conversa que lê a pasta e reescreve a memória, retrato × diário com barra e contador, os seis blocos clicáveis de uma memória, quiz do próximo passo vago ou concreto, checklist de encerramento com o que se perde, a última menção (arquivo que só cresce), quiz manual ou memória, montador dos quatro blocos com copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+
+/* ---- só desta peça ---- */
+/* 1 · a conversa lê a pasta (svg) */
+.op-svg { min-width: 600px; }
+.op-dir { fill: none; stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.op-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.op-f rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.op-f text { font: 500 12px var(--font-mono); fill: var(--text-muted); }
+.op-f.hit rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.op-f.hit text { fill: var(--accent); }
+.op-f.new rect { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 2; }
+.op-f.new text { fill: var(--ok-texto); }
+.op-cv rect { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.3; }
+.op-cv .h { font: 600 12px var(--font-mono); fill: var(--text); letter-spacing: .06em; }
+.op-cv .l { font: 400 12.5px var(--font-body); fill: var(--text); }
+.op-arr { stroke: var(--accent); stroke-width: 2; fill: none; transition: opacity .3s ease; }
+.op-arr.back { stroke: var(--ok); }
+.op-mk { fill: var(--accent); }
+.op-mk2 { fill: var(--ok); }
+.op-off { opacity: 0; }
+
+/* 2 · retrato × diário */
+.op-bars rect.b { fill: var(--border-strong); transition: fill .25s ease; }
+.op-bars rect.b.on { fill: var(--accent); }
+.op-bars rect.track { fill: var(--bg); stroke: var(--border); }
+.op-bars text { font: 400 12px var(--font-body); fill: var(--text-muted); }
+.op-bars text.n { font: 500 12px var(--font-mono); fill: var(--text); }
+.op-count { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.op-peek { font-family: var(--font-mono); font-size: .8rem; line-height: 1.6; background: var(--bg); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 10px 12px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; color: var(--text); max-height: 260px; overflow-y: auto; }
+.op-peek em { font-style: normal; background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 3px; }
+
+/* 3 · seis blocos */
+.op-mem { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.op-file { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px; display: grid; gap: 6px; }
+.op-file button { text-align: left; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 8px 10px; font-family: var(--font-mono); font-size: .8rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); }
+.op-file button:hover { border-color: var(--border-strong); }
+.op-file button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.op-file button b { color: var(--accent); font-weight: 500; }
+
+/* 5 · fecho */
+.op-check { display: grid; gap: 8px; }
+.op-check button { text-align: left; display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.op-check button .bx { width: 20px; height: 20px; border: 1.5px solid var(--border-strong); border-radius: 4px; display: grid; place-items: center; font-size: .8rem; color: var(--bg-elev); margin-top: 2px; }
+.op-check button[aria-pressed="true"] { border-color: var(--ok); }
+.op-check button[aria-pressed="true"] .bx { background: var(--ok); border-color: var(--ok); }
+.op-check button small { display: block; color: var(--text-muted); font-size: .88rem; }
+.op-log circle { stroke-width: 1.6; }
+.op-log .done { fill: var(--accent); stroke: var(--accent); }
+.op-log .miss { fill: var(--bg-elev); stroke: var(--atencao); stroke-dasharray: 3 2; }
+.op-log text { font: 400 12px var(--font-body); fill: var(--text-muted); }
+.op-log .ln { stroke: var(--border-strong); stroke-width: 1.4; }
+
+/* 6 · a última menção */
+.op-log2 { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 8px; display: grid; gap: 4px; font-size: .92rem; }
+.op-log2 div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; padding: 7px 10px; border-radius: 6px; border: 1px solid transparent; }
+.op-log2 div span { font-family: var(--font-mono); font-size: .8rem; color: var(--text-dim); padding-top: 2px; }
+.op-log2 div.head { background: var(--bg); border-color: var(--border); }
+.op-log2 div.ok { background: var(--ok-soft); border-color: var(--ok); }
+.op-log2 div.bad { background: var(--atencao-soft); border-color: var(--atencao); }
+
+/* 8 · montador */
+.op-build { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.op-form { display: grid; gap: 10px; }
+.op-form label { display: grid; gap: 4px; font-size: .92rem; }
+.op-form input, .op-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.op-out { display: grid; gap: 10px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take, .op-mem, .op-build, .op-count { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { .op-f rect, .op-arr, .op-bars rect.b { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--claude-md.html">← 8.2 CLAUDE.md</a><a href="./claude-code--handoff.html">8.4 Handoff →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html" aria-current="page"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.3 · 3 de 7</span>
+  <h1>Onde paramos</h1>
+  <p class="sub">Um arquivo na pasta com o estado do trabalho: o Claude lê no começo e reescreve no fim</p>
+  <p class="lead">A conversa de amanhã é outra conversa, e o modelo não lembra de nada da de hoje. No chat, você recomeça explicando tudo, ou caça a conversa antiga e cola pedaços. Aqui <strong>quem lembra é a pasta</strong>: um arquivo curto, na raiz, diz em que ponto o trabalho está e qual é a próxima ação. <strong>É um retrato, não um diário</strong>: toda sessão reescreve, nenhuma só acrescenta.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-raiz">O arquivo da raiz</a><a href="#s-retrato">Retrato ou diário</a><a href="#s-blocos">Seis blocos</a><a href="#s-passo">Ação e arquivo</a><a href="#s-fecho">O fecho da sessão</a><a href="#s-mencao">A última menção</a><a href="#s-manual">Manual ou memória</a><a href="#s-comecar">Quatro blocos</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-raiz" aria-labelledby="h-raiz">
+  <span class="eyebrow">O arquivo da raiz</span>
+  <h2 id="h-raiz">Lido primeiro porque o manual manda, reescrito por último</h2>
+  <p class="intro">O arquivo se chama <strong>00-aqui-paramos.md</strong> (o 00 é só para ele aparecer no topo da pasta). Ele não é lido por mágica: é lido porque o CLAUDE.md tem uma linha mandando. Avance e veja uma sessão inteira.</p>
+  <div class="stepbar"><span class="eyebrow" id="opLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="opPrev">← Anterior</button><button type="button" class="btn primary" id="opNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="op-svg" viewBox="0 0 720 300" role="img" aria-labelledby="op-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="op-t">À esquerda, a pasta do projeto com o manual, a memória, as decisões, as pendências e os relatórios; à direita, a conversa. A conversa lê o manual, o manual manda ler a memória, o trabalho acontece nos relatórios, e no fim a conversa reescreve a memória</title>
+      <defs>
+        <marker id="mkop" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="op-mk"/></marker>
+        <marker id="mkop2" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="op-mk2"/></marker>
+      </defs>
+      <rect class="op-dir" x="10" y="26" width="300" height="264" rx="10"/><text class="op-zl" x="24" y="18">A PASTA DO PROJETO</text>
+      <g class="op-f" data-f="0"><rect x="30" y="44" width="260" height="36" rx="6"/><text x="46" y="67">CLAUDE.md</text></g>
+      <g class="op-f" data-f="1"><rect x="30" y="92" width="260" height="36" rx="6"/><text x="46" y="115">00-aqui-paramos.md</text></g>
+      <g class="op-f" data-f="2"><rect x="30" y="140" width="260" height="36" rx="6"/><text x="46" y="163">00-decisoes.md</text></g>
+      <g class="op-f" data-f="3"><rect x="30" y="188" width="260" height="36" rx="6"/><text x="46" y="211">00-fios-em-aberto.md</text></g>
+      <g class="op-f" data-f="4"><rect x="30" y="236" width="260" height="36" rx="6"/><text x="46" y="259">relatorios/</text></g>
+      <g class="op-cv"><rect x="400" y="44" width="306" height="228" rx="10"/><text class="h" x="418" y="72">A CONVERSA SABE</text>
+        <text class="l" x="418" y="104" id="opL0"></text><text class="l" x="418" y="134" id="opL1"></text><text class="l" x="418" y="164" id="opL2"></text><text class="l" x="418" y="194" id="opL3"></text><text class="l" x="418" y="224" id="opL4"></text></g>
+      <path class="op-arr op-off" id="opA0" d="M290,62 C340,62 350,96 396,96" marker-end="url(#mkop)"/>
+      <path class="op-arr op-off" id="opA1" d="M290,110 C340,110 350,128 396,128" marker-end="url(#mkop)"/>
+      <path class="op-arr op-off" id="opA4" d="M290,254 C340,254 350,190 396,190" marker-end="url(#mkop)"/>
+      <path class="op-arr back op-off" id="opAB" d="M400,250 C340,286 330,110 294,110" marker-end="url(#mkop2)"/>
+    </svg>
+  </div>
+  <div class="caption" id="opCap" aria-live="polite"></div>
+  <div class="two">
+    <div class="card focal"><span class="eyebrow">uma escolha</span><h3>A memória que você lê, você corrige</h3><p>Há ferramentas que guardam lembranças sozinhas, fora da sua vista. A escolha aqui é o arquivo: dá para abrir, ler o que o Claude acha que é o estado, corrigir uma linha, e ele fica guardado junto com o projeto.</p></div>
+    <div class="card"><span class="eyebrow">não confundir</span><h3>Duas coisas com o mesmo nome</h3><p>Em <a href="./ai-first--memoria.html">toda correção vira regra</a>, memória é a correção que vira regra e passa a valer sempre. Aqui é o estado do trabalho: onde parou e o que vem depois, e muda toda sessão.</p></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-retrato" aria-labelledby="h-retrato">
+  <span class="eyebrow">Retrato ou diário</span>
+  <h2 id="h-retrato">A mesma função, 58 linhas ou 2.396</h2>
+  <p class="intro">Duas memórias reais, de dois projetos. A primeira é reescrita a cada sessão. A segunda nunca foi podada: <strong>cada sessão acrescentou, nenhuma reescreveu</strong>. O estado atual está lá dentro, mas a conversa nova precisa atravessar dois meses de história para achá-lo. Alterne.</p>
+  <div class="chart">
+    <div class="seg" role="group" aria-label="Qual memória">
+      <button type="button" data-rt="ret" aria-pressed="true">O retrato · 58 linhas</button>
+      <button type="button" data-rt="dia" aria-pressed="false">O diário · 2.396 linhas</button>
+    </div>
+    <svg class="op-bars" viewBox="0 0 360 96" role="img" aria-labelledby="rt-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="rt-t">Duas barras na mesma escala: a memória de 58 linhas é um traço; a de 2.396 linhas ocupa a largura inteira</title>
+      <text x="0" y="14">o retrato</text><text class="n" x="360" y="14" text-anchor="end">58 linhas</text>
+      <rect class="track" x="0" y="20" width="360" height="18" rx="3"/><rect class="b" id="rtB0" x="0" y="20" width="9" height="18" rx="2"/>
+      <text x="0" y="66">o diário</text><text class="n" x="360" y="66" text-anchor="end">2.396 linhas · 53 mil palavras</text>
+      <rect class="track" x="0" y="72" width="360" height="18" rx="3"/><rect class="b" id="rtB1" x="0" y="72" width="360" height="18" rx="3"/>
+    </svg>
+    <div class="op-count">
+      <div class="card"><span class="eyebrow">linhas que a conversa atravessa</span><span class="big" id="rtLin">58</span></div>
+      <div class="card"><span class="eyebrow">onde está o estado</span><p id="rtOnde"></p></div>
+      <div class="card"><span class="eyebrow">quanto da mesa ocupa</span><p id="rtMesa"></p></div>
+    </div>
+    <pre class="op-peek" id="rtPeek"></pre>
+    <p class="hint">Os dois tamanhos foram medidos em projetos reais; o texto de cada trecho é ilustrativo.</p>
+  </div>
+  <p class="hint">Por que um arquivo enorme pesa, mesmo cabendo: a conversa tem um espaço de tamanho fixo, e o que entra nele disputa atenção. Mais em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-blocos" aria-labelledby="h-blocos">
+  <span class="eyebrow">Seis blocos</span>
+  <h2 id="h-blocos">Os blocos de uma memória boa são sempre os mesmos</h2>
+  <p class="intro">O exemplo de 58 linhas tem seis blocos. Clique em cada um no arquivo. O conteúdo é de um projeto inventado (um curso interno de atendimento, com cinco módulos); a ordem e o tamanho são os do exemplo real.</p>
+  <div class="op-mem">
+    <div class="op-file" id="bkFile" role="group" aria-label="O arquivo 00-aqui-paramos.md"></div>
+    <div class="panel" id="bkPanel" aria-live="polite"></div>
+  </div>
+  <div class="two">
+    <div class="card"><span class="eyebrow">00-decisoes.md</span><h3>D1, D2, D3…</h3><p>Cada decisão numerada, com data e motivo. Não se reescreve: decisão nova ganha número novo. A memória não repete as decisões; aponta para elas.</p></div>
+    <div class="card"><span class="eyebrow">00-fios-em-aberto.md</span><h3>F1, F2, F3…</h3><p>O que espera resposta ou decisão. Fio fechado ganha a data em que fechou. A memória traz só os cinco mais importantes.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-passo" aria-labelledby="h-passo">
+  <span class="eyebrow">Ação e arquivo</span>
+  <h2 id="h-passo">O próximo passo bom diz a ação e o arquivo onde ela acontece</h2>
+  <p class="intro">É o bloco que a conversa nova usa primeiro. <strong>“Continuar o projeto” obriga a conversa a descobrir sozinha o que você já sabia ontem.</strong> Seis frases: vago ou concreto?</p>
+  <div class="qz" id="psQuiz"></div>
+  <p class="qz-score" id="psScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-fecho" aria-labelledby="h-fecho">
+  <span class="eyebrow">O fecho da sessão</span>
+  <h2 id="h-fecho">Cinco itens antes de fechar, na ordem, e o que se perde em cada um</h2>
+  <p class="intro">O checklist está escrito no manual de um projeto real, como obrigatório. <strong>Desmarque um item e veja o que a próxima conversa deixa de saber.</strong> Quem executa esse fecho é o <a href="./claude-code--handoff.html">handoff</a>.</p>
+  <div class="op-check" id="fcList"></div>
+  <div class="verdict" id="fcVer" aria-live="polite"></div>
+  <h3>Como saber se o fecho foi pulado, sem abrir arquivo nenhum</h3>
+  <p class="intro">Cada vez que o trabalho é salvo com registro (no Claude Code, isso se chama commit), a pasta anota a data num histórico. Então a régua é simples: <strong>se o histórico da pasta de conhecimento está mais de uma rodada atrás do histórico do projeto, o checklist foi pulado</strong>. O trabalho andou e a memória ficou parada.</p>
+  <div class="chart">
+    <svg class="op-log" viewBox="0 0 380 110" role="img" aria-labelledby="lg-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="lg-t">Duas linhas do tempo com cinco rodadas: o projeto registrou as cinco; a pasta de conhecimento registrou só as três primeiras, e está duas rodadas atrás</title>
+      <text x="0" y="30">o projeto</text><line class="ln" x1="140" y1="26" x2="369" y2="26"/>
+      <circle class="done" cx="140" cy="26" r="8"/><circle class="done" cx="197" cy="26" r="8"/><circle class="done" cx="255" cy="26" r="8"/><circle class="done" cx="312" cy="26" r="8"/><circle class="done" cx="369" cy="26" r="8"/>
+      <text x="0" y="80">o conhecimento</text><line class="ln" x1="140" y1="76" x2="369" y2="76"/>
+      <circle class="done" cx="140" cy="76" r="8"/><circle class="done" cx="197" cy="76" r="8"/><circle class="done" cx="255" cy="76" r="8"/><circle class="miss" cx="312" cy="76" r="8"/><circle class="miss" cx="369" cy="76" r="8"/>
+      <text x="378" y="106" text-anchor="end">duas rodadas atrás: o fecho foi pulado</text>
+    </svg>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-mencao" aria-labelledby="h-mencao">
+  <span class="eyebrow">A última menção</span>
+  <h2 id="h-mencao">Em arquivo que só cresce, a menção mais recente não é o valor atual</h2>
+  <p class="intro">A armadilha está escrita como regra num manual real. Qual é o prazo deste projeto? <strong>Leia do jeito rápido e do jeito certo.</strong></p>
+  <div class="seg" role="group" aria-label="Como ler">
+    <button type="button" data-mn="ult" aria-pressed="true">A última linha que fala do prazo</button>
+    <button type="button" data-mn="can" aria-pressed="false">O campo do cabeçalho</button>
+  </div>
+  <div class="op-log2" id="mnLog"></div>
+  <div class="verdict" id="mnVer" aria-live="polite"></div>
+  <p class="punch">Para saber o estado, leia o campo que diz o estado. <em>Nunca a última frase que menciona o assunto.</em></p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-manual" aria-labelledby="h-manual">
+  <span class="eyebrow">Manual ou memória</span>
+  <h2 id="h-manual">O manual diz como se trabalha; a memória diz onde o trabalho está</h2>
+  <p class="intro">Os dois são lidos no começo da conversa, e é por isso que se confundem. <strong>O que muda toda semana vai na memória; o que vale para sempre vai no <a href="./claude-code--claude-md.html">CLAUDE.md</a></strong>, que é também onde está a linha que manda ler a memória.</p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th></th><th>Manual (CLAUDE.md)</th><th>Memória (00-aqui-paramos.md)</th></tr>
+      <tr><td>Responde</td><td>como se trabalha aqui</td><td>onde o trabalho está</td></tr>
+      <tr><td>Muda</td><td>raramente, quando uma correção vale para sempre</td><td>toda sessão</td></tr>
+      <tr><td>Se passar do tamanho</td><td>o Claude obedece a regra velha</td><td>o Claude não acha o estado atual</td></tr>
+    </table>
+  </div>
+  <div class="qz" id="mmQuiz"></div>
+  <p class="qz-score" id="mmScore" aria-live="polite"></p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-comecar" aria-labelledby="h-comecar">
+  <span class="eyebrow">Quatro blocos</span>
+  <h2 id="h-comecar">A primeira memória tem quatro blocos e duas linhas no manual</h2>
+  <p class="intro">Estado, decidido, próximo passo, em aberto. Os outros blocos entram quando o projeto crescer. <strong>Preencha com o seu trabalho de hoje e copie.</strong></p>
+  <div class="op-build">
+    <div class="op-form">
+      <label>Estado, em uma frase<input id="mbEst" value="Os relatórios de julho e agosto estão prontos; o de setembro está pela metade."></label>
+      <label>Decidido (uma linha cada)<textarea id="mbDec" rows="3">Comparação sempre com o mesmo mês do ano anterior.
+Relatório sai em planilha, não em PDF.</textarea></label>
+      <label>Próximo passo: a ação e o arquivo<input id="mbProx" value="Fechar a aba de devoluções em relatorios/2026-09.xlsx com os dados de dados/export-setembro.csv."></label>
+      <label>Em aberto (uma linha cada)<textarea id="mbAb" rows="3">A gerente ainda não disse se entra a filial nova.
+Falta o número de devoluções da segunda quinzena.</textarea></label>
+    </div>
+    <div class="op-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">00-aqui-paramos.md · ao vivo</span><button type="button" class="btn" data-copy="mbOut">Copiar</button></div>
+        <pre id="mbOut"></pre>
+      </div>
+      <div class="verdict" id="mbVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="two">
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">As duas linhas do CLAUDE.md</span><button type="button" class="btn" data-copy="mbDuas">Copiar</button></div>
+<pre id="mbDuas">Antes de começar, leia o 00-aqui-paramos.md.
+Ao terminar um trabalho, reescreva o 00-aqui-paramos.md: estado, decidido, próximo passo e em aberto. Reescreva, não acrescente.</pre>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">O teste · conversa nova</span><button type="button" class="btn" data-copy="mbTeste">Copiar</button></div>
+<pre id="mbTeste">Onde paramos e qual é o próximo passo?</pre>
+    </div>
+  </div>
+  <p class="hint">Se a resposta do teste vier com o arquivo onde a ação acontece, a memória está funcionando. Se vier “continuar o projeto”, o defeito está no próximo passo, não no Claude.</p>
+  <div class="three">
+    <div class="card"><h3>Acrescentar em vez de reescrever</h3><p>A memória é um retrato. O que já passou vai para as decisões, os fios ou a linha do tempo.</p></div>
+    <div class="card"><h3>Esquecer a linha no manual</h3><p>Sem ela, o arquivo fica na pasta e ninguém lê. Ler a memória não é automático.</p></div>
+    <div class="card"><h3>Próximo passo vago</h3><p>“Continuar o projeto” não é passo. O bom diz a ação e o arquivo.</p></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Quem lembra é a pasta</h3><p>O modelo não guarda nada entre conversas. O arquivo guarda, e você pode ler e corrigir o que ele diz.</p></div>
+    <div class="take-card"><h3>Retrato, não diário</h3><p>Toda sessão reescreve. O que passou vai para decisões e fios, numerados, em arquivo próprio.</p></div>
+    <div class="take-card"><h3>Ação e arquivo</h3><p>O próximo passo é a primeira coisa que a conversa nova usa. Vago, ela começa descobrindo.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>00-aqui-paramos.md</dt><dd>O arquivo da memória, na raiz do projeto: estado, próximo passo, frentes, fios em aberto e vínculos.</dd>
+    <dt>Estado</dt><dd>Em que ponto o trabalho está hoje, em uma frase. Muda toda sessão.</dd>
+    <dt>Fio em aberto</dt><dd>Algo que espera resposta ou decisão, numerado (F1, F2…) em arquivo próprio.</dd>
+    <dt>Campo canônico</dt><dd>O lugar fixo onde um valor é escrito, como o prazo no cabeçalho. É ele que se lê, não a última menção.</dd>
+    <dt>Commit</dt><dd>O registro de um salvamento, com data, no histórico da pasta. Serve de régua para ver se a memória acompanhou o trabalho.</dd>
+  </dl>
+  <p class="foot">Simplificação didática: o nome do arquivo e os blocos são um jeito que funciona, não um formato da ferramenta. Os tamanhos (58 linhas; 2.396 linhas e 53 mil palavras) foram medidos em projetos reais, sem nome; mostram a forma do problema, não uma meta de tamanho. Os projetos, datas e trechos dos exemplos são inventados. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--pasta.html">pasta</a>, <a href="./claude-code--claude-md.html">CLAUDE.md</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">referência</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--claude-md.html"><span>← anterior</span><b>8.2 · CLAUDE.md</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code--handoff.html"><span>próxima →</span><b>8.4 · Handoff</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  'use strict';
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · a conversa lê a pasta */
+  var OP = [
+    { hit: [], nw: -1, a: [], L: ['nada da conversa de ontem', '', '', '', ''], t: 'Conversa nova, cabeça vazia', d: 'O modelo não lembra de nada entre uma conversa e outra. O que foi dito ontem não está aqui. Quem guardou alguma coisa foi a pasta.' },
+    { hit: [0], nw: -1, a: ['opA0'], L: ['como se trabalha aqui (o manual)', 'e uma linha: “comece lendo', 'o 00-aqui-paramos.md”', '', ''], t: 'Lê o manual', d: 'O CLAUDE.md entra antes da primeira mensagem. Ele diz como se trabalha ali, e tem a linha que manda ler a memória. Sem essa linha, o arquivo da memória fica esquecido na pasta.' },
+    { hit: [0, 1], nw: -1, a: ['opA0', 'opA1'], L: ['como se trabalha aqui (o manual)', 'o estado, em uma frase', 'o próximo passo, com o arquivo', 'os cinco fios que esperam decisão', ''], t: 'O manual manda ler a memória', d: 'Agora a conversa sabe onde o trabalho parou e por onde começar. As decisões e as pendências completas continuam nos arquivos delas; a memória só aponta e traz as cinco mais importantes.' },
+    { hit: [0, 1, 4], nw: -1, a: ['opA0', 'opA1', 'opA4'], L: ['como se trabalha aqui (o manual)', 'o estado, em uma frase', 'o próximo passo, com o arquivo', 'os cinco fios que esperam decisão', 'o relatório em que está trabalhando'], t: 'Trabalha', d: 'O próximo passo dizia o arquivo, então a conversa foi direto nele. Nenhuma mensagem sua foi gasta explicando onde as coisas estavam.' },
+    { hit: [0, 4], nw: 1, a: ['opA0', 'opA4', 'opAB'], L: ['como se trabalha aqui (o manual)', 'o que mudou hoje', 'o novo próximo passo', '', '→ reescreve a memória'], t: 'Reescreve no fim', d: 'Antes de fechar, a conversa reescreve o 00-aqui-paramos.md: novo estado, novo próximo passo. Reescreve, não acrescenta. Decisão nova ganha número no 00-decisoes.md. É o que o <a href="./claude-code--handoff.html">handoff</a> faz.' }
+  ];
+  var opF = document.querySelectorAll('.op-f'), opArrs = ['opA0', 'opA1', 'opA4', 'opAB'];
+  stepper(OP.length, document.getElementById('opPrev'), document.getElementById('opNext'), document.getElementById('opLab'), 'Passo', function (k) {
+    var s = OP[k - 1];
+    opF.forEach(function (g) { var i = +g.dataset.f; g.classList.toggle('hit', s.hit.indexOf(i) > -1); g.classList.toggle('new', s.nw === i); });
+    opArrs.forEach(function (id) { document.getElementById(id).classList.toggle('op-off', s.a.indexOf(id) < 0); });
+    s.L.forEach(function (t, i) { document.getElementById('opL' + i).textContent = t; });
+    document.getElementById('opCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 2 · retrato × diário */
+  var RT = {
+    ret: { lin: '58', onde: 'Na terceira linha depois do cabeçalho: “Estado em 1 frase”.', mesa: 'Cabe em duas telas. Lido inteiro, custa quase nada.', peek: '---\natualizado: 29/09/2026\nestado: em andamento\n---\n<em>## Estado em 1 frase</em>\nMódulos 1 a 3 aprovados; o 4 em rascunho; o 5 não começou.\n\n<em>## Próximo passo</em>\nTerminar os dois exercícios do fim do módulo 4,\nem modulos/04-reclamacoes.md.\n\n## Frentes\n| módulo | estado |\n...\n## Fios em aberto (top 5)\n...\n## Vínculos\n...' },
+    dia: { lin: '2.396', onde: 'Em algum lugar entre a sessão 1 e a última. Várias frases falam do estado, e as mais antigas estão erradas.', mesa: '53 mil palavras lidas antes do trabalho começar. Dois meses de história na frente do estado de hoje.', peek: '## Sessão 1 · 02/07\nComeçamos pela estrutura. Estado: fase 1...\n\n## Sessão 2 · 03/07\nAjustes no modelo. Estado: fase 1, faltam testes...\n\n## Sessão 3 · 07/07\n...\n\n(… mais 2.300 linhas …)\n\n## Sessão 41 · 04/09\nRetomamos o que ficou da sessão 38. Ver também\no que foi dito na sessão 12 sobre o prazo...\n<em>Estado: fase 2?</em> (a sessão 39 dizia fase 3)' }
+  };
+  var rtBtns = document.querySelectorAll('[data-rt]');
+  function setRt(k) {
+    pressGroup(rtBtns, function (b) { return b.dataset.rt === k; });
+    document.getElementById('rtB0').classList.toggle('on', k === 'ret');
+    document.getElementById('rtB1').classList.toggle('on', k === 'dia');
+    var r = RT[k];
+    document.getElementById('rtLin').textContent = r.lin;
+    document.getElementById('rtOnde').textContent = r.onde;
+    document.getElementById('rtMesa').textContent = r.mesa;
+    document.getElementById('rtPeek').innerHTML = r.peek;
+  }
+  rtBtns.forEach(function (b) { b.addEventListener('click', function () { setRt(b.dataset.rt); }); });
+  setRt('ret');
+
+  /* 3 · seis blocos */
+  var BK = [
+    { f: '---\ntipo: memória do projeto\nestado: em andamento\n<b>atualizado: 29/09/2026</b>\ndecisoes: 00-decisoes.md\nfios: 00-fios-em-aberto.md\n---', t: 'Cabeçalho', d: 'Tipo, estado, a data da última atualização e onde estão os outros arquivos que mandam. A data é o primeiro teste: memória com data velha é memória que ninguém reescreveu.' },
+    { f: '<b>## Estado em 1 frase</b>\nMódulos 1 a 3 aprovados; o 4 em rascunho; o 5 não começou.', t: 'Estado em uma frase', d: 'Em que ponto o trabalho está. Uma frase: se precisar de um parágrafo, o estado não está claro nem para quem escreveu.' },
+    { f: '<b>## Próximo passo</b>\nTerminar os dois exercícios do fim do módulo 4,\nem modulos/04-reclamacoes.md, com os casos de\nreferencias/casos-reais.md.', t: 'Próximo passo concreto', d: 'A primeira ação da próxima conversa, com o arquivo onde ela acontece. É o bloco que mais economiza: a conversa nova começa trabalhando, não procurando.' },
+    { f: '<b>## Frentes</b>\n| módulo | estado |\n| 1 · acolhimento | aprovado |\n| 2 · escuta | aprovado |\n| 3 · resposta | aprovado |\n| 4 · reclamações | rascunho |\n| 5 · pós-atendimento | não começou |', t: 'Estado das frentes', d: 'Uma tabela, uma linha por frente. É o mapa para quem precisa saber mais do que o próximo passo.' },
+    { f: '<b>## Fios em aberto (top 5)</b>\nF7 · a coordenadora não disse se o módulo 5 entra este ano\nF9 · faltam os áudios de exemplo do módulo 2\nF11 · o nome do curso ainda não foi aprovado\n(completo em 00-fios-em-aberto.md)', t: 'Fios em aberto, os cinco primeiros', d: 'O que espera decisão. Só os cinco mais importantes: a lista inteira mora no arquivo dela, numerada, e fio fechado ganha data.' },
+    { f: '<b>## Vínculos</b>\nManual: CLAUDE.md\nDecisões: 00-decisoes.md (D1 a D12)\nPendências: 00-fios-em-aberto.md (F1 a F14)\nLinha do tempo: 00-linha-do-tempo.md', t: 'Vínculos', d: 'Onde estão o manual, as decisões e as pendências. A memória aponta, não copia: o que se copia em dois lugares um dia diverge.' }
+  ];
+  var bkFile = document.getElementById('bkFile');
+  BK.forEach(function (b, i) { var el = document.createElement('button'); el.type = 'button'; el.dataset.bk = i; el.setAttribute('aria-pressed', 'false'); el.innerHTML = b.f; bkFile.appendChild(el); });
+  var bkBtns = bkFile.querySelectorAll('button');
+  function setBk(k) {
+    pressGroup(bkBtns, function (b) { return +b.dataset.bk === k; });
+    document.getElementById('bkPanel').innerHTML = '<span class="eyebrow">bloco ' + (k + 1) + ' de 6</span><h3>' + BK[k].t + '</h3><p>' + BK[k].d + '</p>';
+  }
+  bkBtns.forEach(function (b) { b.addEventListener('click', function () { setBk(+b.dataset.bk); }); });
+  setBk(2);
+
+  /* 4 · próximo passo */
+  quiz(document.getElementById('psQuiz'), document.getElementById('psScore'), [
+    { s: '“Continuar o projeto.”', a: 'vag', why: 'Não diz a ação nem o lugar. A conversa nova começa procurando.' },
+    { s: '“Revisar o módulo 3 em modulos/03-resposta.md: faltam os dois exercícios do fim.”', a: 'con', why: 'Ação, arquivo e o que falta. Dá para começar sem perguntar nada.' },
+    { s: '“Ver o que falta.”', a: 'vag', why: 'Falta onde? Ver como? É o próximo passo de quem não sabia qual era.' },
+    { s: '“Montar a ata da reunião de 14/10 a partir de reunioes/brutas/2026-10-14.md, no modelo de modelos/ata.md.”', a: 'con', why: 'A fonte, o modelo e o que produzir. Concreto.' },
+    { s: '“Dar uma olhada nas propostas.”', a: 'vag', why: '“Dar uma olhada” não termina nunca. Quais propostas, para decidir o quê?' },
+    { s: '“Comparar as três propostas de propostas/recebidas/ e registrar a escolha como D8.”', a: 'con', why: 'Ação, pasta e onde o resultado fica. E a decisão já tem número reservado.' }
+  ], [['vag', 'Vago'], ['con', 'Concreto']], 'o concreto sempre tem um caminho de arquivo.');
+
+  /* 5 · fecho */
+  var FC = [
+    { t: 'A memória do projeto: estado e próximo passo', p: 'A próxima conversa começa pelo estado de ontem, e acha que é o de hoje.' },
+    { t: 'As decisões novas, com número novo (D13)', p: 'A decisão fica só na conversa e morre com ela. Daqui a um mês, alguém decide de novo, diferente.' },
+    { t: 'Os achados e as perguntas sem resposta, com número novo (F15); fio fechado ganha data', p: 'A pergunta some, e o fio que já fechou continua parecendo aberto.' },
+    { t: 'A linha do tempo, se entrou data nova', p: 'O prazo novo vive só na sua cabeça, e a conversa trabalha com o antigo.' },
+    { t: 'A síntese de toda reunião lida, no mesmo dia', p: 'A reunião vira “eu li em algum lugar”, e o que ela decidiu não chega em conversa nenhuma.' }
+  ];
+  var fcOn = [true, true, true, true, true], fcList = document.getElementById('fcList');
+  FC.forEach(function (f, i) { var b = document.createElement('button'); b.type = 'button'; b.dataset.fc = i; b.innerHTML = '<span class="bx" aria-hidden="true">✓</span><span><b>' + (i + 1) + '.</b> ' + f.t + '<small></small></span>'; fcList.appendChild(b); });
+  var fcBtns = fcList.querySelectorAll('button');
+  function renderFc() {
+    pressGroup(fcBtns, function (b) { return fcOn[+b.dataset.fc]; });
+    fcBtns.forEach(function (b) { var i = +b.dataset.fc; b.querySelector('small').textContent = fcOn[i] ? '' : 'Pulado: ' + FC[i].p; });
+    var n = fcOn.filter(Boolean).length, v = document.getElementById('fcVer');
+    if (n === 5) { v.className = 'verdict ok'; v.innerHTML = '<b>5 de 5.</b> A próxima conversa começa de onde esta parou, e tudo o que foi decidido tem endereço.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + n + ' de 5.</b> Ninguém avisa o que faltou: a próxima conversa só não sabe. Desmarcado não é “depois”; é perdido.'; }
+  }
+  fcBtns.forEach(function (b) { b.addEventListener('click', function () { var i = +b.dataset.fc; fcOn[i] = !fcOn[i]; renderFc(); }); });
+  renderFc();
+
+  /* 6 · a última menção */
+  var MN = [
+    { d: 'topo', t: 'prazo: 15/10 (ver D4)', head: true, can: true },
+    { d: '03/09', t: 'Combinado com a diretoria: entrega em 30/09.' },
+    { d: '08/09', t: 'Módulo 2 aprovado.' },
+    { d: '10/09', t: 'D4: prazo adiado para 15/10, a pedido da coordenadora.' },
+    { d: '17/09', t: 'Módulo 3 em revisão.' },
+    { d: '24/09', t: 'Avisado o fornecedor dos áudios, que ainda trabalhava com o prazo de 30/09.', last: true }
+  ];
+  var mnBtns = document.querySelectorAll('[data-mn]');
+  function setMn(k) {
+    pressGroup(mnBtns, function (b) { return b.dataset.mn === k; });
+    document.getElementById('mnLog').innerHTML = MN.map(function (r) {
+      var c = r.head ? 'head' : '';
+      if (k === 'ult' && r.last) c += ' bad';
+      if (k === 'can' && r.can) c += ' ok';
+      return '<div class="' + c.trim() + '"><span>' + r.d + '</span>' + esc(r.t) + '</div>';
+    }).join('');
+    var v = document.getElementById('mnVer');
+    if (k === 'ult') { v.className = 'verdict no'; v.innerHTML = '<b>Resposta: 30/09. Errada.</b> A linha mais recente que cita um prazo cita o antigo, porque falava de quem ainda não sabia da mudança. Quem lê de baixo para cima acha o valor errado com toda a confiança.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Resposta: 15/10. Certa.</b> O campo do topo diz o valor atual e aponta a decisão que o mudou. É por isso que a memória é reescrita: o campo fica sempre certo, e a história vai para as decisões.'; }
+  }
+  mnBtns.forEach(function (b) { b.addEventListener('click', function () { setMn(b.dataset.mn); }); });
+  setMn('ult');
+
+  /* 7 · manual ou memória */
+  quiz(document.getElementById('mmQuiz'), document.getElementById('mmScore'), [
+    { s: '“Estamos na fase 2.”', a: 'mem', why: 'Muda com o trabalho. No manual, vira mentira na próxima fase e ninguém tira.' },
+    { s: '“Nome de pessoa sai só da lista de pessoas.”', a: 'man', why: 'Vale em toda sessão, para sempre. É regra de como se trabalha.' },
+    { s: '“Falta revisar o módulo 3.”', a: 'mem', why: 'Pendência de agora. Quando for revisado, sai.' },
+    { s: '“Ata aprovada não se edita; correção vira ata nova.”', a: 'man', why: 'Regra da casa, não estado do trabalho.' },
+    { s: '“Próximo passo: montar a ata de 14/10.”', a: 'mem', why: 'É o bloco mais importante da memória, e muda toda sessão.' },
+    { s: '“Antes de começar, leia o 00-aqui-paramos.md.”', a: 'man', why: 'É a linha do manual que faz a memória ser lida. Mora no CLAUDE.md.' },
+    { s: '“A coordenadora pediu para segurar a proposta até sexta.”', a: 'mem', why: 'Vale até sexta. Estado, ou fio em aberto.' },
+    { s: '“Resumo de reunião: no máximo 10 linhas, decisões primeiro.”', a: 'man', why: 'Um formato que vale sempre. Manual.' }
+  ], [['man', 'Manual'], ['mem', 'Memória']], 'se na semana que vem a frase pode estar errada, é memória.');
+
+  /* 8 · montador */
+  var mb = ['mbEst', 'mbDec', 'mbProx', 'mbAb'].map(function (id) { return document.getElementById(id); });
+  function hoje() { var d = new Date(); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
+  function lines(t) { return t.split('\n').map(function (l) { return l.trim(); }).filter(Boolean); }
+  function renderMb() {
+    var est = mb[0].value.trim(), dec = lines(mb[1].value), prox = mb[2].value.trim(), ab = lines(mb[3].value);
+    var out = '---\natualizado: ' + hoje() + '\n---\n\n';
+    out += '<b>## Estado</b>\n' + (est ? esc(est) : '<i>[em que ponto o trabalho está, em uma frase]</i>') + '\n\n';
+    out += '<b>## Decidido</b>\n' + (dec.length ? dec.map(function (l, i) { return 'D' + (i + 1) + ' · ' + esc(l); }).join('\n') : '<i>[uma decisão por linha]</i>') + '\n\n';
+    out += '<b>## Próximo passo</b>\n' + (prox ? esc(prox) : '<i>[a ação e o arquivo onde ela acontece]</i>') + '\n\n';
+    out += '<b>## Em aberto</b>\n' + (ab.length ? ab.map(function (l, i) { return 'F' + (i + 1) + ' · ' + esc(l); }).join('\n') : '<i>[o que espera resposta]</i>');
+    document.getElementById('mbOut').innerHTML = out;
+    var v = document.getElementById('mbVer'), temArquivo = /[\w-]+\/|\.[a-z]{2,4}\b/i.test(prox);
+    if (!prox) { v.className = 'verdict no'; v.innerHTML = '<b>Sem próximo passo.</b> É o bloco que a conversa nova usa primeiro.'; }
+    else if (!temArquivo) { v.className = 'verdict no'; v.innerHTML = '<b>O próximo passo não diz o arquivo.</b> Acrescente onde a ação acontece: uma pasta ou um nome de arquivo.'; }
+    else if (ab.length > 5) { v.className = 'verdict no'; v.innerHTML = '<b>Mais de cinco em aberto.</b> Traga só os cinco mais importantes; a lista inteira vai para o arquivo de fios.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Pronta.</b> Salve como 00-aqui-paramos.md na raiz da pasta e ponha as duas linhas no CLAUDE.md.'; }
+  }
+  mb.forEach(function (i) { i.addEventListener('input', renderMb); });
+  renderMb();
+
+  /* teclado: o que tem papel de botão sem ser <button> responde a Enter e espaço */
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>
