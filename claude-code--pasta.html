@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 8.1. Peças: sem dono × com dono (árvore da pasta de atas com os quatro erros), bruta limpa × bruta intacta numa disputa de prazo, controle deslizante das pastas que nascem com o projeto, stepper com diagrama do caminho de uma ata pelos estágios e quem mexe em cada um, montador de nome com data que ordena a pasta ao vivo, quiz de onde mora cada arquivo, grade clicável das 22 atas, blocos para copiar (COMO-EDITAR e o pedido do primeiro dia). */
+/* Layout: página de conceito, família 8.1. Peças: sem dono × com dono (árvore da pasta de atas com os quatro erros), bruta limpa × bruta intacta numa disputa de prazo, controle deslizante das pastas que nascem com o projeto, stepper com diagrama do caminho de uma ata pelos estágios e quem mexe em cada um, montador de nome com data que ordena a pasta ao vivo, quiz de onde mora cada arquivo em quatro tipos de lugar, com a pasta enchendo ao lado, grade clicável das 22 atas, blocos para copiar (COMO-EDITAR e o pedido do primeiro dia). */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -183,6 +183,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 .card ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; display: grid; gap: 4px; }
 .card.nao { border-color: var(--atencao); }
 .card.sim { border-color: var(--ok); }
+#brOut { display: grid; gap: 12px; }
 
 /* 3 · pastas que nascem */
 .pp-out { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
@@ -192,8 +193,8 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 /* 4 · estágios (svg) */
 .scroll svg.wide { min-width: 640px; }
 .st-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
-.st-box .l { font: 500 12.5px var(--font-mono); fill: var(--text); }
-.st-box .s { font: 400 11.5px var(--font-body); fill: var(--text-dim); }
+.st-box .l { font: 500 12px var(--font-mono); fill: var(--text); text-anchor: middle; }
+.st-box .s { font: 400 11.5px var(--font-body); fill: var(--text-dim); text-anchor: middle; }
 .st-box.circ rect { stroke: var(--ok); stroke-width: 1.6; }
 .st-box.agora rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
 .st-box.agora .l { fill: var(--accent); }
@@ -221,6 +222,24 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 .nm-list li { overflow-wrap: anywhere; }
 .nm-list li.new { color: var(--accent); font-weight: 500; }
 
+/* 6 · onde mora: um arquivo por vez, a pasta enchendo ao lado */
+.on-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.on-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 14px; }
+.on-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.on-file { font-size: 1.1rem; line-height: 1.45; }
+.on-grps { display: grid; gap: 10px; }
+.on-grp { display: grid; gap: 6px; }
+.on-gl { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.on-gl b { color: var(--text); font-weight: 500; }
+.on-opts { display: flex; flex-wrap: wrap; gap: 6px; }
+.on-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 12px; font-family: var(--font-mono); font-size: .85rem; }
+.on-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.on-opts button.certa { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.on-opts button:disabled { cursor: default; }
+.pt-row .gt { font-family: var(--font-body); font-size: .78rem; color: var(--text-dim); }
+.pt-row.agora .nm { color: var(--text); background: var(--accent-soft); border-radius: 3px; padding: 0 4px; }
+.pt-row.chegou .nm { color: var(--accent); }
+
 /* 7 · as 22 atas */
 .at-grid { display: grid; grid-template-columns: repeat(11, minmax(0, 1fr)); gap: 6px; max-width: 620px; }
 .at-grid button { aspect-ratio: 1; border: 1px solid var(--ok); background: var(--ok-soft); color: var(--ok-texto); border-radius: 4px; font-family: var(--font-mono); font-size: .72rem; padding: 0; }
@@ -239,7 +258,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
   .two, .three, .take { grid-template-columns: 1fr; }
   .gloss { grid-template-columns: 1fr; }
   .gloss dd { margin-bottom: 8px; }
-  .pt-grid, .pp-out, .nm-grid { grid-template-columns: 1fr; }
+  .pt-grid, .pp-out, .nm-grid, .on-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 420px) { .at-grid { gap: 4px; } .at-grid button { font-size: .62rem; } }
 @media (prefers-reduced-motion: reduce) { .st-box rect { transition: none; } }
@@ -358,18 +377,18 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
       <defs><marker id="mkst" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="9" refX="9" refY="4.5" orient="auto"><path d="M0,0.5 L10,4.5 L0,8.5 z" class="st-mk"/></marker></defs>
       <text class="st-zl" x="20" y="26">O CAMINHO DE UMA ATA</text>
       <text class="st-badge" x="575" y="26">SÓ ESTA CIRCULA</text>
-      <g class="st-box" data-st="0"><rect x="20" y="40" width="165" height="96" rx="8"/><text class="l" x="32" y="64">modelo/</text><text class="s" x="32" y="82">o padrão de toda ata</text></g>
-      <g class="st-box" data-st="1"><rect x="205" y="40" width="165" height="96" rx="8"/><text class="l" x="217" y="64">fontes/</text><text class="s" x="217" y="82">o conteúdo, em texto</text></g>
-      <g class="st-box" data-st="2"><rect x="390" y="40" width="165" height="96" rx="8"/><text class="l" x="402" y="64">em-validacao/</text><text class="s" x="402" y="82">espera o seu OK</text></g>
-      <g class="st-box circ" data-st="3"><rect x="575" y="40" width="165" height="96" rx="8"/><text class="l" x="587" y="64">aprovadas/</text><text class="s" x="587" y="82">o que foi validado</text></g>
-      <g class="st-box" data-st="4"><rect x="20" y="196" width="165" height="96" rx="8"/><text class="l" x="32" y="220">_versoes-anteriores/</text><text class="s" x="32" y="238">o padrão antigo</text></g>
-      <g class="st-box" data-st="5"><rect x="575" y="196" width="165" height="96" rx="8"/><text class="l" x="587" y="220">evidencias/</text><text class="s" x="587" y="238">a prova visual</text></g>
-      <path class="st-flow" d="M185,88 L203,88" marker-end="url(#mkst)"/>
-      <path class="st-flow" d="M370,88 L388,88" marker-end="url(#mkst)"/>
-      <path class="st-flow" d="M555,88 L573,88" marker-end="url(#mkst)"/>
-      <path class="st-flow dash" d="M102,136 L102,194" marker-end="url(#mkst)"/>
-      <path class="st-flow dash" d="M657,136 L657,194" marker-end="url(#mkst)"/>
-      <g class="st-tok" id="stTok" transform="translate(32,94)"><rect x="0" y="0" width="141" height="28" rx="4"/><text x="8" y="18" id="stTokT">ata-modelo.docx</text></g>
+      <g class="st-box" data-st="0"><rect x="20" y="40" width="165" height="64" rx="8"/><text class="l" x="102" y="67">modelo/</text><text class="s" x="102" y="85">o padrão de toda ata</text></g>
+      <g class="st-box" data-st="1"><rect x="205" y="40" width="165" height="64" rx="8"/><text class="l" x="287" y="67">fontes/</text><text class="s" x="287" y="85">o conteúdo, em texto</text></g>
+      <g class="st-box" data-st="2"><rect x="390" y="40" width="165" height="64" rx="8"/><text class="l" x="472" y="67">em-validacao/</text><text class="s" x="472" y="85">espera o seu OK</text></g>
+      <g class="st-box circ" data-st="3"><rect x="575" y="40" width="165" height="64" rx="8"/><text class="l" x="657" y="67">aprovadas/</text><text class="s" x="657" y="85">o que foi validado</text></g>
+      <g class="st-box" data-st="4"><rect x="20" y="196" width="165" height="64" rx="8"/><text class="l" x="102" y="223">_versoes-anteriores/</text><text class="s" x="102" y="241">o padrão antigo</text></g>
+      <g class="st-box" data-st="5"><rect x="575" y="196" width="165" height="64" rx="8"/><text class="l" x="657" y="223">evidencias/</text><text class="s" x="657" y="241">a prova visual</text></g>
+      <path class="st-flow" d="M185,72 L203,72" marker-end="url(#mkst)"/>
+      <path class="st-flow" d="M370,72 L388,72" marker-end="url(#mkst)"/>
+      <path class="st-flow" d="M555,72 L573,72" marker-end="url(#mkst)"/>
+      <path class="st-flow dash" d="M102,104 L102,194" marker-end="url(#mkst)"/>
+      <path class="st-flow dash" d="M657,104 L657,194" marker-end="url(#mkst)"/>
+      <g class="st-tok" id="stTok" transform="translate(32,112)"><rect x="0" y="0" width="141" height="28" rx="4"/><text x="8" y="18" id="stTokT">ata-modelo.docx</text></g>
     </svg>
   </div>
   <div class="st-who"><span class="hint">Quem mexe nesta pasta:</span><span class="st-chip" id="stClaude">o Claude grava</span><span class="st-chip" id="stVoce">você move</span></div>
@@ -407,10 +426,18 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 <!-- 6 -->
 <section class="sec" id="s-onde" aria-labelledby="h-onde">
   <span class="eyebrow">Onde mora este arquivo</span>
-  <h2 id="h-onde">Oito arquivos de uma semana de reunião. Para que pasta vai cada um?</h2>
-  <p class="intro">A pergunta que decide não é “que tipo de arquivo é”, é <strong>“em que estado ele está, e quem pode mexer nele”</strong>.</p>
-  <div class="qz" id="ondeQuiz"></div>
-  <p class="qz-score" id="ondeScore" aria-live="polite"></p>
+  <h2 id="h-onde">Oito arquivos de uma semana de reunião. Onde mora cada um?</h2>
+  <p class="intro">A pasta tem quatro tipos de lugar, e cada tipo responde uma pergunta: <strong>é a prova do que aconteceu? é o que o Claude usa para escrever? é a ata no caminho da aprovação? ou é o que saiu de uso?</strong> Descubra o tipo primeiro, e a pasta vem junto. Um arquivo por vez; a pasta, ao lado, vai se enchendo.</p>
+  <div class="on-grid">
+    <div class="on-card">
+      <div class="on-top"><span class="eyebrow" id="onLab">Arquivo 1 de 8</span><span class="qz-score" id="onScore" aria-live="polite"></span></div>
+      <p class="on-file" id="onFile"></p>
+      <div class="on-grps" id="onGrps"></div>
+      <div class="qz-fb" id="onFb" hidden aria-live="polite"></div>
+      <div class="nav"><button type="button" class="btn primary" id="onNext" disabled>Próximo arquivo →</button></div>
+    </div>
+    <div class="pt-tree" id="onTree" aria-label="A pasta, enchendo"></div>
+  </div>
 </section>
 
 <!-- 7 -->
@@ -654,7 +681,7 @@ Antes de mexer em qualquer coisa, me mostre a lista do que vai criar e espere o 
   stepper(ST.length, document.getElementById('stPrev'), document.getElementById('stNext'), document.getElementById('stLab'), 'Passo', function (k) {
     var s = ST[k - 1], p = BOX[s.b];
     stBoxes.forEach(function (g) { g.classList.toggle('agora', +g.dataset.st === s.b); });
-    stTok.setAttribute('transform', 'translate(' + (p[0] + 12) + ',' + (p[1] + 54) + ')');
+    stTok.setAttribute('transform', 'translate(' + (p[0] + 12) + ',' + (p[1] + 72) + ')');
     document.getElementById('stTokT').textContent = s.tok;
     document.getElementById('stClaude').className = 'st-chip' + (s.c ? ' on' : '');
     document.getElementById('stVoce').className = 'st-chip' + (s.v ? ' on' : '');
@@ -682,17 +709,69 @@ Antes de mexer em qualquer coisa, me mostre a lista do que vai criar e espere o 
   [nmD, nmDoc, nmT].forEach(function (i) { i.addEventListener('change', nm); });
   nm();
 
-  /* 6 · onde mora */
-  quiz(document.getElementById('ondeQuiz'), document.getElementById('ondeScore'), [
-    { s: 'A transcrição da reunião de ontem, do jeito que o gravador entregou.', a: 'bru', why: 'É a prova do que foi dito. Fica separada, e ninguém edita.' },
-    { s: 'A ata que o Claude acabou de gerar, que você ainda não leu.', a: 'val', why: 'Tudo o que o Claude gera cai aqui primeiro, esperando o seu OK.' },
-    { s: 'A ata que você leu, corrigiu uma vírgula e liberou para o comitê.', a: 'apr', why: 'Aprovar é mover. É a única pasta que circula.' },
-    { s: 'O print da chamada com os participantes da reunião.', a: 'evi', why: 'Prova visual, com a mesma raiz de nome da ata e um número no fim.' },
-    { s: 'O conteúdo da ata em texto simples, que você revisa antes de virar documento.', a: 'fon', why: 'O conteúdo revisável de cada ata mora em fontes/, com a data no nome.' },
-    { s: 'A lista de quem é quem, com todos os jeitos como cada nome aparece na transcrição.', a: 'fon', why: 'Uma lista só, em fontes/, que vale para todas as atas. Veja <a href="./claude-code--referencia.html">arquivo de referência</a>.' },
-    { s: 'A ata de exemplo, com a cara que toda ata precisa ter.', a: 'mod', why: 'O padrão que toda ata segue. Veja <a href="./claude-code--modelo.html">modelo</a>.' },
-    { s: 'O modelo que valia até agosto, antes de o comitê pedir um campo novo.', a: 'ver', why: 'Guardado e fora do caminho, para o Claude não tomá-lo como padrão.' }
-  ], [['bru', 'brutas/'], ['fon', 'fontes/'], ['mod', 'modelo/'], ['val', 'em-validacao/'], ['apr', 'aprovadas/'], ['evi', 'evidencias/'], ['ver', '_versoes-anteriores/']], 'repare que a pergunta nunca foi o tipo do arquivo: foi o estado dele.');
+  /* 6 · onde mora: quatro tipos de lugar, um arquivo por vez */
+  var GR = [
+    { t: 'É a prova', d: 'ninguém edita', f: [['bru', 'reunioes/brutas/'], ['evi', 'atas/evidencias/']] },
+    { t: 'O Claude usa para escrever', d: 'o que ele consulta', f: [['mod', 'atas/modelo/'], ['fon', 'atas/fontes/']] },
+    { t: 'A ata no caminho', d: 'o estado da aprovação', f: [['val', 'atas/em-validacao/'], ['apr', 'atas/aprovadas/']] },
+    { t: 'Saiu de uso', d: 'guardado, fora do caminho', f: [['ver', 'atas/_versoes-anteriores/']] }
+  ];
+  var ON = [
+    { s: 'A transcrição da reunião de ontem, do jeito que o gravador entregou.', n: '2026-09-21_transcricao.txt', a: 'bru', why: 'É a prova do que foi dito. Tudo sai dela, e ninguém edita.' },
+    { s: 'A ata que o Claude acabou de gerar, e que você ainda não leu.', n: '2026-09-21_ATA_Semanal_orcamento.docx', a: 'val', why: 'Tudo o que o Claude gera cai aqui primeiro, esperando o seu OK.' },
+    { s: 'A ata que você leu, corrigiu uma vírgula e liberou para o comitê.', n: '2026-09-14_ATA_Semanal_cronograma.pdf', a: 'apr', why: 'Aprovar é mover o arquivo para cá. É a única pasta que circula.' },
+    { s: 'O print da chamada, com os participantes da reunião.', n: '2026-09-21_EVIDENCIA_Semanal_orcamento_01.png', a: 'evi', why: 'É prova também: mostra quem estava. Leva a mesma raiz de nome da ata, com um número no fim.' },
+    { s: 'O conteúdo da ata em texto simples, que você revisa antes de virar documento.', n: '2026-09-21-orcamento.md', a: 'fon', why: 'É o que o Claude escreve a partir da bruta, e o que ele usa para gerar o documento. Corrigir um fato é corrigir aqui.' },
+    { s: 'A lista de quem é quem, com todos os jeitos como cada nome aparece na transcrição.', n: 'pessoas.md', a: 'fon', why: 'O Claude consulta para acertar os nomes, e ela vale para todas as atas. Mais em <a href="./claude-code--referencia.html">referência</a>.' },
+    { s: 'A ata de exemplo, com a cara que toda ata precisa ter.', n: 'ata-modelo.docx', a: 'mod', why: 'O Claude segue o modelo em vez de adivinhar o formato. Mais em <a href="./claude-code--modelo.html">modelo</a>.' },
+    { s: 'O modelo que valia até agosto, antes de o comitê pedir um campo novo.', n: 'ata-modelo-ate-agosto.docx', a: 'ver', why: 'Guardado, para quem precisar consultar, e fora do caminho, para o Claude não tomá-lo como padrão.' }
+  ];
+  var ONAME = {}, OGRP = {};
+  GR.forEach(function (g, gi) { g.f.forEach(function (f) { ONAME[f[0]] = f[1]; OGRP[f[0]] = gi; }); });
+  var TREE = [[0, 'reunioes/', 'dir'], [1, 'brutas/', 'dir', 'bru'], [0, 'atas/', 'dir'], [1, 'modelo/', 'dir', 'mod'], [1, 'fontes/', 'dir', 'fon'], [1, 'em-validacao/', 'dir', 'val'], [1, 'aprovadas/', 'dir', 'apr'], [1, 'evidencias/', 'dir', 'evi'], [1, '_versoes-anteriores/', 'dir', 'ver']];
+  var onCur = 0, onDone = [], onHits = 0, onAnswered = false;
+  function onTree(hl) {
+    document.getElementById('onTree').innerHTML = TREE.map(function (r) {
+      var k = r[3], row = '<div class="pt-row d' + r[0] + ' dir' + (k && k === hl ? ' agora' : '') + '"><span class="nm">' + r[1] + '</span>' + (k ? '<span class="gt">' + GR[OGRP[k]].t.toLowerCase() + '</span>' : '') + '</div>';
+      onDone.forEach(function (i) { if (ON[i].a === k) row += '<div class="pt-row d2 chegou"><span class="nm">' + ON[i].n + '</span></div>'; });
+      return row;
+    }).join('');
+  }
+  function onRender() {
+    var q = ON[onCur]; onAnswered = false;
+    document.getElementById('onLab').textContent = 'Arquivo ' + (onCur + 1) + ' de ' + ON.length;
+    document.getElementById('onFile').textContent = q.s;
+    document.getElementById('onGrps').innerHTML = GR.map(function (g) {
+      return '<div class="on-grp"><span class="on-gl"><b>' + g.t + '</b> · ' + g.d + '</span><div class="on-opts" role="group" aria-label="' + g.t + '">' + g.f.map(function (f) { return '<button type="button" data-on="' + f[0] + '" aria-pressed="false">' + f[1] + '</button>'; }).join('') + '</div></div>';
+    }).join('');
+    document.getElementById('onFb').hidden = true;
+    var nx = document.getElementById('onNext'); nx.disabled = true; nx.textContent = onCur === ON.length - 1 ? 'Ver a pasta pronta' : 'Próximo arquivo →';
+    onTree(null);
+  }
+  document.getElementById('onGrps').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-on]'); if (!b || onAnswered) return;
+    var q = ON[onCur], ok = b.dataset.on === q.a; onAnswered = true;
+    var bs = document.querySelectorAll('#onGrps [data-on]');
+    bs.forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); x.disabled = true; if (!ok && x.dataset.on === q.a) x.classList.add('certa'); });
+    if (ok) onHits++;
+    onDone.push(onCur);
+    var fb = document.getElementById('onFb'); fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+    var mesmoTipo = !ok && OGRP[b.dataset.on] === OGRP[q.a];
+    fb.innerHTML = '<b>' + (ok ? 'Isso. ' : (mesmoTipo ? 'O tipo está certo, a pasta não: mora em ' : 'Mora em ') + ONAME[q.a] + '. ') + '</b>' + (ok || mesmoTipo ? '' : 'É do tipo “' + GR[OGRP[q.a]].t.toLowerCase() + '”. ') + q.why;
+    document.getElementById('onScore').textContent = onDone.length + ' de ' + ON.length + ' · ' + onHits + ' no lugar certo';
+    document.getElementById('onNext').disabled = false;
+    onTree(q.a);
+  });
+  document.getElementById('onNext').addEventListener('click', function () {
+    if (onCur < ON.length - 1) { onCur++; onRender(); return; }
+    if (this.textContent === 'Recomeçar ↺') { onCur = 0; onDone = []; onHits = 0; document.getElementById('onScore').textContent = ''; onRender(); return; }
+    document.getElementById('onLab').textContent = 'A pasta pronta';
+    document.getElementById('onFile').textContent = 'Os oito arquivos no lugar. Repare que nenhuma resposta dependeu do tipo de arquivo (.txt, .docx, .png): dependeu do papel dele. Prova, insumo, caminho ou fora de uso.';
+    document.getElementById('onGrps').innerHTML = ''; document.getElementById('onFb').hidden = true;
+    this.textContent = 'Recomeçar ↺';
+    onTree(null);
+  });
+  onRender();
 
   /* 7 · as 22 atas (datas e assuntos inventados; os totais são os medidos) */
   var ASS = ['abertura', 'cronograma', 'equipe', 'orcamento', 'levantamento', 'capacitacao', 'riscos', 'comunicacao'];
