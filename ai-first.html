@@ -296,9 +296,31 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 }
 @media (max-width: 520px) { .story, .stairs, .hub, .mini { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .bar-t, .lab-v, .flow li, .chap, .cy-box rect, .cy-arr, .back { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
 </style>
 
 <div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
 
 <header class="hero">
   <nav class="famhead" aria-label="Família AI First">
@@ -313,22 +335,6 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     <a href="#mapa">O mapa da família</a><a href="#s-encosta">Onde a IA encosta</a><a href="#s-tempo">O seu tempo</a><a href="#s-quiz">Ilha ou trilho</a><a href="#s-loop">O loop</a><a href="#s-camadas">Do que um loop é feito</a><a href="#s-ciclo">O ciclo do contexto</a><a href="#s-historia">Um loop fechado</a><a href="#s-sozinha">Trabalhar sozinha</a><a href="#s-escada">Por onde começar</a><a href="#s-conta">Quando paga</a>
   </nav>
 </header>
-
-<!-- mapa -->
-<section class="sec" id="mapa" aria-labelledby="h-mapa">
-  <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Cinco pilares e um método, cada um com página própria</h2>
-  <p class="intro">Esta página é a visão geral: o que muda quando a IA entra no desenho. <strong>Cada pilar abaixo é uma peça do desenho, e tem a sua página.</strong> Os cinco formam um ciclo: o que a medição ensina volta para o registro. O IPO é o método para abrir um processo em passos antes de redesenhar.</p>
-  <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">5.1 · Captura · pilar 1 de 5</span><h3>O que não vira registro não existe</h3><p>A IA só trabalha com o que está escrito. O que vive na conversa é invisível para ela, e para quem começa amanhã.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três gavetas</li><li>do corredor ao registro</li><li>a pergunta das férias</li></ul><a class="fmap-go" href="./ai-first--captura.html">abrir 5.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">5.2 · Contexto · pilar 2 de 5</span><h3>Resultado ruim é falta de contexto</h3><p>Quando a resposta volta genérica, quase sempre faltou o que só quem trabalha aqui sabe.</p><span class="fmap-lab">Lá você encontra</span><ul><li>o mesmo comunicado, sem e com contexto</li><li>os quatro campos da casa</li><li>antes de culpar a ferramenta</li></ul><a class="fmap-go" href="./ai-first--contexto.html">abrir 5.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">5.3 · Execução · pilar 3 de 5</span><h3>Quebrar em fases e conferir entre elas</h3><p>Em fases, com alguém conferindo entre elas, o erro aparece cedo e sai barato.</p><span class="fmap-lab">Lá você encontra</span><ul><li>onde o erro aparece</li><li>quem executa, quem confere</li><li>o plano antes de gerar</li></ul><a class="fmap-go" href="./ai-first--execucao.html">abrir 5.3 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">5.4 · Memória · pilar 4 de 5</span><h3>Toda correção vira regra</h3><p>A correção precisa morar onde é lida na hora de fazer. Quase nunca é o manual.</p><span class="fmap-lab">Lá você encontra</span><ul><li>o erro que volta toda semana</li><li>a linha de correção</li><li>onde a correção mora</li></ul><a class="fmap-go" href="./ai-first--memoria.html">abrir 5.4 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">5.5 · Medição · pilar 5 de 5</span><h3>Nada começa sem quatro campos</h3><p>Em que ajuda, qual é o número, quanto é hoje, quanto em sessenta dias. Sem os quatro, é vontade, não projeto.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a ficha preenchida ao vivo</li><li>um de cada destino</li><li>os sessenta dias</li></ul><a class="fmap-go" href="./ai-first--medicao.html">abrir 5.5 →</a></div>
-    <div class="fmap-card metodo"><span class="fmap-n">5.6 · IPO · método</span><h3>Entrada, processo, saída</h3><p>Escrever o que chega, o que se faz e o que sai, com o tempo de cada passo, vira número que se defende.</p><span class="fmap-lab">Lá você encontra</span><ul><li>monte o seu</li><li>onde o tempo vaza</li><li>quanto vale</li></ul><a class="fmap-go" href="./ai-first--ipo.html">abrir 5.6 →</a></div>
-  </div>
-</section>
-<!-- /mapa -->
 
 <!-- 1 -->
 <section class="sec" id="s-encosta" aria-labelledby="h-encosta">
@@ -569,6 +575,13 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <a class="famfoot-next" href="./ai-first--captura.html"><span>próxima →</span><b>5.1 · O que não vira registro não existe</b></a>
 </nav>
 <!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
 </div>
 
 <script>

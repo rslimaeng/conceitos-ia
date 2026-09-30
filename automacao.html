@@ -241,9 +241,31 @@ a { color: var(--accent); }
 }
 @media (max-width: 520px) { .gt { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .dy-mk, .ch-bar .fill { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
 </style>
 
 <div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
 
 <header class="hero">
   <nav class="famhead" aria-label="Família Automação">
@@ -258,19 +280,6 @@ a { color: var(--accent); }
     <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O gatilho</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Fluxo ou agente</a>
   </nav>
 </header>
-
-<!-- mapa -->
-<section class="sec" id="mapa" aria-labelledby="h-mapa">
-  <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Três peças de quando dois sistemas conversam</h2>
-  <p class="intro">Esta página é a visão geral: toda automação cabe numa frase, <strong>quando, faz, para</strong>. As três páginas abaixo são as peças que aparecem quando um sistema fala com outro.</p>
-  <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">7.1 · API · 1 de 3</span><h3>API</h3><p>Um sistema pedindo coisas a outro por um balcão com regras: o pedido, o verbo, e o número que volta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro verbos</li><li>faça um pedido</li><li>o crachá</li></ul><a class="fmap-go" href="./automacao--api.html">abrir 7.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">7.2 · Webhook · 2 de 3</span><h3>Webhook</h3><p>Em vez de perguntar toda hora se chegou, você é avisado quando acontece.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a campainha</li><li>o que chega</li><li>relógio ou aviso</li></ul><a class="fmap-go" href="./automacao--webhook.html">abrir 7.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">7.3 · JSON · 3 de 3</span><h3>JSON</h3><p>A ficha que os sistemas trocam, e por que ela precisa dizer se cada coisa é palavra ou quantidade.</p><span class="fmap-lab">Lá você encontra</span><ul><li>cinco tipos de linha</li><li>quando 10 + 5 dá 105</li><li>o erro que não avisa</li></ul><a class="fmap-go" href="./automacao--json.html">abrir 7.3 →</a></div>
-  </div>
-</section>
-<!-- /mapa -->
 
 <!-- 1 -->
 <section class="sec" id="s-frase" aria-labelledby="h-frase">
@@ -439,6 +448,13 @@ a { color: var(--accent); }
   <a class="famfoot-next" href="./automacao--api.html"><span>próxima →</span><b>7.1 · API</b></a>
 </nav>
 <!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
 </div>
 
 <script>

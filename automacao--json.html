@@ -241,9 +241,31 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 }
 @media (max-width: 520px) { .jt-cards { grid-template-columns: 1fr; } .js-val { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .jl-it { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
 </style>
 
 <div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
 
 <header class="hero">
   <nav class="famhead" aria-label="Família Automação">
@@ -422,6 +444,13 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <a class="famfoot-next" href="./automacao.html"><span>volta ao começo ↺</span><b>Visão geral · Pensar como automação</b></a>
 </nav>
 <!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
 </div>
 
 <script>

@@ -174,9 +174,31 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
   .ad-cap dd { margin-bottom: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .ad-map .st rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
 </style>
 
 <div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
 
 <header class="hero">
   <nav class="famhead" aria-label="Família Limites da IA">
@@ -191,19 +213,6 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
     <a href="#mapa">O mapa da família</a><a href="#s-momento">Antes, durante, depois</a><a href="#s-qual">Qual limite é esse</a><a href="#s-bolso">Três gestos de bolso</a>
   </nav>
 </header>
-
-<!-- mapa -->
-<section class="sec" id="mapa" aria-labelledby="h-mapa">
-  <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Três limites, cada um com página própria</h2>
-  <p class="intro">Esta página é a visão geral. Três limites valem para qualquer ferramenta, e cada um tem a sua página: <strong>o que ela enxerga</strong>, <strong>o que ela inventa quando não enxerga</strong> e <strong>o que pode chegar até ela</strong>.</p>
-  <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">3.1 · Janela de contexto · 1 de 3</span><h3>Janela de contexto</h3><p>Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e a conversa longa enche a mesa sozinha.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a mesa enchendo</li><li>lembrar ou recomeçar</li><li>chat ou projeto</li></ul><a class="fmap-go" href="./limites-da-ia--janela-de-contexto.html">abrir 3.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">3.2 · Alucinação · 2 de 3</span><h3>Alucinação</h3><p>Quando a informação não está no que ela enxerga, ela continua escrevendo com a mesma fluência. Fluência não é evidência.</p><span class="fmap-lab">Lá você encontra</span><ul><li>caça ao erro</li><li>quatro jeitos de errar</li><li>a conferência de trinta segundos</li></ul><a class="fmap-go" href="./limites-da-ia--alucinacao.html">abrir 3.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">3.3 · O que pode subir · 3 de 3</span><h3>O que pode subir para a IA</h3><p>A regra é sobre o dado, não sobre a ferramenta. Quase todo documento só precisa perder a identificação para entrar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três caixas</li><li>o semáforo</li><li>antes de anexar</li></ul><a class="fmap-go" href="./limites-da-ia--o-que-pode-subir.html">abrir 3.3 →</a></div>
-  </div>
-</section>
-<!-- /mapa -->
 
 <section class="sec" id="s-momento" aria-labelledby="h-momento">
   <span class="eyebrow">Antes, durante, depois</span>
@@ -268,6 +277,13 @@ Antes de usar a resposta: número, nome próprio e causa, conferidos contra algu
   <a class="famfoot-next" href="./limites-da-ia--janela-de-contexto.html"><span>próxima →</span><b>3.1 · Janela de contexto</b></a>
 </nav>
 <!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
 </div>
 
 <script>
