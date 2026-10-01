@@ -282,6 +282,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <div class="panel" id="acPanel" aria-live="polite"></div>
   </div>
   <p class="hint">A regra prática: o trabalho está dentro da conversa? Conversa. Repete com as mesmas regras? Projeto. Está em arquivo, numa pasta? Pasta. Precisa continuar rodando sem você? Rotina. Pare na primeira que der sim: subir sem precisar custa configuração e não devolve nada. Por trás de cada anel está a diferença entre <a href="./llm-e-harness.html">o modelo e o sistema em volta dele</a>.</p>
+  <p class="hint">Ligar um conector não sobe o anel: o que sobe é ela mexer nos seus arquivos e terminar num entregável, e não de onde veio o dado. Os casos para classificar estão em <a href="./assistente--conector.html#s-tipo">conector: ter um conector no meio não muda o tipo de trabalho</a>.</p>
 </section>
 
 <!-- 2 -->
@@ -292,6 +293,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <div class="mp" id="mpMap"></div>
   <div class="panel" id="mpPanel" aria-live="polite"></div>
   <p class="hint">Um exemplo de como o nome muda: as instruções do trabalho são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
+  <div class="card"><h3>O perfil está por baixo de todas as outras camadas</h3><p>As instruções gerais da conta, o perfil e as preferências, entram em toda conversa de todos os trabalhos. <strong>Uma linha pensada para um trabalho só, escrita no perfil, aparece em todos.</strong></p></div>
   <p class="punch">Nas três primeiras colunas, ela lê ou busca o que precisa. Na quarta, <em>ela não lê nada</em>: a tranca tira a decisão de quem lê.</p>
 </section>
 
@@ -351,19 +353,21 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="intro">Numa equipe, há o regulamento assinado, o quadro de avisos que muda toda semana e a lembrança de cada um sobre a última reunião: só o primeiro você pode cobrar. Com a IA, três coisas parecem a mesma e moram em lugares diferentes. <strong>Regra prescreve comportamento e fica. Fato descreve algo que pode mudar. Lembrança é o resumo que a própria IA faz das conversas.</strong></p>
   <div class="tablewrap"><table class="vtable">
     <tr><th></th><th>A instrução</th><th>O caderno de fatos</th><th>A memória automática</th></tr>
-    <tr><td>Quem escreve</td><td>Você, linha por linha</td><td>Você, ou ela quando você diz “lembre disso”</td><td>Ela, resumindo sozinha</td></tr>
+    <tr><td>Quem escreve</td><td>Você, linha por linha</td><td>Você; quando você diz “lembre disso”, ela devolve a linha pronta</td><td>Ela, resumindo sozinha</td></tr>
     <tr><td>O que guarda</td><td>“sempre”, “nunca”, “antes de X, faça Y”</td><td>status, contato, decisão tomada, data</td><td>o que ela achou que importava</td></tr>
     <tr><td>Muda</td><td>quando você muda de ideia</td><td>toda semana</td><td>sem você ver</td></tr>
+    <tr><td>Quem lê</td><td>Quem divide o projeto com você, quando é a instrução do projeto</td><td>Quem tem acesso ao arquivo</td><td>Só você: não chega a quem divide o projeto</td></tr>
     <tr><td>Serve para regra crítica?</td><td>Sim: está lá, igual, toda vez</td><td>Não: é fato, não comportamento</td><td>Não: pode não trazer a linha certa na hora certa</td></tr>
   </table></div>
+  <p class="hint">Dá para ver na tela: em agosto de 2026, o painel da memória de um projeto no Claude vinha marcado “Apenas você”. <strong>Quem divide o projeto lê as mesmas instruções, mas não a sua memória.</strong> O que o time inteiro precisa seguir não pode morar nela.</p>
   <p class="punch">Memória é o que ela lembrou. <em>Instrução é o que você mandou.</em></p>
   <span class="eyebrow">Regra ou fato? Duas perguntas: prescreve comportamento? Descreve algo que pode mudar?</span>
   <div class="qz" id="rfQuiz"></div>
   <p class="qz-score" id="rfScore" aria-live="polite"></p>
   <div class="copy">
-    <div class="copy-head"><span class="eyebrow">As duas linhas que ligam um caderno de fatos · vão no arquivo de regras</span><button type="button" class="btn" data-copy="mmLines">Copiar</button></div>
-<pre id="mmLines">No início de toda sessão, leia o <i>[caderno de fatos]</i> antes de responder, e use o que estiver lá sem anunciar que leu.
-Quando eu disser "lembre disso", escreva no <i>[caderno de fatos]</i> na hora e me confirme o que escreveu. Se não souber se é regra ou fato, pergunte antes.</pre>
+    <div class="copy-head"><span class="eyebrow">As duas linhas que ligam um caderno de fatos · vão na instrução do projeto</span><button type="button" class="btn" data-copy="mmLines">Copiar</button></div>
+<pre id="mmLines">No início da conversa, leia o arquivo <i>[caderno de fatos]</i> anexado ao projeto antes de responder, e use o que estiver lá sem anunciar que leu.
+Quando eu disser "lembre disso", me devolva a linha pronta para eu atualizar o arquivo. Se não souber se é regra ou fato, pergunte antes.</pre>
   </div>
 </section>
 
@@ -393,6 +397,7 @@ Quando eu disser "lembre disso", escreva no <i>[caderno de fatos]</i> na hora e 
     <div class="card"><h3>Um arquivo que nunca é anexado</h3><p>Não é “cuidado com esse arquivo”: ele não está na pasta que a IA lê. É a tranca mais barata, e a mais esquecida.</p></div>
   </div>
   <p class="hint">Nenhuma das três é uma frase escrita para a IA. Todas mudam o caminho, não a instrução. E o erro existe dos dois lados: chamar de tranca o que é capricho trava o trabalho, porque toda tranca cobra uma etapa.</p>
+  <p class="hint"><strong>Se você usa a IA numa pasta:</strong> lá existe o gancho, uma ação que a própria ferramenta dispara depois de todo arquivo salvo, sem passar pela leitura da IA. O detalhe está em <a href="./claude-code--claude-md.html#s-tirar">o manual da pasta</a>.</p>
 </section>
 
 <!-- 8 -->
@@ -419,7 +424,7 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
     <dt>Conector</dt><dd>Não é regra, é caminho: o acesso ao dado que mora em outro sistema e muda toda hora.</dd>
     <dt>Tranca</dt><dd>Uma trava fora da IA, que não lê nem decide: etapa assinada, botão com alçada, arquivo fora da pasta.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes, nunca e fora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
+  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes, nunca e fora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. O comportamento da memória do projeto foi visto na tela em agosto de 2026 e pode mudar com a versão. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
 </section>
 
 <!-- rodape -->

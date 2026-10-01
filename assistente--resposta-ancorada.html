@@ -212,6 +212,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .ps-q .l { font-family: var(--font-mono); font-size: 13px; border-radius: 4px; text-align: center; padding: 2px 0; border: 1px solid; }
 .ps-q .l.y { color: var(--ok-texto); border-color: var(--ok); background: var(--ok-soft); }
 .ps-q .l.n { color: var(--atencao-texto); border-color: var(--atencao); background: var(--atencao-soft); }
+/* reforço: a versão superada, a tabela que não se busca */
+.ra-sub { font-size: 1.25rem; }
+.ra-old .card { min-width: 0; }
+.ra-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.card.focal .ra-tag { color: var(--accent); }
 
 @media (max-width: 860px) {
   .two, .three, .take { grid-template-columns: 1fr; }
@@ -356,7 +361,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-parecidos" aria-labelledby="h-parecidos">
   <span class="eyebrow">Material demais</span>
   <h2 id="h-parecidos">O trecho certo disputa com os parecidos</h2>
-  <p class="intro">Achar um contrato num arquivo morto cheio de contratos do mesmo fornecedor é mais difícil do que numa pasta com três: o problema não é o volume, é a semelhança. O instinto é subir o manual inteiro para a ferramenta “para ela ter contexto” (o pano de fundo do assunto). Mas ela não lê o arquivo de ponta a ponta: <strong>procura o trecho que parece responder</strong>. O problema não são as páginas que não têm nada a ver. São as parecidas. Arraste.</p>
+  <p class="intro">Achar um contrato num arquivo morto cheio de contratos do mesmo fornecedor é mais difícil do que numa pasta com três: o problema não é o volume, é a semelhança. O instinto é subir o manual inteiro para a ferramenta “para ela ter contexto” (o pano de fundo do assunto). Quando o material é grande, ela não lê de ponta a ponta: <strong>procura o trecho que parece responder.</strong> Arraste.</p>
   <div class="tp-wrap">
     <div class="tp-grid" id="tpGrid" role="img" aria-label="Páginas carregadas: a que responde, as parecidas e as que não têm a ver"></div>
     <div class="card">
@@ -367,7 +372,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     </div>
   </div>
   <div class="tp-leg" aria-hidden="true"><span><i class="r"></i>o trecho que responde</span><span><i class="a"></i>parecido, de outro caso</span><span><i></i>não tem a ver</span></div>
-  <p class="hint">A forma, não a medida: a proporção de páginas parecidas muda de manual para manual. O que não muda é a direção. E quando o material guardado num projeto (a área da ferramenta que junta os arquivos e as instruções de um trabalho) passa do que cabe de uma vez, a ferramenta passa a procurar trechos sozinha, sem avisar quando virou. Mais sobre o espaço em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (quanto texto ela consegue ter à vista de uma vez).</p>
+  <p class="hint">A forma, não a medida: a proporção de parecidos muda de manual para manual; a direção, não. Um projeto é a área da ferramenta que junta os arquivos e as instruções de um trabalho. Quando o que está guardado nele passa do que cabe de uma vez, ela começa a procurar trechos sem avisar. Mais em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+  <h3 class="ra-sub">O parecido mais perigoso é a versão antiga do mesmo documento</h3>
+  <div class="two ra-old">
+    <div class="card"><span class="ra-tag">o que ficou na base</span><p>A tabela de preços nova subiu, e a do trimestre passado continuou lá, com o mesmo título e os mesmos códigos. <strong>Só os números mudaram.</strong> Ela traz o trecho de uma ou de outra, e a proposta sai com preço vencido.</p></div>
+    <div class="card focal"><span class="ra-tag">o conserto</span><p><strong>Quando um documento é substituído, o antigo sai da base no mesmo dia.</strong> Se precisar guardar, guarde fora do que ela consulta.</p></div>
+  </div>
 </section>
 
 <!-- 6 -->
@@ -381,6 +391,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <div class="card"><h3>Antes de subir, limpe</h3><p>Tire capa, rodapé repetido e índice com número de página. Uma seção por assunto, com título: é pelo título que ela acha o trecho. Se você não diz o assunto de uma seção em cinco palavras, ela tem dois assuntos dentro.</p></div>
     <div class="card focal"><h3>Declare o que o arquivo não cobre</h3><p>Uma seção final chamada “o que este documento não responde”. É nela que a IA se apoia para dizer não. Sem ela, o buraco fica invisível também para ela. E ponha a data de vigência na primeira linha: base envelhece sem avisar.</p></div>
   </div>
+  <h3 class="ra-sub">Dado de resposta exata vai em tabela, não na busca</h3>
+  <p class="hint">Procurar o trecho parecido funciona para texto corrido: política, manual, ata. <strong>Para preço, estoque ou prazo de um código, “parecido” é erro:</strong> o trecho mais parecido com o B-215 é o B-216. Dado de resposta única sobe como planilha, que ela lê linha por linha, e a pergunta pede a linha pelo código. Como conferir essa leitura: <a href="./dados--planilha.html">analisar planilha com IA</a>.</p>
 </section>
 
 <!-- 7 -->
@@ -395,6 +407,8 @@ Não resuma e não reescreva o trecho. Se alguma afirmação não tem trecho que
   </div>
   <div class="qz" id="leuQuiz"></div>
   <p class="qz-score" id="leuScore" aria-live="polite"></p>
+  <p class="hint">Quando junta vários arquivos sobre o mesmo assunto, confira o material antes de pedir a análise: onde eles discordam, o que nenhum cobre e que lado nenhum mostra. Os três pedidos prontos estão em <a href="./dados--pesquisa.html#s-conferir">conferir as fontes entre si</a>.</p>
+  <p class="hint">Em planilha, a citação não é um trecho entre aspas: é a coluna e a linha de onde saiu cada número. O pedido pronto está em <a href="./dados--planilha.html#s-endereco">em planilha, a citação é a coluna e a linha</a>.</p>
 </section>
 
 <!-- 8 -->

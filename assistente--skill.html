@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 4.3. Peças: stepper com diagrama da etiqueta que abre o conteúdo, instrução × skill no pedido errado, pasta com gavetas por exemplo, quiz da gaveta, montador de etiqueta com teste de acionamento, tabelas de comparação, prova pela citação, o esqueleto em quatro partes, skill com a receita copiada × skill fina. */
+/* Layout: página de conceito, família 4.3. Peças: stepper com diagrama da etiqueta que abre o conteúdo, instrução × skill no pedido errado, pasta com gavetas por exemplo, quiz da gaveta, montador de etiqueta com teste de acionamento, tabelas de comparação, prova pela citação, o esqueleto em quatro partes, o passo 04 na sequência de 01 a 03, o diagnóstico antes da correção. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -203,6 +203,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .et-test { display: grid; gap: 8px; }
 .et-test mark { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 3px; }
 .sk-cmd { font-family: var(--font-mono); font-size: .92rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+/* reforço: projeto × skill, o passo 04 na sequência, o diagnóstico */
+.sk-pair .card { min-width: 0; }
+.sk-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 @media (max-width: 860px) {
   .two, .three, .take { grid-template-columns: 1fr; }
@@ -362,6 +365,12 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <button type="button" data-pr="cmd" aria-pressed="false">× comando</button>
   </div>
   <div class="tablewrap" id="prOut" aria-live="polite"></div>
+  <h3>E o projeto? Ele guarda o quê; a skill guarda o como</h3>
+  <div class="two sk-pair">
+    <div class="card"><span class="eyebrow">projeto · informação</span><p>Os documentos, as regras da casa, o histórico daquele trabalho. Responde <strong>o quê</strong>: quais são os clientes, qual tabela vale, o que já se decidiu. Vale ali dentro.</p></div>
+    <div class="card focal"><span class="eyebrow">skill · procedimento</span><p>Os passos de uma tarefa, com as exceções no lugar. Responde <strong>como</strong>: em que ordem, com que conferência, em que formato. Por isso não carrega o que muda toda semana (status, clientes do mês, o que já se decidiu). A norma que o passo a passo manda consultar vai junto, na gaveta.</p></div>
+  </div>
+  <p class="hint">O teste é a frase: ela descreve o trabalho de agora ou manda fazer alguma coisa? A que descreve vai para o projeto; a que manda fazer, para a skill.</p>
   <p class="hint">Onde cada coisa mora, no mapa completo: <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>.</p>
 </section>
 
@@ -387,10 +396,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <span class="eyebrow">Como nasce uma skill</span>
   <h2 id="h-nasce">O pior jeito de fazer uma skill é sentar para escrever uma skill</h2>
   <p class="intro">A melhor receita da cozinha industrial não nasce numa reunião: nasce do cozinheiro que fez o prato, acertou o sal e só depois escreveu. A sua área já escreveu quase todos os procedimentos: norma, checklist, o passo a passo que você explicou para quem entrou. <strong>O caminho que funciona é fazer a tarefa uma vez, junto com a IA, e só depois empacotar o que deu certo.</strong></p>
-  <div class="three">
+  <div class="three sk-steps">
     <div class="card"><span class="eyebrow">01 · faça</span><h3>A tarefa, uma vez, corrigindo</h3><p>“Faltou o frete.” “Põe em preço por milheiro.” Vá até a resposta ficar do jeito que você entregaria. As correções são o material da skill.</p></div>
     <div class="card focal"><span class="eyebrow">02 · empacote</span><h3>Peça para virar skill</h3><p>Na mesma conversa. Mandar listar as correções antes de escrever é o que impede metade delas de sumir.</p></div>
     <div class="card"><span class="eyebrow">03 · teste</span><h3>Em conversa nova, sem dizer o nome</h3><p>Peça uma tarefa parecida com as palavras do dia a dia. Se ela não entrar, o defeito está na etiqueta, não no passo a passo.</p></div>
+    <div class="card"><span class="eyebrow">04 · compare</span><h3>O mesmo pedido, com e sem a skill</h3><p>O passo 03 prova que ela abre, não que ela melhora. Rode o mesmo pedido com a skill e sem ela, e escolha qual resposta você mandaria. Os casos que ela ainda não resolve ficam listados, para ninguém confiar nela onde não serve.</p></div>
   </div>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O pedido do passo 2 · literal</span><button type="button" class="btn" data-copy="nsPrompt">Copiar</button></div>
@@ -416,7 +426,7 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
   <h2 id="h-esqueleto">Uma skill de confiança diz onde para, o que não muda e o que não é dela</h2>
   <p class="intro">Um bom procedimento operacional diz, além dos passos, onde parar para a assinatura do chefe, o que nunca se muda e o que é decisão de outro setor. Na skill, o passo a passo diz como fazer. Uma skill que roda toda semana precisa de mais quatro partes, e é nelas que moram as correções que você não quer fazer de novo. <strong>Clique em cada parte.</strong></p>
   <div class="pa-wrap">
-    <div class="pa-folder" data-name="status-semanal/SKILL.md">
+    <div class="pa-folder" data-name="status-semanal/">
       <button type="button" data-es="0" aria-pressed="true"><b>Antes de qualquer coisa</b><small>o que ler primeiro, e a lista fechada do que entra</small></button>
       <button type="button" data-es="1" aria-pressed="false"><b>Os pontos de parada</b><small>onde ela para e espera o seu OK</small></button>
       <button type="button" data-es="2" aria-pressed="false"><b>O que não pode regredir</b><small>o formato que você já aprovou</small></button>
@@ -424,14 +434,17 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
     </div>
     <div class="panel" id="esPanel" aria-live="polite"></div>
   </div>
-  <h3>Skill fina: a receita mora num lugar só</h3>
-  <p class="intro">Quando a pasta já tem um arquivo com a receita (um passo a passo que qualquer pessoa da equipe segue à mão), a skill não copia os passos: <strong>aponta para ele</strong>. Compare.</p>
-  <div class="seg" role="group" aria-label="Onde a receita mora">
-    <button type="button" data-fn="gorda" aria-pressed="true">A receita copiada na skill</button>
-    <button type="button" data-fn="fina" aria-pressed="false">A skill que aponta</button>
+  <h3>Quando a saída vem torta, pergunte por quê antes de mandar corrigir</h3>
+  <p class="intro">O reflexo é mandar consertar. Pergunte antes o motivo, e só peça análise: a resposta mostra de qual parte da skill o erro saiu. <strong>Aí a correção vai para essa parte</strong>, com o que você esperava e o que veio, em vez de virar mais uma regra solta no fim.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Diagnóstico primeiro, correção depois</span><button type="button" class="btn" data-copy="esFix">Copiar</button></div>
+<pre id="esFix"><b>1 · Só o diagnóstico</b>
+Por que você fez isto aqui: <i>[cole o trecho da saída]</i>? Não corrija nada ainda. Só analise: qual parte da skill levou a esse resultado?
+
+<b>2 · A correção</b>
+Eu esperava <i>[o que você esperava]</i>. Veio <i>[o que veio]</i>. Atualize a skill para isso não se repetir, e me mostre a linha que mudou.</pre>
   </div>
-  <div id="fnOut" aria-live="polite"></div>
-  <p class="hint">No Claude Code (o Claude que trabalha dentro de uma pasta do seu computador), a skill é uma pasta dentro do projeto ou da sua pasta de usuário, lida pelo mesmo mecanismo da etiqueta. Como ela conversa com o manual, a memória e a pasta está na família <a href="./claude-code.html">Claude Code</a>.</p>
+  <p class="hint"><strong>Se você usa a IA numa pasta:</strong> a skill mora numa pasta do projeto e, quando a pasta já tem a receita num arquivo, aponta para ele em vez de copiar os passos. Como ela conversa com o manual e a memória da pasta está na família <a href="./claude-code.html">Claude Code</a>.</p>
 </section>
 
 <!-- 9 -->
@@ -607,7 +620,7 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
   pvBtns.forEach(function (b) { b.addEventListener('click', function () { setPv(b.dataset.pv); }); });
   setPv('sem');
 
-  /* 8b · esqueleto e skill fina */
+  /* 8b · esqueleto */
   var ES = [
     { t: 'Antes de qualquer coisa', d: 'Os arquivos que ela lê primeiro, na ordem, e a confirmação da lista do que entra nesta rodada.', ex: '“Leia a memória do projeto e as atas da semana. Confirme comigo quais atas entram antes de começar.”', por: 'Sem isso, ela junta o que achar na pasta, inclusive o rascunho da semana passada.' },
     { t: 'Os pontos de parada', d: 'Os lugares onde ela para e mostra o que fez antes de seguir. Sem eles, vai da transcrição ao documento que circula sem ninguém olhar.', ex: '“Pare depois do rascunho e me mostre. Só gere o PDF com o meu OK.”', por: 'Erro pego no rascunho custa uma frase. Pego no documento que já saiu, custa uma retratação.' },
@@ -618,14 +631,6 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
   function setEs(k) { pressGroup(esBtns, function (x) { return +x.dataset.es === k; }); var e = ES[k]; esPanel.innerHTML = '<span class="eyebrow">parte ' + (k + 1) + ' de 4</span><h3>' + e.t + '</h3><p>' + e.d + '</p><p class="sk-cmd">' + e.ex + '</p><p class="hint">' + e.por + '</p>'; }
   esBtns.forEach(function (b) { b.addEventListener('click', function () { setEs(+b.dataset.es); }); });
   setEs(0);
-  var FN = {
-    gorda: '<div class="sk-mail bad"><span class="eyebrow">Duas cópias da mesma receita</span><ul><li>A skill tem os 8 passos do relatório semanal</li><li>O arquivo de instruções da pasta tem os mesmos 8 passos, para quem faz à mão</li><li>Em março alguém muda o passo 5 no arquivo da pasta. A skill continua com o passo 5 antigo</li></ul><p class="hint">As duas cópias divergem em silêncio, e ninguém sabe qual vale.</p></div>',
-    fina: '<div class="sk-mail good"><span class="eyebrow">Uma receita, dois leitores</span><ul><li>Os 8 passos moram só no arquivo de instruções da pasta</li><li>A skill diz: “a receita está lá; leia antes de começar”, e guarda só o que é dela: quando parar, o que não regride, o que não é dela</li><li>Em março o passo 5 muda num lugar só, e a pessoa e a skill leem o mesmo</li></ul><p class="hint">A skill fica curta, e a receita tem um dono.</p></div>'
-  };
-  var fnBtns = document.querySelectorAll('[data-fn]'), fnOut = document.getElementById('fnOut');
-  function setFn(k) { pressGroup(fnBtns, function (x) { return x.dataset.fn === k; }); fnOut.innerHTML = FN[k]; }
-  fnBtns.forEach(function (b) { b.addEventListener('click', function () { setFn(b.dataset.fn); }); });
-  setFn('gorda');
 })();
 </script>
 </body>

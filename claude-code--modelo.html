@@ -278,7 +278,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <span class="eyebrow">8.6 · 6 de 7</span>
   <h1>Modelo e padrão visual</h1>
   <p class="sub">O formato mora num arquivo: o Claude segue o modelo em vez de adivinhar a cada pedido.</p>
-  <p class="lead">O <strong>modelo</strong> é um documento de verdade que mostra como a saída tem de ficar: a ata de exemplo, a planilha com as colunas certas, a apresentação com os slides certos. O <strong>padrão visual</strong> diz as cores, as fontes e a logo. Os dois são arquivos guardados na pasta do projeto. Com eles ali, você para de descrever o formato em cada conversa, e <strong>a correção de formato passa a ser feita uma vez, no arquivo</strong>.</p>
+  <p class="lead">O <strong>modelo</strong> é um documento de verdade que mostra como a saída tem de ficar: a ata de exemplo, a planilha com as colunas certas, a apresentação com os slides certos. Aqui, modelo é o documento de exemplo, não o modelo de IA das outras páginas. O <strong>padrão visual</strong> diz as cores, as fontes e a logo. Os dois são arquivos guardados na pasta do projeto. Com eles ali, você para de descrever o formato em cada conversa, e <strong>a correção de formato passa a ser feita uma vez, no arquivo</strong>.</p>
   <nav class="toc" aria-label="Nesta página">
     <a href="#s-semanas">Duas semanas de atas</a><a href="#s-ata">A ata de referência</a><a href="#s-forma">Texto de um lado, forma do outro</a><a href="#s-cor">A cor pelo que ela faz</a><a href="#s-caixas">Uma caixa por decisão</a><a href="#s-abrir">Abrir o arquivo antes de entregar</a><a href="#s-melhor">A melhor ata que você já fez</a>
   </nav>
@@ -313,15 +313,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <!-- 3 -->
 <section class="sec" id="s-forma" aria-labelledby="h-forma">
   <span class="eyebrow">Texto de um lado, forma do outro</span>
-  <h2 id="h-forma">Corrigir uma ata é corrigir o texto. Mudar o formato de todas é mudar o gerador.</h2>
-  <p class="intro">É a mala direta do Word: os nomes ficam numa planilha, a carta-modelo em outro arquivo, e corrigir um endereço não mexe na diagramação da carta. O conteúdo de cada ata é um arquivo de texto simples em <code>fontes/</code>, que qualquer um revisa. Um gerador (o passo automático que transforma o texto em documento) lê esse texto e monta o <code>.docx</code> (o arquivo do Word) e o <code>.pdf</code> no formato do modelo. <strong>Como as duas coisas estão separadas, cada tipo de correção tem um lugar só.</strong> Escolha uma correção e veja o que muda.</p>
+  <h2 id="h-forma">Corrigir uma ata é corrigir o texto. Mudar o formato de todas é mudar o modelo, uma vez.</h2>
+  <p class="intro">É a mala direta do Word: os nomes ficam numa planilha, a carta-modelo em outro arquivo, e corrigir um endereço não mexe na diagramação da carta. O conteúdo de cada ata é um arquivo de texto simples em <code>fontes/</code>, que qualquer um revisa. Quem transforma esse texto em documento é um gerador: um pequeno programa que o próprio Claude escreve e deixa na pasta. Ele monta o <code>.docx</code> (o arquivo do Word) e o <code>.pdf</code> no formato do modelo. <strong>Como as duas coisas estão separadas, cada tipo de correção tem um lugar só.</strong> Escolha uma correção e veja o que muda.</p>
   <div class="seg" role="group" aria-label="Tipo de correção">
     <button type="button" data-cf="txt" aria-pressed="true">Um nome errado na ata de 19/08</button>
     <button type="button" data-cf="fmt" aria-pressed="false">Participantes em três colunas, em todas</button>
   </div>
   <div class="cf" id="cfOut">
     <div class="cf-col"><span class="eyebrow">fontes/ · o texto</span><span class="cf-f" data-f="s1">2026-08-05-reuniao.md</span><span class="cf-f" data-f="s2">2026-08-12-reuniao.md</span><span class="cf-f" data-f="s3">2026-08-19-reuniao.md</span></div>
-    <div class="cf-col cf-gen" id="cfGen"><span class="eyebrow">o gerador</span><span class="big">→</span><span class="hint">aplica o formato do modelo</span></div>
+    <div class="cf-col cf-gen" id="cfGen"><span class="eyebrow">o modelo</span><span class="big">→</span><span class="hint">o gerador aplica o formato dele</span></div>
     <div class="cf-col"><span class="eyebrow">atas prontas</span><span class="cf-f" data-f="o1">2026-08-05 .docx · .pdf</span><span class="cf-f" data-f="o2">2026-08-12 .docx · .pdf</span><span class="cf-f" data-f="o3">2026-08-19 .docx · .pdf</span></div>
   </div>
   <p class="cf-count" id="cfCount" aria-live="polite"></p>
@@ -563,8 +563,8 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
 
   /* 3 · conteúdo × forma */
   var CF = {
-    txt: { m: ['s3', 'o3'], gen: false, c: '1 arquivo de texto editado · o gerador não mudou · 1 ata refeita', t: 'Corrigir uma ata é corrigir o texto', d: 'O nome errado está no texto da reunião de 19/08. Você corrige ali, roda o gerador, e só aquela ata sai de novo. As outras duas nem são tocadas, e o formato de nenhuma muda.' },
-    fmt: { m: ['o1', 'o2', 'o3'], gen: true, c: '0 arquivo de texto editado · o gerador mudou uma vez · 3 atas refeitas', t: 'Mudar o formato de todas é mudar o gerador', d: 'Nenhum texto de reunião muda: quem estava na sala continua o mesmo. Muda a regra de como a lista vira tabela. Uma alteração, e as três atas saem com participantes em três colunas.' }
+    txt: { m: ['s3', 'o3'], gen: false, c: '1 arquivo de texto editado · o modelo não mudou · 1 ata refeita', t: 'Corrigir uma ata é corrigir o texto', d: 'O nome errado está no texto da reunião de 19/08. Você corrige ali, roda o gerador, e só aquela ata sai de novo. As outras duas nem são tocadas, e o formato de nenhuma muda.' },
+    fmt: { m: ['o1', 'o2', 'o3'], gen: true, c: '0 arquivo de texto editado · o modelo mudou uma vez · 3 atas refeitas pelo gerador', t: 'Mudar o formato de todas é mudar o modelo, uma vez', d: 'Nenhum texto de reunião muda: quem estava na sala continua o mesmo. Muda o modelo: a lista de participantes passa a ser tabela de três colunas. O gerador roda de novo e aplica a mudança, e as três atas saem com participantes em três colunas.' }
   };
   var cfBtns = document.querySelectorAll('[data-cf]');
   function setCf(k) {

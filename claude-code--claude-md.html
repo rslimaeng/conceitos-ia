@@ -322,8 +322,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
       <button type="button" data-pt="0" aria-pressed="true"><b>01</b><span>Propósito e escopo</span></button>
       <button type="button" data-pt="1" aria-pressed="false"><b>02</b><span>O que ler antes de qualquer ação</span></button>
       <button type="button" data-pt="2" aria-pressed="false"><b>03</b><span>Como o trabalho anda aqui</span></button>
-      <button type="button" data-pt="3" aria-pressed="false"><b>04</b><span>A pasta de conhecimento</span></button>
-      <button type="button" data-pt="4" aria-pressed="false"><b>05</b><span>Vínculos</span></button>
+      <button type="button" data-pt="3" aria-pressed="false"><b>04</b><span>O que tem em cada pasta</span></button>
+      <button type="button" data-pt="4" aria-pressed="false"><b>05</b><span>Onde estão os outros arquivos</span></button>
     </div>
     <div class="panel" id="ptPanel" aria-live="polite"></div>
   </div>
@@ -356,6 +356,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="intro">Formulário com campo que ninguém preenche só atrasa quem usa; na revisão, o campo sai. Aqui, a revisão é a pergunta do título, linha por linha. Se não erra, a linha sai. Se é algo que muda toda semana, não é manual: é estado, e vai para a memória. Dez linhas candidatas de um manual de projeto. <strong>O manual de usuário deste exemplo já diz “responda em português, frases curtas”.</strong></p>
   <div class="qz" id="trQuiz"></div>
   <p class="qz-score" id="trScore" aria-live="polite"></p>
+  <h3>O que o manual não consegue garantir</h3>
+  <p class="intro">O manual é texto, e texto é interpretado. Peça nele “depois de salvar um arquivo, rode o formatador” (o programa que arruma o espaçamento do arquivo): <strong>quase sempre</strong> ele roda. Para o que precisa acontecer toda vez, o Claude Code tem o <strong>gancho</strong> (hook, em inglês). É uma ação que a ferramenta executa sozinha num momento fixo, como depois de todo arquivo salvo, sem depender de o Claude lembrar.</p>
+  <div class="two">
+    <div class="card"><h3>No manual: quase sempre</h3><p>Serve para o jeito de trabalhar, o que pede julgamento, o que tolera um esquecimento de vez em quando.</p></div>
+    <div class="card focal"><h3>No gancho: sempre</h3><p>Serve para o que não pode falhar nenhuma vez. Ninguém lê nem interpreta: acontece.</p></div>
+  </div>
+  <p class="hint">Como separar o que é texto do que precisa virar trava, com exemplos fora do Claude Code: <a href="./assistente--onde-a-regra-mora.html#s-tranca">quando a regra vira trava</a>.</p>
 </section>
 
 <!-- 6 -->
@@ -401,10 +408,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <div class="cm-meter">
       <div class="card"><span class="eyebrow">linhas</span><span class="big" id="pdLin">0</span></div>
       <div class="card"><span class="eyebrow">pares em conflito</span><span class="big" id="pdCon">0</span></div>
-      <div class="card"><span class="eyebrow">lidas sem mudar nada</span><span class="big" id="pdAll">0</span></div>
+      <div class="card"><span class="eyebrow">linhas lidas à toa</span><span class="big" id="pdAll">0</span></div>
     </div>
     <div class="verdict" id="pdVer" aria-live="polite"></div>
     <p class="hint">Simulação ilustrativa: os números de linha por mês são inventados. A forma do problema não é.</p>
+  </div>
+  <div class="panel">
+    <h3>O sinal de que passou da hora: ele desobedece uma regra que está escrita</h3>
+    <p>A regra existe, está no arquivo, e mesmo assim ele faz o contrário. A reação comum é reescrever a mesma regra em letras maiúsculas, ou repeti-la mais abaixo. Antes disso, desconfie do tamanho: <strong>o manual provavelmente está longo demais, e a regra se perde no meio de tudo o que é lido junto com ela</strong>. Mais uma linha piora o problema. O remédio é a poda, e o pedido para copiar desta seção faz a primeira passada.</p>
   </div>
   <div class="two">
     <div class="card focal"><span class="eyebrow">a poda que funcionou</span><span class="big">252 → 83</span><p>Um manual foi de 252 para 83 linhas (menos 63%) numa revisão feita só para isso. O próprio arquivo registra o motivo logo depois da regra de não repetir: foi por isso que ele encolheu.</p></div>
@@ -418,15 +429,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 3. Se, sem ela, você faria alguma coisa diferente. Seja honesto: se faria igual, diga.
 4. Se contradiz outra linha do mesmo arquivo.
 Não apague nada. Me mostre a lista e eu decido o que sai, o que fica e o que vai para a memória.</pre>
-  </div>
-  <h3>Seis tropeços que fazem o manual pesar</h3>
-  <div class="three">
-    <div class="card"><h3>Tudo num arquivo só</h3><p>Um manual gigante pesa em toda conversa, inclusive nas que não precisam daquilo. O que é de um projeto vai no projeto (<a href="./claude-code--pasta.html">a pasta</a>).</p></div>
-    <div class="card"><h3>Adjetivo no lugar de regra</h3><p>“Seja preciso” não muda nada. “Nome de pessoa sai só da lista de pessoas” muda.</p></div>
-    <div class="card"><h3>O mesmo em duas camadas</h3><p>Quando as duas versões divergirem, você não controla qual delas ele obedece.</p></div>
-    <div class="card"><h3>Acrescentar e nunca tirar</h3><p>A regra nova não apaga a velha. Se as duas estão lá, as duas são lidas.</p></div>
-    <div class="card"><h3>Estado no manual</h3><p>“Estamos na fase 2”, “falta revisar o módulo 3”. Muda toda semana: é da memória.</p></div>
-    <div class="card"><h3>Corrigir só no pedido</h3><p>Funciona hoje e volta amanhã, porque a correção não foi para onde é lida.</p></div>
   </div>
 </section>
 
@@ -482,6 +484,7 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
     <dt>Camada</dt><dd>Cada um dos manuais que se somam: o do usuário (vale em qualquer pasta), o da pasta-mãe e o do projeto.</dd>
     <dt>Limiar contável</dt><dd>Regra escrita com um número que dá para conferir: “mais de 3 arquivos” em vez de “mudança grande”.</dd>
     <dt>Poda</dt><dd>A revisão do manual inteiro com a pergunta “se eu tirar, ele erra?”, para cortar o que não muda comportamento.</dd>
+    <dt>Gancho (hook)</dt><dd>Ação que o Claude Code executa sozinho num momento fixo, como depois de todo arquivo salvo. O manual molda; o gancho garante.</dd>
     <dt>Memória</dt><dd>O arquivo com o estado do trabalho, reescrito toda sessão. O manual manda ler; o manual não é ela.</dd>
   </dl>
   <p class="foot">Simplificação didática: o nome dos arquivos e onde cada camada fica podem mudar entre versões da ferramenta; a soma de cima para baixo continua. Os tamanhos (84, 270 e 102 linhas; 252 para 83; 583) foram medidos em projetos reais, sem nome; mostram a forma do problema, não uma meta de tamanho. Pastas, regras e projetos dos exemplos são inventados. Família <a href="./claude-code.html">Claude Code</a>; irmãs: <a href="./claude-code--pasta.html">pasta</a>, <a href="./claude-code--onde-paramos.html">onde paramos</a>, <a href="./claude-code--handoff.html">handoff</a>, <a href="./claude-code--referencia.html">referência</a>, <a href="./claude-code--modelo.html">modelo</a>, <a href="./claude-code--obsidian.html">Obsidian</a>.</p>
@@ -587,8 +590,8 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
     { t: 'Propósito e escopo', d: 'O que é o projeto, em poucas linhas ou numa tabela: para quem, até quando, em que estado.', s: 'Projeto: propostas comerciais da área\nPara quem: clientes novos e renovações\nVigência: 2026\nEstado: em uso' },
     { t: 'O que ler antes de qualquer ação', d: 'A lista, em ordem, começando pela memória. É o que faz a conversa chegar sabendo onde o trabalho parou.', s: 'Antes de qualquer ação, leia, nesta ordem:\n1. 00-aqui-paramos.md (onde paramos)\n2. modelos/proposta.md\n3. referencias/tabela-de-precos.md' },
     { t: 'Como o trabalho anda aqui', d: 'O que é particular deste projeto e já causou erro. É a parte que mais cresce com as correções, e a que mais precisa de poda.', s: 'Proposta nasce em rascunhos/ e só vai para enviadas/\ndepois do ok da coordenadora.\n(Uma versão de rascunho já foi para o cliente:\né por isso que esta linha existe.)' },
-    { t: 'A pasta de conhecimento', d: 'O que tem em cada subpasta, em uma linha cada. Quem abre sabe onde procurar sem listar tudo.', s: 'referencias/  tabela de preços e política de desconto\nmodelos/      a proposta em branco\nrascunhos/    o que está em andamento\nenviadas/     o que já saiu; não se edita' },
-    { t: 'Vínculos', d: 'Onde estão o manual da pasta-mãe, a memória, as decisões e as referências. O manual aponta; não copia.', s: 'Manual da área: ../CLAUDE.md\nMemória: 00-aqui-paramos.md\nDecisões: 00-decisoes.md\nPendências: 00-fios-em-aberto.md' }
+    { t: 'O que tem em cada pasta', d: 'O que tem em cada subpasta, em uma linha cada. Quem abre sabe onde procurar sem listar tudo.', s: 'referencias/  tabela de preços e política de desconto\nmodelos/      a proposta em branco\nrascunhos/    o que está em andamento\nenviadas/     o que já saiu; não se edita' },
+    { t: 'Onde estão os outros arquivos', d: 'Onde estão o manual da pasta-mãe, a memória, as decisões e as referências. O manual aponta; não copia.', s: 'Manual da área: ../CLAUDE.md\nMemória: 00-aqui-paramos.md\nDecisões: 00-decisoes.md\nPendências: 00-fios-em-aberto.md' }
   ];
   var ptBtns = document.querySelectorAll('[data-pt]');
   function setPt(k) {
@@ -620,7 +623,7 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
   /* 5 · se eu tirar */
   quiz(document.getElementById('trQuiz'), document.getElementById('trScore'), [
     { s: '“Seja sempre preciso e cuidadoso.”', a: 'sai', why: 'Tirando, ele faz igual. Adjetivo não muda comportamento.' },
-    { s: '“Mudança em mais de 3 arquivos: mostre o plano e espere o ok.”', a: 'fica', why: 'Sem ela, ele sai mexendo. Tem limiar contável e muda o que acontece.' },
+    { s: '“Preço sai só da tabela de preços vigente, em referencias/.”', a: 'fica', why: 'Sem ela, ele tira o preço da proposta antiga que achar na pasta. O caminho da tabela ele não adivinha.' },
     { s: '“Estamos na fase 2 do projeto.”', a: 'mem', why: 'É estado: na semana que vem é mentira. Vai para a memória, que é reescrita toda sessão.' },
     { s: '“Em março a sessão revisou os módulos 1 a 3 e ajustou o modelo.”', a: 'sai', why: 'É história: como foi, não como é. Fica no histórico; se algo dali ainda importa, é o estado, e o estado vai reescrito na memória.' },
     { s: '“Responda em português, em frases curtas.”', a: 'sai', why: 'Já está no manual do usuário. Aqui é duplicata: não reforça, dilui, e um dia diverge.' },

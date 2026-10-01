@@ -204,6 +204,14 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 .vs-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .punch { font-family: var(--font-body); font-size: clamp(1.25rem, 2.6vw, 1.6rem); color: var(--text); max-width: 40ch; }
 .punch em { font-style: normal; color: var(--accent); }
+/* ---- só desta peça ---- */
+.lay { display: grid; gap: 14px; border-top: 1px solid var(--border); padding-top: 20px; }
+.lay h3 { font-size: 1.35rem; }
+.lay-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.lay-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.lay-seg { flex-wrap: wrap; }
+.lay-fb[hidden] { display: none; }
+.lay .hint a { color: var(--accent); }
 
 /* E: para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
@@ -432,6 +440,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
         <li><button type="button" class="tool" role="switch" data-tool="files" aria-checked="false"><span class="t-name"><b>Arquivos do computador</b><span>arquivos</span></span><span class="sw" aria-hidden="true"></span></button></li>
         <li><button type="button" class="tool" role="switch" data-tool="terminal" aria-checked="false"><span class="t-name"><b>Terminal</b><span>executar_comando</span></span><span class="sw" aria-hidden="true"></span></button></li>
         <li><button type="button" class="tool" role="switch" data-tool="house" aria-checked="false"><span class="t-name"><b>Casa conectada</b><span>controlar_casa</span></span><span class="sw" aria-hidden="true"></span></button></li>
+        <li><button type="button" class="tool" role="switch" data-tool="code" aria-checked="false"><span class="t-name"><b>Executar código</b><span>executar_codigo</span></span><span class="sw" aria-hidden="true"></span></button></li>
       </ul>
       <p class="model-note">Modelo: <code>Opus</code>, o mesmo em qualquer configuração.</p>
     </div>
@@ -447,13 +456,27 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
         <button type="button" class="ask" data-ask="ls" aria-pressed="false">Listar a pasta</button>
         <button type="button" class="ask" data-ask="light" aria-pressed="false">Acender a luz</button>
         <button type="button" class="ask" data-ask="ac" aria-pressed="false">Desligar o ar</button>
+        <button type="button" class="ask" data-ask="avg" aria-pressed="false">Calcular a média</button>
       </div>
       <p class="prompt-line" id="promptLine"></p>
       <ol class="trace" id="trace" aria-live="polite"></ol>
       <div class="verdict" id="verdict"></div>
     </div>
   </div>
+  <p class="intro">Com a ferramenta <strong>Executar código</strong>, “Calcular a média” conta em todas as linhas; sem ela, a IA lê um pedaço e escreve um número no mesmo tom. Pergunte: <strong>ela calculou ou leu?</strong></p>
+  <p class="hint">Numa turma, um chat devolveu as médias de uma planilha de avaliações e, perguntado, admitiu ter lido só as primeiras linhas.</p>
   <p class="punch">O modelo não mudou. Mudou a lista de ferramentas do <em>harness</em>.</p>
+
+  <div class="lay">
+    <h3>É o pedido ou é o harness?</h3>
+    <p class="intro">Quando a resposta sai errada, o reflexo é reescrever o pedido. Antes, veja em qual camada está o problema: pedido reescrito não liga ferramenta desligada nem devolve acesso que falta, e ferramenta nova não conserta pedido vago. Escolha a camada de cada caso.</p>
+    <ol class="lay-list">
+      <li class="lay-item"><p>A IA responde que não consegue abrir a pasta compartilhada da equipe.</p><div class="seg lay-seg" role="group" aria-label="Camada do problema"><button type="button" data-lay="0" data-pick="pedido" aria-pressed="false">É o pedido</button><button type="button" data-lay="0" data-pick="harness" aria-pressed="false">É o harness</button></div><p class="verdict lay-fb" id="layFb0" aria-live="polite" hidden></p></li>
+      <li class="lay-item"><p>O resumo veio no tom de relatório, com três páginas, e você queria um parágrafo para o diretor.</p><div class="seg lay-seg" role="group" aria-label="Camada do problema"><button type="button" data-lay="1" data-pick="pedido" aria-pressed="false">É o pedido</button><button type="button" data-lay="1" data-pick="harness" aria-pressed="false">É o harness</button></div><p class="verdict lay-fb" id="layFb1" aria-live="polite" hidden></p></li>
+      <li class="lay-item"><p>Você pediu que a IA conferisse o próprio trabalho, e ela aprovou um texto com erro.</p><div class="seg lay-seg" role="group" aria-label="Camada do problema"><button type="button" data-lay="2" data-pick="pedido" aria-pressed="false">É o pedido</button><button type="button" data-lay="2" data-pick="harness" aria-pressed="false">É o harness</button></div><p class="verdict lay-fb" id="layFb2" aria-live="polite" hidden></p></li>
+    </ol>
+    <p class="hint">Do lado do pedido, a página Prompt tem <a href="./prompt.html#s-cerca">três casos em que o problema não é o pedido</a>.</p>
+  </div>
 </section>
 
 <!-- D2 · SEGUNDO EXEMPLO -->
@@ -501,7 +524,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
     <dt>Ferramenta</dt><dd>Programa que o harness sabe executar quando o modelo pede, como uma busca na web.</dd>
     <dt>Prompt</dt><dd>O texto enviado ao modelo. No app, inclui a sua mensagem e as instruções do sistema.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Cada aplicativo monta o seu harness de um jeito, e os nomes das ferramentas nos exemplos são ilustrativos.</p>
+  <p class="foot">Simplificação didática. Cada aplicativo monta o seu harness de um jeito, e os nomes das ferramentas nos exemplos são ilustrativos. Os números do pedido “Calcular a média” são inventados para o exemplo.</p>
 </section>
 
 
@@ -596,7 +619,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
   go(1);
 
   /* ---------- D · simulador ---------- */
-  var TOOLS = { web: 'busca_web', files: 'arquivos', terminal: 'executar_comando', house: 'controlar_casa' };
+  var TOOLS = { web: 'busca_web', files: 'arquivos', terminal: 'executar_comando', house: 'controlar_casa', code: 'executar_codigo' };
   var ASKS = {
     web: { tool: 'web', q: 'Faça uma pesquisa na web: quem é o presidente atual da Argentina?', call: 'busca_web("presidente atual da Argentina")', result: 'Javier Milei, no cargo desde dezembro de 2023.', done: 'O presidente atual da Argentina é Javier Milei.', no: 'Não consigo pesquisar na web nesta conversa.', deed: 'A pesquisa foi feita na internet.' },
     weather: { tool: 'web', q: 'Como vai estar o tempo em Fortaleza amanhã?', call: 'busca_web("previsão do tempo Fortaleza amanhã")', result: 'Sol com poucas nuvens, máxima de 31 °C.', done: 'Amanhã em Fortaleza: sol com poucas nuvens e máxima de 31 °C.', no: 'Não consigo consultar a previsão do tempo nesta conversa.', deed: 'A consulta foi feita na internet.' },
@@ -605,10 +628,11 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
     tests: { tool: 'terminal', q: 'Rode os testes do projeto e me diga se passou.', call: 'executar_comando("npm test")', result: '12 testes passaram, 0 falharam.', done: 'Rodei os testes: 12 passaram e nenhum falhou.', no: 'Não consigo rodar comandos no seu computador.', deed: 'O comando rodou no seu computador.' },
     ls: { tool: 'terminal', q: 'Liste o que tem na pasta do projeto.', call: 'executar_comando("ls")', result: 'README.md  notas.txt  package.json  src/', done: 'A pasta tem README.md, notas.txt, package.json e a pasta src.', no: 'Não consigo ver as pastas do seu computador.', deed: 'O comando rodou no seu computador.' },
     light: { tool: 'house', q: 'Acenda a luz da sala.', call: 'controlar_casa("luz_sala", "ligar")', result: 'Luz da sala: ligada.', done: 'A luz da sala está acesa.', no: 'Não tenho acesso à sua casa, então não consigo acender a luz.', deed: 'A luz acendeu de verdade.' },
-    ac: { tool: 'house', q: 'Desligue o ar-condicionado do quarto.', call: 'controlar_casa("ar_quarto", "desligar")', result: 'Ar-condicionado do quarto: desligado.', done: 'Desliguei o ar-condicionado do quarto.', no: 'Não tenho acesso à sua casa, então não consigo controlar o ar-condicionado.', deed: 'O aparelho desligou de verdade.' }
+    ac: { tool: 'house', q: 'Desligue o ar-condicionado do quarto.', call: 'controlar_casa("ar_quarto", "desligar")', result: 'Ar-condicionado do quarto: desligado.', done: 'Desliguei o ar-condicionado do quarto.', no: 'Não tenho acesso à sua casa, então não consigo controlar o ar-condicionado.', deed: 'O aparelho desligou de verdade.' },
+    avg: { tool: 'code', q: 'Calcule a nota média da coluna Nota na planilha anexada, de 3.000 linhas.', call: 'executar_codigo("média da coluna Nota, todas as linhas")', result: 'Média calculada sobre as 3.000 linhas: 6,8.', done: 'A nota média é 6,8, calculada sobre as 3.000 linhas.', guess: 'Lê as primeiras linhas da planilha e escreve: “A nota média é 7,4.”', deed: 'A conta foi feita em todas as linhas.' }
   };
-  var PRESETS = { chat: { web: true, files: false, terminal: false, house: false }, code: { web: true, files: true, terminal: true, house: false }, all: { web: true, files: true, terminal: true, house: true } };
-  var on = { web: true, files: false, terminal: false, house: false };
+  var PRESETS = { chat: { web: true, files: false, terminal: false, house: false, code: false }, code: { web: true, files: true, terminal: true, house: false, code: true }, all: { web: true, files: true, terminal: true, house: true, code: true } };
+  var on = { web: true, files: false, terminal: false, house: false, code: false };
   var ask = 'web';
   var toolBtns = document.querySelectorAll('.tool');
   var presetBtns = document.querySelectorAll('[data-preset]');
@@ -643,6 +667,11 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
       html += row(5, 'llm', 'Modelo', '“' + a.done + '” <small>só texto</small>');
       verdictEl.className = 'verdict ok';
       verdictEl.innerHTML = '<b>Funcionou.</b> ' + a.deed + ' Quem fez foi o harness, a pedido do modelo.';
+    } else if (a.guess) {
+      html += row(1, 'harness', 'Harness', 'Envia ao modelo: sua mensagem, a planilha como texto, as instruções e a lista de ferramentas (' + listTxt + '). Nada nela faz conta.');
+      html += row(2, 'llm', 'Modelo', a.guess + ' <small>só texto</small>');
+      verdictEl.className = 'verdict no';
+      verdictEl.innerHTML = '<b>Parece que funcionou, e não funcionou.</b> O 7,4 saiu de uma amostra, escrito no mesmo tom de uma conta feita. Nada na resposta avisa. Ligue “Executar código” e peça de novo.';
     } else {
       html += row(1, 'harness', 'Harness', 'Envia ao modelo: sua mensagem, as instruções e a lista de ferramentas (' + listTxt + '). Nada nela serve para esse pedido.');
       html += row(2, 'llm', 'Modelo', 'Não vê ferramenta para isso e responde só com texto: “' + a.no + '” <small>só texto</small>');
@@ -655,6 +684,29 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
   presetBtns.forEach(function (b) { b.addEventListener('click', function () { on = Object.assign({}, PRESETS[b.dataset.preset]); renderSim(); }); });
   askBtns.forEach(function (b) { b.addEventListener('click', function () { ask = b.dataset.ask; renderSim(); }); });
   renderSim();
+
+  /* ---------- D · é o pedido ou é o harness? ---------- */
+  var LAY = [
+    { ok: 'harness', yes: 'É o harness: falta o acesso à pasta. Nenhuma reescrita do pedido abre uma pasta que o app não alcança.', nope: 'Reescrever o pedido não muda nada aqui: o que falta é o acesso à pasta, e isso é do harness.' },
+    { ok: 'pedido', yes: 'É o pedido: o tamanho e o leitor não estavam escritos. Ferramenta nova não adivinha para quem é o texto.', nope: 'Nenhuma ferramenta resolve isso. O que faltou foi dizer o tamanho e quem vai ler: é do pedido.' },
+    { ok: 'pedido', yes: 'É o pedido: “confira” sem dizer o que conferir deixa a IA aprovar o que ela mesma escreveu. Diga o critério.', nope: 'As ferramentas estavam lá. Faltou dizer o que conferir e quando reprovar: é do pedido.' }
+  ];
+  var layBtns = document.querySelectorAll('[data-lay]');
+  var layPick = LAY.map(function () { return null; });
+  function renderLay() {
+    layBtns.forEach(function (b) { b.setAttribute('aria-pressed', String(layPick[+b.dataset.lay] === b.dataset.pick)); });
+    LAY.forEach(function (it, i) {
+      var fb = document.getElementById('layFb' + i);
+      var p = layPick[i];
+      fb.hidden = !p;
+      if (!p) { fb.textContent = ''; return; }
+      fb.className = 'verdict lay-fb ' + (p === it.ok ? 'ok' : 'no');
+      fb.textContent = p === it.ok ? it.yes : it.nope;
+    });
+  }
+  layBtns.forEach(function (b) { b.addEventListener('click', function () { layPick[+b.dataset.lay] = b.dataset.pick; renderLay(); }); });
+  renderLay();
+
   document.getElementById('tryCode').addEventListener('click', function () {
     on = Object.assign({}, PRESETS.code); ask = 'tests'; renderSim();
     document.getElementById('h-teste').scrollIntoView({ behavior: 'smooth', block: 'start' });

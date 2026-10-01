@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 6. Peças: caixas em volta do centro clicáveis, diagnóstico em quiz, passos com diagrama, montador de instrução com copiar, rodadas de teste, janela de memória com controle deslizante, etiqueta de conversa em alternância, ferramenta com e sem. */
+/* Layout: página de conceito, família 6. Peças: caixas em volta do centro clicáveis, diagnóstico em quiz, passos com diagrama, montador de instrução com copiar, rodadas de teste, janela de memória com controle deslizante, etiqueta de conversa em alternância, descrição de ferramenta vaga × clara. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -192,7 +192,6 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .ses-msg.bad { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
 
 /* 7 · ferramentas */
-.tl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .tl-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
 .tl-card, .tl-card > * { min-width: 0; } /* no celular a coluna única precisa encolher abaixo do texto mais largo do cartão */
 .tl-fields { grid-template-columns: max-content minmax(0, 1fr); }
@@ -201,6 +200,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .tl-fields dt { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); padding-top: 2px; }
 .tl-fields dd { margin: 0; }
 .tl-fields dd span { font-family: var(--font-mono); font-size: 11px; color: var(--accent); margin-left: 6px; }
+/* reforços: o que o passo de IA enxerga · ler antes de escrever */
+.vw .seg, .rw .seg { flex-wrap: wrap; }
+.vw p, .rw p { max-width: 70ch; }
 /* 11 · para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -213,7 +215,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
 
 @media (max-width: 860px) {
-  .sp, .ol, .mem, .tl, .take { grid-template-columns: 1fr; }
+  .sp, .ol, .mem, .take { grid-template-columns: 1fr; }
   .sp-out { position: static; }
   .body4 { grid-template-columns: 1fr 1fr; }
   .pc-core { grid-column: 1 / -1; grid-row: 1; aspect-ratio: auto; border-radius: 8px; }
@@ -341,6 +343,16 @@ code { font-family: var(--font-mono); font-size: .88em; }
       <ul class="sp-miss" id="spMiss" aria-live="polite"></ul>
     </div>
   </div>
+  <div class="tl-card vw">
+    <span class="eyebrow">O que o passo de IA enxerga</span>
+    <p>Quando o agente mora dentro de uma automação (uma sequência de passos que roda sozinha), ele vira o passo de IA: a etapa do fluxo em que a IA escreve. Os passos anteriores do fluxo já trouxeram coisas: o nome do cliente, o plano, a data. <strong>O passo de IA não vê nada disso por conta própria: vê só o que você pôs na instrução ou na mensagem dele.</strong> O dado precisa ser levado para dentro do texto e, pela regra das gavetas, o que muda a cada cliente vai na mensagem.</p>
+    <div class="seg" role="group" aria-label="O que entrou no passo de IA">
+      <button type="button" data-vw="so" aria-pressed="true">Só a instrução</button>
+      <button type="button" data-vw="com" aria-pressed="false">Com os dados do passo anterior</button>
+    </div>
+    <pre id="vwTxt"></pre>
+    <div class="verdict" id="vwVer" aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 5 -->
@@ -389,35 +401,36 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <!-- 7 -->
 <section class="sec" id="s-ferramentas" aria-labelledby="h-ferramentas">
   <span class="eyebrow">As ferramentas</span>
-  <h2 id="h-ferramentas">A mesma pergunta, com e sem a ferramenta</h2>
-  <p class="intro">Pense na lista de ramais do escritório: ninguém liga para “ramal 7” se a lista diz só o número, mas liga para “Financeiro: segunda via de boleto”. Ferramenta é o que transforma o agente de quem responde em quem faz. <strong>Ele não recebe um roteiro dizendo quando usá-la: lê o nome e a descrição, e decide.</strong> Por isso a descrição é, ela mesma, uma instrução.</p>
-  <div class="tl">
-    <div class="tl-card">
-      <div class="seg" role="group" aria-label="Ferramenta">
-        <button type="button" data-tool="sem" aria-pressed="true">Sem a ferramenta</button>
-        <button type="button" data-tool="com" aria-pressed="false">Com busca_cliente</button>
-      </div>
-      <p><b>“Qual o orçamento do cliente Souza?”</b></p>
-      <div id="toolOut" aria-live="polite"></div>
+  <h2 id="h-ferramentas">O nome e a descrição dizem quando usar</h2>
+  <p class="intro">Pense na lista de ramais do escritório: ninguém liga para “ramal 7” se a lista diz só o número, mas liga para “Financeiro: segunda via de boleto”. Ferramenta é o que transforma o agente de quem responde em quem faz (o antes e depois está em <a href="./agente.html#s-maos">responder ou agir</a>). <strong>Ele não recebe um roteiro dizendo quando usá-la: lê o nome e a descrição, e decide.</strong> Por isso a descrição é, ela mesma, uma instrução.</p>
+  <div class="tl-card">
+    <div class="seg" role="group" aria-label="Descrição">
+      <button type="button" data-desc="vaga" aria-pressed="true">Descrição vaga</button>
+      <button type="button" data-desc="clara" aria-pressed="false">Descrição clara</button>
     </div>
-    <div class="tl-card">
-      <div class="seg" role="group" aria-label="Descrição">
-        <button type="button" data-desc="vaga" aria-pressed="true">Descrição vaga</button>
-        <button type="button" data-desc="clara" aria-pressed="false">Descrição clara</button>
-      </div>
-      <pre id="descTxt"></pre>
-      <div class="verdict" id="descVer" aria-live="polite"></div>
-    </div>
+    <pre id="descTxt"></pre>
+    <div class="verdict" id="descVer" aria-live="polite"></div>
   </div>
   <div class="tl-card">
     <span class="eyebrow">Quem preenche os campos</span>
-    <p>Numa ferramenta de e-mail, você não escreve o destinatário: marca os campos que <strong>o modelo preenche na hora</strong>, a partir da conversa. Pedido: “manda a confirmação para a Beatriz, reunião quinta às 10h”.</p>
+    <p>Numa ferramenta de e-mail, você não escreve o destinatário. <strong>Ao montar a ferramenta, você deixa alguns campos em aberto, e o modelo os preenche a partir da conversa.</strong> Pedido: “manda a confirmação para a Beatriz, reunião quinta às 10h”.</p>
     <dl class="tl-fields">
-      <dt>Para</dt><dd>beatriz@empresa.com<span>o modelo preencheu</span></dd>
+      <dt>Para</dt><dd>beatriz@empresa.com<span>o modelo preencheu, com o endereço que a busca de contatos trouxe antes</span></dd>
       <dt>Assunto</dt><dd>Confirmação: reunião quinta às 10h<span>o modelo preencheu</span></dd>
       <dt>Remetente</dt><dd>agenda@suaempresa.com<span>fixo, você definiu</span></dd>
     </dl>
     <p class="hint">Campo que deveria variar e ficou fixo manda tudo para o mesmo lugar. E quem executa o envio é o sistema em volta do modelo, não ele: <a href="./llm-e-harness.html">LLM e harness</a>. Comece com uma ferramenta, teste, e só então some a próxima.</p>
+  </div>
+  <div class="tl-card rw">
+    <span class="eyebrow">Ler antes de escrever</span>
+    <p>Há ferramentas que só consultam (buscar o contato, listar os projetos, ver a agenda) e ferramentas que mudam alguma coisa (enviar, criar, apagar). <strong>A que muda quase sempre precisa de um dado que só a que consulta acha</strong>: o endereço certo, o número do projeto, o evento que já existe. Sem a de consulta, o agente preenche o campo com um palpite. Pedido: “cria a tarefa ‘renovar contrato’ no projeto Compras”.</p>
+    <div class="seg" role="group" aria-label="Ferramentas disponíveis">
+      <button type="button" data-rw="so" aria-pressed="true">Só a que cria</button>
+      <button type="button" data-rw="com" aria-pressed="false">A que lista, antes da que cria</button>
+    </div>
+    <pre id="rwTxt"></pre>
+    <div class="verdict" id="rwVer" aria-live="polite"></div>
+    <p class="hint">A ordem vai escrita na instrução, na gaveta das regras: “antes de criar, enviar ou apagar, busque”. Sem essa linha, ele pode ter a ferramenta de consulta e pular direto para a que muda.</p>
   </div>
 </section>
 
@@ -613,15 +626,6 @@ code { font-family: var(--font-mono); font-size: .88em; }
   setTag('fixa');
 
   /* 7 · ferramentas */
-  var toolBtns = document.querySelectorAll('[data-tool]'), toolOut = document.getElementById('toolOut');
-  function setTool(k) {
-    pressGroup(toolBtns, function (x) { return x.dataset.tool === k; });
-    toolOut.innerHTML = k === 'sem'
-      ? '<div class="verdict no"><b>“Não tenho acesso a essa informação.”</b> Ou pior: um número que parece plausível e foi inventado.</div>'
-      : '<pre>pensa: o dado está na planilha\npede:  busca_cliente("Souza")\nvolta: orçamento R$ 18.400</pre><div class="verdict ok"><b>“O orçamento do cliente Souza é de R$ 18.400.”</b> A resposta veio de onde o dado mora.</div>';
-  }
-  toolBtns.forEach(function (b) { b.addEventListener('click', function () { setTool(b.dataset.tool); }); });
-  setTool('sem');
   var descBtns = document.querySelectorAll('[data-desc]');
   function setDesc(k) {
     pressGroup(descBtns, function (x) { return x.dataset.desc === k; });
@@ -631,6 +635,32 @@ code { font-family: var(--font-mono); font-size: .88em; }
   }
   descBtns.forEach(function (b) { b.addEventListener('click', function () { setDesc(b.dataset.desc); }); });
   setDesc('vaga');
+  var RW = {
+    so: { t: 'pensa: preciso do número do projeto Compras\npede:  cria_tarefa(projeto: 1, título: "renovar contrato")\nvolta: tarefa criada no projeto 1 (Marketing)', ok: false, v: '<b>Criou, no projeto errado.</b> Nenhuma ferramenta dava a ele o número do projeto Compras; ele chutou um, e o sistema aceitou.' },
+    com: { t: 'pensa: preciso do número do projeto Compras\npede:  lista_projetos()\nvolta: Marketing = 1 · Compras = 4 · RH = 7\npede:  cria_tarefa(projeto: 4, título: "renovar contrato")\nvolta: tarefa criada no projeto 4 (Compras)', ok: true, v: '<b>Consultou antes de mexer.</b> O número veio da lista, não da imaginação.' }
+  };
+  var rwBtns = document.querySelectorAll('[data-rw]');
+  function setRw(k) {
+    pressGroup(rwBtns, function (x) { return x.dataset.rw === k; });
+    document.getElementById('rwTxt').textContent = RW[k].t;
+    var v = document.getElementById('rwVer'); v.className = 'verdict ' + (RW[k].ok ? 'ok' : 'no'); v.innerHTML = RW[k].v;
+  }
+  rwBtns.forEach(function (b) { b.addEventListener('click', function () { setRw(b.dataset.rw); }); });
+  setRw('so');
+
+  /* 4b · o que o passo de IA enxerga */
+  var VW = {
+    so: { t: 'INSTRUÇÃO\nResponda o cliente sobre a renovação do plano.\n\nMENSAGEM\nQuando vence o meu plano?', ok: false, v: '<b>“Para consultar o vencimento, me diga o seu nome e o seu plano.”</b> O passo anterior tinha buscado tudo isso, e o passo de IA nunca viu. No pior caso, ele inventa uma data.' },
+    com: { t: 'INSTRUÇÃO\nResponda o cliente sobre a renovação do plano.\n\nMENSAGEM\nQuando vence o meu plano?\nDados do cliente, trazidos do passo anterior:\nnome: Souza · plano: anual · vence em: 30/10', ok: true, v: '<b>“O seu plano anual vence em 30/10.”</b> Mesma instrução, mesmo modelo. A diferença é só o que entrou no texto.' }
+  };
+  var vwBtns = document.querySelectorAll('[data-vw]');
+  function setVw(k) {
+    pressGroup(vwBtns, function (x) { return x.dataset.vw === k; });
+    document.getElementById('vwTxt').textContent = VW[k].t;
+    var v = document.getElementById('vwVer'); v.className = 'verdict ' + (VW[k].ok ? 'ok' : 'no'); v.innerHTML = VW[k].v;
+  }
+  vwBtns.forEach(function (b) { b.addEventListener('click', function () { setVw(b.dataset.vw); }); });
+  setVw('so');
 })();
 </script>
 

@@ -223,6 +223,21 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .sx-bt { font: 500 11.5px var(--font-mono); fill: var(--ok-texto); }
 .mk-ok { fill: var(--ok); }
 
+/* 3 · sem IA primeiro · 8 · seguir ou parar */
+.add { display: grid; gap: 12px; border-top: 1px dashed var(--border-strong); padding-top: 20px; }
+.add h3 { font-size: 1.25rem; }
+.add > p { max-width: 64ch; color: var(--text-muted); }
+.si-det dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; }
+.si-det dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+.si-det dd { margin: 0; }
+.cn-rule { font-size: 1.02rem; border-left: 3px solid var(--accent); padding-left: 14px; }
+.cn-rows { display: grid; gap: 8px; }
+.cn-row { display: grid; grid-template-columns: minmax(0, 1fr) max-content max-content; gap: 12px; align-items: center; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; background: var(--bg); }
+.cn-row b { font-family: var(--font-mono); font-weight: 500; }
+.cn-row .cn-s { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--atencao-texto); }
+.cn-row.cn-ok { border-color: var(--ok); }
+.cn-row.cn-ok .cn-s { color: var(--ok-texto); }
+
 /* 9 · levar */
 .copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
 .copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
@@ -243,6 +258,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   .cp-grid { grid-template-columns: 1fr 1fr; }
   .fc-out { position: static; }
   .cp-det dl, .tv-rules dl { grid-template-columns: 1fr; }
+  .si-det dl { grid-template-columns: 1fr; }
+  .cn-row { grid-template-columns: minmax(0, 1fr) max-content; }
+  .cn-row .cn-s { grid-column: 1 / -1; }
 }
 @media (max-width: 520px) { .cp-grid, .fn-stats { grid-template-columns: 1fr; } .fm-row { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .fn-grid i, .dc-now, .dc-goal, .dc-v, .tv-item { transition: none; } }
@@ -282,7 +300,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <p class="sub">O filtro que separa a iniciativa que vira rotina da que morre na demonstração</p>
   <p class="lead">Antes de começar qualquer coisa com IA, quatro perguntas: <strong>em que isso ajuda, qual é o número, quanto é hoje, quanto em sessenta dias.</strong> Sem as quatro, é vontade, não projeto. E o campo que você não consegue preencher não reprova a ideia: ele é a próxima tarefa. Esta página é o quinto dos cinco pilares da família AI First, as cinco práticas de quem põe a IA no desenho do trabalho: o que mede.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-demo">Funciona na apresentação, morre na rotina</a><a href="#s-ficha">A ficha de quatro campos</a><a href="#s-campos">Os quatro campos</a><a href="#s-destinos">Um exemplo para cada destino</a><a href="#s-trava">Qual campo travou</a><a href="#s-numero">Frase ou medida</a><a href="#s-dentro">A ficha dentro do processo</a><a href="#s-sessenta">O prazo de sessenta dias</a><a href="#s-copiar">Um revisor para a sua ficha</a>
+    <a href="#s-demo">Funciona na apresentação, morre na rotina</a><a href="#s-ficha">A ficha de quatro campos</a><a href="#s-campos">Os quatro campos</a><a href="#s-destinos">Um exemplo para cada destino</a><a href="#s-trava">Onde a ficha emperra</a><a href="#s-numero">Frase ou medida</a><a href="#s-dentro">A ficha dentro do processo</a><a href="#s-sessenta">O prazo de sessenta dias</a><a href="#s-copiar">Um revisor para a sua ficha</a>
   </nav>
 </header>
 
@@ -344,7 +362,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-campos" aria-labelledby="h-campos">
   <span class="eyebrow">Os quatro campos</span>
   <h2 id="h-campos">Quatro perguntas, e nenhuma é sobre tecnologia</h2>
-  <p class="intro">Como na vistoria do carro antes da viagem, cada item tem um teste que dispensa especialista: pneu calibrado, óleo no nível. Cada campo tem um teste que você faz sozinho, e um jeito típico de travar. <strong>Clique em cada um.</strong></p>
+  <p class="intro">Como na vistoria do carro antes da viagem, cada item tem um teste que dispensa especialista: pneu calibrado, óleo no nível. Cada campo tem um teste que você faz sozinho, e um jeito típico de emperrar. <strong>Clique em cada um.</strong></p>
   <div class="cp-grid" role="group" aria-label="Os quatro campos">
     <button type="button" class="cp" data-cp="0" aria-pressed="true"><span class="k">CAMPO 1</span><b>Em que isso ajuda</b></button>
     <button type="button" class="cp" data-cp="1" aria-pressed="false"><span class="k">CAMPO 2</span><b>Qual é o número</b></button>
@@ -352,6 +370,16 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     <button type="button" class="cp" data-cp="3" aria-pressed="false"><span class="k">CAMPO 4</span><b>Quanto em sessenta dias</b></button>
   </div>
   <div class="panel focal cp-det" id="cpDet" aria-live="polite"></div>
+  <div class="add">
+    <h3>Antes da ficha: como você resolveria sem IA</h3>
+    <p>Um passo resolve muita ficha que emperra no campo 1: <strong>descrever como você resolveria o problema sem IA nenhuma</strong>. Parece andar para trás, mas o passo a passo sem a ferramenta mostra qual pedaço do problema dá para automatizar, e às vezes mostra que nenhum dá.</p>
+    <p>O exemplo são as devoluções de pedido de uma loja, cada uma com o motivo escrito pelo cliente. Troque entre os dois jeitos de resolver.</p>
+    <div class="seg" role="group" aria-label="Como resolver">
+      <button type="button" data-si="sem" aria-pressed="true">Sem IA</button>
+      <button type="button" data-si="com" aria-pressed="false">Com IA</button>
+    </div>
+    <div class="panel si-det" id="siDet" aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 4 -->
@@ -387,9 +415,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 <!-- 5 -->
 <section class="sec" id="s-trava" aria-labelledby="h-trava">
-  <span class="eyebrow">Qual campo travou</span>
-  <h2 id="h-trava">Cada trava quer dizer uma coisa diferente</h2>
-  <p class="intro">No caixa eletrônico, “saldo insuficiente” e “cartão bloqueado” mandam você para balcões diferentes. Travar não reprova a iniciativa: mostra por onde ela começa. <strong>Para cada situação, diga qual campo travou.</strong></p>
+  <span class="eyebrow">Onde a ficha emperra</span>
+  <h2 id="h-trava">Cada campo emperrado quer dizer uma coisa diferente</h2>
+  <p class="intro">No caixa eletrônico, “saldo insuficiente” e “cartão bloqueado” mandam você para balcões diferentes. Emperrar não reprova a iniciativa: mostra por onde ela começa. <strong>Para cada situação, diga qual campo emperrou.</strong></p>
   <div class="tq-list" id="tqList"></div>
   <p class="score" id="tqScore" aria-live="polite"></p>
 </section>
@@ -400,14 +428,14 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <h2 id="h-numero">Se duas pessoas medirem, elas chegam ao mesmo valor?</h2>
   <p class="intro">“O estoque está baixo” gera discussão; “faltam 40 caixas” gera pedido de compra. O campo 2 costuma chegar como frase. O teste é simples: <strong>duas pessoas, medindo separadas, chegariam ao mesmo número?</strong> Se não, ainda é frase. Transforme cada uma.</p>
   <div class="fm" id="fm"></div>
-  <p class="hint">O atalho quando trava: pergunte o que uma pessoa faria de diferente se desse certo. O número está nessa ação.</p>
+  <p class="hint">O atalho quando emperra: pergunte o que uma pessoa faria de diferente se desse certo. O número está nessa ação.</p>
 </section>
 
 <!-- 7 -->
 <section class="sec" id="s-dentro" aria-labelledby="h-dentro">
   <span class="eyebrow">A ficha dentro do processo</span>
   <h2 id="h-dentro">A trava que ninguém precisa lembrar</h2>
-  <p class="intro">Pense na catraca do prédio: ninguém precisa lembrar de mostrar o crachá, porque sem ele a catraca não gira. Numa equipe que monta propostas com vários auxiliares (assistentes de IA, cada um com uma parte do trabalho), um deles não escreve nada: <strong>só confere se três campos foram preenchidos, e devolve quando falta qualquer um.</strong> É a ficha morando no caminho do trabalho, em vez de num manual. Ligue e desligue a trava.</p>
+  <p class="intro">Pense na catraca do prédio: ninguém precisa lembrar de mostrar o crachá, porque sem ele a catraca não gira. Numa equipe que monta propostas com vários auxiliares (assistentes de IA, cada um com uma parte do trabalho), um deles não escreve nada: <strong>só confere se três campos foram preenchidos, e devolve quando falta qualquer um.</strong> É parente da ficha: confere o número e o prazo, acrescenta quem responde, e mora no caminho do trabalho, em vez de num manual. O quanto é hoje continua com você. Ligue e desligue a trava.</p>
   <div class="seg" role="group" aria-label="Estado da trava">
     <button type="button" data-tv="off" aria-pressed="true">Sem a trava</button>
     <button type="button" data-tv="on" aria-pressed="false">Com a trava</button>
@@ -452,6 +480,20 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
       </svg>
     </div>
   </div>
+  <div class="add">
+    <h3>Seguir ou parar, escrito no dia zero</h3>
+    <p>A data de voltar já está marcada. Falta escrever, antes de começar, <strong>o que vai ser decidido nela</strong>: com qual resultado o teste segue, com qual ele para. Quem aprova o teste e quem executa combinam e assinam juntos. Escrito antes, o dia sessenta vira uma conferência, e não uma discussão; e ninguém muda a meta depois de ver o número. Antes de assinar, faça a conta em três cenários: se der pouco certo, o esperado, e se der tudo certo.</p>
+    <div class="panel">
+      <span class="eyebrow">A regra, para quem mede 6 horas hoje</span>
+      <p class="cn-rule">No dia sessenta: segue com <b>4 h por semana ou menos</b> · corta o pedaço e repete <b>entre 4 e 5</b> · para <b>acima de 5</b>.</p>
+      <div class="seg" role="group" aria-label="Qual plano">
+        <button type="button" data-cn="tudo" aria-pressed="true">Meta que depende de tudo dar certo</button>
+        <button type="button" data-cn="cabe" aria-pressed="false">Pedaço que cabe</button>
+      </div>
+      <div class="cn-rows" id="cnRows" aria-live="polite"></div>
+      <div class="verdict" id="cnVer" aria-live="polite"></div>
+    </div>
+  </div>
 </section>
 
 <!-- 9 -->
@@ -491,7 +533,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
     <dt>Linha de base</dt><dd>O valor de hoje, medido antes de mudar qualquer coisa. Sem ele, só existe o depois.</dd>
     <dt>Trava</dt><dd>Uma conferência no caminho do trabalho que devolve o que chegou sem responsável, métrica ou prazo.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os quadrados das etapas, as semanas de teste e os números dos exemplos mostram a forma, não a medida. O corte de “mais que o dobro de melhora” é um sinal prático para meta de sessenta dias, não uma regra.</p>
+  <p class="foot">Simplificação didática. Os quadrados das etapas, as semanas de teste e os números dos exemplos mostram a forma, não a medida. O corte de “mais que o dobro de melhora” é um sinal prático para meta de sessenta dias, não uma regra. A linha de seguir e parar e os três cenários também são inventados, para mostrar a forma.</p>
 </section>
 
 <!-- rodape -->
@@ -527,7 +569,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   var FNL = ['Ideias que aparecem', 'Viram teste', 'Funcionam na apresentação', 'Viram rotina'];
   var FNT = {
     sem: ['<b>Sessenta ideias, todas seguem.</b> Nenhuma foi perguntada sobre número, e todas parecem boas.', '<b>Viram teste.</b> Cada teste custa semanas de alguém. Ninguém sabe ainda o que seria dar certo.', '<b>Funcionam na apresentação.</b> Agradam. Mas sem o número de hoje, não existe antes e depois para mostrar.', '<b>Poucas viram rotina.</b> O resto parou na demonstração, depois de consumir semanas.'],
-    com: ['<b>Mais da metade volta na primeira folha.</b> Não morreu: travou num campo, e esse campo virou a próxima tarefa, quase sempre medir.', '<b>As que passaram viram teste.</b> Cada uma com destino, número, ponto de partida e meta.', '<b>Funcionam na apresentação, com número.</b> Dá para mostrar o antes e o depois.', '<b>Mais delas viram rotina.</b> E as que não viraram gastaram menos semanas, porque o corte veio cedo.']
+    com: ['<b>Mais da metade volta na primeira folha.</b> Não morreu: emperrou num campo, e esse campo virou a próxima tarefa, quase sempre medir.', '<b>As que passaram viram teste.</b> Cada uma com destino, número, ponto de partida e meta.', '<b>Funcionam na apresentação, com número.</b> Dá para mostrar o antes e o depois.', '<b>Mais delas viram rotina.</b> E as que não viraram gastaram menos semanas, porque o corte veio cedo.']
   };
   var fnGrid = document.getElementById('fnGrid'), fnSq = [], fnMode = 'sem', fnStep = 1;
   for (var i = 0; i < 60; i++) { var sq = document.createElement('i'); fnGrid.appendChild(sq); fnSq.push(sq); }
@@ -560,7 +602,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
     if (!nv) r.push({ s: '', v: '', w: 'Sem número, não há como saber depois se mudou.' });
     else if (VAGO.test(nv) && !CONTA.test(nv)) r.push({ s: 'warn', v: nv, w: 'Ainda é frase: duas pessoas mediriam diferente. O que se conta aqui?' });
     else r.push({ s: 'ok', v: nv });
-    if (!hv) r.push({ s: '', v: '', w: 'O campo mais comum de travar. Meça uma semana comum: é a primeira tarefa, antes da automação.' });
+    if (!hv) r.push({ s: '', v: '', w: 'O campo que mais emperra. Meça uma semana comum: é a primeira tarefa, antes da automação.' });
     else if (/n[ãa]o medido/i.test(hv)) r.push({ s: 'warn', v: hv, w: 'Honesto. A próxima tarefa é medir, e ela vem antes de qualquer outra.' });
     else if (num(hv) === null) r.push({ s: 'warn', v: hv, w: 'Sem número, não há ponto de partida.' });
     else if (CHUTE.test(hv)) r.push({ s: 'warn', v: hv, w: 'Parece estimativa. Escreva ao lado quando vai medir de verdade.' });
@@ -600,16 +642,16 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
 
   /* 3 · campos */
   var CP = [
-    { q: 'Em que isso ajuda?', t: 'Um destino só, entre três: trazer mais clientes, fazer cada um valer mais, reduzir custo e retrabalho.', e: 'Marcar os três. Iniciativa que ajuda em tudo costuma não ajudar em nada.', f: 'Se travou aqui, a ideia nasceu da ferramenta, não do problema. Recomece pelo incômodo: o que na sua semana faz você pensar “de novo isso”?' },
+    { q: 'Em que isso ajuda?', t: 'Um destino só, entre três: trazer mais clientes, fazer cada um valer mais, reduzir custo e retrabalho.', e: 'Marcar os três. Iniciativa que ajuda em tudo costuma não ajudar em nada.', f: 'Se emperrou aqui, a ideia nasceu da ferramenta, não do problema. Recomece pelo incômodo: o que na sua semana faz você pensar “de novo isso”?' },
     { q: 'Qual é o número?', t: 'Se duas pessoas medirem, chegam ao mesmo valor?', e: 'Escrever “melhorar o atendimento” ou “ganhar agilidade”. É real, mas é difuso.', f: 'Pergunte o que uma pessoa faria de diferente se desse certo. O número está nessa ação: horas, dias, quantidade, porcentagem.' },
-    { q: 'Quanto é hoje?', t: 'O valor veio de contagem, e não de estimativa?', e: 'Chutar. Sem o hoje medido não existe antes e depois: existe só o depois.', f: 'É a trava mais comum e a mais fácil. O número existe, ninguém contou. Meça uma semana: contar à mão numa folha vale.' },
+    { q: 'Quanto é hoje?', t: 'O valor veio de contagem, e não de estimativa?', e: 'Chutar. Sem o hoje medido não existe antes e depois: existe só o depois.', f: 'É o campo que mais emperra, e o mais fácil de resolver. O número existe, ninguém contou. Meça uma semana: contar à mão numa folha vale.' },
     { q: 'Quanto em sessenta dias?', t: 'Tem número, tem prazo, e a meta é modesta?', e: 'Meta agressiva, ou não saber se dá. Os dois indicam que o pedaço é grande demais.', f: 'Corte o escopo até caber: um curso, uma turma, um tipo de documento. Depois repita no pedaço seguinte.' }
   ];
   var cpB = document.querySelectorAll('.cp');
   function showCp(i) {
     pressGroup(cpB, function (x) { return +x.dataset.cp === i; });
     var c = CP[i];
-    document.getElementById('cpDet').innerHTML = '<dl><dt>A pergunta</dt><dd class="q">' + c.q + '</dd><dt>O teste</dt><dd>' + c.t + '</dd><dt>O erro comum</dt><dd>' + c.e + '</dd><dt>Se travou</dt><dd>' + c.f + '</dd></dl>';
+    document.getElementById('cpDet').innerHTML = '<dl><dt>A pergunta</dt><dd class="q">' + c.q + '</dd><dt>O teste</dt><dd>' + c.t + '</dd><dt>O erro comum</dt><dd>' + c.e + '</dd><dt>Se emperrou</dt><dd>' + c.f + '</dd></dl>';
   }
   cpB.forEach(function (b) { b.addEventListener('click', function () { showCp(+b.dataset.cp); }); });
   showCp(0);
@@ -644,12 +686,12 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   var tqList = document.getElementById('tqList'), tqAns = {};
   TQ.forEach(function (q, i) {
     var d = document.createElement('div'); d.className = 'tq';
-    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Qual campo travou">' + [0, 1, 2, 3].map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="false">Campo ' + (k + 1) + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
+    d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Qual campo emperrou">' + [0, 1, 2, 3].map(function (k) { return '<button type="button" data-v="' + k + '" aria-pressed="false">Campo ' + (k + 1) + '</button>'; }).join('') + '</div><div class="fb" hidden></div>';
     var bs = d.querySelectorAll('button'), fb = d.querySelector('.fb');
     bs.forEach(function (b) { b.addEventListener('click', function () {
       pressGroup(bs, function (x) { return x === b; });
       var ok = +b.dataset.v === q.a; tqAns[i] = ok; fb.hidden = false; fb.className = 'fb ' + (ok ? 'ok' : 'no');
-      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Travou no campo ' + (q.a + 1) + '. ') + '</b>' + q.w;
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Emperrou no campo ' + (q.a + 1) + '. ') + '</b>' + q.w;
       var n = Object.keys(tqAns).length, c = Object.keys(tqAns).filter(function (k) { return tqAns[k]; }).length;
       document.getElementById('tqScore').textContent = n + ' de 4 respondidas · ' + c + ' certas';
     }); });
@@ -707,6 +749,39 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   }
   [sxA, sxB].forEach(function (x) { x.addEventListener('input', renderSx); });
   renderSx();
+
+  /* 3 · sem IA primeiro */
+  var SI = {
+    sem: { p: 'Abrir cada devolução do mês, ler o motivo que o cliente escreveu e anotar numa planilha.', o: 'Leva dias, e no fechamento do mês já é tarde para corrigir o que causou as primeiras.', l: 'Escrito assim, aparece a etapa que pesa: agrupar centenas de motivos, cada um escrito de um jeito.' },
+    com: { p: 'Toda semana, a IA agrupa os motivos escritos em poucas categorias; a equipe decide o que corrigir em cada uma.', o: 'A causa mais comum aparece na primeira semana, e não no fechamento do mês.', l: 'A IA entrou numa etapa só, a que o passo a passo sem ela revelou. O campo 1 sai pronto: <b>Destino: reduzir custo e retrabalho.</b>' }
+  };
+  var siB = document.querySelectorAll('[data-si]');
+  function showSi(k) {
+    pressGroup(siB, function (x) { return x.dataset.si === k; });
+    var d = SI[k];
+    document.getElementById('siDet').innerHTML = '<dl><dt>Como resolveria</dt><dd>' + d.p + '</dd><dt>O que acontece</dt><dd>' + d.o + '</dd><dt>O que isso mostra</dt><dd>' + d.l + '</dd></dl>';
+  }
+  siB.forEach(function (b) { b.addEventListener('click', function () { showSi(b.dataset.si); }); });
+  showSi('sem');
+
+  /* 8 · seguir ou parar */
+  var CN = {
+    tudo: { v: [6, 5, 3], ok: false, t: '<b>Só o cenário em que tudo dá certo chega à linha de seguir.</b> O teste virou aposta. Corte o pedaço até o cenário esperado passar, antes de assinar.' },
+    cabe: { v: [5, 4, 3], ok: true, t: '<b>O cenário esperado já chega à linha de seguir</b>, e mesmo o pior fica melhor que hoje. Dá para assinar a regra e começar.' }
+  };
+  var CNL = ['Se der pouco certo', 'O esperado', 'Se der tudo certo'];
+  var cnB = document.querySelectorAll('[data-cn]');
+  function showCn(k) {
+    pressGroup(cnB, function (x) { return x.dataset.cn === k; });
+    var d = CN[k];
+    document.getElementById('cnRows').innerHTML = d.v.map(function (h, i) {
+      var st = h <= 4 ? 'segue' : (h > 5 ? 'para' : 'corta e repete');
+      return '<div class="cn-row' + (h <= 4 ? ' cn-ok' : '') + '"><span>' + CNL[i] + '</span><b>' + h + ' h</b><span class="cn-s">' + st + '</span></div>';
+    }).join('');
+    var v = document.getElementById('cnVer'); v.className = 'verdict ' + (d.ok ? 'ok' : 'no'); v.innerHTML = d.t;
+  }
+  cnB.forEach(function (b) { b.addEventListener('click', function () { showCn(b.dataset.cn); }); });
+  showCn('tudo');
 
   document.getElementById('rvCopy').addEventListener('click', function () { copyText(document.getElementById('rvText').innerText, this); });
 })();

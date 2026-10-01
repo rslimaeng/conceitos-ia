@@ -218,6 +218,22 @@ a { color: var(--accent); }
 .cb-lab { font: 500 12px var(--font-mono); fill: var(--text-muted); letter-spacing: .04em; }
 .cb-val { font: 600 14px var(--font-body); fill: var(--text); }
 code { font-family: var(--font-mono); font-size: .88em; }
+/* reforços: quando o laço para · quanto você aprova · o mesmo atendimento dos dois jeitos */
+.stop, .apr { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 12px; min-width: 0; }
+.stop > *, .apr > * { min-width: 0; }
+.stop p, .apr p { max-width: 70ch; }
+.stop .seg, .apr .seg { flex-wrap: wrap; }
+.stop .sim-trace:empty { display: none; }
+.fx-h { font-size: 1.25rem; }
+.fx { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.fx-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.fx-col.on { border-color: var(--accent); }
+.fx-col ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .94rem; color: var(--text-muted); }
+.fx-col li.ia { color: var(--accent); font-weight: 500; }
+.fx-n { font-family: var(--font-mono); font-size: 1rem; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px; }
+.fx-pros { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; }
+.fx-pros dt { font-weight: 600; }
+.fx-pros dd { margin: 0; color: var(--text-muted); }
 /* 11 · para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -237,6 +253,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
   .lad button:nth-child(n) { min-height: 0; }
   .lad-d dl { grid-template-columns: 1fr; }
   .sim-out { min-height: 0; }
+  .fx, .fx-pros { grid-template-columns: 1fr; }
 }
 @media (max-width: 520px) { .jobs { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .sim-sw .knob, .sim-sw .knob::after, .lp-box rect, .lp-arr, .cb-bar { transition: none; } }
@@ -312,6 +329,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
     </div>
     <div class="sim-out" id="simOut" aria-live="polite"></div>
   </div>
+  <p class="hint">As linhas em formato de código, como <code>busca_cliente("Souza")</code>, são o modelo escrevendo o pedido para o sistema: o nome da ferramenta e, entre parênteses, o que procurar ou criar.</p>
   <p class="punch">Sem ferramenta ela <em>promete</em>. Com ferramenta ela <em>faz</em>. Com objetivo ela sabe <em>o que conferir antes</em>.</p>
 </section>
 
@@ -348,6 +366,17 @@ code { font-family: var(--font-mono); font-size: .88em; }
     </svg>
   </div>
   <div class="caption" id="lpCap" aria-live="polite"></div>
+  <div class="stop">
+    <span class="eyebrow">Quando o laço para</span>
+    <p>A máquina de lavar para quando o ciclo de uma hora acaba, não quando a mancha sai: ela para pelo esforço. Um laço bem montado para pelo resultado, e por isso <strong>tem duas saídas: deu certo, ou bateu no teto de voltas</strong>. O teto é o número máximo de tentativas que você fixa antes de ligar o agente. Quando chega nele, o agente para e conta onde travou, em vez de girar sem fim. Veja o mesmo envio da proposta terminando de três jeitos.</p>
+    <div class="seg" role="group" aria-label="Como o laço termina">
+      <button type="button" data-stop="esforco" aria-pressed="true">Para pelo esforço</button>
+      <button type="button" data-stop="certo" aria-pressed="false">Saída 1: deu certo</button>
+      <button type="button" data-stop="teto" aria-pressed="false">Saída 2: bateu no teto</button>
+    </div>
+    <ol class="sim-trace" id="stopTr"></ol>
+    <div class="verdict" id="stopVer" aria-live="polite"></div>
+  </div>
   <p class="hint">Quem executa a ferramenta não é o modelo: é o sistema em volta dele, que se chama harness. O modelo só escreve o pedido. Isso está desenhado em <a href="./llm-e-harness.html">LLM e harness</a>.</p>
 </section>
 
@@ -362,6 +391,15 @@ code { font-family: var(--font-mono); font-size: .88em; }
     <button type="button" data-l="2" aria-pressed="true"><span class="et">DEGRAU 3</span><b>Agente</b><small>ferramentas, memória e objetivo</small></button>
   </div>
   <div class="lad-d" id="ladD" aria-live="polite"></div>
+  <div class="apr">
+    <span class="eyebrow">Quanto você aprova</span>
+    <p>Os degraus dizem até onde a IA alcança. Dentro do degrau do agente existe um segundo eixo: <strong>quanto do trabalho passa pela sua aprovação</strong>. O mesmo agente pode parar antes de cada ação para você dizer “pode”, ou rodar do pedido ao fim e entregar pronto.</p>
+    <div class="seg" role="group" aria-label="Quanto você aprova">
+      <button type="button" data-apr="passo" aria-pressed="true">Aprova cada passo</button>
+      <button type="button" data-apr="pronto" aria-pressed="false">Recebe pronto</button>
+    </div>
+    <div class="lad-d" id="aprD" aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 4 -->
@@ -371,6 +409,37 @@ code { font-family: var(--font-mono); font-size: .88em; }
   <p class="intro">Para revisar um contrato que já está na sua mesa, ninguém contrata um despachante: ele só entra quando alguém precisa ir ao banco, ao fornecedor, à prefeitura. Se a tarefa é <strong>transformar um texto que já chegou</strong> (tirar dados, pôr num balde, encurtar, ler o tom), um passo simples de IA (um único pedido ao modelo, sem ferramenta) resolve, mais barato e mais previsível. Agente é para quando é preciso buscar, mexer em sistema ou conversar lembrando. Classifique as seis.</p>
   <div class="aq" id="aq"></div>
   <p class="aq-score" id="aqScore" aria-live="polite"></p>
+  <h3 class="fx-h">O mesmo atendimento, montado dos dois jeitos</h3>
+  <p class="intro">Um cliente escreve perguntando o prazo para trocar um produto. Dá para montar a resposta como agente, que decide sozinho ir buscar a regra no documento de políticas da empresa, ou como fluxo fixo (passos desenhados por alguém, sempre na mesma ordem). No fluxo, a busca vira um passo comum, e <strong>a IA já recebe a regra servida junto com a pergunta</strong>: só precisa escrever.</p>
+  <div class="fx">
+    <div class="fx-col">
+      <span class="eyebrow">Como agente</span>
+      <ol>
+        <li class="ia">chamada 1: lê o e-mail e decide buscar a regra</li>
+        <li>ferramenta: busca no documento de políticas e devolve o trecho de troca</li>
+        <li class="ia">chamada 2: lê o trecho e decide responder</li>
+        <li>ferramenta: envia a resposta ao cliente</li>
+        <li class="ia">chamada 3: vê que enviou e encerra</li>
+      </ol>
+      <p class="fx-n">3 chamadas ao modelo</p>
+    </div>
+    <div class="fx-col on">
+      <span class="eyebrow">Como fluxo fixo</span>
+      <ol>
+        <li>passo fixo: chega o e-mail</li>
+        <li>passo fixo: busca no documento o trecho sobre troca</li>
+        <li class="ia">chamada 1: a IA recebe a pergunta e o trecho, e escreve a resposta</li>
+        <li>passo fixo: envia a resposta</li>
+      </ol>
+      <p class="fx-n">1 chamada ao modelo</p>
+    </div>
+  </div>
+  <p class="intro">Neste atendimento os passos são sempre os mesmos: chega, busca, escreve, envia. <strong>Se não há decisão a tomar, deixar a IA decidir só abre espaço para ela errar.</strong> Além de custar menos chamadas (a conta está em <a href="#s-volta">quanto custa cada volta</a>), o fluxo fixo tem três vantagens:</p>
+  <dl class="fx-pros">
+    <dt>Confiável</dt><dd>Não sai do trilho: os mesmos passos, na mesma ordem, toda vez.</dd>
+    <dt>Erro fácil de achar</dt><dd>Quando algo quebra, você vê em qual passo parou.</dd>
+    <dt>Cresce sem desandar</dt><dd>No agente, cada ferramenta nova engorda a instrução, e as primeiras podem parar de funcionar direito.</dd>
+  </dl>
 </section>
 
 <!-- 5 -->
@@ -452,7 +521,7 @@ Algum "sim": agente. Comece com uma ferramenta, teste, e só depois some a próx
     <dt>Laço</dt><dd>O ciclo pensar, agir, observar, que se repete até o agente decidir que já dá para responder.</dd>
     <dt>Passo simples</dt><dd>Uma única chamada ao modelo que transforma um texto: extrai, classifica, resume ou lê o tom.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Cada ferramenta de automação e cada aplicativo chama estas peças por um nome diferente; os nomes de ferramenta nos exemplos são ilustrativos. As barras de chamadas mostram a forma, não a medida.</p>
+  <p class="foot">Simplificação didática. Cada ferramenta de automação e cada aplicativo chama estas peças por um nome diferente; os nomes de ferramenta nos exemplos são ilustrativos. As barras de chamadas mostram a forma, não a medida. O teto de três tentativas e as contagens do atendimento montado dos dois jeitos são de exemplo: quem monta o agente escolhe o próprio teto.</p>
 </section>
 
 <!-- rodape -->
@@ -544,6 +613,36 @@ Algum "sim": agente. Comece com uma ferramenta, teste, e só depois some a próx
   }
   ldBtns.forEach(function (b) { b.addEventListener('click', function () { showLd(+b.dataset.l); }); });
   showLd(2);
+
+  /* 2b · quando o laço para */
+  var STOP = {
+    esforco: { tr: ['t:age: envia_email(compras@souza…)', 'observa: a ferramenta não devolveu nada', 'pensa: já fiz o passo de enviar; respondo'], ok: false, v: '<b>“Proposta enviada.”</b> Parou porque fez o passo, não porque conferiu. Se o e-mail voltou, ninguém sabe. É a máquina de lavar: o ciclo acabou, e a mancha?' },
+    certo: { tr: ['t:age: envia_email(compras@souza…)', 'observa: enviado às 10h12', 'pensa: o objetivo pedia a proposta enviada hoje; confere'], ok: true, v: '<b>Saída 1, deu certo.</b> “Mandei agora, às 10h12.” Parou porque o resultado bateu com o objetivo, não porque acabaram os passos.' },
+    teto: { tr: ['t:age: envia_email(compras@souza…) · tentativa 1 de 3', 'observa: endereço recusado', 't:age: envia_email(compras@souza…) · tentativa 2 de 3', 'observa: endereço recusado', 't:age: envia_email(compras@souza…) · tentativa 3 de 3', 'observa: endereço recusado', 'pensa: cheguei ao teto; paro e conto onde travou'], ok: true, v: '<b>Saída 2, bateu no teto.</b> “Tentei três vezes e o endereço do cliente volta recusado. Parei aqui. Você confere o e-mail na planilha?” Não resolveu, mas parou no limite e disse onde travou. Sem teto, cada nova tentativa seria mais uma chamada paga.' }
+  };
+  var stopBtns = document.querySelectorAll('[data-stop]'), stopTr = document.getElementById('stopTr'), stopVer = document.getElementById('stopVer');
+  function showStop(k) {
+    pressGroup(stopBtns, function (x) { return x.dataset.stop === k; });
+    var s = STOP[k];
+    stopTr.innerHTML = s.tr.map(function (t) { return t.indexOf('t:') === 0 ? '<li class="t">' + t.slice(2) + '</li>' : '<li>' + t + '</li>'; }).join('');
+    stopVer.className = 'verdict ' + (s.ok ? 'ok' : 'no'); stopVer.innerHTML = s.v;
+  }
+  stopBtns.forEach(function (b) { b.addEventListener('click', function () { showStop(b.dataset.stop); }); });
+  showStop('esforco');
+
+  /* 3b · quanto você aprova */
+  var APR = {
+    passo: { v: 'O agente busca, monta e propõe. Antes de cada ação fora da conversa (enviar, criar, apagar), ele para e espera o seu “pode”.', c: 'Você, a cada passo. O erro aparece antes de sair.', k: 'O seu tempo: você continua no meio do processo, aprovando.', q: 'o começo, e o trabalho em que um erro sai caro.' },
+    pronto: { v: 'O agente roda do pedido ao fim sem parar, e você recebe o resultado.', c: 'O que estiver escrito: o objetivo diz o que é tarefa cumprida, e as regras dizem onde parar e perguntar.', k: 'Escrever antes tudo o que você conferiria de olho. O que precisa existir escrito para a IA entregar sem alguém do lado está em <a href="./ai-first.html#s-sozinha">O que a IA precisa para entregar sozinha</a>.', q: 'tarefa em que o objetivo e as regras já dizem tudo o que você conferiria.' }
+  };
+  var aprBtns = document.querySelectorAll('[data-apr]'), aprD = document.getElementById('aprD');
+  function showApr(k) {
+    pressGroup(aprBtns, function (x) { return x.dataset.apr === k; });
+    var d = APR[k];
+    aprD.innerHTML = '<dl><dt>Como é</dt><dd>' + d.v + '</dd><dt>Quem confere</dt><dd>' + d.c + '</dd><dt>O que custa</dt><dd>' + d.k + '</dd><dt>Serve para</dt><dd>' + d.q + '</dd></dl>';
+  }
+  aprBtns.forEach(function (b) { b.addEventListener('click', function () { showApr(b.dataset.apr); }); });
+  showApr('passo');
 
   /* 4 · quiz */
   var AQ = [

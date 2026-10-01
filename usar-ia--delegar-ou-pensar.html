@@ -212,6 +212,23 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+/* 10 · o terceiro caso: fazer sem pedir */
+.mn-box { background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; }
+.mn-box h3 { font-size: 1.25rem; }
+.mn-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.mn-case { border-left: 3px solid var(--atencao); padding-left: 12px; color: var(--text-muted); font-size: .95rem; }
+
+/* 11 · outros pedidos de pensar junto */
+.pv-h { font-size: 1.3rem; }
+.pv-pane { display: grid; gap: 12px; }
+.pv-when { max-width: 64ch; color: var(--text-muted); }
+.pv-swap { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.pv-swap div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px; display: grid; gap: 4px; min-width: 0; }
+.pv-swap div:first-child { border-left: 4px solid var(--border-strong); }
+.pv-swap div:last-child { border-left: 4px solid var(--atencao); }
+.pv-swap .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.pv-swap[hidden] { display: none; }
+
 /* para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -224,7 +241,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
 
 @media (max-width: 860px) {
-  .md-cards, .dm-grid, .rt-pane, .cp-grid, .take { grid-template-columns: 1fr; }
+  .md-cards, .dm-grid, .rt-pane, .cp-grid, .take, .pv-swap { grid-template-columns: 1fr; }
   .mx { grid-template-columns: 1fr 1fr; }
   .mx .corner { display: none; }
   .mx .rh { grid-column: 1 / -1; }
@@ -389,6 +406,16 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <div class="tq" id="tq"></div>
   <div class="verdict ok" id="tqVer" aria-live="polite" hidden></div>
   <p class="hint">Olhe a terceira pergunta: é a única em que os dois lados dizem a mesma coisa. Delegar a execução nunca é delegar a assinatura, e o que a IA aponta quando você pensa junto são hipóteses para conferir na fonte. É o assunto da página <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
+  <div class="mn-box">
+    <h3>O terceiro caso: fazer sem pedir</h3>
+    <p>As três perguntas escolhem entre os dois modos de pedir. Às vezes a resposta honesta é outra: não pedir, e fazer você mesmo. Não por desconfiança da ferramenta: a conta não fecha. Três sinais:</p>
+    <ul class="mn-list">
+      <li><b>Explicar custa mais do que fazer.</b> A tarefa leva minutos seus, e escrever o contexto para a IA entender levaria a tarde.</li>
+      <li><b>O erro é difícil de desfazer.</b> Uma conversa de desligamento, a resposta a um cliente que ameaça ir à imprensa, uma compra fora da sua alçada. Um rascunho bem escrito não diminui esse risco.</li>
+      <li><b>O raciocínio é a própria entrega.</b> Quando alguém vai perguntar "por que você recomenda isso?", uma recomendação que você não construiu não se defende sozinha.</li>
+    </ul>
+    <p class="mn-case">O caso do último sinal: o analista cola a proposta do fornecedor e pede "analise, compare e recomende". A recomendação vai direto para o slide. Na reunião, o diretor pergunta pelo custo de implementação no primeiro ano, e nem ele nem a IA tinham pensado nisso. Ele delegou o que precisava pensar.</p>
+  </div>
 </section>
 
 <section class="sec" id="s-pedidos" aria-labelledby="h-pedidos">
@@ -408,6 +435,14 @@ Restrições: não repita o que eu já disse que confiro. Cada ponto precisa vir
 Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor.</pre></div>
   </div>
   <p class="hint">O "marque para eu conferir" do primeiro pedido é a linha que quase todo mundo esquece. Sem ela, delegar vira entregar a decisão junto com a execução. Como montar o resto do pedido está em <a href="./prompt.html">Prompt</a>.</p>
+  <h3 class="pv-h">Outros pedidos de pensar junto, para situações que se repetem</h3>
+  <p class="pv-when">O segundo modelo serve para qualquer caso. Os pedidos para a IA discordar de você (o plano que deu errado, o melhor argumento contra, as premissas, as perguntas incômodas) estão prontos em <a href="./limites-da-ia--a-ia-concorda.html#s-pedir">A IA concorda com você</a>. Dois casos que se repetem têm forma própria aqui: a mudança que mexe na rotina de alguém e o assunto técnico que você precisa aprender até sexta.</p>
+  <div class="rt-tabs" role="tablist" aria-label="Pedidos de pensar junto" id="pvTabs"></div>
+  <div class="pv-pane" role="tabpanel" aria-live="polite">
+    <p class="pv-when" id="pvWhen"></p>
+    <div class="pv-swap" id="pvSwap" hidden><div><span class="k">Em vez de</span><p id="pvFrom"></p></div><div><span class="k">Peça</span><p id="pvTo"></p></div></div>
+    <div class="copy"><div class="copy-head"><span class="eyebrow" id="pvLab"></span><button type="button" class="btn" id="pvCopy">Copiar</button></div><pre id="pvText"></pre></div>
+  </div>
 </section>
 
 <section class="sec" id="s-levar" aria-labelledby="h-levar">
@@ -423,8 +458,9 @@ Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor
     <dt>Pensar junto</dt><dd>Pedir à IA que amplie o que você enxerga antes de decidir: o que escapa, onde quebra, o que falta.</dd>
     <dt>Critério</dt><dd>A regra que você usaria se fizesse a tarefa na mão. É o que transforma uma ordem em delegação.</dd>
     <dt>Verbo de execução</dt><dd>O verbo que diz o que volta: confira, compare, monte, liste, resuma.</dd>
+    <dt>Premissa</dt><dd>O que uma decisão dá como certo sem ninguém ter conferido.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os dois modos são uma forma de organizar o assunto; outros materiais os chamam de outros nomes, e na prática muitos pedidos misturam os dois. As situações e os documentos dos exemplos são fictícios.</p>
+  <p class="foot">Simplificação didática. Os dois modos são uma forma de organizar o assunto; outros materiais os chamam de outros nomes, e na prática muitos pedidos misturam os dois. Alguns materiais contam um terceiro modo, fazer sem IA; aqui ele entra como caso, na seção das três perguntas, porque não é um jeito de pedir. As situações e os documentos dos exemplos são fictícios.</p>
 </section>
 
 <!-- rodape -->
@@ -578,6 +614,28 @@ Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor
     v.hidden = false;
     v.innerHTML = tqAns[0] === 's' ? '<b>Este caso pede delegação.</b> ' + (tqAns[1] === 'n' ? 'Mas antes escreva a regra que está na sua cabeça: sem ela, você entrega a decisão junto.' : 'Com o critério no pedido, e a conferência na sua mão.') : '<b>Este caso pede pensar junto.</b> Diga o que já sabe e o que já confere, e termine em pergunta. Quando a decisão estiver tomada, aí sim delegue a execução.';
   }
+
+  /* outros pedidos de pensar junto */
+  var PV = [
+    { t: 'Como cada grupo reage', w: 'Para a mudança que mexe na rotina de alguém: a equipe, o cliente, o parceiro. A planilha mostra o ganho; não mostra quem vai resistir. O pedido antecipa a conversa de corredor antes da reunião de anúncio.', a: '"Como eu comunico esta mudança?"', b: '"Como cada grupo vai reagir a ela?"',
+      p: 'A mudança está descrita acima. Ela afeta estes grupos: [liste os grupos].\nComo cada grupo vai reagir a ela?\nPara cada grupo:\n- a reação provável no primeiro mês;\n- o principal argumento que vai usar contra;\n- quanto poder tem para travar a mudança: alto, médio ou baixo;\n- o que precisaria ouvir, ou que garantia precisaria ter, para aceitar.\nRestrição: não monte um cenário em que todo mundo aceita em paz.' },
+    { t: 'Aprender um tema', w: 'Para o assunto técnico que você precisa entender até a reunião, e que todo mundo na sala parece já saber. É pensar junto para aprender: você conta o que já sabe e onde trava, e recebe o que fecha as suas lacunas, não uma aula genérica.', a: '"Me explique este tema."', b: '"Isto eu já sei. Onde eu travo?"',
+      p: 'Preciso entender [o tema] para [a situação: a reunião de sexta, a decisão do mês].\nO que eu já sei: [três ou quatro frases, do jeito que você explicaria a um colega].\nOnde eu travo: [as dúvidas, uma por linha, o mais concretas possível].\nO que eu preciso: antes de explicar, diga quais das minhas travas são de definição, quais são de método e quais dependem de convenção, onde cada empresa faz de um jeito.\nDepois: resolva uma trava por vez, apontando onde a resposta vale em qualquer lugar e onde é convenção da casa, que eu preciso confirmar aqui dentro.\nFeche com três perguntas que eu deveria fazer ao meu time antes de sair aplicando.\nNão me conte a história do tema. Vá direto no que destrava.' }
+  ];
+  var pvTabs = document.getElementById('pvTabs'), pvBtns = [];
+  PV.forEach(function (x, i) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = x.t; b.addEventListener('click', function () { showPv(i); }); pvTabs.appendChild(b); pvBtns.push(b); });
+  function showPv(i) {
+    press(pvBtns, function (b) { return b === pvBtns[i]; }, 'aria-selected');
+    var x = PV[i];
+    document.getElementById('pvWhen').textContent = x.w;
+    document.getElementById('pvSwap').hidden = !x.a;
+    document.getElementById('pvFrom').textContent = x.a;
+    document.getElementById('pvTo').textContent = x.b;
+    document.getElementById('pvLab').textContent = x.t;
+    document.getElementById('pvText').textContent = x.p;
+  }
+  document.getElementById('pvCopy').addEventListener('click', function () { copyText(document.getElementById('pvText').innerText, this); });
+  showPv(0);
 
   /* copiar */
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });

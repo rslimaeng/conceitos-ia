@@ -510,13 +510,13 @@ Se a pergunta exigir uma suposição forte, como “por que caiu?”, responda c
 
   /* 4 · média por segmento */
   var SG = {
-    geral: { rows: [['Todas', 7.2, 1000]], note: '7,2 de 10. Parece razoável, e não aponta nenhum lugar para agir.' },
-    canal: { rows: [['Site', 7.9, 400], ['Aplicativo', 7.6, 300], ['Balcão', 7.4, 150], ['Convênio', 4.3, 150]], note: 'A média de 7,2 era três grupos bem e um grupo muito mal: quem se inscreveu por convênio deu 4,3. É o problema que a média escondia.' },
-    regiao: { rows: [['Nordeste', 7.3, 250], ['Sudeste', 7.2, 250], ['Sul', 7.1, 250], ['Centro-Oeste', 7.1, 250]], note: 'Por região, quase nada muda. Nem todo corte revela alguma coisa, e é por isso que se pede todos, e não só o que você já suspeita.' }
+    geral: { rows: [['Todas', 5.9, 1000]], note: '5,9 de 10. Não é bom, e não aponta nenhum lugar para agir.' },
+    canal: { rows: [['Site', 6.6, 400], ['Aplicativo', 6.2, 300], ['Balcão', 6.0, 150], ['Convênio', 3.3, 150]], note: 'A média de 5,9 era três grupos parecidos e um grupo muito abaixo: quem se inscreveu por convênio deu 3,3. É o problema que a média escondia.' },
+    regiao: { rows: [['Nordeste', 6.0, 250], ['Sudeste', 5.9, 250], ['Sul', 5.8, 250], ['Centro-Oeste', 5.9, 250]], note: 'Por região, quase nada muda. Nem todo corte revela alguma coisa, e é por isso que se pede todos, e não só o que você já suspeita.' }
   };
   var sgBars = document.getElementById('sgBars'), sgNote = document.getElementById('sgNote');
   toggle('[data-sg]', function (k) {
-    sgBars.innerHTML = SG[k].rows.map(function (r) { return '<div class="sg-row"><span>' + r[0] + '</span><div class="sg-track"><div class="sg-fill' + (r[1] < 6 ? ' low' : '') + '" data-w="' + (r[1] * 10) + '"></div></div><span class="sg-val">' + fmt(r[1]) + '<small>' + r[2] + ' resp.</small></span></div>'; }).join('');
+    sgBars.innerHTML = SG[k].rows.map(function (r) { return '<div class="sg-row"><span>' + r[0] + '</span><div class="sg-track"><div class="sg-fill' + (r[1] < 5 ? ' low' : '') + '" data-w="' + (r[1] * 10) + '"></div></div><span class="sg-val">' + fmt(r[1]) + '<small>' + r[2] + ' resp.</small></span></div>'; }).join('');
     sgBars.querySelectorAll('.sg-fill').forEach(function (f) { f.style.width = f.dataset.w + '%'; });
     sgNote.textContent = SG[k].note;
   }, 'geral');
@@ -543,8 +543,8 @@ Se a pergunta exigir uma suposição forte, como “por que caiu?”, responda c
 
   /* 7 · as três leituras */
   var LT = [
-    { t: 'É relevante?', ia: '“A região Sul tem nota 0,4 abaixo da média.”', voce: 'Isso era esperado? Existe uma explicação da operação que eu conheço e ela não, como uma loja que abriu no mês?', ped: 'Liste os desvios que você encontrou, do maior para o menor, com o tamanho da diferença e quantas respostas sustentam cada um. Não diga quais são importantes: isso eu decido.' },
-    { t: 'É aceitável ou crítico?', ia: '“28% dos clientes de convênio deram nota abaixo de 5.”', voce: 'Qual é a meta? Quanto era no período anterior? Quanto esse grupo pesa no faturamento? O número não traz a régua; a régua é sua.', ped: 'Compare esse número com a meta e com o período anterior, que eu informo aqui: [meta] · [período anterior]. Mostre a diferença, sem adjetivo.' },
+    { t: 'É relevante?', ia: '“A região Sul tem nota 0,1 abaixo da média.”', voce: 'Isso era esperado? Existe uma explicação da operação que eu conheço e ela não, como uma loja que abriu no mês?', ped: 'Liste os desvios que você encontrou, do maior para o menor, com o tamanho da diferença e quantas respostas sustentam cada um. Não diga quais são importantes: isso eu decido.' },
+    { t: 'É aceitável ou crítico?', ia: '“72% dos clientes de convênio deram nota abaixo de 5.”', voce: 'Qual é a meta? Quanto era no período anterior? Quanto esse grupo pesa no faturamento? O número não traz a régua; a régua é sua.', ped: 'Compare esse número com a meta e com o período anterior, que eu informo aqui: [meta] · [período anterior]. Mostre a diferença, sem adjetivo.' },
     { t: 'Qual é a causa?', ia: '“A causa provável é uma falha no cadastro dos clientes de convênio.”', voce: 'Isso está nos dados ou é dedução? O que derrubaria essa explicação? Causa proposta pela IA entra como hipótese até alguém confirmar.', ped: 'Marque cada causa que você propôs como “está nos dados” (com coluna e linhas) ou “hipótese”. Para cada hipótese, diga que dado a confirmaria e que dado a derrubaria.' }
   ];
   var ltBtns = document.querySelectorAll('[data-lt]'), ltPanel = document.getElementById('ltPanel');

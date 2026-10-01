@@ -297,7 +297,7 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 @keyframes pop { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes blink { 50% { opacity: 0; } }
 @media (max-width: 860px) {
-  .builder, .verbs, .convs, .lib, .fence, .take, .dj-wrap, .dj-when, .dt-rule, .dl-wrap, .dl-copies { grid-template-columns: 1fr; }
+  .builder, .verbs, .convs, .lib, .fence, .take, .dj-wrap, .dj-when, .dt-rule, .dl-wrap, .dl-copies, .cr-pair { grid-template-columns: 1fr; }
   .dl-tbl td:first-child { white-space: normal; }
   .out { position: static; }
   .step { grid-template-columns: 1fr; gap: 4px; }
@@ -329,6 +329,12 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* ---- só desta peça ---- */
+.cr-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.cr-pair > div { min-width: 0; }
+.cr-pair .q { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.tablewrap .vtable td:first-child { white-space: normal; }
 </style>
 
 <div class="page">
@@ -393,6 +399,11 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
     <div class="step" data-step="4"><span class="add"><b>+</b> o que não pode faltar</span><div class="ftrack"><div class="fbar" style="width:8%"></div><span class="what">sobra o que você levaria</span></div></div>
   </div>
   <div class="caption" id="fCap" aria-live="polite"></div>
+  <div class="dl-note info">
+    <b>Por que tanto site feito por IA sai roxo</b>
+    <p>Uma explicação que circula entre quem faz site: uma ferramenta muito usada para montar sites trazia um roxo como cor de exemplo. Os tutoriais copiaram o exemplo, e a IA aprendeu lendo esses tutoriais. Aprendeu que “botão moderno” é roxo. Quando o pedido não diz a cor, ela escolhe a mais provável, e <strong>a mais provável é a média do que ela leu.</strong></p>
+    <p>Com o seu relatório acontece o mesmo: sem a situação da sua empresa escrita, ele sai com a cara do relatório de qualquer empresa. Não é defeito da IA. É o que sobra quando o contexto fica na sua cabeça.</p>
+  </div>
   <p class="punch">Estreitar não é alongar. Pedido longo cheio de <em>“capriche”</em> e <em>“seja detalhado”</em> não fecha porta nenhuma.</p>
 </section>
 
@@ -418,6 +429,11 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
     </div>
   </div>
   <p class="hint">Os cinco primeiros campos melhoram a resposta. O sexto melhora a sua conferência: sem critério, qualquer resposta parece certa, inclusive para quem pediu.</p>
+  <p class="intro"><strong>Como saber se o sexto campo está bem escrito.</strong> Compare dois critérios para a mesma tela, a que mostra ao paciente quanto tempo falta para ser atendido.</p>
+  <div class="cr-pair">
+    <div class="dl-note warn"><b>Critério que cada um lê de um jeito</b><p class="q">“O sistema é fácil de usar.”</p><p>Fácil para quem? Fazendo o quê? Qualquer resposta passa, porque não há o que medir.</p></div>
+    <div class="dl-note good"><b>Critério que passa ou não passa</b><p class="q">“Um paciente com celular simples acha o tempo de espera em menos de 30 segundos, sem criar conta.”</p><p>Tem quem usa, o que faz, em quanto tempo e com que condição. Dá para conferir com um cronômetro na mão.</p></div>
+  </div>
 </section>
 
 <!-- 3b -->
@@ -481,6 +497,7 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
     <div class="dest"><b>Destino</b><p>Formato, tamanho, quem lê, o que ignorar, o que fazer na dúvida, como conferir. Quanto mais disso, menos ela adivinha.</p></div>
     <div class="traj"><b>Trajeto</b><p>Em que ordem pensar, que fórmula usar, por onde começar. Os modelos atuais costumam achar um caminho melhor que o ditado.</p></div>
   </div>
+  <p class="hint">Cuidado com o pedido que parece destino e é desejo: “melhore a recepção dos clientes novos” não diz como reconhecer que chegou; “o cliente novo emite a primeira nota sozinho, no primeiro dia” diz. Essa linha se escreve no <a href="#s-campos">critério de sucesso</a>.</p>
   <p class="hint">A exceção: quando a ordem é o próprio requisito (uma checagem obrigatória, um passo que depende do outro), ela deixa de ser trajeto e vira destino.</p>
 </section>
 
@@ -605,6 +622,18 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
     <details class="trap"><summary>Escrever o critério de sucesso como opinião</summary><p>“Que fique bom” não é critério. Critério é o que alguém faz depois de ler: decide, aprova, envia, corrige.</p></details>
     <details class="trap"><summary>Rodar de novo até sair uma resposta que agrada</summary><p>Cada rodada é uma amostra diferente, e sempre vai existir uma que agrada, inclusive quando todas estão erradas. O caminho é mudar o pedido.</p></details>
   </div>
+  <p class="intro"><strong>Quando o problema é o pedido, o defeito da resposta diz qual campo mexer.</strong> Mude esse campo e rode de novo.</p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <thead><tr><th>A resposta veio</th><th>Mexa em</th><th>O que acrescentar</th></tr></thead>
+      <tbody>
+        <tr><td>Genérica, servia para qualquer empresa</td><td>Contexto</td><td>A sua situação: números, prazos, o que já foi decidido</td></tr>
+        <tr><td>Rasa: tem o que você pediu, sem profundidade</td><td>Tarefa</td><td>Quais pontos aprofundar, e um exemplo ou caso prático de cada</td></tr>
+        <tr><td>No tom errado: formal demais para a equipe, solta demais para a diretoria</td><td>Contexto</td><td>Quem vai ler, e o tom que essa pessoa espera</td></tr>
+        <tr><td>Com a informação certa, mas difícil de usar</td><td>Formato</td><td>Tabela, lista ou checklist, e o tamanho</td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <!-- 8 -->
@@ -624,7 +653,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
     <dt>Delimitador</dt><dd>Uma etiqueta, como &lt;tarefa&gt; … &lt;/tarefa&gt;, que marca onde cada parte do pedido começa e termina.</dd>
     <dt>Metaprompt</dt><dd>Um pedido para a IA montar o pedido, perguntando antes o que falta.</dd>
   </dl>
-  <p class="foot">Simplificação didática. As porcentagens do jogo e as larguras do funil são ilustrativas. Os nomes dos campos variam entre materiais; o que não varia é que cada um responde a uma pergunta que a IA não tem como adivinhar. A fala citada é de 2026, em tradução livre e resumida; o que vale para os modelos muda a cada geração.</p>
+  <p class="foot">Simplificação didática. As porcentagens do jogo e as larguras do funil são ilustrativas, assim como os exemplos de critério e de pedido, inclusive os 30 segundos. Os nomes dos campos variam entre materiais; o que não varia é que cada um responde a uma pergunta que a IA não tem como adivinhar. A fala citada é de 2026, em tradução livre e resumida; o que vale para os modelos muda a cada geração.</p>
 </section>
 
 
@@ -722,7 +751,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 
   /* 3 · montador */
   var CAMPOS = [
-    { k: 'papel', n: 'Papel', q: 'quem a IA deve ser', sem: 'Ela responde de lugar nenhum, e o texto sai sem ponto de vista.' },
+    { k: 'papel', n: 'Papel', q: 'quem a IA deve ser', sem: 'ela escreve de um ponto de vista neutro. Inclua quando o olhar muda a resposta: o cliente, o auditor.' },
     { k: 'contexto', n: 'Contexto', q: 'a situação, com números e prazos', sem: 'Ela preenche o que não sabe com o que é comum, e o comum não é a sua empresa.' },
     { k: 'tarefa', n: 'Tarefa', q: 'o que fazer, começando por um verbo', sem: 'Ela devolve reflexão quando você queria o documento.' },
     { k: 'formato', n: 'Formato', q: 'estrutura, tamanho, seções', sem: 'Vem em texto corrido, e você reformata na mão.' },

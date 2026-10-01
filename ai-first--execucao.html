@@ -213,6 +213,21 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
 .tb-tabs button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 7px 14px; font-size: .92rem; color: var(--text-muted); }
 .tb-tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
 .tb-pane { display: grid; gap: 10px; }
+/* 3 · o passo que tira */
+.add { display: grid; gap: 12px; border-top: 1px dashed var(--border-strong); padding-top: 20px; }
+.add h3 { font-size: 1.25rem; }
+.add > p { max-width: 64ch; color: var(--text-muted); }
+.pd-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.pd-list { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.pd-list li.pd-cut { color: var(--atencao-texto); font-weight: 600; }
+.pd-one { font-family: var(--font-mono); font-size: .88rem; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
+.pd-list[hidden], .pd-one[hidden] { display: none; }
+/* 4 · o apontamento */
+.ap-txt { font-size: .97rem; line-height: 1.75; }
+.ap-txt mark { background: var(--accent-soft); color: var(--text); border-radius: 3px; padding: 1px 3px; }
+.ap-txt mark small { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-right: 5px; }
+.ap-txt mark.ap-dec { background: var(--ok-soft); }
+.ap-txt mark.ap-dec small { color: var(--ok-texto); }
 
 /* para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
@@ -322,13 +337,33 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     </table>
   </div>
   <p class="hint" id="chTxt" aria-live="polite"></p>
+  <div class="add">
+    <h3>Um passo que tira, em vez de acrescentar</h3>
+    <p>Nem toda fase produz mais coisa. Numa cadeia de pedidos, a resposta de um alimenta o seguinte, e às vezes o melhor pedido da cadeia é o que <strong>corta o que não serve</strong> antes de seguir. No diagnóstico das seis entrevistas, é tirar a conversa de abertura antes de analisar. Troque entre os dois jeitos de pedir.</p>
+    <div class="seg" role="group" aria-label="Como pedir">
+      <button type="button" data-pd="um" aria-pressed="true">Um pedido só</button>
+      <button type="button" data-pd="seis" aria-pressed="false">Seis pedidos em sequência</button>
+    </div>
+    <div class="pd-box" aria-live="polite">
+      <p class="pd-one" id="pdOne">Leia as seis transcrições e faça um diagnóstico com prioridades.</p>
+      <ol class="pd-list" id="pdList" hidden>
+        <li>Liste as perguntas que queremos responder com estas seis entrevistas.</li>
+        <li class="pd-cut">Tire das seis transcrições a conversa de abertura e o que fugiu do assunto. Devolva só os trechos que respondem às perguntas.</li>
+        <li>Analise uma entrevista por vez: cada dor citada, com a frase que a sustenta.</li>
+        <li>Conte em quantas entrevistas cada dor aparece.</li>
+        <li>Ordene as dores pela contagem e proponha três prioridades.</li>
+        <li>Para cada prioridade, aponte as frases de origem.</li>
+      </ol>
+      <div class="verdict" id="pdVer"></div>
+    </div>
+  </div>
 </section>
 
 <!-- 4 -->
 <section class="sec" id="s-papeis" aria-labelledby="h-papeis">
   <span class="eyebrow">Quem executa, quem confere</span>
   <h2 id="h-papeis">Nunca deixe quem produziu ser o único a dizer que está bom</h2>
-  <p class="intro">No financeiro, quem lança o pagamento não é quem aprova: é a regra mais antiga do controle interno. Um sistema de análise com onze auxiliares (pequenos assistentes de IA, cada um com uma tarefa só), divididos em dois grupos que nunca se misturam. É a mesma divisão entre quem escreve um parecer e quem revisa antes de assinar. <strong>Clique num auxiliar, e depois misture os papéis.</strong></p>
+  <p class="intro">No financeiro, quem lança o pagamento não é quem aprova: é a regra mais antiga do controle interno. Um sistema de análise com onze auxiliares (pequenos assistentes de IA, cada um com uma tarefa só), divididos em dois grupos que nunca se misturam. <strong>Clique num auxiliar, e depois misture os papéis.</strong></p>
   <div class="seg" role="group" aria-label="Papéis">
     <button type="button" data-rl="sep" aria-pressed="true">Papéis separados</button>
     <button type="button" data-rl="mix" aria-pressed="false">Quem faz também aprova</button>
@@ -338,7 +373,23 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     <div class="rl-col rl-conf"><div class="rl-h"><span class="eyebrow">Conferem · não fazem, apontam</span><span class="rl-c">6</span></div><div id="rlCf" style="display:grid;gap:6px"></div></div>
   </div>
   <div class="rl-det" id="rlDet" aria-live="polite"></div>
-  <p class="punch">Um revisor conferiu os dez critérios da lista e aprovou os dez. O resultado tinha catorze problemas. <em>Ele conferiu a saída; o defeito estava no pedido.</em></p>
+  <div class="add">
+    <h3>Como um conferente aponta</h3>
+    <p>Quem confere não diz “parece estranho”. Diz <strong>onde</strong>, <strong>com base em quê</strong> e <strong>o que está faltando</strong>, e devolve a decisão para quem responde por ela. Na planilha, “onde” é a aba e a célula (C14). O exemplo confere a planilha do orçamento contra os documentos de onde ela deveria ter saído. Troque entre os dois apontamentos.</p>
+    <div class="seg" role="group" aria-label="Qual apontamento">
+      <button type="button" data-ap="vago" aria-pressed="true">Apontamento vago</button>
+      <button type="button" data-ap="end" aria-pressed="false">Apontamento com endereço</button>
+    </div>
+    <div class="pd-box"><p class="ap-txt" id="apTxt" aria-live="polite"></p><div class="verdict" id="apVer"></div></div>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">Pedido para quem confere uma planilha</span><button type="button" class="btn" id="apCopy">Copiar</button></div><pre id="apText">Confira <i>a planilha do orçamento</i> contra <i>os documentos de origem</i> que colo abaixo. Não corrija nada.
+
+Para cada discordância, uma linha com três partes:
+1. onde está: a aba e a célula, ou a página e o parágrafo
+2. qual documento discorda, com o trecho que discorda
+3. o que está faltando na planilha, se algo estiver
+
+No fim, não decida por mim: liste as discordâncias e diga quais pedem decisão minha.</pre></div>
+  </div>
 </section>
 
 <!-- 5 -->
@@ -365,14 +416,14 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     </div>
     <div class="tv-res" id="tvRes" aria-live="polite"><span class="eyebrow">A trava</span><p class="hint">Preencha e passe pela trava.</p></div>
   </div>
-  <p class="hint">A trava é a ficha dos <a href="./ai-first--medicao.html">quatro campos</a> morando dentro do processo, em vez de num manual. Ninguém precisa lembrar dela: ela aparece na hora em que o trabalho passa. É assim que uma <a href="./ai-first--memoria.html">correção vira regra</a>.</p>
+  <p class="hint">A trava é parente da ficha de <a href="./ai-first--medicao.html">quatro campos</a>: confere dono, número e data, e mora no caminho do trabalho, em vez de num manual. Ninguém precisa lembrar dela: ela aparece na hora em que o trabalho passa. É assim que uma <a href="./ai-first--memoria.html">correção vira regra</a>.</p>
 </section>
 
 <!-- 7 -->
 <section class="sec" id="s-plano" aria-labelledby="h-plano">
   <span class="eyebrow">Confirmar antes de fazer</span>
   <h2 id="h-plano">A fase mais barata de todas: pedir que ela confirme o plano antes de fazer</h2>
-  <p class="intro">É o “só confirmando” que o bom fornecedor manda antes de produzir mil unidades: um e-mail curto que evita um lote errado. Mesma planilha de pedidos em produção, dois pedidos. O segundo termina com uma instrução: <strong>confirme em três bullets e espere o meu OK</strong> (bullets são tópicos curtos, um por linha). São trinta segundos que evitam um documento inteiro feito em cima de um entendimento errado. A “mesa” do gráfico é o espaço que a IA tem para ler, de uma vez, o material e a conversa inteira.</p>
+  <p class="intro">É o “só confirmando” que o bom fornecedor manda antes de produzir mil unidades: um e-mail curto que evita um lote errado. A mesma planilha de pedidos, dois jeitos de pedir o relatório. O segundo termina com: <strong>confirme em três bullets e espere o meu OK</strong>. Bullet é um tópico curto, um por linha. A “mesa” do gráfico é o espaço que a IA tem para ler, de uma vez, o material e a conversa.</p>
   <div class="seg" role="group" aria-label="Qual pedido">
     <button type="button" data-pl="vago" aria-pressed="true">Pedido vago</button>
     <button type="button" data-pl="sit" aria-pressed="false">Pedido que confirma o plano</button>
@@ -398,6 +449,20 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     </div>
   </div>
   <p class="hint">Por que a conversa ocupa espaço, e o que acontece quando a mesa enche: <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>.</p>
+  <div class="add">
+    <h3>Depois do OK: o plano por escrito, e uma conversa nova para fazer</h3>
+    <p>Quando o trabalho é grande, a conversa em que vocês combinaram o plano já está cheia: opções que caíram, correções, idas e vindas. Tudo isso continua na mesa e disputa atenção com o que foi decidido. O passo seguinte ao OK é <strong>pedir o plano num bloco só, abrir uma conversa nova, colar o plano e o material, e só então mandar fazer</strong>. A conversa nova começa de mesa limpa, e o plano escrito vira a régua para conferir cada fase.</p>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">O plano para levar à conversa nova</span><button type="button" class="btn" id="pnCopy">Copiar</button></div><pre id="pnText">Escreva o plano que combinamos num bloco só, para eu colar numa conversa nova que vai executar o trabalho.
+
+Inclua:
+- o objetivo, em uma frase
+- as fases, na ordem, com o que cada uma entrega
+- como saber que cada fase está pronta
+- o que decidimos deixar de fora
+
+Não inclua as opções que descartamos nem a história desta conversa. Se alguma decisão não ficou clara, escreva como pergunta em vez de decidir por mim.</pre></div>
+    <p class="hint">Se o trabalho parar no meio, o bloco leva também o que já está pronto e o que falta: <a href="./claude-code--handoff.html#s-continuidade">o pedido para continuar numa conversa nova</a>.</p>
+  </div>
 </section>
 
 <!-- 8 -->
@@ -424,7 +489,7 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     <dt>Trava</dt><dd>Um portão que não depende de ninguém lembrar: campo obrigatório que devolve o trabalho quando falta alguma coisa.</dd>
     <dt>Rastreabilidade</dt><dd>Conseguir responder “de onde vocês tiraram isso?” para qualquer frase do resultado.</dd>
   </dl>
-  <p class="foot">Simplificação didática. O custo em fases refeitas, as barras da mesa e as contagens de palavras e rodadas mostram a forma, não a medida: cada trabalho tem o seu. O número de fases também varia; o que não varia é existir um portão entre elas.</p>
+  <p class="foot">Simplificação didática. O custo em fases refeitas, as barras da mesa e as contagens de palavras e rodadas mostram a forma, não a medida: cada trabalho tem o seu. O número de fases também varia; o que não varia é existir um portão entre elas. Os números do apontamento da planilha são inventados, para mostrar a forma.</p>
 </section>
 
 <!-- rodape -->
@@ -564,13 +629,28 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
   }
   showCh(2);
 
+  /* 3 · o passo que tira */
+  var PD = {
+    um: { c: 'no', t: '<b>A conversa de abertura entra na análise.</b> O cafezinho, a história de cada um na empresa e o comentário sobre o trânsito disputam espaço com as dores, e nada diz o que ficou de fora.' },
+    seis: { c: 'ok', t: '<b>O segundo pedido é o que tira.</b> Sem ele, os passos 3 a 6 gastariam espaço analisando conversa que não responde a nenhuma pergunta. Cada resposta dá para conferir antes de virar a entrada do pedido seguinte.' }
+  };
+  var pdBtns = document.querySelectorAll('[data-pd]');
+  function setPd(k) {
+    pressGroup(pdBtns, function (x) { return x.dataset.pd === k; });
+    document.getElementById('pdOne').hidden = k !== 'um';
+    document.getElementById('pdList').hidden = k !== 'seis';
+    var v = document.getElementById('pdVer'); v.className = 'verdict ' + PD[k].c; v.innerHTML = PD[k].t;
+  }
+  pdBtns.forEach(function (b) { b.addEventListener('click', function () { setPd(b.dataset.pd); }); });
+  setPd('um');
+
   /* 4 · papéis */
   var EX = [
     ['Pesquisa o setor antes da conversa', 'Levanta o que já se sabe do negócio de quem pediu.'],
     ['Organiza os pedidos na ordem em que precisam rodar', 'Monta a sequência das fases e o que cada uma recebe.'],
     ['Levanta onde a ferramenta já é usada sem ninguém ter declarado', 'Acha o uso escondido antes de propor uso novo.'],
     ['Faz a conta que sustenta a proposta', 'Transforma o achado em número.'],
-    ['Diz se o primeiro resultado já serve, ou se volta', 'Olha o próprio rascunho antes de ele seguir para quem confere.']
+    ['Relê o próprio rascunho e marca o que achou fraco', 'Aponta os trechos frágeis antes de o rascunho seguir. Quem diz se serve é quem confere.']
   ];
   var CF = [
     ['Se a peça é do tipo que diz ser', 'Um relatório que virou lista de achados é devolvido.'],
@@ -601,6 +681,21 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     else { rlBtns[rlBtns.length - 1].click(); }
   }); });
   rlBtns[rlBtns.length - 1].click();
+
+  /* 4 · o apontamento */
+  var AP = {
+    vago: { t: 'A premissa de crescimento de vendas parece otimista. Talvez valha revisar.', c: 'no', v: '<b>Ninguém sabe o que fazer com isso.</b> Qual premissa, otimista comparada com o quê, e revisar para quanto? Quem recebe precisa refazer a conferência para descobrir.' },
+    end: { t: '<mark><small>onde</small>Aba Premissas, célula C14: crescimento de vendas de 12% no ano que vem.</mark> <mark><small>a fonte que discorda</small>A ata da reunião comercial de março fala em 5% a 7%. Os seus 12% estão acima da previsão da própria equipe.</mark> <mark><small>o que falta</small>A renegociação do contrato com o maior cliente, prevista para o segundo semestre, não aparece em nenhuma linha.</mark> <mark class="ap-dec"><small>a decisão volta</small>Manter os 12% é uma decisão sua.</mark>', c: 'ok', v: '<b>Dá para agir em dois minutos.</b> Você abre a célula, lê a ata e decide. O conferente não mudou nada: apontou e devolveu.' }
+  };
+  var apBtns = document.querySelectorAll('[data-ap]');
+  function setAp(k) {
+    pressGroup(apBtns, function (x) { return x.dataset.ap === k; });
+    document.getElementById('apTxt').innerHTML = AP[k].t;
+    var v = document.getElementById('apVer'); v.className = 'verdict ' + AP[k].c; v.innerHTML = AP[k].v;
+  }
+  apBtns.forEach(function (b) { b.addEventListener('click', function () { setAp(b.dataset.ap); }); });
+  setAp('vago');
+  document.getElementById('apCopy').addEventListener('click', function () { copyText(document.getElementById('apText').innerText, this); });
 
   /* 5 · você é o portão */
   var GQ = [
@@ -659,6 +754,7 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
   }
   plBtns.forEach(function (b) { b.addEventListener('click', function () { setPl(b.dataset.pl); }); });
   setPl('vago');
+  document.getElementById('pnCopy').addEventListener('click', function () { copyText(document.getElementById('pnText').innerText, this); });
 
   /* 8 · abas */
   var TB = [

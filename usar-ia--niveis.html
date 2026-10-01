@@ -211,6 +211,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .fence b { font-weight: 600; }
 .fence p { font-size: .92rem; color: var(--text-muted); }
 
+/* 9 · o que o uso não ensina */
+.rr-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-left: 4px solid var(--atencao); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; }
+.rr-box h3 { font-size: 1.25rem; }
+.rr-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+
+/* 10 · o gesto de cada virada */
+.gs-box { display: grid; gap: 14px; }
+.gs-box h3 { font-size: 1.3rem; }
+.gs-list { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.gs-list li { background: var(--bg-elev); border: 1px solid var(--border-strong); border-top: 3px solid var(--ok); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.gs-list .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ok-texto); }
+.gs-list p { font-size: .95rem; }
+
 /* para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -224,7 +237,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 @media (max-width: 860px) {
   .nv-facts { grid-template-columns: 1fr 1fr; }
-  .nv-analogy, .es-detail, .fi-wrap, .take, .ps-grid, .fence { grid-template-columns: 1fr; }
+  .nv-analogy, .es-detail, .fi-wrap, .take, .ps-grid, .fence, .gs-list { grid-template-columns: 1fr; }
   .ad-q { grid-template-columns: 34px minmax(0, 1fr); }
   .ad-q .opts { grid-column: 2; }
   .mt-card dl { grid-template-columns: 1fr; }
@@ -359,6 +372,16 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <p class="hint">A forma, não a medida. Os meses e as alturas são ilustrativos; o que o desenho afirma é só que as viradas não vêm do volume.</p>
   </div>
   <p class="punch">Subir de degrau é <em>treinar outra coisa</em>, não repetir a mesma com mais frequência.</p>
+  <div class="rr-box">
+    <h3>O que o uso não ensina sozinho</h3>
+    <p>É uma observação comum em quem acompanha equipes usando IA: descrever o pedido é o que as pessoas aprendem sozinhas, usando. O <b>discernimento</b>, que é avaliar o que voltou antes de usar, aparece bem menos. Três comportamentos costumam faltar:</p>
+    <ul class="rr-list">
+      <li><b>Questionar o raciocínio</b> que levou à resposta, e não só ler a conclusão.</li>
+      <li><b>Conferir o fato</b> antes de repassar.</li>
+      <li><b>Notar o contexto que faltou</b> no pedido, e que a resposta preencheu por conta própria.</li>
+    </ul>
+    <p class="hint">Combina com a linha parada do gráfico: o uso ensina a pedir melhor, e para aí. A conferência é uma virada que se treina de propósito, em qualquer degrau. Como conferir está em <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
+  </div>
 </section>
 
 <section class="sec" id="s-tarefa" aria-labelledby="h-tarefa">
@@ -402,6 +425,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <div><b>Mede o seu uso, não o da empresa</b><p>Dá para estar no N5 dentro de uma empresa que não tem nada rodando, e o contrário. São duas medidas, e misturar as duas produz discussão sem saída.</p></div>
     <div><b>Vale para esta semana</b><p>É uma fotografia, não um diploma. A única comparação que interessa é com a sua ficha de antes.</p></div>
   </div>
+  <div class="gs-box">
+    <h3>O gesto de cinco minutos em cada virada</h3>
+    <p class="intro">Os cartões desta seção levam ao porquê de cada virada. O que muda o degrau, na prática, é um gesto pequeno, repetido até virar hábito. Os três primeiros:</p>
+    <ol class="gs-list">
+      <li><span class="k">N1 → N2</span><p>Peça a mesma coisa de dois jeitos, um curto e um com contexto, e compare o que volta lado a lado.</p></li>
+      <li><span class="k">Dentro do N2</span><p>Peça que a IA faça as perguntas de que precisa antes de responder. E quando uma resposta só ficou boa depois de várias voltas, <b>peça o pedido que teria acertado de primeira, e salve</b>.</p></li>
+      <li><span class="k">N2 → N3</span><p>Tudo o que você reexplica toda vez vai para um lugar que persiste: o projeto, a instrução salva, o documento fixo.</p></li>
+    </ol>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">O pedido que teria acertado de primeira</span><button type="button" class="btn" id="gsCopy">Copiar</button></div><pre id="gsText">Esta conversa precisou de várias voltas até chegar no resultado que eu queria.
+Escreva o pedido único que teria chegado neste resultado de primeira, com o contexto, o formato e as restrições que foram aparecendo nas minhas correções.
+Deixe de fora o que for só desta vez. Quero guardar esse pedido e usar de novo na próxima.</pre></div>
+    <p class="hint">Os pedidos salvos formam o bloco de notas do N2. O que se repete em todos eles é o que vai para o projeto no N3.</p>
+  </div>
 </section>
 
 <section class="sec" id="s-levar" aria-labelledby="h-levar">
@@ -416,6 +452,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <dt>Degrau</dt><dd>O jeito como você usa IA hoje, descrito por um comportamento que dá para reconhecer.</dd>
     <dt>Sintoma</dt><dd>O sinal concreto do degrau: o que você faz, não o que você sabe.</dd>
     <dt>Virada</dt><dd>A mudança de hábito que leva ao degrau seguinte. Nunca é "usar mais".</dd>
+    <dt>Discernimento</dt><dd>Avaliar o que a IA devolveu antes de usar: questionar o raciocínio, conferir o fato, notar o contexto que faltou.</dd>
     <dt>Horizonte</dt><dd>Os degraus 6 e 7: ficam na escada para mostrar que ela não termina onde a maioria para.</dd>
   </dl>
   <p class="foot">Simplificação didática. A escada de sete degraus é uma forma de organizar o assunto; outros materiais numeram e nomeiam os degraus de outro jeito, e os de cima mudam mais de um material para o outro. Os tempos da tarefa e as alturas do gráfico mostram a forma, não a medida.</p>
@@ -584,6 +621,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   document.getElementById('fiClear').addEventListener('click', function () { FI.forEach(function (f) { fiT[f.k].value = ''; }); buildFi(); });
   document.getElementById('fiCopy').addEventListener('click', function () { copyText(document.getElementById('fiText').textContent, this); });
   buildFi();
+
+  /* o pedido que teria acertado de primeira */
+  document.getElementById('gsCopy').addEventListener('click', function () { copyText(document.getElementById('gsText').innerText, this); });
 })();
 </script>
 

@@ -187,6 +187,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
 .tb-tabs button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 7px 14px; font-size: .92rem; color: var(--text-muted); }
 .tb-tabs button[aria-selected="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
 .tb-pane { display: grid; gap: 10px; }
+/* 7 · quem pede */
+.qp { display: grid; gap: 12px; border-top: 1px dashed var(--border-strong); padding-top: 20px; }
+.qp h3 { font-size: 1.25rem; }
+.qp > p { max-width: 64ch; color: var(--text-muted); }
 
 /* para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
@@ -363,6 +367,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
   <p class="intro">São como os modelos de ofício que a secretaria guarda: a estrutura já está pronta, você só troca o que é do seu caso. O que está marcado é o que você troca.</p>
   <div class="tb-tabs" id="tbTabs" role="tablist" aria-label="Pedidos"></div>
   <div class="tb-pane" id="tbPane" role="tabpanel"></div>
+  <div class="qp">
+    <h3>Quem está pedindo, em sete linhas</h3>
+    <p>O contexto da casa muda a cada pedido; <strong>quem você é, quase nunca</strong>. Escreva isso uma vez e cole no começo de cada conversa nova; se colar virar rotina, guarde num lugar que a ferramenta lê sozinha (<a href="./assistente--onde-a-regra-mora.html#s-acessos">onde cada regra mora</a>).</p>
+    <div class="copy"><div class="copy-head"><span class="eyebrow">Cartão de quem pede</span><button type="button" class="btn" id="qpCopy">Copiar</button></div><pre id="qpText">Sobre mim, para ajustar as suas respostas:
+Cargo: <i>o seu cargo</i>
+Empresa: <i>o ramo e o tamanho, sem precisar do nome</i>
+O que eu faço: <i>duas ou três responsabilidades principais</i>
+O que estou resolvendo agora: <i>um a três problemas do momento</i>
+Como prefiro a resposta: <i>direta, detalhada ou analítica</i>
+Formato que mais uso: <i>lista, tabela ou texto corrido</i>
+Para quem vão as minhas entregas: <i>a equipe, a diretoria ou clientes</i></pre></div>
+  </div>
 </section>
 
 <!-- 8 -->
@@ -581,6 +597,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visib
     document.getElementById('tbCopy').addEventListener('click', function () { copyText(document.getElementById('tbText').innerText, this); });
   }
   showTb(0);
+  document.getElementById('qpCopy').addEventListener('click', function () { copyText(document.getElementById('qpText').innerText, this); });
 })();
 </script>
 </body>

@@ -195,12 +195,24 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .gt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .gt-chips button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 4px 12px; font-size: .88rem; color: var(--text-muted); }
 .gt-chips button:hover { border-color: var(--accent); color: var(--accent); }
+/* 3 · fluxo de decisão: trocar, refazer o pedido ou compactar */
+.fx { list-style: none; margin: 0; padding: 0; display: grid; }
+.fx-q { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; gap: 14px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; }
+.fx-n { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent); color: var(--accent); display: grid; place-items: center; font-family: var(--font-mono); font-size: 13px; }
+.fx-q p { margin: 0; font-weight: 500; color: var(--text); }
+.fx-q small { display: block; font-weight: 400; font-size: .9rem; color: var(--text-muted); margin-top: 2px; }
+.fx-sim { display: grid; gap: 4px; justify-items: end; }
+.fx-sim .eyebrow, .fx-nao { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.fx-nao { margin-left: 30px; padding: 8px 0 8px 14px; border-left: 2px solid var(--border-strong); }
+.fx-fim { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-left: 30px; padding-left: 16px; }
 
 @media (max-width: 860px) {
   .two, .three, .take, .mt-grid { grid-template-columns: 1fr; }
   .gloss { grid-template-columns: 1fr; }
   .gloss dd { margin-bottom: 8px; }
   .cv-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .fx-q { grid-template-columns: 30px minmax(0, 1fr); }
+  .fx-sim { grid-column: 2; justify-items: start; }
 }
 @media (prefers-reduced-motion: reduce) { .cv-b, .hd-l { transition: none; } }
 /* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
@@ -271,23 +283,23 @@ code { font-family: var(--font-mono); font-size: .88em; }
     <div class="cv-scale" aria-hidden="true"><span>o combinado do começo</span><span>a mensagem de agora</span></div>
     <div class="caption" id="cvCap" aria-live="polite"></div>
   </div>
-  <p class="hint">A forma, não a medida: nenhuma ferramenta mostra quanto o começo ainda pesa. Por que a conversa longa perde o combinado está explicado em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (o espaço limitado que a conversa tem para guardar o que foi dito); aqui a pergunta é outra: <strong>em que ponto trocar</strong>.</p>
+  <p class="hint">A forma, não a medida: nenhuma ferramenta mostra quanto o começo ainda pesa. Por que a conversa longa perde o combinado está explicado em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (o espaço limitado que a conversa tem para guardar o que foi dito); aqui a pergunta é outra: <strong>em que ponto trocar</strong>, e quem responde é a <a href="#s-frente">próxima seção</a>.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-frente" aria-labelledby="h-frente">
   <span class="eyebrow">Assunto novo, conversa nova</span>
   <h2 id="h-frente">Compactar ou abrir conversa nova</h2>
-  <p class="intro">Ninguém discute o orçamento e a contratação na mesma pauta só porque a primeira reunião acabou cedo: assunto novo pede pauta nova. <strong>Compactar</strong> é pedir para a conversa se resumir dentro dela mesma, para liberar espaço e seguir no mesmo lugar. Serve quando o trabalho continua o mesmo; o resumo pode perder detalhe, por isso o que importa precisa estar escrito antes. <strong>Conversa nova com handoff</strong> é fechar esta, escrever o estado e abrir outra limpa. A regra que decide entre os dois: <strong>o critério é a mudança de frente, não o tamanho da conversa.</strong></p>
-  <div class="tablewrap">
-    <table class="vtable">
-      <tr><th>Situação</th><th>O que fazer</th></tr>
-      <tr><td>Mesma frente, conversa longa</td><td>Compactar a conversa</td></tr>
-      <tr><td>Mudou de frente</td><td><b>Conversa nova + handoff escrito</b></td></tr>
-      <tr><td>Trabalho pesado pela frente, na mesma frente</td><td>Compactar antes de começar</td></tr>
-      <tr><td>Pausa entre um dia e outro</td><td><b>Conversa nova + handoff escrito</b></td></tr>
-    </table>
-  </div>
+  <p class="intro">Ninguém discute o orçamento e a contratação na mesma pauta só porque a primeira reunião acabou cedo: assunto novo pede pauta nova. <strong>Compactar</strong> é pedir para a conversa se resumir dentro dela mesma, para liberar espaço e seguir no mesmo lugar. Serve quando o trabalho continua o mesmo; o resumo pode perder detalhe, por isso o que importa precisa estar escrito antes. <strong>Conversa nova com handoff</strong> é fechar esta, escrever o estado e abrir outra limpa. O critério principal: <strong>a mudança de frente, não o tamanho da conversa.</strong> Três perguntas, nesta ordem.</p>
+  <ol class="fx" aria-label="Três perguntas para decidir: trocar de conversa, refazer o pedido ou compactar">
+    <li class="fx-q"><span class="fx-n">1</span><p>Mudou de assunto, ou o dia acabou?<small>O relatório fechou e agora vem a apresentação; ou é sexta, e você volta na segunda.</small></p><span class="fx-sim"><span class="eyebrow">sim</span><span class="cv-act go">Conversa nova + handoff</span></span></li>
+    <li class="fx-nao">não</li>
+    <li class="fx-q"><span class="fx-n">2</span><p>Mesmo assunto, e dois ajustes seguidos não pegaram?<small>Você pediu, não saiu; pediu de outro jeito, e ainda não. A terceira tentativa carrega as duas versões erradas junto. O pedido pronto está em <a href="#s-continuidade">um bloco para a conversa nova</a>.</small></p><span class="fx-sim"><span class="eyebrow">sim</span><span class="cv-act no">Conversa nova, com pedido melhor</span></span></li>
+    <li class="fx-nao">não</li>
+    <li class="fx-q"><span class="fx-n">3</span><p>Mesmo assunto, indo bem, só longa?<small>Ou vem trabalho pesado pela frente, como comparar cinco contratos longos.</small></p><span class="fx-sim"><span class="eyebrow">sim</span><span class="cv-act mid">Compactar</span></span></li>
+    <li class="fx-nao">não</li>
+    <li class="fx-fim"><span class="cv-act ok">Siga aqui</span></li>
+  </ol>
   <p class="intro">Agora decida você. Seis situações de uma semana comum.</p>
   <div class="qz" id="frQuiz"></div>
   <p class="qz-score" id="frScore" aria-live="polite"></p>
@@ -336,6 +348,15 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
 <pre id="mtAsk">Escreva um prompt de continuidade para eu colar numa conversa nova. Quatro blocos: o que decidimos, o estado atual (pronto e pela metade), o próximo passo concreto, e o que está em aberto esperando decisão. Sem narrar a conversa: só o que a próxima precisa para continuar. Se alguma decisão não ficou clara, liste como pergunta em vez de decidir por mim.</pre>
   </div>
   <p class="hint">Se for ela quem escreve, leia antes de colar. Quem resume é a conversa que já está cheia, e o começo costuma sair numa frase genérica: confira se as decisões do início estão lá.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Depois de dois ajustes que não pegaram · o pedido que abre a conversa nova</span><button type="button" class="btn" data-copy="cvRetry">Copiar</button></div>
+<pre id="cvRetry">Estou recomeçando numa conversa nova porque, na anterior, o mesmo ajuste não saiu em duas tentativas.
+O que eu quero: [o resultado, em uma frase].
+O que não serve, e já saiu errado: [o que as duas tentativas fizeram].
+Como eu sei que ficou certo: [o que dá para conferir no resultado].
+O material: [o arquivo ou o trecho que ele precisa ler].</pre>
+  </div>
+  <p class="hint">É diferente do erro que volta em outra conversa, outro dia: esse vira linha do manual (<a href="./claude-code--claude-md.html#s-linha">a segunda correção vira regra</a>).</p>
 </section>
 
 <!-- 6 -->

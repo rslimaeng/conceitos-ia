@@ -219,6 +219,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .jp-pane { display: grid; gap: 10px; }
 .jp-conf { margin: 0; padding-left: 20px; color: var(--text-muted); display: grid; gap: 4px; }
 
+/* reforços do acervo: juntar antes de enviar */
+.seg.wr { flex-wrap: wrap; }
+
 /* 9 · para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -385,6 +388,17 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     </div>
   </div>
   <p class="punch">A tabela arruma para ficar bonito, e nesse arrumar <em>as aspas e o quadrinho de dentro somem</em>. Quando algo der errado, olhe o JSON.</p>
+  <span class="eyebrow">Juntar antes de enviar</span>
+  <p class="intro">Rodar uma vez por ficha é ótimo para escrever. É péssimo quando o passo seguinte é enviar: <strong>três fichas viram três mensagens</strong> para o mesmo gerente, e uma planilha de 300 linhas vira 300 e-mails. Antes de enviar, junte as fichas de volta numa lista só. Compare.</p>
+  <div class="seg wr" role="group" aria-label="Como enviar">
+    <button type="button" data-jj="cada" aria-pressed="false">Um envio por ficha</button>
+    <button type="button" data-jj="junta" aria-pressed="true">Juntar antes de enviar</button>
+  </div>
+  <div class="jl-wrap">
+    <div class="jl-view"><pre id="jjMsgs" aria-live="polite"></pre></div>
+    <div class="jl-belt"><span class="eyebrow">Mensagens para o gerente</span><div class="js-big" id="jjN"></div><p class="hint" id="jjWhy"></p></div>
+  </div>
+  <p class="hint">Quando algo sai repetido ou some, a primeira pergunta é <strong>quantos itens chegaram neste passo?</strong> Se um passo não deve repetir de jeito nenhum (mandar o resumo, avisar o gerente), muitas ferramentas têm a opção de rodar uma vez só. Ir um item por vez a ferramenta já faz sozinha; pausa entre um e outro só quando o outro lado limita o ritmo, como em <a href="./automacao--api.html#s-simular">faça um pedido</a>.</p>
 </section>
 
 <!-- 7 -->
@@ -411,7 +425,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     <li>Sim e não estão como <code>true</code> e <code>false</code>, e não como "sim" e "não" entre aspas?</li>
     <li>Os nomes dos campos estão sem acento, sem espaço e sem maiúscula?</li>
     <li>Cada chave e cada colchete que abriu, fechou?</li>
+    <li>Os nomes dos campos são os mesmos da última vez, letra por letra?</li>
   </ol>
+  <p class="hint">Num fluxo, a IA também pode responder nesta ficha, se você pedir o formato: sem ele vem um parágrafo, que você lê e o passo seguinte não consegue usar. Como chegar a esse formato está em <a href="./agente--anatomia.html#s-linha">uma linha por vez</a>. Escolheu o nome de uma chave, fique nele: se hoje vem <code>valor</code> e amanhã <code>valor_total</code>, o passo seguinte deixa de achar, sem avisar.</p>
 </section>
 
 <!-- 9 -->
@@ -624,6 +640,25 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     step();
   });
 
+  /* 6b · juntar antes de enviar */
+  var jjBtns = document.querySelectorAll('[data-jj]');
+  function setJj(k) {
+    pressGroup(jjBtns, function (x) { return x.dataset.jj === k; });
+    var txt, num, why;
+    if (k === 'cada') {
+      txt = PEOPLE.map(function (p, i) { return 'Mensagem ' + (i + 1) + ' · para o gerente\nNovo contato: ' + p.nome + ', ' + p.cargo + '.'; }).join('\n\n');
+      num = PEOPLE.length; why = 'Uma por ficha. Com uma planilha de 300 linhas, seriam 300 mensagens.';
+    } else {
+      txt = 'Mensagem 1 · para o gerente\nNovos contatos de hoje (' + PEOPLE.length + '):\n' + PEOPLE.map(function (p) { return '- ' + p.nome + ', ' + p.cargo; }).join('\n');
+      num = 1; why = 'As fichas voltam a ser uma lista antes do envio. Com 300 linhas, continua uma: a lista cresce, a mensagem não.';
+    }
+    document.getElementById('jjMsgs').textContent = txt;
+    var b = document.getElementById('jjN'); b.textContent = num; b.className = 'js-big' + (num > 1 ? ' bad' : '');
+    document.getElementById('jjWhy').textContent = why;
+  }
+  jjBtns.forEach(function (b) { b.addEventListener('click', function () { setJj(b.dataset.jj); }); });
+  setJj('junta');
+
   /* 7 · erro calado */
   var CC = [
     { et: 'sim escrito por extenso', t: 'O cliente satisfeito caiu na lista errada', ln: '"satisfeito": "true"', m: 'Um sistema de fora mandou <code>"true"</code> entre aspas. Virou palavra, e a regra que espera sim ou não trata como se não fosse sim.', f: 'Confira as aspas no JSON do passo anterior. Sim e não, sem aspas.' },
@@ -661,6 +696,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     document.getElementById('jpCopy').addEventListener('click', function () { copyText(document.getElementById('jpText').innerText, this); });
   }
   showLib(0);
+
 })();
 </script>
 

@@ -358,16 +358,16 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="intro">Como o fechamento de caixa da loja: conferir, guardar, anotar a diferença; item pulado não dá erro na hora, só no dia seguinte. O checklist está escrito no manual de um projeto real, como obrigatório. <strong>Desmarque um item e veja o que a próxima conversa deixa de saber.</strong> Quem executa esse fecho é o <a href="./claude-code--handoff.html">handoff</a>, a passagem de turno por escrito no fim da sessão.</p>
   <div class="op-check" id="fcList"></div>
   <div class="verdict" id="fcVer" aria-live="polite"></div>
-  <h3>Como saber se o fecho foi pulado, sem abrir arquivo nenhum</h3>
-  <p class="intro">Cada vez que o trabalho é salvo com registro (no Claude Code, isso se chama commit), a pasta anota a data num histórico. Então a régua é simples: <strong>se o histórico da pasta de conhecimento (o lugar onde ficam as sínteses das reuniões, ligadas umas às outras) está mais de uma rodada atrás do histórico do projeto, o checklist foi pulado</strong>. O trabalho andou e a memória ficou parada.</p>
+  <h3>Como saber se o fecho foi pulado, pela data</h3>
+  <p class="intro">A memória carrega no topo a data da última vez que foi reescrita: o campo “atualizado:” do cabeçalho. Compare essa data com o arquivo mais recente que mudou no projeto (na janela de arquivos do computador, ordene a pasta por data de modificação). <strong>Se o trabalho andou e a data ficou para trás, o fecho foi pulado.</strong> O trabalho seguiu e a memória ficou parada.</p>
   <div class="chart">
     <svg class="op-log" viewBox="0 0 380 110" role="img" aria-labelledby="lg-t" xmlns="http://www.w3.org/2000/svg">
-      <title id="lg-t">Duas linhas do tempo com cinco rodadas: o projeto registrou as cinco; a pasta de conhecimento registrou só as três primeiras, e está duas rodadas atrás</title>
-      <text x="0" y="30">o projeto</text><line class="ln" x1="140" y1="26" x2="369" y2="26"/>
+      <title id="lg-t">Duas linhas do tempo com cinco sessões: o trabalho andou nas cinco; a memória foi reescrita só nas três primeiras, e a data dela está duas sessões atrás</title>
+      <text x="0" y="30">o trabalho</text><line class="ln" x1="140" y1="26" x2="369" y2="26"/>
       <circle class="done" cx="140" cy="26" r="8"/><circle class="done" cx="197" cy="26" r="8"/><circle class="done" cx="255" cy="26" r="8"/><circle class="done" cx="312" cy="26" r="8"/><circle class="done" cx="369" cy="26" r="8"/>
-      <text x="0" y="80">o conhecimento</text><line class="ln" x1="140" y1="76" x2="369" y2="76"/>
+      <text x="0" y="80">a memória</text><line class="ln" x1="140" y1="76" x2="369" y2="76"/>
       <circle class="done" cx="140" cy="76" r="8"/><circle class="done" cx="197" cy="76" r="8"/><circle class="done" cx="255" cy="76" r="8"/><circle class="miss" cx="312" cy="76" r="8"/><circle class="miss" cx="369" cy="76" r="8"/>
-      <text x="378" y="106" text-anchor="end">duas rodadas atrás: o fecho foi pulado</text>
+      <text x="378" y="106" text-anchor="end">a data parou duas sessões atrás: fecho pulado</text>
     </svg>
   </div>
 </section>

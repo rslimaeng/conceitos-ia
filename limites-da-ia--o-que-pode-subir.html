@@ -235,9 +235,17 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .gloss dd { margin: 0; color: var(--text-muted); }
 .foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
 
+/* reforços: o pedido também conta, a pasta inteira sobe */
+.pd { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.pd div { min-width: 0; border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; background: var(--bg-elev); display: grid; gap: 6px; align-content: start; }
+.pd div + div { border-color: var(--atencao); background: var(--atencao-soft); }
+.pd .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.pd div + div .k { color: var(--atencao-texto); }
+.pd p { font-size: .95rem; }
+
 @media (max-width: 860px) {
   .sb-facts { grid-template-columns: 1fr 1fr; }
-  .sb-analogy, .id-wrap, .ck-wrap, .take, .nu { grid-template-columns: 1fr; }
+  .sb-analogy, .id-wrap, .ck-wrap, .take, .nu, .pd { grid-template-columns: 1fr; }
   .cx-row { grid-template-columns: 1fr; }
   .cx-box.in { min-height: 90px; }
   .cx-box.mid { min-height: 130px; }
@@ -294,7 +302,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-conteudo" aria-labelledby="h-conteudo">
   <span class="eyebrow">O dado, não a ferramenta</span>
   <h2 id="h-conteudo">A decisão é sobre o dado, e vem antes da ferramenta</h2>
-  <p class="intro">O sigilo de um contrato vale igual se ele vai por e-mail, pelo correio ou em mão: quem decide é o que está escrito no papel, não o envelope. A pergunta que todo mundo faz é qual ferramenta é segura. Ela muda de resposta a cada seis meses. <strong>A que dura é outra: este dado é meu para compartilhar?</strong> A lei brasileira de proteção de dados pessoais diz que a empresa responde pelo que faz com dado pessoal, inclusive pelo que alguém da equipe cola numa ferramenta de fora.</p>
+  <p class="intro">Ninguém pergunta se o elevador é seguro para conversar: a pergunta é o que dá para falar nele. Com a IA, a pergunta que todo mundo faz é qual ferramenta é segura, e ela muda de resposta a cada seis meses. <strong>A que dura é outra: este dado é meu para compartilhar?</strong> A lei brasileira de proteção de dados pessoais diz que a empresa responde pelo que faz com dado pessoal, inclusive pelo que alguém da equipe cola numa ferramenta de fora.</p>
   <div class="sb-facts">
     <div class="sb-fact is"><span class="tag">É</span><h3>Uma regra sobre conteúdo</h3><p>Vale igual no chat, no anexo, no print e na automação (o processo que roda sozinho) que você montar depois.</p></div>
     <div class="sb-fact is"><span class="tag">É</span><h3>Compatível com o material real</h3><p>Quase todo caso funciona com o dado trocado. O que ensina é a estrutura, não o nome.</p></div>
@@ -313,6 +321,12 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <span class="eyebrow">As duas reações erradas</span>
   <div class="seg" role="group" aria-label="Reação"><button type="button" data-rx="cola" aria-pressed="true">Colar tudo sem olhar</button><button type="button" data-rx="trava" aria-pressed="false">Travar e não subir nada</button></div>
   <div class="rx-out" id="rxOut" aria-live="polite"></div>
+  <p class="intro">Conteúdo não é só o anexo. <strong>O próprio pedido também conta coisas</strong>, mesmo com o arquivo limpo e sem nome nenhum.</p>
+  <div class="pd">
+    <div><span class="k">o que o anexo mostra</span><p>Um contrato de fornecimento, com o nome da outra empresa trocado por "Fornecedor A" e os valores por [VALOR].</p></div>
+    <div><span class="k">o que o pedido conta</span><p>"Ache os pontos em que este contrato nos deixa mais fracos na renegociação de março." Sem nome nenhum, a frase entrega que há uma renegociação, quando ela acontece e onde a empresa se sente exposta.</p></div>
+  </div>
+  <p class="hint">O pedido passa pelo mesmo critério do anexo: a estratégia da negociação é da família "negociação e concorrência". Peça a leitura neutra (as cláusulas de reajuste, multa e saída, uma a uma) e guarde com você a conclusão sobre qual delas enfraquece a sua posição.</p>
 </section>
 
 <section class="sec" id="s-caixas" aria-labelledby="h-caixas">
@@ -330,8 +344,8 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-semaforo" aria-labelledby="h-semaforo">
   <span class="eyebrow">O semáforo</span>
   <h2 id="h-semaforo">Nove documentos de uma semana comum, trinta segundos cada</h2>
-  <p class="intro">É a triagem do malote da manhã: cada envelope leva segundos para ir ao lugar certo, porque o critério foi decidido antes. Verde entra como está. Amarelo entra depois de tirar a identificação. Vermelho não entra. <strong>Classifique</strong>, e repare nas cinco famílias do que não sai de casa:</p>
-  <div class="fam" aria-label="Cinco famílias do que não sai"><span>gente</span><span>produto e produção</span><span>contrato e preço</span><span>resultado não divulgado</span><span>negociação e concorrência</span></div>
+  <p class="intro">É a triagem do malote da manhã: cada envelope leva segundos para ir ao lugar certo, porque o critério foi decidido antes. Verde entra como está. Amarelo entra depois de tirar a identificação. Vermelho não entra. <strong>Classifique</strong>, e repare nas cinco famílias que pedem cuidado:</p>
+  <div class="fam" aria-label="Cinco famílias que pedem cuidado"><span>gente</span><span>produto e produção</span><span>contrato e preço</span><span>resultado não divulgado</span><span>negociação e concorrência</span></div>
   <div class="sm-list" id="smList"></div>
   <p class="sm-score" id="smScore" aria-live="polite"></p>
 </section>
@@ -359,11 +373,12 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 <section class="sec" id="s-planilha" aria-labelledby="h-planilha">
   <span class="eyebrow">Trocar o nome por código</span>
-  <h2 id="h-planilha">Anonimizar não é apagar: é tirar a identificação e manter o problema</h2>
+  <h2 id="h-planilha">Trocar o nome por código não é apagar: é tirar a identificação e manter o problema</h2>
   <p class="intro">É como o processo seletivo que entrega os currículos à banca com um número no lugar do nome: a banca avalia tudo, e só o RH sabe de quem é cada número. Troque a versão e repare que a preparada <strong>não perdeu nada do que fazia a análise funcionar</strong>. O que saiu foi identificação; o que ficou foi estrutura, proporção e o problema.</p>
   <div class="seg" role="group" aria-label="Versão da planilha"><button type="button" data-pl="antes" aria-pressed="true">Como ela vive</button><button type="button" data-pl="depois" aria-pressed="false">Pronta para anexar</button></div>
   <div class="ad-scroll" role="region" tabindex="0" aria-label="Planilha. Role para os lados se a tela for estreita."><table class="ad-tbl" id="plTbl" aria-live="polite"></table></div>
   <p class="punch">A troca por código funciona porque <em>a chave fica com você</em>. Apagar o nome sem guardar a correspondência resolve o risco e destrói o trabalho.</p>
+  <p class="intro">Essa troca tem nome: <strong>pseudonimizar</strong>, trocar o nome por código e guardar a chave. Com a chave guardada com você, a planilha ainda é dado pessoal: o risco cai, a responsabilidade não.</p>
   <p class="hint">Nomes e números da planilha são fictícios. Em trabalho longo, o nome sai na primeira etapa, antes de qualquer análise, e a tabela que liga código e nome fica com uma pessoa só. Se ele atravessa a primeira etapa, atravessa todas as seguintes e vai parar no documento final.</p>
 </section>
 
@@ -387,28 +402,30 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     </svg>
   </div>
   <div class="caption" id="cmCap" aria-live="polite"></div>
+  <p class="verdict no"><b>Se você usa a IA numa pasta:</b> não existe o gesto de anexar para fazer você parar. Cada arquivo que ela abre sobe para ser processado fora, inclusive o que você não pretendia usar. <b>Estar na sua máquina não quer dizer que não subiu</b>, e o semáforo vale para cada arquivo da pasta. Mais em <a href="./claude-code--pasta.html">Pasta com dono</a>.</p>
 </section>
 
 <section class="sec" id="s-anexar" aria-labelledby="h-anexar">
   <span class="eyebrow">Antes de anexar</span>
   <h2 id="h-anexar">A IA não é quem limpa o dado: você limpa antes</h2>
-  <p class="intro">Ninguém manda o arquivo para a gráfica esperando que ela corrija o erro de digitação: a revisão vem antes, e a gráfica só pega o que escapou. Marque conforme confere o seu arquivo. Quando o texto chega na IA, ele já tem que estar sem identificação. <strong>Depois de limpo</strong>, o pedido ao lado usa a IA como rede de segurança, nunca como faxina.</p>
+  <p class="intro">Ninguém manda o arquivo para a gráfica esperando que ela corrija o erro de digitação: a revisão vem antes, e a gráfica só pega o que escapou. Marque conforme confere o seu arquivo. Quando o texto chega na IA, ele já tem que estar sem identificação. <strong>Depois de limpo</strong>, o pedido de rede de segurança usa a IA para achar o que escapou, nunca como faxina.</p>
+  <p class="verdict ok"><b>Pedido novo? A primeira rodada é com dado inventado.</b> Na primeira vez, o que você está testando é o pedido, não o dado: ele quase nunca sai certo de primeira, e cada ajuste é mais um envio. Monte três ou quatro linhas fictícias com a mesma forma do arquivo real e acerte o pedido nelas. O dado real, já limpo pela lista de conferência, entra quando o pedido já devolve o que você queria.</p>
   <div class="ck-wrap">
     <div class="ck-list" id="ckList"><div class="ck-bar" aria-hidden="true"><div class="ck-fill" id="ckFill" style="width:0"></div></div><p class="hint" id="ckTxt" aria-live="polite"></p></div>
     <div class="copy"><div class="copy-head"><span class="eyebrow">Rede de segurança · depois de limpar</span><button type="button" class="btn" data-copy="cpRede">Copiar</button></div>
-<pre id="cpRede">Vou colar abaixo um texto que eu já anonimizei: as pessoas viraram "Colaborador A, B, C", os números de documento viraram "XXXX" e os valores de contrato viraram "[VALOR]".
+<pre id="cpRede">Vou colar abaixo um texto em que eu já troquei os nomes por códigos: as pessoas viraram "Colaborador A, B, C", os números de documento viraram "XXXX" e os valores de contrato viraram "[VALOR]".
 O que eu preciso: antes de qualquer outra coisa, aponte se ainda sobrou algo que identifique uma pessoa, um cliente, um contrato ou um preço, direta ou indiretamente (cargo, unidade e data que juntos apontam para alguém).
 Restrições: não complete nem adivinhe o que foi mascarado. Não use o que eu tirei.
 Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de seguir.
 
-[cole aqui o texto já anonimizado]</pre></div>
+[cole aqui o texto já com os códigos]</pre></div>
   </div>
   <div class="nu">
     <div><b>Quando a identificação é o objeto</b><p>Se a tarefa é justamente cruzar pessoa com pessoa, tirar o nome destrói o trabalho, e manter não é opção. Fica na mão.</p></div>
     <div><b>Quando existe regra da casa</b><p>Política da empresa vence esta página inteira, inclusive quando for mais permissiva. Dado de cliente e de fornecedor costuma vir com contrato que diz o que pode.</p></div>
     <div><b>Quando o ganho é pequeno</b><p>Documento de duas páginas que você lê em cinco minutos não justifica nem a preparação do anexo.</p></div>
   </div>
-  <p class="hint">Anexo não tem desfazer. Documento com pessoa identificável não sobe para "ver o que volta": teste se faz com material fictício. E anonimizar reduz o risco de exposição sem transferir a responsabilidade: o que sai com o seu nome continua pedindo a conferência de <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
+  <p class="hint">Anexo não tem desfazer. E trocar o nome por código reduz o risco de exposição sem transferir a responsabilidade: o que sai com o seu nome continua pedindo a conferência de <a href="./limites-da-ia--alucinacao.html">Alucinação</a>.</p>
 </section>
 
 <section class="sec" id="s-levar" aria-labelledby="h-levar">
@@ -421,7 +438,7 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
   </div>
   <dl class="gloss">
     <dt>Dado pessoal</dt><dd>Qualquer informação que identifica alguém, direta ou indiretamente: nome, documento, telefone, salário, atestado, avaliação.</dd>
-    <dt>Anonimizar</dt><dd>Tirar do material o que identifica, mantendo o que a análise precisa. A chave de volta fica com você.</dd>
+    <dt>Pseudonimizar</dt><dd>Trocar o que identifica por código, mantendo o que a análise precisa. A chave de volta fica com você, e por isso o material ainda é dado pessoal: o risco cai, a responsabilidade não.</dd>
     <dt>Identificação indireta</dt><dd>Quando o nome saiu, mas o que sobrou, cruzado, ainda aponta para uma pessoa.</dd>
     <dt>Regra da casa</dt><dd>A política de dados da sua empresa. Quando existe, vence qualquer régua geral.</dd>
   </dl>
@@ -456,7 +473,7 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
   /* reações */
   var RX = {
     cola: '<b>O anexo sobe sem a pergunta chegar a se formar.</b><p>Você está no meio da tarefa, o arquivo está aberto, e "posso?" não chega a ser pensado. Depois, se alguém perguntar, a resposta honesta é que você não pensou nisso. Não foi má-fé: foi hábito sem regra.</p>',
-    trava: '<b>Nada da empresa sobe, e o método é aprendido num caso que não existe.</b><p>A reação oposta custa mais caro do que parece. Quem trava trabalha com exemplo inventado, e na segunda-feira não consegue aplicar no que existe. Em equipe, proibir tudo empurra o uso para o celular pessoal, fora de qualquer visibilidade, e o dado vai junto.</p>'
+    trava: '<b>Nada da empresa sobe, e o método é aprendido num caso que não existe.</b><p>A reação oposta custa mais caro do que parece. Quem trava trabalha com exemplo inventado no lugar do real, para sempre, e na segunda-feira não consegue aplicar no que existe. Em equipe, proibir tudo empurra o uso para o celular pessoal, fora de qualquer visibilidade, e o dado vai junto.</p>'
   };
   var rxBtns = document.querySelectorAll('[data-rx]');
   function setRx(k) { press(rxBtns, function (b) { return b.dataset.rx === k; }); document.getElementById('rxOut').innerHTML = RX[k]; }
@@ -488,7 +505,7 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
     { s: 'O edital publicado da concorrência de que a empresa vai participar.', a: 'g', w: 'Já é público. O que não entra é a sua proposta de preço para ele.' },
     { s: 'A margem negociada com o maior cliente, para montar um argumento de venda.', a: 'a', w: 'Descreva sem o número e sem o nome do cliente. A estrutura do argumento funciona igual sem a margem real.' },
     { s: 'A folha de pagamento com nome e salário.', a: 'r', w: 'Não entra como está. Se a análise precisa de salário, ela vira outro arquivo, com faixa e código, e esse passa pelo semáforo de novo.' },
-    { s: 'O resultado do trimestre, antes de a diretoria divulgar.', a: 'r', w: 'Resultado não divulgado é uma das famílias que não sai de casa. Se vazasse, quem daria explicação seria você.' }
+    { s: 'O resultado do trimestre, antes de a diretoria divulgar.', a: 'r', w: 'Resultado não divulgado é uma das cinco famílias, e esta não sai de casa. Se vazasse, quem daria explicação seria você.' }
   ];
   var SML = { g: 'verde', a: 'amarelo', r: 'vermelho' };
   var smList = document.getElementById('smList'), smAns = {};
@@ -509,8 +526,8 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
 
   /* árvore */
   var TR = [
-    { q: 'Dá para dizer quem é a pessoa, direta ou indiretamente?', y: 'Troque.', d: 'Nome vira Cliente A, documento sai, matrícula vira sequencial. E confira o conjunto: cargo, unidade e data juntos também apontam.' },
     { q: 'Isso constrangeria alguém se vazasse amanhã?', y: 'Não entra.', d: 'Salário, avaliação, saúde, advertência, desligamento. Fica na mão.' },
+    { q: 'Dá para dizer quem é a pessoa, direta ou indiretamente?', y: 'Troque.', d: 'Nome vira Cliente A, documento sai, matrícula vira sequencial. E confira o conjunto: cargo, unidade e data juntos também apontam.' },
     { q: 'Isso dá vantagem a um concorrente?', y: 'Descreva sem o número.', d: 'Margem, preço, condição negociada. A estrutura ensina igual sem o valor real.' },
     { q: 'A sua empresa já disse alguma coisa sobre isso?', y: 'A palavra dela vence.', d: 'Política interna manda mais que qualquer régua geral, inclusive quando for mais permissiva. É a pergunta mais pulada, porque é a única que não depende de você.' }
   ];
@@ -606,7 +623,7 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
   function renderCk() {
     var n = ckBoxes.filter(function (c) { return c.checked; }).length;
     document.getElementById('ckFill').style.width = (n / CK.length * 100) + '%';
-    document.getElementById('ckTxt').textContent = n === CK.length ? 'Seis de seis. Agora o arquivo pode subir, e o pedido ao lado confere o que escapou.' : n + ' de ' + CK.length + ' conferidos. Se sobrou algo, não mande: mascare primeiro.';
+    document.getElementById('ckTxt').textContent = n === CK.length ? 'Seis de seis. Agora o arquivo pode subir, e o pedido de rede de segurança confere o que escapou.' : n + ' de ' + CK.length + ' conferidos. Se sobrou algo, não mande: mascare primeiro.';
   }
   renderCk();
 

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito em coluna única. Peças: a frase nascendo com o número sem base, o gráfico do chute na prova, o que entrou × o que voltou, a caça ao erro contra a planilha, as quatro camadas, os quatro jeitos de errar, a mesma pergunta com e sem a instrução, o validador de trinta segundos e o loop do caso fechado. */
+/* Layout: página de conceito em coluna única. Peças: a frase nascendo com o número sem base, o gráfico do chute na prova, os três lugares do que volta a mais, a caça ao erro contra a planilha, as cinco camadas, os quatro jeitos de errar, a mesma pergunta com e sem a instrução, o validador de trinta segundos e o loop do caso fechado. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -136,13 +136,6 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .pv-lv { font: 600 15px var(--font-body); fill: var(--text); text-anchor: middle; transition: y .4s ease; }
 
 /* 3 · entrou × voltou */
-.ev-grid { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr); gap: 12px; align-items: stretch; }
-.ev-col { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 8px; align-content: start; }
-.ev-col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
-.ev-col li { border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: .95rem; transition: background .2s ease, border-color .2s ease; }
-.ev-col li.inv.show { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
-.ev-col li.ok.show { background: var(--ok-soft); border-color: var(--ok); }
-.ev-arrow { display: grid; place-items: center; font-family: var(--font-mono); font-size: 1.5rem; color: var(--text-dim); }
 .wh { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
 .wh div { border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; background: var(--bg-elev); display: grid; gap: 4px; }
 .wh .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--atencao-texto); }
@@ -240,11 +233,13 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .gloss dd { margin: 0; color: var(--text-muted); }
 .foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
 
+/* reforços: rótulos por destino */
+.rt-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.rt-list code { font-family: var(--font-mono); font-size: .86rem; color: var(--accent); }
+
 @media (max-width: 860px) {
   .al-facts { grid-template-columns: 1fr 1fr; }
   .pv-wrap, .ce-grid, .cm-wrap, .vl-wrap, .take, .wh { grid-template-columns: 1fr; }
-  .ev-grid { grid-template-columns: 1fr; }
-  .ev-arrow { transform: rotate(90deg); }
   .jm-grid { grid-template-columns: 1fr 1fr; }
   .jm-detail dl { grid-template-columns: 1fr; }
   .lp { grid-template-columns: 1fr; gap: 26px; }
@@ -253,7 +248,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   .vl-res { position: static; }
 }
 @media (max-width: 520px) { .al-facts, .jm-grid { grid-template-columns: 1fr; } .fn-cand { grid-template-columns: 70px minmax(0, 1fr) 44px; } .cm-layer { grid-template-columns: 30px minmax(0, 1fr); } .cm-layer .who { grid-column: 2; width: fit-content; } }
-@media (prefers-reduced-motion: reduce) { .pv-guess, .pv-lv, .ev-col li { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .pv-guess, .pv-lv { transition: none; } }
 /* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
    As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
    o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
@@ -340,18 +335,13 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-voltou" aria-labelledby="h-voltou">
   <span class="eyebrow">O que voltou a mais</span>
   <h2 id="h-voltou">Tudo o que aparece no que voltou precisa ter origem no que você deu</h2>
-  <p class="intro">É a conferência do almoxarifado: tudo o que aparece na nota de saída precisa ter entrado antes por uma nota de entrada. Compare a matéria-prima com o produto. <strong>Marque o que não tem origem</strong> e repare onde isso acontece: no ponto em que o texto passa de relatar para explicar.</p>
-  <div class="seg" role="group" aria-label="Destaque"><button type="button" data-ev="nada" aria-pressed="true">Ler como chegou</button><button type="button" data-ev="origem" aria-pressed="false">Marcar o que não tem origem</button></div>
-  <div class="ev-grid">
-    <div class="ev-col"><span class="eyebrow">O que você deu · a base</span><ul><li>Uma planilha com vendas por loja</li><li>Quatro semanas de dados</li><li>O pedido: "resuma o desempenho"</li><li>e mais nada</li></ul></div>
-    <div class="ev-arrow" aria-hidden="true">→</div>
-    <div class="ev-col"><span class="eyebrow">O que voltou · com o mesmo tom</span><ul id="evOut"><li class="ok">O desempenho por loja</li><li class="ok">A comparação entre as semanas</li><li class="inv">"queda puxada pela sazonalidade de julho"</li><li class="inv">"abaixo da média do setor, de 4,2%"</li></ul></div>
-  </div>
+  <p class="intro">É a conferência do almoxarifado: tudo o que aparece na nota de saída precisa ter entrado antes por uma nota de entrada. Com a IA, o que aparece a mais nasce no ponto em que o texto passa de <strong>relatar para explicar</strong>, e cai quase sempre em três lugares. A caça linha por linha, numa planilha, está em <a href="#s-caca">Caça ao erro</a>.</p>
   <div class="wh">
     <div><span class="k">número</span><p>"…abaixo da média do setor, de" pede um número com uma casa decimal. É o que aparece em milhões de textos de análise.</p></div>
     <div><span class="k">nome próprio</span><p>Pessoa, empresa, norma, artigo de lei. O nome mais provável é o que mais aparece, não o que existe.</p></div>
     <div><span class="k">causa</span><p>"Puxado por", "devido a" pedem um complemento. Para uma queda em julho, o mais provável é sazonalidade.</p></div>
   </div>
+  <p class="fn-note"><b>A norma que tinha o formato certo.</b> Num recurso contra uma cobrança recusada, a resposta citou uma resolução de agência reguladora, com número e ano. Parecia exata, e não existia. A IA tinha visto muitas resoluções escritas como "número/ano" e muitos recursos desse tipo citando uma; juntou as duas coisas e escreveu uma que fazia sentido no contexto. <b>O formato certo é justamente o que torna o nome inventado convincente.</b> Norma citada se confere na publicação oficial, nunca na própria resposta.</p>
 </section>
 
 <section class="sec" id="s-caca" aria-labelledby="h-caca">
@@ -373,7 +363,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <h2 id="h-camadas">Conferir tem ordem, da camada mais barata para a mais cara</h2>
   <p class="intro">Numa nota fiscal, primeiro se olha se tem data e assinatura; só depois se pergunta se aquela compra devia ter sido feita. A conferência que a maioria faz para na primeira camada, porque é a que se enxerga rápido. <strong>É também a única que a ferramenta já faria sozinha.</strong> Clique em cada uma.</p>
   <div class="cm-wrap">
-    <div><div class="cm-stack" id="cmStack" role="group" aria-label="As quatro camadas"></div><div class="cm-cost" aria-hidden="true"><span>↑ a de cima, mais barata</span><span>a de baixo, mais cara ↓</span></div></div>
+    <div><div class="cm-stack" id="cmStack" role="group" aria-label="As cinco camadas"></div><div class="cm-cost" aria-hidden="true"><span>↑ a de cima, mais barata</span><span>a de baixo, mais cara ↓</span></div></div>
     <div class="cm-detail" id="cmDetail" aria-live="polite"></div>
   </div>
 </section>
@@ -384,6 +374,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <p class="intro">Erro de digitação se pega relendo; erro de quem leu errado o pedido de compra chega com a nota bonita e o produto trocado. São erros de leitura do material. Por isso reler a resposta procurando coisa estranha não pega nenhum deles. <strong>Clique em cada um</strong> para ver o sintoma, a causa e o conserto.</p>
   <div class="jm-grid" id="jmGrid" role="group" aria-label="Quatro jeitos de errar"></div>
   <div class="jm-detail" id="jmDetail" aria-live="polite"></div>
+  <p class="hint">Quando o pedido é pesquisa, aparece um parente destes quatro: a fonte que não existe, ou que não diz o que a resposta afirma. É o mesmo mecanismo da <a href="#s-voltou">norma com o formato certo</a>. Abra cada link antes de usar, e peça que o que não abrir saia da resposta, com aviso.</p>
 </section>
 
 <section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
@@ -392,10 +383,22 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <p class="intro">É a diferença entre o fornecedor que completa o pedido por conta própria quando falta um item e o que liga avisando: “esse não tinha”. Mesma planilha, mesma pergunta: <strong>"Qual loja vendeu mais no trimestre, e quanto isso representa do total?"</strong> A única diferença é o parágrafo que manda declarar o que não foi encontrado.</p>
   <div class="seg" role="group" aria-label="Pedido"><button type="button" data-in="sem" aria-pressed="true">Sem a instrução</button><button type="button" data-in="com" aria-pressed="false">Com a instrução</button></div>
   <div class="in-out" id="inOut" aria-live="polite"></div>
+  <p>No trecho, <strong>cada lacuna leva um rótulo que diz o que você faz com ela</strong>:</p>
+  <ul class="rt-list">
+    <li><code>[estimativa a validar]</code> ela calculou com uma premissa: confira a premissa antes de usar o número.</li>
+    <li><code>[buscar internamente]</code> dado que só a sua empresa tem: você busca, ela não chuta.</li>
+    <li><code>[verificar antes da reunião]</code> está no material, mas ambíguo: vira item da sua conferência.</li>
+    <li><code>não informado</code> o documento não traz: vira pergunta para quem mandou.</li>
+  </ul>
+  <p>E quando ela precisar estimar, a faixa mostra o tamanho da dúvida: "entre 2.800 e 3.400 cupons", no lugar de "3.100".</p>
   <div class="copy"><div class="copy-head"><span class="eyebrow">O trecho de conferência · cole no fim de qualquer pedido</span><button type="button" class="btn" data-copy="cpTrecho">Copiar</button></div>
 <pre id="cpTrecho">Antes de me dar a resposta final, faça a conferência abaixo e me mostre o resultado dela.
-O que eu preciso: para cada número que aparecer, de onde ele saiu, com a aba, a coluna e quantas linhas foram somadas. E a lista do que você procurou e não encontrou no material.
-Restrições: não complete dado que estiver faltando, e não arredonde diferença. Se dois registros parecem a mesma coisa escrita de jeitos diferentes, mostre os dois como estão e não junte.
+O que eu preciso: para cada número que aparecer, de onde ele saiu, com a aba, a coluna e quantas linhas foram somadas. E a lista do que você procurou e não encontrou no material, cada item marcado pelo que eu devo fazer com ele:
+[estimativa a validar] quando você calculou com uma premissa, e diga qual premissa.
+[buscar internamente] quando o dado só existe dentro da empresa. Não estime.
+[verificar antes da reunião] quando o dado está no material, mas ambíguo.
+"não informado" quando o documento não traz o campo.
+Restrições: não complete dado que estiver faltando, e não arredonde diferença. Quando precisar estimar, dê uma faixa (de … a …), nunca um número só. Se dois registros parecem a mesma coisa escrita de jeitos diferentes, mostre os dois como estão e não junte.
 Na dúvida: pergunte antes de decidir por mim. Deixar um item em aberto é o resultado certo quando a informação não está no material.</pre></div>
   <p class="hint">A instrução não deixa a resposta perfeita, e nenhuma frase garante que a base seja respeitada. Ela transforma erro invisível em pendência visível, e pendência visível se resolve em um minuto.</p>
 </section>
@@ -420,6 +423,7 @@ Na dúvida: pergunte antes de decidir por mim. Deixar um item em aberto é o res
   <div class="lp" id="lp" role="group" aria-label="Os quatro passos"></div>
   <div class="lp-back"><span class="arr" aria-hidden="true">↶</span><span><b>E roda de novo, no mesmo caso fechado, até a diferença sumir.</b> Só então o pedido vai para um trabalho que você ainda não fez.</span></div>
   <div class="lp-detail" id="lpDetail" aria-live="polite"></div>
+  <p class="verdict mid"><b>E se, depois de ajustar o pedido algumas vezes, a diferença não some?</b> Então o teste respondeu outra pergunta: <b>esta tarefa não é para delegar</b>, pelo menos não do jeito que está. É um resultado tão útil quanto o outro, e saiu barato: no caso fechado, nenhum documento errado chegou a ninguém.</p>
   <div class="copy"><div class="copy-head"><span class="eyebrow">A pergunta de bolso</span><button type="button" class="btn" data-copy="cpBolso">Copiar</button></div>
 <pre id="cpBolso">De onde saiu esta linha?
 Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja verdade no mundo.</pre></div>
@@ -439,7 +443,7 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
     <dt>Caso fechado</dt><dd>Um trabalho que você já entregou e cujo resultado você conhece. É o gabarito para testar um pedido.</dd>
     <dt>Pendência declarada</dt><dd>O item que a resposta diz não ter encontrado, em vez de completar por estimativa.</dd>
   </dl>
-  <p class="foot">Simplificação didática. As porcentagens do sorteio, os números da planilha e as respostas dos exemplos são ilustrativos; a planilha e as lojas são fictícias. A prova de múltipla escolha é uma analogia para a direção do incentivo, não a descrição de como os modelos são treinados. Veja também <a href="./limites-da-ia--o-que-pode-subir.html">O que pode subir para a IA</a>, a outra ponta da mesma conferência.</p>
+  <p class="foot">Simplificação didática. As porcentagens do sorteio, os números da planilha e as respostas dos exemplos são ilustrativos; a planilha e as lojas são fictícias. A prova de múltipla escolha é uma analogia para a direção do incentivo, não a descrição de como os modelos são treinados. A faixa de cupons da loja Leste e a escala de plantão são inventadas para o exemplo; o caso da norma aconteceu, e aparece aqui sem número, órgão nem ano. Veja também <a href="./limites-da-ia--o-que-pode-subir.html">O que pode subir para a IA</a>, a outra ponta da mesma conferência.</p>
 </section>
 
 <!-- rodape -->
@@ -511,13 +515,6 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
   pvBtns.forEach(function (b) { b.addEventListener('click', function () { setPv(b.dataset.pv); }); });
   setPv('so');
 
-  /* entrou × voltou */
-  var evBtns = document.querySelectorAll('[data-ev]');
-  evBtns.forEach(function (b) { b.addEventListener('click', function () {
-    press(evBtns, function (x) { return x === b; });
-    document.querySelectorAll('#evOut li').forEach(function (li) { li.classList.toggle('show', b.dataset.ev === 'origem'); });
-  }); });
-
   /* caça ao erro */
   var CE = [
     { s: 'A rede fechou as quatro semanas com 12.480 cupons.', a: 'bateu', w: 'O total da rede na planilha é 12.480. Esta linha você aprova sem medo.' },
@@ -548,7 +545,8 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
     { t: 'Está preenchido', q: 'Tem data, tem assinatura, tem valor, tem o campo obrigatório?', w: 'A IA resolve sozinha, e resolve bem.', c: 'ia', l: 'IA sozinha', ex: 'Quatro pedidos de compra sem a data de aprovação. A conferência aponta sem precisar de mais nada.' },
     { t: 'O número fecha', q: 'A soma bate com o total declarado? As duas abas dizem a mesma coisa?', w: 'A IA resolve, se o pedido mandar conferir.', c: 'ia', l: 'IA, se pedida', ex: 'Uma loja com mais cupons na aba de vendas do que na aba de caixa. Aparece porque o pedido mandou comparar as duas.' },
     { t: 'É o documento certo', q: 'Este comprovante é deste período, deste centro de custo, deste contrato?', w: 'Só você. Ela não sabe o que foi combinado.', c: 'voce', l: 'Só você', ex: 'Duas lojas com nomes parecidos. Só quem conhece a rede sabe se são a mesma loja ou duas de verdade.' },
-    { t: 'A conclusão se sustenta', q: 'Dá para assinar com isto? O que falta é irrelevante ou é o essencial?', w: 'Só você, e é o que ninguém delega.', c: 'voce', l: 'Só você', ex: 'O relatório está completo e mesmo assim não responde à pergunta que a diretoria fez. Nenhuma ferramenta decide isso.' }
+    { t: 'A conclusão se sustenta', q: 'Dá para assinar com isto? O que falta é irrelevante ou é o essencial?', w: 'Só você, e é o que ninguém delega.', c: 'voce', l: 'Só você', ex: 'O relatório está completo e mesmo assim não responde à pergunta que a diretoria fez. Nenhuma ferramenta decide isso.', x: 'A pergunta que mais pega aqui: isto resolve o problema que existe, ou só o que foi escrito no pedido? Uma resposta pode estar perfeita para a pergunta errada.' },
+    { t: 'Quem pode sair prejudicado', q: 'Se isto for usado como está, quem paga a conta? Alguém fica de fora, ou recebe uma decisão sem saber por quê?', w: 'Só você, e quase ninguém chega até aqui.', c: 'voce', l: 'Só você', ex: 'A escala de plantão sugerida cobre todas as horas e põe as mesmas três pessoas em todos os fins de semana. A conta está certa; alguém vai pagar por ela.' }
   ];
   var cmStack = document.getElementById('cmStack'), cmBtns = [];
   CM.forEach(function (c, i) {
@@ -559,7 +557,7 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
   function showCm(i) {
     cmBtns.forEach(function (b, k) { b.setAttribute('aria-pressed', String(k === i)); });
     var c = CM[i];
-    document.getElementById('cmDetail').innerHTML = '<span class="eyebrow">Camada 0' + (i + 1) + ' de 04</span><h3>' + c.q + '</h3><p><b>Quem resolve:</b> ' + c.w + '</p><p class="ex">' + c.ex + '</p>' + (i > 1 ? '<p class="hint">É nesta camada que o problema costuma estar, e é a que vai precisar de você para sempre.</p>' : '');
+    document.getElementById('cmDetail').innerHTML = '<span class="eyebrow">Camada 0' + (i + 1) + ' de 0' + CM.length + '</span><h3>' + c.q + '</h3><p><b>Quem resolve:</b> ' + c.w + '</p><p class="ex">' + c.ex + '</p>' + (c.x ? '<p>' + c.x + '</p>' : '') + (i > 1 ? '<p class="hint">É nesta camada que o problema costuma estar, e é a que vai precisar de você para sempre.</p>' : '');
   }
   showCm(0);
 

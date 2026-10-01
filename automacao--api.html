@@ -211,6 +211,14 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .ap-dcard.focal { border-color: var(--accent); background: var(--accent-soft); }
 .ap-dcard .arrow { font-family: var(--font-mono); font-size: 1.1rem; color: var(--accent); }
 
+/* reforços do acervo: o conector embrulhado, a fila com pausa */
+.seg.wr { flex-wrap: wrap; }
+.ap-fila { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.ap-range { display: grid; grid-template-columns: auto minmax(120px, 260px) 60px; gap: 12px; align-items: center; }
+.ap-range input { width: 100%; accent-color: var(--accent); }
+.ap-range output { font-family: var(--font-mono); }
+.ap-fila .say { font-size: 1.1rem; }
+
 /* 8 · para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -226,6 +234,8 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 @media (max-width: 860px) {
   .ap-anat, .ap-verb, .ap-sim, .ap-vault, .ap-dir, .take { grid-template-columns: 1fr; }
+  .ap-range { grid-template-columns: minmax(0, 1fr) 60px; }
+  .ap-range label { grid-column: 1 / -1; }
   .ap-creds { grid-template-columns: 1fr 1fr; }
   .ap-detail dl { grid-template-columns: 1fr; }
   .gloss { grid-template-columns: 1fr; gap: 2px 0; }
@@ -327,6 +337,18 @@ Content-Type: application/json</button></div>
     <div class="ap-detail" id="apDet" aria-live="polite"></div>
   </div>
   <p class="hint">Toda documentação decente mostra três coisas para cada operação: o endereço, o que ele aceita e como é a resposta. Procure primeiro a seção de início rápido, depois a de autenticação (como provar quem você é), depois o limite de pedidos.</p>
+  <span class="eyebrow">Três jeitos do mesmo pedido</span>
+  <p class="intro">O conector pronto da sua ferramenta (o bloco com o logotipo do serviço, em que você só escolhe a conta e preenche campos) <strong>é este mesmo pedido, já embrulhado</strong>: alguém montou o endereço, o verbo e o cabeçalho, e deixou para você só os campos. Veja a mesma tarefa, criar um item numa lista de tarefas, escrita de três jeitos.</p>
+  <div class="seg wr" role="group" aria-label="Jeito de fazer o pedido">
+    <button type="button" data-cj="cod" aria-pressed="false">Em código</button>
+    <button type="button" data-cj="mao" aria-pressed="false">Pedido montado à mão</button>
+    <button type="button" data-cj="pronto" aria-pressed="true">Conector pronto</button>
+  </div>
+  <div class="ap-vault">
+    <pre class="ap-file" id="cjCode" aria-live="polite"></pre>
+    <div class="verdict" id="cjVer"></div>
+  </div>
+  <p class="hint">A ordem de escolha: primeiro o conector pronto; se não houver, o pedido à mão, que a documentação quase sempre traz de exemplo. Por isso a pergunta “dá para a minha automação falar com tal sistema?” tem resposta curta: se ele publica a documentação da API, dá.</p>
 </section>
 
 <!-- 3 -->
@@ -351,6 +373,7 @@ Content-Type: application/json</button></div>
     <div class="ap-vcard" id="apVerb" aria-live="polite"></div>
   </div>
   <p class="hint">O verbo não é intercambiável. Se a documentação diz buscar e você manda criar, a cozinha recusa com um número que quer dizer "esse verbo não serve aqui".</p>
+  <p class="hint">Trabalho que demora (gerar um vídeo, transcrever uma gravação) usa dois verbos: POST começa o trabalho, e GET, mais tarde, busca o resultado pelo número do pedido que voltou no primeiro.</p>
 </section>
 
 <!-- 4 -->
@@ -387,6 +410,13 @@ Content-Type: application/json</button></div>
       <g id="apPin" class="ap-pin" style="opacity:0"><path d="M0,26 L-8,12 L8,12 z"/><text class="ap-pinl" id="apPinT" x="0" y="8">200</text></g>
     </svg>
   </div>
+  <span class="eyebrow">Fila com pausa</span>
+  <p class="intro">Quando o serviço responde 429 (“devagar”: você mandou pedidos demais por minuto), a saída é uma repetição com pausa: o fluxo manda um item por vez e espera alguns segundos entre um pedido e outro. Mas <strong>a pausa só entra quando o outro lado limita.</strong> Para ir um item por vez você não precisa dela: o passo já roda uma vez para cada item da lista, sozinho, como mostra <a href="./automacao--json.html#s-lista">tudo chega em lista</a>. Pausa posta “para garantir” só deixa o fluxo mais lento. Quando o limite existe, faça a conta da fila.</p>
+  <div class="ap-fila">
+    <div class="ap-range"><label for="fpP">Pausa entre um pedido e outro</label><input type="range" id="fpP" min="1" max="10" step="1" value="2"><output id="fpO" for="fpP">2 s</output></div>
+    <p class="say" id="fpRes" aria-live="polite"></p>
+    <p class="hint">A conta ignora o tempo que cada pedido leva para voltar: na prática, a fila anda um pouco mais devagar. Quanto o serviço aceita por minuto está na documentação, na parte de limite de pedidos.</p>
+  </div>
 </section>
 
 <!-- 5 -->
@@ -419,6 +449,12 @@ Content-Type: application/json</button></div>
     <pre class="ap-file" id="apFile" aria-live="polite"></pre>
     <div class="verdict" id="apVaultV"></div>
   </div>
+  <span class="eyebrow">Fluxo compartilhado</span>
+  <div class="ap-dir">
+    <div class="ap-dcard"><b>Quem edita, usa</b><p>Em muitas ferramentas, quem pode editar um fluxo compartilhado pode usar todas as credenciais que ele usa, <strong>inclusive as que você não compartilhou com essa pessoa</strong>. Antes de dar acesso de edição, veja que crachás o fluxo carrega: quem edita pode mudar o pedido e mandá-lo com a sua chave.</p></div>
+    <div class="ap-dcard focal"><b>Usar não é ver</b><p>A chave guardada no cofre não aparece para quem usa. Na maioria das ferramentas, nem quem a compartilhou consegue lê-la de novo: dá para compartilhar e revogar, não para copiar. Precisou dela outra vez, gere outra no serviço.</p></div>
+  </div>
+  <p class="hint">Dê nome a cada credencial: serviço, conta e para quê (“Planilhas · conta do financeiro”). Com três, você lembra qual é qual; com dezenas, o nome é o único jeito de saber o que revogar quando alguém sai.</p>
 </section>
 
 <!-- 7 -->
@@ -464,8 +500,10 @@ Content-Type: application/json</button></div>
     <dt>Credencial</dt><dd>O crachá que prova que o pedido é seu e que você tem permissão.</dd>
     <dt>OAuth</dt><dd>A credencial em que você entra com a sua conta numa janela e autoriza o que o sistema pode fazer.</dd>
     <dt>Limite de pedidos (rate limit)</dt><dd>Quantos pedidos o serviço aceita por minuto ou por dia. Passou, volta 429.</dd>
+    <dt>Conector pronto</dt><dd>O bloco da ferramenta com o nome do serviço: o mesmo pedido de API, já montado, com só os campos para preencher.</dd>
+    <dt>Repetição com pausa</dt><dd>O fluxo manda um item por vez, com uma espera entre um pedido e outro. É a saída quando o outro lado limita o ritmo.</dd>
   </dl>
-  <p class="foot">Simplificação didática. A loja, os clientes e as respostas do simulador são fictícios; serviços reais variam nos nomes e nos detalhes, e o mesmo número às vezes vem com explicações diferentes. A analogia do restaurante explica a direção dos pedidos, não como um servidor funciona por dentro.</p>
+  <p class="foot">Simplificação didática. A loja, os clientes e as respostas do simulador são fictícios; serviços reais variam nos nomes e nos detalhes, e o mesmo número às vezes vem com explicações diferentes. A analogia do restaurante explica a direção dos pedidos, não como um servidor funciona por dentro. A lista de tarefas e os números da fila também são de exemplo; os limites de verdade estão na documentação de cada serviço.</p>
 </section>
 
 <!-- rodape -->
@@ -649,6 +687,31 @@ Content-Type: application/json</button></div>
   setVault('colada');
 
   document.getElementById('apCopy').addEventListener('click', function () { copyText(document.getElementById('apPrompt').innerText, this); });
+
+  /* 2b · três jeitos do mesmo pedido */
+  var CJ = {
+    cod: { c: '// o mesmo pedido, escrito em código\nfetch("https://api.tarefas-exemplo.com/tarefas", {\n  method: "POST",\n  headers: {\n    "Authorization": "Bearer sua-chave-aqui",\n    "Content-Type": "application/json"\n  },\n  body: JSON.stringify({ "titulo": "Ligar para a Ana", "prazo": "sexta" })\n})', v: 'no', t: '<b>Funciona, e é o mais trabalhoso:</b> cada vírgula é sua. Não é para você escrever. Serve para ver que por baixo não há mágica: endereço, verbo, cabeçalho e corpo.' },
+    mao: { c: 'verbo:      POST\nendereço:   https://api.tarefas-exemplo.com/tarefas\ncabeçalho:  Authorization: Bearer sua-chave-aqui\n            Content-Type: application/json\ncorpo:      { "titulo": "Ligar para a Ana", "prazo": "sexta" }', v: 'ok', t: '<b>Os mesmos quatro pedaços, em campos.</b> É o que você monta quando o serviço não tem conector pronto. Funciona com qualquer serviço que publique documentação.' },
+    pronto: { c: 'conector:   Lista de tarefas\n  conta:    "Tarefas · equipe comercial" (do cofre)\n  ação:     criar tarefa\n  título:   Ligar para a Ana\n  prazo:    sexta', v: 'ok', t: '<b>O mesmo pedido, embrulhado.</b> O verbo virou “ação”, o endereço e o cabeçalho ficaram escondidos, o corpo virou campos. Quando o conector não tem a ação que você quer, desembrulhe: é o pedido montado à mão.' }
+  };
+  var cjBtns = document.querySelectorAll('[data-cj]');
+  function setCj(k) {
+    pressGroup(cjBtns, function (x) { return x.dataset.cj === k; });
+    document.getElementById('cjCode').textContent = CJ[k].c;
+    var v = document.getElementById('cjVer'); v.className = 'verdict ' + CJ[k].v; v.innerHTML = CJ[k].t;
+  }
+  cjBtns.forEach(function (b) { b.addEventListener('click', function () { setCj(b.dataset.cj); }); });
+  setCj('pronto');
+
+  /* 4b · fila com pausa */
+  var fpP = document.getElementById('fpP');
+  function fila() {
+    var p = +fpP.value, porMin = Math.floor(60 / p), min = Math.ceil(500 * p / 60);
+    document.getElementById('fpO').textContent = p + ' s';
+    document.getElementById('fpRes').innerHTML = 'Um pedido a cada ' + p + ' s: <b>' + porMin + ' por minuto</b>. A planilha de 500 linhas leva cerca de <b>' + min + ' minutos</b>. Se a documentação aceita menos que ' + porMin + ' por minuto, aumente a pausa.';
+  }
+  fpP.addEventListener('input', fila);
+  fila();
 })();
 </script>
 

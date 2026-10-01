@@ -271,8 +271,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
       <title id="ar-t">Três caixas em sequência, analisar, pesquisar e comunicar, ligadas por setas; abaixo de cada uma, a conferência que fica com você</title>
       <defs><marker id="mkar" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="ar-mk"/></marker></defs>
       <g class="ar-box" data-ar="0"><rect x="20" y="30" width="210" height="112" rx="8"/><text class="ar-n" x="38" y="58">9.1</text><text class="ar-t" x="38" y="84">Analisar</text><text class="ar-s" x="38" y="108">o que a planilha diz</text><text class="ar-s" x="38" y="126">com coluna e linha</text></g>
-      <g class="ar-box" data-ar="1"><rect x="275" y="30" width="210" height="112" rx="8"/><text class="ar-n" x="293" y="58">9.2 · A PUBLICAR</text><text class="ar-t" x="293" y="84">Pesquisar</text><text class="ar-s" x="293" y="108">por que aconteceu,</text><text class="ar-s" x="293" y="126">a partir de uma hipótese</text></g>
-      <g class="ar-box" data-ar="2"><rect x="530" y="30" width="210" height="112" rx="8"/><text class="ar-n" x="548" y="58">9.3 · A PUBLICAR</text><text class="ar-t" x="548" y="84">Comunicar</text><text class="ar-s" x="548" y="108">o que fazer com isso,</text><text class="ar-s" x="548" y="126">para quem decide</text></g>
+      <g class="ar-box" data-ar="1"><rect x="275" y="30" width="210" height="112" rx="8"/><text class="ar-n" x="293" y="58">9.2</text><text class="ar-t" x="293" y="84">Pesquisar</text><text class="ar-s" x="293" y="108">por que aconteceu,</text><text class="ar-s" x="293" y="126">a partir de uma hipótese</text></g>
+      <g class="ar-box" data-ar="2"><rect x="530" y="30" width="210" height="112" rx="8"/><text class="ar-n" x="548" y="58">9.3</text><text class="ar-t" x="548" y="84">Comunicar</text><text class="ar-s" x="548" y="108">o que fazer com isso,</text><text class="ar-s" x="548" y="126">para quem decide</text></g>
       <path class="ar-arr ar-hide" id="arA1" d="M232,86 L271,86" marker-end="url(#mkar)"/>
       <path class="ar-arr ar-hide" id="arA2" d="M487,86 L526,86" marker-end="url(#mkar)"/>
       <g class="ar-chk ar-hide" id="arC0"><rect x="20" y="170" width="210" height="52" rx="6"/><text x="34" y="192">Você confere: o número</text><text x="34" y="210">tem endereço?</text></g>
@@ -339,7 +339,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <dt>Comunicar o resultado</dt><dd>Escrever para quem decide o que os dados mostram, o que isso quer dizer e o que precisa acontecer, sem número novo no caminho.</dd>
     <dt>Endereço do número</dt><dd>A coluna, o corte de linhas e a contagem de onde um número saiu. Sem ele, o número não se confere.</dd>
   </dl>
-  <p class="foot">Simplificação didática. A ordem dos três trabalhos é um jeito de organizar o assunto; na prática eles se misturam, e a pesquisa às vezes devolve você para a planilha. As médias de 5,9 e 4,8 vêm de uma planilha real usada em aula, sem identificação; a resposta estimada (6,4 e 5,1), a nota do convênio e os pedidos do quiz são inventados para o exemplo. Páginas da família: <a href="./dados--planilha.html">analisar planilha com IA</a>; pesquisa com hipótese e comunicar o resultado (a publicar).</p>
+  <p class="foot">Simplificação didática. A ordem dos três trabalhos é um jeito de organizar o assunto; na prática eles se misturam, e a pesquisa às vezes devolve você para a planilha. As médias de 5,9 e 4,8 vêm de uma planilha real usada em aula, sem identificação; a resposta estimada (6,4 e 5,1), a nota do convênio e os pedidos do quiz são inventados para o exemplo. Páginas da família: <a href="./dados--planilha.html">analisar planilha com IA</a>; <a href="./dados--pesquisa.html">pesquisa com hipótese</a> e <a href="./dados--comunicar.html">comunicar o resultado</a>.</p>
 </section>
 
 <!-- rodape -->
@@ -396,7 +396,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
   /* 1 · o arco */
   var AR = [
-    { hit: 0, t: 'Analisar · o que a planilha diz', d: 'A IA lê a estrutura antes da conta, você arruma o dado, e cada número volta com a coluna e as linhas de onde saiu. Sai daqui um desvio com endereço, como “a nota de quem entrou por convênio é 4,3, contra 7,2 da média”. Página: <a href="./dados--planilha.html">analisar planilha com IA</a>.' },
+    { hit: 0, t: 'Analisar · o que a planilha diz', d: 'A IA lê a estrutura antes da conta, você arruma o dado, e cada número volta com a coluna e as linhas de onde saiu. Sai daqui um desvio com endereço, como “a nota de quem entrou por convênio é 3,3, contra 5,9 da média”. Página: <a href="./dados--planilha.html">analisar planilha com IA</a>.' },
     { hit: 1, t: 'Pesquisar · por que aconteceu', d: 'A planilha mostra o que aconteceu; quase nunca mostra por quê. A pesquisa vai buscar fora dela, e começa por uma hipótese que dá para derrubar, e não por um assunto. Sai daqui uma explicação com fonte, ou a hipótese descartada. Página: <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.' },
     { hit: 2, t: 'Comunicar · o que fazer com isso', d: 'O resultado escrito para quem decide: o que os dados mostram, o que isso quer dizer, o que precisa acontecer. Sai daqui um texto curto em que cada número veio da análise, e nenhum apareceu no caminho. Página: <a href="./dados--comunicar.html">comunicar o resultado</a>.' },
     { hit: -1, t: 'O que liga os três', d: 'Cada trabalho entrega o que o seguinte usa, inclusive o erro. Um número errado que passa na análise vira explicação na pesquisa e decisão no e-mail, cada vez mais bem escrito. <strong>Por isso a conferência fica em cada etapa, e não só no fim.</strong>' }

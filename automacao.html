@@ -229,8 +229,22 @@ a { color: var(--accent); }
 .gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
 .gloss dd { margin: 0; color: var(--text-muted); }
 .foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+/* reforços do acervo: ordem do mapa, passos com dono, gatilho por situação, pessoa no fluxo */
+.mp-ord { display: grid; gap: 12px; }
+.mp-ordbox { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 12px; }
+.mp-ordbox ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
+.vl-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.vl-steps li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 14px; }
+.vl-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; border-radius: 999px; padding: 2px 10px; border: 1px solid var(--accent); color: var(--accent); background: var(--accent-soft); }
+.vl-tag.p { border-color: var(--atencao); color: var(--atencao-texto); background: var(--atencao-soft); }
+.vl-tag.ia { border-color: var(--ok); color: var(--ok-texto); background: var(--ok-soft); }
+.st2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.st2 .verdict { display: grid; gap: 4px; align-content: start; }
+.fl3 { display: grid; gap: 12px; }
+.seg.wr { flex-wrap: wrap; }
 
 @media (max-width: 860px) {
+  .st2 { grid-template-columns: 1fr; }
   .bd, .sg, .mp, .ch, .pit, .take { grid-template-columns: 1fr; }
   .gt { grid-template-columns: 1fr 1fr; }
   .mp-out, .ch-res { position: static; }
@@ -277,7 +291,7 @@ a { color: var(--accent); }
   <p class="sub">Toda automação é uma frase em três partes: quando, faz, para</p>
   <p class="lead">Quando algo acontece, eu faço estas coisas, para entregar isto. <strong>Se a sua tarefa cabe nessa frase, ela cabe em qualquer ferramenta de automação</strong> (um programa que liga os seus aplicativos e roda passos sozinho). Se não cabe, o problema não é a ferramenta: é que o processo ainda não está claro nem para você. O mapa vem antes de abrir qualquer programa.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase de três partes</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O que dispara</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Roteiro fixo ou assistente</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase de três partes</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O que dispara</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Roteiro fixo ou agente</a>
   </nav>
 </header>
 
@@ -349,6 +363,17 @@ a { color: var(--accent); }
   <p class="intro">Agora classifique quatro tarefas de gente de áreas diferentes.</p>
   <div class="tq" id="tq"></div>
   <p class="tq-score" id="tqScore" aria-live="polite"></p>
+  <span class="eyebrow">Uma parte já vale</span>
+  <p class="intro">Duas perguntas ajudam a achar a parte que vale, mesmo quando o todo não vale. <strong>Alguma coisa passa de um lugar para outro?</strong> Automação move dado: do e-mail para a planilha, da planilha para o sistema. Se tudo acontece na sua cabeça, não há o que mover.</p>
+  <p class="intro"><strong>A decisão do meio pede pensar?</strong> Copiar, conferir se o campo veio preenchido, mandar para a pasta certa: isso não pede cabeça, e é o melhor candidato. <strong>Automatizar uma parte também é automatizar.</strong> Veja o reembolso de despesas, passo a passo.</p>
+  <ol class="vl-steps" aria-label="Reembolso de despesas, passo a passo, com quem faz cada um">
+    <li><span>1 · O pedido de reembolso chega pelo formulário</span><span class="vl-tag">fluxo</span></li>
+    <li><span>2 · Confere se a nota fiscal veio anexada</span><span class="vl-tag">fluxo</span></li>
+    <li><span>3 · Copia data, valor e centro de custo para a planilha</span><span class="vl-tag">fluxo</span></li>
+    <li><span>4 · Aprova ou recusa, olhando a política e o histórico</span><span class="vl-tag p">pessoa</span></li>
+    <li><span>5 · Avisa o colaborador do resultado</span><span class="vl-tag">fluxo</span></li>
+  </ol>
+  <p class="hint">Quem espera automatizar tudo trava no passo 4 e continua fazendo os cinco na mão. Quem automatiza os quatro que não pedem cabeça fica só com o que é da pessoa: a decisão. Como ela entra no meio do fluxo está em <a href="#s-fluxo">roteiro fixo ou agente</a>.</p>
   <p class="hint">E há o que não se automatiza mesmo sendo possível: a decisão de alto impacto, o contrato, o retorno difícil para um colaborador. Nessas, a IA pode ajudar a pensar; quem decide e assina é uma pessoa.</p>
 </section>
 
@@ -374,6 +399,13 @@ a { color: var(--accent); }
   <p class="intro"><strong>Qual gatilho?</strong> Cinco situações, cinco respostas diferentes.</p>
   <div class="tq" id="gq"></div>
   <p class="tq-score" id="gqScore" aria-live="polite"></p>
+  <span class="eyebrow">Linha nova ou situação mudou</span>
+  <p class="intro">Um evento muito usado é “linha nova na planilha”. Ele tem um defeito: <strong>alguém acrescenta uma linha sem querer, ou começa a preencher e não termina, e o fluxo já disparou.</strong> Em planilha que gente edita, dispare quando uma coluna de situação mudar, e não quando a linha nascer.</p>
+  <div class="st2">
+    <div class="verdict no"><b>Dispara na linha nova</b><span>A analista abre a linha do contrato, preenche o nome do cliente e sai para o almoço. O fluxo já mandou o contrato pela metade.</span></div>
+    <div class="verdict ok"><b>Dispara quando a situação vira “pronto”</b><span>Ela preenche com calma e, no fim, muda a coluna situação para “pronto”. Só aí o fluxo roda, com a linha completa.</span></div>
+  </div>
+  <p class="hint">Quando o clique errado custa caro (mandar contrato, cobrar, avisar cliente), exija duas condições juntas: a situação é “pronto” <strong>e</strong> a caixa “conferido” está marcada. Um clique por engano não basta para disparar.</p>
 </section>
 
 <!-- 4 -->
@@ -395,6 +427,13 @@ a { color: var(--accent); }
       <p class="hint">Cole num chat de IA para uma segunda opinião antes de abrir qualquer ferramenta. Guarde o mapa: é ele que vira o fluxo depois.</p>
     </div>
   </div>
+  <div class="mp-ord">
+    <span class="eyebrow">Por onde começar o mapa</span>
+    <p class="intro">Escreva a entrega primeiro. <strong>Comece pelo que quem recebe vai ver, e volte até o dado</strong>: assim cada passo existe porque a entrega pede. O caminho contrário, começar pelo dado que seria bom ter, é o erro mais comum. Compare as duas ordens no mesmo relatório.</p>
+    <div class="seg wr" role="group" aria-label="Ordem do mapa"><button type="button" data-or="ini" aria-pressed="false">Do começo para o fim</button><button type="button" data-or="fim" aria-pressed="true">Do fim para o começo</button></div>
+    <div class="mp-ordbox" id="orBox" aria-live="polite"></div>
+  </div>
+  <p class="hint">Antes de automatizar, faça a tarefa inteira à mão uma vez: passo que você nunca fez, a automação não vai saber fazer por você. E conte com o mapa errando: o <a href="./automacao--testar.html">teste em pequeno</a> mostra o que faltou, e o mapa ganha a linha.</p>
 </section>
 
 <!-- 5 -->
@@ -423,19 +462,26 @@ a { color: var(--accent); }
 
 <!-- 6 -->
 <section class="sec" id="s-fluxo" aria-labelledby="h-fluxo">
-  <span class="eyebrow">Roteiro fixo ou assistente</span>
+  <span class="eyebrow">Roteiro fixo ou agente</span>
   <h2 id="h-fluxo">A tarefa é sempre a mesma, ou muda toda vez?</h2>
-  <p class="intro">É a diferença entre o relógio de ponto, que faz a mesma coisa toda vez sem ninguém olhar, e o assistente pessoal, que resolve cada pedido de um jeito e liga antes de fechar algo caro. Existem dois jeitos de a IA trabalhar sem você do lado. <strong>O fluxo automático</strong> roda sozinho num servidor (um computador que fica ligado o tempo todo, na internet), a qualquer hora, sempre os mesmos passos. <strong>O assistente que age</strong> trabalha quando você pede, adapta o caminho e para para perguntar antes do que não tem volta. Responda as cinco perguntas sobre uma tarefa sua.</p>
+  <p class="intro">É a diferença entre o relógio de ponto, que faz a mesma coisa toda vez sem ninguém olhar, e o braço direito do gestor, que resolve cada pedido de um jeito e liga antes de fechar algo caro. Existem dois jeitos de a IA trabalhar sem você do lado. <strong>O fluxo automático</strong> roda sozinho num servidor (um computador que fica ligado o tempo todo, na internet), a qualquer hora, sempre os mesmos passos. <strong>O agente</strong> (a IA que decide o caminho e age) trabalha quando você pede, adapta o caminho e para para perguntar antes do que não tem volta. Responda as cinco perguntas sobre uma tarefa sua.</p>
   <div class="ch">
     <div class="ch-list" id="chList"></div>
     <div class="ch-res">
       <span class="eyebrow">Para onde pende</span>
       <div class="ch-bar"><span>Fluxo</span><div class="tr"><div class="fill" id="fillF"></div></div><b id="nF">0</b></div>
-      <div class="ch-bar"><span>Assistente</span><div class="tr"><div class="fill" id="fillA"></div></div><b id="nA">0</b></div>
+      <div class="ch-bar"><span>Agente</span><div class="tr"><div class="fill" id="fillA"></div></div><b id="nA">0</b></div>
       <div class="verdict ok" id="chVer" aria-live="polite"></div>
     </div>
   </div>
-  <p class="hint">Um cabe dentro do outro: é comum o fluxo capturar o gatilho e organizar o dado, e um passo de IA ou um <a href="./agente.html">agente</a> (o assistente que age) entrar só na ponta que pede julgamento.</p>
+  <p class="hint">Um cabe dentro do outro: é comum o fluxo capturar o gatilho e organizar o dado, e um passo de IA ou um <a href="./agente.html">agente</a> (a IA que decide o caminho e age) entrar só na ponta que pede julgamento.</p>
+  <div class="fl3">
+    <span class="eyebrow">A pessoa no meio do fluxo</span>
+    <p class="intro">Quando o julgamento é um passo só, a pessoa não precisa sair do fluxo: <strong>o fluxo deixa rascunho, ou para e espera por ela.</strong> O mesmo anúncio de vaga, em três versões: a IA escreve, o fluxo move, e muda só o que acontece antes de publicar.</p>
+    <div class="seg wr" role="group" aria-label="Versão do fluxo"><button type="button" data-fl="envia" aria-pressed="false">Publica direto</button><button type="button" data-fl="rascunho" aria-pressed="true">Deixa rascunho</button><button type="button" data-fl="pausa" aria-pressed="false">Pausa para aprovar</button></div>
+    <ol class="vl-steps" id="flSteps" aria-label="Os passos desta versão, com quem faz cada um"></ol>
+    <div class="verdict" id="flVer" aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 7 -->
@@ -593,7 +639,7 @@ a { color: var(--accent); }
     { s: 'Gerente comercial: “toda segunda de manhã eu junto os contatos novos da semana e mando um resumo para a diretoria”. Uns 45 minutos.', a: 'sim', w: 'Repete toda semana, o formato é sempre o mesmo e custa tempo. É o caso clássico: horário, leitura, cálculo, envio.' },
     { s: 'Advogado: “leio cada e-mail de cliente novo, decido se o caso é meu e respondo de forma pessoal, pelo histórico”.', a: 'parte', w: 'Repete e custa tempo, mas depende do conteúdo. Dá para automatizar a triagem (separar, juntar o histórico, sugerir resposta); a decisão fica com ele.' },
     { s: 'Criadora de conteúdo: “quando publico um post numa rede, quero que ele vá para outra, adaptado ao tom de lá”.', a: 'sim', w: 'Evento numa plataforma, adaptação, publicação em outra. Os três sinais estão lá.' },
-    { s: 'Assistente: “uma vez por mês renomeio um arquivo”. Leva trinta segundos.', a: 'nao', w: 'Não custa tempo. Montar o fluxo leva mais do que anos de renomear na mão.' }
+    { s: 'Auxiliar administrativo: “uma vez por mês renomeio um arquivo”. Leva trinta segundos.', a: 'nao', w: 'Não custa tempo. Montar o fluxo leva mais do que anos de renomear na mão.' }
   ], [{ k: 'sim', n: 'Automatizável' }, { k: 'parte', n: 'Em parte' }, { k: 'nao', n: 'Não compensa' }], ' · o sinal que mais engana é o “depende”.');
 
   /* 3 · gatilhos */
@@ -649,11 +695,25 @@ a { color: var(--accent); }
     if (!e) chk('kE', null, 'um destino com endereço: “e-mail para o gerente com o resumo”');
     else if (/avisar alguém|avisa alguém|alguém|mandar pra quem|avisar o pessoal/i.test(e)) chk('kE', false, 'quem, exatamente? e por onde? dê endereço à entrega');
     else chk('kE', true, 'destino específico');
-    document.getElementById('mpTxt').textContent = 'Mapeei uma tarefa minha para automatizar:\n\nGATILHO: ' + (g || '___') + '\nEXECUÇÃO: ' + (steps.length ? steps.join(' → ') : '___') + '\nENTREGA: ' + (e || '___') + '\n\nRevise o mapa como alguém que vai construir a automação:\n1. O gatilho é concreto (tem momento ou acontecimento)?\n2. Algum passo esconde uma decisão que depende de uma pessoa?\n3. A entrega tem destino específico?\n4. O que eu ainda não sei como fazer em cada passo? Liste as dúvidas.\nNão monte a automação ainda. Só aponte o que falta no mapa.';
+    document.getElementById('mpTxt').textContent = 'Mapeei uma tarefa minha para automatizar:\n\nGATILHO: ' + (g || '___') + '\nEXECUÇÃO: ' + (steps.length ? steps.join(' → ') : '___') + '\nENTREGA: ' + (e || '___') + '\n\nRevise o mapa como alguém que vai construir a automação:\n1. O gatilho é concreto (tem momento ou acontecimento)?\n2. Algum passo esconde uma decisão que depende de uma pessoa?\n3. A entrega tem destino específico?\n4. O que eu ainda não sei como fazer em cada passo? Liste as dúvidas.\n5. Eu já fiz essa tarefa inteira à mão, do começo ao fim? Se algum passo parece que nunca foi feito, aponte qual.\nNão monte a automação ainda. Só aponte o que falta no mapa.';
   }
   [mG, mX, mE].forEach(function (t) { t.addEventListener('input', mp); });
   mp();
   document.getElementById('mpCopy').addEventListener('click', function () { copyText(document.getElementById('mpTxt').textContent, this); });
+
+  /* 4b · ordem do mapa */
+  var OR = {
+    ini: { l: ['Que dados eu tenho? A planilha de pedidos tem muitas colunas: puxo todas.', 'Filtro, somo e arrumo o que der para arrumar.', 'No fim, monto o e-mail com o que saiu.'], v: 'no', t: '<b>O e-mail sai com o que o dado permitiu</b>, não com o que a diretoria precisa. Muita coluna foi puxada à toa, e a pergunta difícil (esse número existe?) só aparece no fim.' },
+    fim: { l: ['O que a diretoria vê na segunda: o total da semana por loja, e qual loja caiu.', 'Para isso eu preciso das vendas dos últimos sete dias, com a loja de cada uma.', 'Isso está na planilha de pedidos: as colunas data, loja e valor.'], v: 'ok', t: '<b>Cada passo existe porque a entrega pede.</b> Só entra o dado que vai aparecer no e-mail, e a pergunta difícil (dá para conseguir esse dado?) aparece no primeiro minuto.' }
+  };
+  var orBtns = document.querySelectorAll('[data-or]');
+  function setOr(k) {
+    pressGroup(orBtns, function (x) { return x.dataset.or === k; });
+    var o = OR[k];
+    document.getElementById('orBox').innerHTML = '<ol>' + o.l.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ol><div class="verdict ' + o.v + '">' + o.t + '</div>';
+  }
+  orBtns.forEach(function (b) { b.addEventListener('click', function () { setOr(b.dataset.or); }); });
+  setOr('fim');
 
   /* 5 · trocar a entrega */
   var TO = { email: 'e-mail para a diretoria com o resumo', chat: 'mensagem no grupo da equipe com o resumo', plan: 'linha nova na planilha de acompanhamento' };
@@ -687,10 +747,28 @@ a { color: var(--accent); }
     if (!n) v.innerHTML = 'Responda as cinco perguntas sobre a sua tarefa.';
     else if (f && a) v.innerHTML = '<b>As duas juntas.</b> O fluxo cuida do gatilho, do volume e do formato; a parte que pede julgamento vai para a IA ou para uma pessoa.';
     else if (f) v.innerHTML = '<b>Fluxo automático.</b> Sempre a mesma tarefa, muda só o dado. Mapeie a frase e monte uma vez.';
-    else if (a) v.innerHTML = '<b>Assistente que age.</b> A tarefa muda toda vez ou pede decisão no meio. Deixe a IA trabalhar com você, não sozinha.';
+    else if (a) v.innerHTML = '<b>Agente.</b> A tarefa muda toda vez ou pede decisão no meio. Deixe a IA trabalhar com você, não sozinha.';
     else v.innerHTML = '<b>Nenhum dos dois, por enquanto.</b> Talvez um bom pedido no chat já resolva.';
   }
   ch();
+
+  /* 6b · a pessoa no meio do fluxo */
+  var TAG = { fluxo: ['', 'fluxo'], ia: [' ia', 'IA'], pessoa: [' p', 'pessoa'] };
+  var BASE = [['fluxo', 'A requisição da vaga é aprovada no sistema de RH'], ['ia', 'A IA escreve o anúncio a partir da requisição']];
+  var FL = {
+    envia: { s: [['fluxo', 'O anúncio é publicado no site de vagas']], v: 'no', t: '<b>Ninguém lê antes de sair.</b> Se a IA errar o salário ou o nome do cargo, o erro já está publicado. Serve quando errar custa pouco e se desfaz fácil.' },
+    rascunho: { s: [['fluxo', 'O anúncio fica salvo como rascunho no site de vagas'], ['pessoa', 'Alguém do RH abre, corrige se precisar e publica']], v: 'ok', t: '<b>A pessoa aperta o último botão.</b> O fluxo faz o trabalho pesado e para antes do que não tem volta. Muita empresa prefere assim: não quer resposta saindo sozinha em nome dela. É também o jeito de estrear um fluxo: <a href="./automacao--testar.html#s-pessoa">as primeiras semanas em rascunho</a>.' },
+    pausa: { s: [['fluxo', 'O fluxo pausa e manda o anúncio à gestora da vaga, com três respostas: aprovar, recusar ou comentar'], ['pessoa', 'A gestora responde dentro do prazo'], ['fluxo', 'Aprovado, publica. Recusado com comentário, a IA refaz e o anúncio volta para aprovar']], v: 'ok', t: '<b>O fluxo espera, e com prazo.</b> Pausa é para horas, não para dias: decida antes o que acontece se ninguém responder (lembrar de novo, ou cancelar e avisar). Quem não quer mais uma mensagem para responder pode aprovar numa coluna da planilha: o fluxo segue quando a coluna muda para “aprovado”, o mesmo gatilho por situação de <a href="#s-gatilho">o que dispara</a>.' }
+  };
+  var flBtns = document.querySelectorAll('[data-fl]');
+  function setFl(k) {
+    pressGroup(flBtns, function (x) { return x.dataset.fl === k; });
+    var f = FL[k];
+    document.getElementById('flSteps').innerHTML = BASE.concat(f.s).map(function (p, i) { return '<li><span>' + (i + 1) + ' · ' + p[1] + '</span><span class="vl-tag' + TAG[p[0]][0] + '">' + TAG[p[0]][1] + '</span></li>'; }).join('');
+    var v = document.getElementById('flVer'); v.className = 'verdict ' + f.v; v.innerHTML = f.t;
+  }
+  flBtns.forEach(function (b) { b.addEventListener('click', function () { setFl(b.dataset.fl); }); });
+  setFl('rascunho');
 })();
 </script>
 

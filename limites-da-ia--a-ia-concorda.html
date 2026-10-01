@@ -282,7 +282,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   </div>
   <div class="cm-grid" id="cmGrid"></div>
   <div class="verdict" id="cmVer" aria-live="polite"></div>
-  <p class="punch">O material era o mesmo. <em>A pergunta escolheu qual metade seria lida.</em></p>
+  <p class="punch">O material era o mesmo. <em>A pergunta escolheu qual parte seria lida.</em></p>
 </section>
 
 <!-- 3 -->
@@ -481,8 +481,8 @@ Prefiro uma discordância que me faça mudar de ideia a uma concordância que me
   ];
   var CMM = {
     favor: { hit: [0, 3, 4, 6], trap: [4], v: 'no', txt: '<b>“A hipótese se confirma: metade dos comentários fala de atraso ou demora.”</b> Para chegar a quatro, ela contou o comentário 5 como atraso. Lido de perto, ele reclama de que ninguém sabia informar.' },
-    contra: { hit: [1, 2, 5, 7], trap: [], v: 'no', txt: '<b>“A hipótese não se sustenta: metade dos comentários não fala de prazo.”</b> Também verdade, também metade do material. Mesma segurança da aba anterior, conclusão oposta.' },
-    pesar: { hit: [], trap: [], v: 'ok', txt: '<b>Prazo 3 · atendimento 3 · embalagem 1 · produto 1.</b> O prazo é um dos motivos, empatado com o atendimento. E o comentário 5 junta os dois: atrasou e ninguém respondeu. A pergunta que vale levar para a reunião é outra: por que ninguém informa o cliente quando atrasa.' }
+    contra: { hit: [1, 2, 4, 5, 7], trap: [], v: 'no', txt: '<b>“A hipótese não se sustenta: cinco dos oito comentários não falam de prazo.”</b> Também verdade, e deixa de fora os três que falam. Mesma segurança da aba anterior, conclusão oposta.' },
+    pesar: { hit: [], trap: [], v: 'ok', txt: '<b>Prazo 3 · atendimento 3 · embalagem 1 · produto 1.</b> O prazo é um dos motivos, empatado com o atendimento. O comentário 5, que a primeira aba contou como prazo, é de atendimento: ninguém sabia informar. A pergunta que vale levar para a reunião é outra: por que ninguém informa o cliente quando atrasa.' }
   };
   var cmBtns = document.querySelectorAll('[data-cm]'), cmGrid = document.getElementById('cmGrid');
   CM.forEach(function (c, i) { var d = document.createElement('div'); d.className = 'cm'; d.innerHTML = '<span class="n">COMENTÁRIO ' + (i + 1) + '</span><span>' + c.t + '</span><span class="tema"></span>'; cmGrid.appendChild(d); });

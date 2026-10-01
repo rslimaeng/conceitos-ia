@@ -278,7 +278,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">Um dia o passo falha; o que importa é o que o fluxo faz com o erro, e quem fica sabendo</p>
   <p class="lead">Uma automação roda sem ninguém olhar: é para isso que ela existe. Por isso, quando um passo falha, ninguém está olhando. O serviço do outro lado sai do ar, uma senha de acesso vence, alguém renomeia a planilha. Não dá para impedir. Dá para decidir antes <strong>o que o fluxo faz com o erro, e quem fica sabendo</strong>, para que a falha apareça para a equipe, e não para o cliente.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-sem">O que acontece sem plano</a><a href="#s-respostas">Cinco respostas a uma falha</a><a href="#s-qual">Cada falha, sua resposta</a><a href="#s-verde">Verde não é sucesso</a><a href="#s-parar">Parar de propósito</a><a href="#s-avisar">Registre e avise</a><a href="#s-cliente">Antes de o cliente contar</a><a href="#s-plano">O plano de falha do seu fluxo</a>
+    <a href="#s-sem">O que acontece sem plano</a><a href="#s-respostas">Cinco respostas a uma falha</a><a href="#s-parar">Parar de propósito</a><a href="#s-qual">Cada falha, sua resposta</a><a href="#s-verde">Verde não é sucesso</a><a href="#s-avisar">Registre e avise</a><a href="#s-cliente">Antes de o cliente contar</a><a href="#s-plano">O plano de falha do seu fluxo</a>
   </nav>
 </header>
 
@@ -286,7 +286,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-sem" aria-labelledby="h-sem">
   <span class="eyebrow">O que acontece sem plano</span>
   <h2 id="h-sem">Se ninguém disse o que fazer, o fluxo para no passo que falhou</h2>
-  <p class="intro">Na expedição, quando a etiquetadora trava, as caixas param na esteira: nenhuma sai com a etiqueta errada, mas nenhuma sai. Um fluxo (a sequência de passos que roda sozinha, sem você do lado; mais em <a href="./automacao.html#s-fluxo">roteiro fixo ou assistente</a>) costuma fazer o mesmo quando um passo falha e ninguém combinou outra coisa. O exemplo desta página: uma gráfica que recebe pedidos de orçamento pelo site e, toda manhã, deixa a lista pronta para o vendedor. <strong>Avance e veja onde está o problema de verdade.</strong></p>
+  <p class="intro">Na expedição, quando a etiquetadora trava, as caixas param na esteira: nenhuma sai com a etiqueta errada, mas nenhuma sai. Um fluxo (a sequência de passos que roda sozinha, sem você do lado; mais em <a href="./automacao.html#s-fluxo">roteiro fixo ou agente</a>) costuma fazer o mesmo quando um passo falha e ninguém combinou outra coisa. O exemplo desta página: uma gráfica que recebe pedidos de orçamento pelo site e, toda manhã, deixa a lista pronta para o vendedor. <strong>Avance e veja onde está o problema de verdade.</strong></p>
   <div class="stepbar"><span class="eyebrow" id="snLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="snPrev">← Anterior</button><button type="button" class="btn primary" id="snNext">Próximo →</button></div></div>
   <div class="scroll" id="snFlow"></div>
   <div class="caption" id="snCap" aria-live="polite"></div>
@@ -335,29 +335,6 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 </section>
 
 <!-- 3 -->
-<section class="sec" id="s-qual" aria-labelledby="h-qual">
-  <span class="eyebrow">Cada falha, sua resposta</span>
-  <h2 id="h-qual">Seis falhas da mesma gráfica. Qual resposta?</h2>
-  <p class="intro">Atraso de entrega e carga extraviada não se tratam do mesmo jeito: um pede paciência, o outro pede telefonema. Três perguntas decidem a resposta: <strong>a falha passa sozinha? o passo é crítico, ou só acrescenta? quem consegue consertar?</strong> Uma das opções abaixo é nova: parar de propósito, que a seção seguinte explica.</p>
-  <div class="qz" id="qlQuiz"></div>
-  <p class="qz-score" id="qlScore" aria-live="polite"></p>
-</section>
-
-<!-- 4 -->
-<section class="sec" id="s-verde" aria-labelledby="h-verde">
-  <span class="eyebrow">Verde não é sucesso</span>
-  <h2 id="h-verde">O painel diz que o passo rodou; só a entrega diz se deu certo</h2>
-  <p class="intro">O e-mail com “enviado” no canto não garante que o anexo foi junto. O painel de uma automação (a tela que lista cada rodada, com cada passo marcado em verde ou vermelho) diz se o passo rodou, não se o resultado presta. O caso mais traiçoeiro é o passo de IA que tem uma ferramenta à mão e perde o acesso a ela: <strong>ela não quebra, ela responde</strong>, com educação, que não conseguiu. Para o painel, responder é sucesso. Compare as duas telas da mesma terça-feira.</p>
-  <div class="seg" role="group" aria-label="Qual tela">
-    <button type="button" data-vd="painel" aria-pressed="true">O que o painel mostra</button>
-    <button type="button" data-vd="planilha" aria-pressed="false">O que chegou na planilha</button>
-  </div>
-  <div id="vdOut" aria-live="polite"></div>
-  <p class="punch">O aviso de erro só dispara quando algo fica vermelho. <em>Uma resposta educada nunca fica vermelha.</em></p>
-  <p class="hint">É o mesmo problema de <a href="./automacao--json.html#s-calado">o erro que não avisa</a>, por outro caminho: lá, um número chega como texto e a conta sai errada sem alarme. O remédio dos dois é o mesmo: conferir o que saiu, não a cor do passo.</p>
-</section>
-
-<!-- 5 -->
 <section class="sec" id="s-parar" aria-labelledby="h-parar">
   <span class="eyebrow">Parar de propósito</span>
   <h2 id="h-parar">No caminho que não devia acontecer, o fluxo para e diz por quê</h2>
@@ -369,6 +346,29 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <div class="cf-list" id="cfList" aria-live="polite"></div>
   <div class="verdict" id="cfVer" aria-live="polite"></div>
   <p class="hint">Parar assim não é defeito: é o fluxo dizendo “aqui eu não sei seguir”. É a mesma ideia de <a href="./ai-first--execucao.html#s-trava">o campo que barra o vazio</a> e de <a href="./ai-first--execucao.html#s-portao">passa ou volta</a>, morando dentro da automação: a conferência faz uma pergunta só, escrita antes, e devolve o que não passa.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-qual" aria-labelledby="h-qual">
+  <span class="eyebrow">Cada falha, sua resposta</span>
+  <h2 id="h-qual">Seis falhas da mesma gráfica. Qual resposta?</h2>
+  <p class="intro">Atraso de entrega e carga extraviada não se tratam do mesmo jeito: um pede paciência, o outro pede telefonema. Três perguntas decidem a resposta: <strong>a falha passa sozinha? o passo é crítico, ou só acrescenta? quem consegue consertar?</strong></p>
+  <div class="qz" id="qlQuiz"></div>
+  <p class="qz-score" id="qlScore" aria-live="polite"></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-verde" aria-labelledby="h-verde">
+  <span class="eyebrow">Verde não é sucesso</span>
+  <h2 id="h-verde">O painel diz que o passo rodou; só a entrega diz se deu certo</h2>
+  <p class="intro">O e-mail com “enviado” no canto não garante que o anexo foi junto. O painel de uma automação (a tela que lista cada rodada, com cada passo marcado em verde ou vermelho) diz se o passo rodou, não se o resultado presta. O caso mais traiçoeiro é o passo de IA que tem uma ferramenta à mão e perde o acesso a ela: <strong>ela não quebra, ela responde</strong>, com educação, que não conseguiu. Para o painel, responder é sucesso. Compare as duas telas da mesma terça-feira.</p>
+  <div class="seg" role="group" aria-label="Qual tela">
+    <button type="button" data-vd="painel" aria-pressed="true">O que o painel mostra</button>
+    <button type="button" data-vd="planilha" aria-pressed="false">O que chegou na planilha</button>
+  </div>
+  <div id="vdOut" aria-live="polite"></div>
+  <p class="punch">O aviso de erro só dispara quando algo fica vermelho. <em>Uma resposta educada nunca fica vermelha.</em></p>
+  <p class="hint">É o mesmo problema de <a href="./automacao--json.html#s-calado">o erro que não avisa</a>, por outro caminho: lá, um número chega como texto e a conta sai errada sem alarme. O remédio dos dois é o mesmo: conferir o que saiu, não a cor do passo.</p>
 </section>
 
 <!-- 6 -->
