@@ -194,6 +194,8 @@ code { font-family: var(--font-mono); font-size: .88em; }
 /* 7 · ferramentas */
 .tl { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
 .tl-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; align-content: start; }
+.tl-card, .tl-card > * { min-width: 0; } /* no celular a coluna única precisa encolher abaixo do texto mais largo do cartão */
+.tl-fields { grid-template-columns: max-content minmax(0, 1fr); }
 .tl-card pre { margin: 0; font-family: var(--font-mono); font-size: .82rem; white-space: pre-wrap; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; }
 .tl-fields { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 0; font-size: .92rem; }
 .tl-fields dt { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); padding-top: 2px; }

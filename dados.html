@@ -236,7 +236,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <header class="hero">
   <nav class="famhead" aria-label="Família Trabalhar com dados">
     <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--planilha.html">9.1 Planilha →</a></span></div>
-    <div class="famhead-chips"><a href="./dados.html" aria-current="page">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a></div>
+    <div class="famhead-chips"><a href="./dados.html" aria-current="page">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html"><b>9.3</b>Comunicar</a></div>
   </nav>
   <span class="eyebrow">Visão geral</span>
   <h1>Trabalhar com dados</h1>
@@ -251,9 +251,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">O mapa da família</span>
   <h2 id="h-mapa">Três trabalhos, cada um com página própria</h2>
-  <p class="intro">Esta página é a visão geral: <strong>analisar, pesquisar e comunicar</strong>, nessa ordem. A IA escreve número com a mesma segurança com que escreve texto, e quem confere é você. A primeira página já está aqui; pesquisa com hipótese e comunicar o resultado chegam em seguida.</p>
-  <div class="fmap c1">
+  <p class="intro">Esta página é a visão geral: <strong>analisar, pesquisar e comunicar</strong>, nessa ordem. A IA escreve número com a mesma segurança com que escreve texto, e quem confere é você. Cada trabalho tem a sua página.</p>
+  <div class="fmap c3">
     <div class="fmap-card"><span class="fmap-n">9.1 · Planilha · 1 de 3</span><h3>Analisar planilha com IA</h3><p>Antes da conta, ela lê a estrutura. Arrume o dado, desconfie da média e peça o endereço de cada número.</p><span class="fmap-lab">Lá você encontra</span><ul><li>ler as colunas antes da conta</li><li>a média que esconde o grupo</li><li>de onde saiu cada número</li></ul><a class="fmap-go" href="./dados--planilha.html">abrir 9.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">9.2 · Pesquisa · 2 de 3</span><h3>Pesquisa com hipótese</h3><p>Pedir “pesquise sobre” devolve uma pesquisa equilibrada e rasa. Comece por uma hipótese que dá para derrubar, e diga que fontes valem.</p><span class="fmap-lab">Lá você encontra</span><ul><li>três tipos de hipótese</li><li>lembrado ou buscado</li><li>poucas fontes, lidas inteiras</li></ul><a class="fmap-go" href="./dados--pesquisa.html">abrir 9.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">9.3 · Comunicar · 3 de 3</span><h3>Comunicar o resultado</h3><p>Número sozinho deixa o gestor com o trabalho mais difícil. Escreva o que mostra, o que quer dizer e o que fazer, e confira se nenhum número nasceu no caminho.</p><span class="fmap-lab">Lá você encontra</span><ul><li>situação, interpretação, implicação</li><li>informar ou pedir aprovação</li><li>ler só os títulos</li></ul><a class="fmap-go" href="./dados--comunicar.html">abrir 9.3 →</a></div>
   </div>
 </section>
 <!-- /mapa -->
@@ -395,8 +397,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   /* 1 · o arco */
   var AR = [
     { hit: 0, t: 'Analisar · o que a planilha diz', d: 'A IA lê a estrutura antes da conta, você arruma o dado, e cada número volta com a coluna e as linhas de onde saiu. Sai daqui um desvio com endereço, como “a nota de quem entrou por convênio é 4,3, contra 7,2 da média”. Página: <a href="./dados--planilha.html">analisar planilha com IA</a>.' },
-    { hit: 1, t: 'Pesquisar · por que aconteceu', d: 'A planilha mostra o que aconteceu; quase nunca mostra por quê. A pesquisa vai buscar fora dela, e começa por uma hipótese que dá para derrubar, e não por um assunto. Sai daqui uma explicação com fonte, ou a hipótese descartada. Página própria em breve: pesquisa com hipótese.' },
-    { hit: 2, t: 'Comunicar · o que fazer com isso', d: 'O resultado escrito para quem decide: o que os dados mostram, o que isso quer dizer, o que precisa acontecer. Sai daqui um texto curto em que cada número veio da análise, e nenhum apareceu no caminho. Página própria em breve: comunicar o resultado.' },
+    { hit: 1, t: 'Pesquisar · por que aconteceu', d: 'A planilha mostra o que aconteceu; quase nunca mostra por quê. A pesquisa vai buscar fora dela, e começa por uma hipótese que dá para derrubar, e não por um assunto. Sai daqui uma explicação com fonte, ou a hipótese descartada. Página: <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.' },
+    { hit: 2, t: 'Comunicar · o que fazer com isso', d: 'O resultado escrito para quem decide: o que os dados mostram, o que isso quer dizer, o que precisa acontecer. Sai daqui um texto curto em que cada número veio da análise, e nenhum apareceu no caminho. Página: <a href="./dados--comunicar.html">comunicar o resultado</a>.' },
     { hit: -1, t: 'O que liga os três', d: 'Cada trabalho entrega o que o seguinte usa, inclusive o erro. Um número errado que passa na análise vira explicação na pesquisa e decisão no e-mail, cada vez mais bem escrito. <strong>Por isso a conferência fica em cada etapa, e não só no fim.</strong>' }
   ];
   var boxes = document.querySelectorAll('.ar-box');

@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--pesquisa">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pesquisa com hipótese</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.2. Peças: pesquisa sem e com hipótese com barras de profundidade, seletor dos três tipos de hipótese com quiz, filtro de fontes com o parágrafo ao vivo, memória × busca em três estados, escolher três fontes abrindo cada uma, as três conferências entre fontes, montador do pedido de pesquisa com conferência ao vivo. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono da biblioteca, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.sec > * { min-width: 0; }
+.ps-ask { font-family: var(--font-mono); font-size: .9rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.ps-mail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; font-size: .95rem; display: grid; gap: 8px; }
+.ps-mail.bad { border-color: var(--atencao); }
+.ps-mail.good { border-color: var(--ok); }
+.ps-mail ul, .ps-mail ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; }
+.ps-mail li + li { margin-top: 4px; }
+
+/* 1 · barras de profundidade */
+.ps-bars { display: grid; gap: 8px; }
+.ps-row { display: grid; grid-template-columns: minmax(0, 13rem) minmax(0, 1fr); gap: 10px; align-items: center; font-size: .9rem; }
+.ps-row > * { min-width: 0; }
+.ps-track { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; height: 18px; overflow: hidden; }
+.ps-fill { height: 100%; width: 0; background: var(--border-strong); transition: width .35s ease; }
+.ps-fill.deep { background: var(--accent); }
+.ps-fill.contra { background: var(--atencao); }
+.ps-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .85rem; color: var(--text-dim); }
+.ps-key { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; background: var(--border-strong); }
+.ps-key.deep { background: var(--accent); }
+.ps-key.contra { background: var(--atencao); }
+
+/* 2 · tipos */
+.ty-panel .ps-ask { font-family: var(--font-body); font-size: .95rem; }
+
+/* 3 · filtro de fontes */
+.fx-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.fx-wrap > * { min-width: 0; }
+.fx-side { display: grid; gap: 12px; }
+.fx-filters { display: grid; gap: 8px; }
+.fx-filters button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 9px 12px; font-size: .92rem; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.fx-filters button .box { width: 16px; height: 16px; border: 1.5px solid var(--border-strong); border-radius: 3px; background: var(--bg); }
+.fx-filters button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.fx-filters button[aria-pressed="true"] .box { background: var(--accent); border-color: var(--accent); }
+.fx-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.fx-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; font-size: .92rem; transition: opacity .25s ease; }
+.fx-item small { color: var(--text-dim); font-size: .82rem; }
+.fx-item .st { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ok-texto); }
+.fx-item.out { opacity: .5; border-style: dashed; }
+.fx-item.out b { text-decoration: line-through; font-weight: 400; }
+.fx-item.out .st { color: var(--text-dim); }
+.fx-item.flag { border-color: var(--atencao); }
+.fx-item.flag .st { color: var(--atencao-texto); }
+.fx-item b { font-weight: 500; }
+
+/* 4 · memória × busca */
+.tg { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; border-radius: 3px; padding: 1px 6px; border: 1px solid; white-space: nowrap; }
+.tg.mem { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.tg.ver { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.tg.bus { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+
+/* 5 · escolher três fontes */
+.fc-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.fc-grid > * { min-width: 0; }
+.fc-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; }
+.fc-card h3 { font-size: 1.02rem; font-weight: 500; line-height: 1.3; }
+.fc-card .eyebrow { font-size: 11px; }
+.fc-card .fc-read { font-size: .9rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 8px; }
+.fc-card .fc-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.fc-card .fc-btns .btn { padding: 6px 12px; font-size: .88rem; }
+.fc-card.used { border-color: var(--accent); background: var(--accent-soft); }
+.fc-card.used .fc-use { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); }
+.fc-read[hidden] { display: none; }
+
+/* 7 · montador */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.mt-grid > * { min-width: 0; }
+.mt-form { display: grid; gap: 10px; }
+.mt-form label { display: grid; gap: 4px; font-size: .92rem; }
+.mt-form input, .mt-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.mt-out { display: grid; gap: 10px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 860px) {
+  .fx-wrap, .mt-grid { grid-template-columns: 1fr; }
+  .fc-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .fc-grid { grid-template-columns: 1fr; }
+  .ps-row { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .ps-fill, .fx-item { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--planilha.html">← 9.1 Planilha</a><a href="./dados--comunicar.html">9.3 Comunicar →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html" aria-current="page"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html"><b>9.3</b>Comunicar</a></div>
+  </nav>
+  <span class="eyebrow">9.2 · 2 de 3</span>
+  <h1>Pesquisa com hipótese</h1>
+  <p class="sub">Diga antes o que você acha que explica o problema, e a pesquisa para de listar tudo e vai fundo onde importa</p>
+  <p class="lead">Pedir para a IA “pesquisar sobre” um assunto devolve um texto bem organizado que passa por todos os ângulos e não aprofunda nenhum. Não é defeito dela: sem saber o que você quer testar, ela distribui o esforço por igual. A pesquisa que serve para decidir começa antes do pedido, com <strong>uma hipótese declarada</strong> (o que você acha que explica o problema, escrito antes de pesquisar), o que vale como prova, a separação entre o que ela lembra e o que precisa buscar, e <strong>poucas fontes, lidas</strong>. Na família, este é o segundo trabalho: a planilha mostrou <em>o que</em> aconteceu; aqui se procura <em>por quê</em>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-raso">Pesquise sobre isso</a><a href="#s-tipos">Quanto você já sabe</a><a href="#s-fontes">O que vale como prova</a><a href="#s-memoria">Lembrado ou buscado</a><a href="#s-poucas">Poucas fontes, lidas inteiras</a><a href="#s-conferir">Conferir as fontes entre si</a><a href="#s-montar">O pedido inteiro</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-raso" aria-labelledby="h-raso">
+  <span class="eyebrow">Pesquise sobre isso</span>
+  <h2 id="h-raso">Sem hipótese, a pesquisa sai equilibrada e rasa</h2>
+  <p class="intro">Peça ao estagiário “um levantamento sobre cancelamento de clientes” e volta uma pasta grossa, bem organizada, que fala de tudo um pouco e não responde a pergunta da reunião. Com a IA é igual, só que mais rápido. No exemplo, a XPTO, uma empresa inventada que vende sistema de gestão para pequenos negócios: a <a href="./dados--planilha.html">análise da planilha</a> mostrou que os cancelamentos subiram no trimestre. Abaixo, dois pedidos para descobrir por quê. <strong>Repare para onde vai a profundidade em cada um.</strong></p>
+  <div class="seg" role="group" aria-label="Qual pedido">
+    <button type="button" data-rs="sem" aria-pressed="true">“Pesquise sobre”</button>
+    <button type="button" data-rs="com" aria-pressed="false">Com hipótese</button>
+  </div>
+  <p class="ps-ask" id="rsAsk"></p>
+  <div class="chart">
+    <span class="eyebrow">Quanto da resposta foi para cada assunto</span>
+    <div class="ps-bars" id="rsBars"></div>
+    <div class="ps-legend"><span><i class="ps-key"></i>assunto tratado</span><span><i class="ps-key deep"></i>aprofundado</span><span><i class="ps-key contra"></i>o que derrubaria a hipótese</span></div>
+  </div>
+  <div id="rsOut" aria-live="polite"></div>
+  <p class="hint">Para resumir, redigir ou formatar o que você já tem, o pedido simples basta. A hipótese vale quando o resultado vai orientar uma decisão, ou vai ser apresentado a outras pessoas, e o custo de um ponto cego é maior que os minutos de preparo.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tipos" aria-labelledby="h-tipos">
+  <span class="eyebrow">Quanto você já sabe</span>
+  <h2 id="h-tipos">Três tipos de hipótese: confirmar, derrubar ou mapear</h2>
+  <p class="intro">Quem entra numa entrevista de emprego já com uma impressão do candidato faz perguntas diferentes de quem não leu o currículo: um quer confirmar, outro quer achar o ponto fraco, o terceiro quer ouvir tudo antes de opinar. Na pesquisa, o tipo de hipótese diz à IA qual dos três trabalhos fazer. <strong>Escolha pelo quanto você já sabe e pelo quanto custa errar.</strong></p>
+  <div class="seg" role="group" aria-label="Tipo de hipótese">
+    <button type="button" data-ty="conf" aria-pressed="true">Confirmação</button>
+    <button type="button" data-ty="ref" aria-pressed="false">Refutação</button>
+    <button type="button" data-ty="map" aria-pressed="false">Mapeamento</button>
+  </div>
+  <div class="panel ty-panel" id="tyPanel" aria-live="polite"></div>
+  <h3>Qual tipo cabe em cada pedido?</h3>
+  <div class="qz" id="tyQuiz"></div>
+  <p class="qz-score" id="tyScore" aria-live="polite"></p>
+  <p class="hint">A refutação é o antídoto da IA que concorda com você: ela tende a achar razão para o que você já pensa, e pedir o contrário é o que quebra isso. O mecanismo, com exemplos, está em <a href="./limites-da-ia--a-ia-concorda.html#s-hipoteses">a IA concorda com você</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-fontes" aria-labelledby="h-fontes">
+  <span class="eyebrow">O que vale como prova</span>
+  <h2 id="h-fontes">Diga que fontes valem e que ruído ignorar, antes de ela buscar</h2>
+  <p class="intro">Quando o jurídico dá um parecer, ninguém aceita “li num grupo de mensagens” como fundamento: que tipo de fonte vale já está combinado antes. Na pesquisa, sem esse combinado, a IA põe o relatório do setor e o comentário anônimo de fórum no mesmo parágrafo, com o mesmo tom. Abaixo, oito coisas que uma busca sobre os cancelamentos da XPTO poderia trazer. <strong>Ligue os filtros e veja o que sobra, e o parágrafo que vai no pedido.</strong></p>
+  <div class="fx-wrap">
+    <div class="fx-side">
+      <div class="fx-filters" role="group" aria-label="Filtros de fonte">
+        <button type="button" data-fx="a" aria-pressed="false"><span class="box"></span><span>Só fonte com autor ou instituição identificada</span></button>
+        <button type="button" data-fx="b" aria-pressed="false"><span class="box"></span><span>Publicado nos últimos dois anos</span></button>
+        <button type="button" data-fx="c" aria-pressed="false"><span class="box"></span><span>Sem texto de quem vende a solução</span></button>
+        <button type="button" data-fx="d" aria-pressed="false"><span class="box"></span><span>Dado de outro país ou porte entra marcado</span></button>
+      </div>
+      <div class="verdict" id="fxVer" aria-live="polite"></div>
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O parágrafo de fontes · ao vivo</span><button type="button" class="btn" data-copy="fxOut">Copiar</button></div>
+        <pre id="fxOut"></pre>
+      </div>
+    </div>
+    <ul class="fx-list" id="fxList"></ul>
+  </div>
+  <p class="hint">Os dados da própria empresa (os chamados de suporte, a planilha de cancelamentos) não estão na internet: só entram na pesquisa se você anexar. Muitas vezes são a fonte mais forte que existe.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-memoria" aria-labelledby="h-memoria">
+  <span class="eyebrow">Lembrado ou buscado</span>
+  <h2 id="h-memoria">Separe o que ela sabe de memória do que precisa ser buscado</h2>
+  <p class="intro">O colega veterano responde muita coisa de cabeça, e o bom veterano avisa: “isso eu lembro, mas confere na norma, que pode ter mudado”. A IA também responde de memória: é o que ela leu durante o <strong>treino</strong>, a fase em que aprendeu com uma montanha de textos, até uma certa data. Ela não sabe o que veio depois e não guarda de qual texto saiu cada coisa. Quando o chat tem a <strong>busca na internet</strong> ligada, ela pode ir atrás da fonte; quando não tem, ainda assim responde, no mesmo tom. A mesma pergunta, em três situações:</p>
+  <p class="ps-ask">“Em sistemas por assinatura, quanto do cancelamento acontece nos primeiros meses de contrato?”</p>
+  <div class="seg" role="group" aria-label="Como ela respondeu">
+    <button type="button" data-mm="sem" aria-pressed="true">Sem marcação</button>
+    <button type="button" data-mm="mar" aria-pressed="false">Marcada, sem busca</button>
+    <button type="button" data-mm="bus" aria-pressed="false">Marcada, com busca</button>
+  </div>
+  <div id="mmOut" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">As três etiquetas · cole no fim do pedido de pesquisa</span><button type="button" class="btn" data-copy="mmAsk">Copiar</button></div>
+<pre id="mmAsk">Marque cada afirmação da resposta com uma etiqueta:
+[DE MEMÓRIA] o que você sabe do que leu antes, sem fonte para mostrar agora;
+[BUSCADO] o que você encontrou nesta pesquisa, com o link e o trecho que diz isso;
+[PRECISA VERIFICAR] número, data, regra ou nome que eu devo conferir antes de usar.
+Não dê porcentagem nem valor sem fonte. Se não tiver a fonte, diga onde eu poderia procurar.</pre>
+  </div>
+  <p class="hint">Número específico sem fonte não se usa, venha de onde vier. Por que ela preenche o que falta em vez de dizer “não sei”, e o parágrafo que manda avisar o que não encontrou, em <a href="./limites-da-ia--alucinacao.html#s-instrucao">alucinação</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-poucas" aria-labelledby="h-poucas">
+  <span class="eyebrow">Poucas fontes, lidas inteiras</span>
+  <h2 id="h-poucas">Escolha no máximo três fontes, e abra cada uma antes de usar</h2>
+  <p class="intro">Na compra, três orçamentos lidos com calma valem mais que vinte empilhados na mesa sem abrir. A busca devolve títulos, e o título promete o que o texto às vezes não cumpre. Abaixo, seis resultados de uma busca sobre os cancelamentos. <strong>Só dá para usar depois de abrir, e cabem três.</strong></p>
+  <div class="fc-grid" id="fcGrid"></div>
+  <p class="qz-score" id="fcScore" aria-live="polite"></p>
+  <div class="verdict" id="fcVer" aria-live="polite"></div>
+  <div class="two">
+    <div class="card"><span class="eyebrow">Busca que lista</span><h3>Ela mostra os links, você escolhe</h3><p>Serve quando você sabe o que procura. Você abre, lê e decide o que entra. Quem conhece o assunto filtra com mais critério que ela.</p></div>
+    <div class="card"><span class="eyebrow">Pesquisa que entrega relatório</span><h3>Ela lê muitas páginas e escreve o resumo</h3><p>Alguns chats têm um modo de pesquisa mais demorado, com nome que muda de ferramenta para ferramenta. Serve para um primeiro panorama de tema que você não domina. O relatório é uma fonte a mais: os links dele se abrem como os outros.</p></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-conferir" aria-labelledby="h-conferir">
+  <span class="eyebrow">Conferir as fontes entre si</span>
+  <h2 id="h-conferir">Antes de analisar, pergunte onde as fontes brigam, o que falta e quem não foi ouvido</h2>
+  <p class="intro">Antes de fechar um acordo a partir de três e-mails sobre o mesmo assunto, você confere onde eles se contradizem e qual é o mais recente. Com as fontes escolhidas, três perguntas vêm <strong>antes</strong> da análise, uma de cada vez. Elas não respondem a pesquisa: dizem quanto dá para confiar no material com que ela vai ser feita.</p>
+  <div class="seg" role="group" aria-label="Conferência">
+    <button type="button" data-cf="0" aria-pressed="true">Onde brigam</button>
+    <button type="button" data-cf="1" aria-pressed="false">O que falta</button>
+    <button type="button" data-cf="2" aria-pressed="false">Quem não foi ouvido</button>
+  </div>
+  <div class="panel" id="cfPanel" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">As três conferências · uma por mensagem, nesta ordem</span><button type="button" class="btn" data-copy="cfAll">Copiar</button></div>
+<pre id="cfAll">1. Olhando só as fontes que eu escolhi, mostre onde elas discordam entre si: afirmações conflitantes e dados que não batem. Para cada ponto, cite a fonte e o trecho. Se elas forem consistentes, diga isso claramente.
+
+2. Com base nessas fontes, que pontos importantes sobre [o tema] ficaram de fora ou foram tratados por cima? Não invente detalhes: só descreva o que falta.
+
+3. Há pontos de vista contrários, ou menos conhecidos, sobre [o tema] que provavelmente não estão nessas fontes? Descreva em linhas gerais e diga que tipo de fonte eu precisaria buscar para encontrá-los.</pre>
+  </div>
+  <p class="hint">Ponha só a versão que vale de cada documento: a edição antiga e a nova juntas criam uma contradição que não existe. Como escolher o que entra quando o material é seu, em <a href="./assistente--resposta-ancorada.html#s-escolher">resposta ancorada</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-montar" aria-labelledby="h-montar">
+  <span class="eyebrow">O pedido inteiro</span>
+  <h2 id="h-montar">Monte o seu pedido de pesquisa</h2>
+  <p class="intro">É o briefing que você daria a um analista contratado por uma semana: de que cadeira você pergunta, para que decisão, o que você acha, o que conta como prova e como quer receber. Tudo o que esta página mostrou cabe num pedido só. <strong>Troque os campos pelo seu caso</strong>; a conferência abaixo do pedido reage enquanto você escreve.</p>
+  <div class="mt-grid">
+    <div class="mt-form">
+      <label>De que cadeira você pesquisa<input id="mtCad" value="Sou gerente de atendimento ao cliente da XPTO; o resultado vai para a diretoria."></label>
+      <label>A decisão que a pesquisa vai apoiar<textarea id="mtDec" rows="2">Decidir se investimos num acompanhamento das duas primeiras semanas de cada cliente novo, no lugar de dar desconto na renovação.</textarea></label>
+      <div class="seg" role="group" aria-label="Tipo de hipótese do pedido">
+        <button type="button" data-mt="conf" aria-pressed="false">Confirmação</button>
+        <button type="button" data-mt="ref" aria-pressed="true">Refutação</button>
+        <button type="button" data-mt="map" aria-pressed="false">Mapeamento</button>
+      </div>
+      <label>A hipótese, como afirmação<textarea id="mtHip" rows="2">Os cancelamentos não vêm do preço: vêm da dificuldade das duas primeiras semanas de uso.</textarea></label>
+      <label>Fontes que valem<input id="mtFon" value="relatórios do setor com método descrito, estudos de caso de empresas do nosso porte, os chamados de suporte que anexei"></label>
+      <label>Ruído a ignorar<input id="mtIgn" value="fórum, texto de quem vende a solução, material com mais de dois anos sem a data dita"></label>
+      <label>Como você quer receber<input id="mtEnt" value="uma página: o que confirma, o que derruba, o que ficou em aberto, e o que conferir na nossa planilha"></label>
+    </div>
+    <div class="mt-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O pedido · ao vivo</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+        <pre id="mtOut"></pre>
+      </div>
+      <div class="verdict" id="mtVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">Em sala de aula, este pedido aparece com o nome PHFE: persona (a cadeira de onde você pesquisa), hipótese, fontes e estrutura da entrega. O nome é o de menos; a ordem é a de pensar. A linha “antes de escrever, liste as incertezas” faz a IA olhar o que contradiz a hipótese antes de começar a defender uma resposta. Para os campos de um pedido comum, veja <a href="./prompt.html">prompt</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Hipótese antes do assunto</h3><p>Sem ela, a pesquisa passa por todos os ângulos e não aprofunda nenhum. Com ela, a IA sabe onde cavar, e o que derrubaria a resposta.</p></div>
+    <div class="take-card"><h3>A prova se combina antes</h3><p>Que fonte vale, que ruído se ignora, o que é memória dela e o que foi buscado agora.</p></div>
+    <div class="take-card"><h3>Poucas fontes, abertas</h3><p>Três que você leu valem mais que vinte que ela citou. E, antes de analisar, pergunte onde elas brigam.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Hipótese</dt><dd>O que você acha que explica o problema, escrito como afirmação antes de pesquisar, de um jeito que dê para confirmar ou derrubar.</dd>
+    <dt>Confirmação</dt><dd>Pesquisa para reunir evidência de algo de que você já está convencido. Pede junto a metade contra.</dd>
+    <dt>Refutação</dt><dd>Pesquisa para achar o que derruba a sua hipótese antes de uma decisão cara.</dd>
+    <dt>Mapeamento</dt><dd>Pesquisa para conhecer as explicações que existem quando você ainda não tem palpite. Termina quando você escolhe uma.</dd>
+    <dt>De memória</dt><dd>O que a IA sabe do treino, sem fonte para mostrar e sem nada do que veio depois da data em que ela parou de aprender.</dd>
+    <dt>Ruído</dt><dd>O que a busca traz e não vale como prova: opinião sem autor, texto de quem vende, material velho apresentado como atual.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Se o seu chat busca na internet, e se tem um modo de pesquisa mais demorado, depende do aplicativo, do plano e da versão; o nome muda de um para outro. A XPTO, os cancelamentos, os resultados de busca, as fontes, a porcentagem da resposta sem marcação e as conferências são inventados para o exemplo. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--planilha.html">analisar planilha</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados--planilha.html"><span>← anterior</span><b>9.1 · Analisar planilha com IA</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <a class="famfoot-next" href="./dados--comunicar.html"><span>próxima →</span><b>9.3 · Comunicar o resultado</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+
+  /* 1 · sem e com hipótese */
+  var RS = {
+    sem: {
+      ask: 'Pedido: “Pesquise por que empresas cancelam sistemas de gestão e me entregue um briefing completo: visão geral, tendências, dados, principais motivos, riscos e recomendações.”',
+      bars: [['Preço', 30, ''], ['Pouco uso do sistema', 30, ''], ['Suporte lento', 30, ''], ['Concorrente mais barato', 30, ''], ['Falta de integração', 30, ''], ['Troca de gestor no cliente', 30, ''], ['Cenário econômico', 30, '']],
+      out: '<div class="ps-mail bad"><span class="eyebrow">O que voltou · sete motivos, um parágrafo cada</span><ol><li>Preço: clientes pequenos são sensíveis a reajuste.</li><li>Pouco uso: quem não usa não vê valor.</li><li>Suporte: demora no atendimento frustra.</li><li>Concorrência: há opções mais baratas.</li><li>Integração: o sistema não conversa com o banco ou com a contabilidade.</li><li>Troca de gestor: quem chega traz o sistema que já conhecia.</li><li>Economia: em crise, corta-se o que não é essencial.</li></ol><div class="verdict no"><b>Nada aqui está errado. E nada aqui ajuda a decidir.</b> Sete ângulos com a mesma profundidade, e você continua sem saber qual deles é o da XPTO.</div></div>'
+    },
+    com: {
+      ask: 'Pedido: “Acredito que os cancelamentos da XPTO não vêm do preço, e sim da dificuldade das duas primeiras semanas de uso. Procure o que confirma e o que derruba essa ideia, e diga o que eu deveria conferir nos nossos dados.”',
+      bars: [['Primeiras semanas de uso', 92, 'deep'], ['O que derrubaria a hipótese', 58, 'contra'], ['Preço', 26, ''], ['Pouco uso do sistema', 0, ''], ['Suporte lento', 0, ''], ['Concorrente mais barato', 0, ''], ['Cenário econômico', 0, '']],
+      out: '<div class="ps-mail good"><span class="eyebrow">O que voltou · uma hipótese testada</span><ul><li><b>Se for verdade, você veria:</b> cancelamento concentrado nos primeiros meses de contrato; clientes que não terminaram a configuração; chamados de suporte do tipo “como faço”.</li><li><b>O que derrubaria:</b> cancelamento espalhado ao longo do ano, ou concentrado no mês do reajuste; quem cancela citando um concorrente mais barato.</li><li><b>Estudos parecidos:</b> empresas de sistema por assinatura que mudaram o acompanhamento dos primeiros dias, e o que mediram antes e depois.</li><li><b>Para conferir na sua planilha:</b> o mês de entrada e o mês de cancelamento de cada cliente, na mesma linha.</li></ul><div class="verdict ok"><b>A profundidade foi para onde a decisão está.</b> E a resposta diz o que derrubaria a hipótese: é isso que a torna testável, e que manda você de volta aos seus dados.</div></div>'
+    }
+  };
+  var rsBtns = document.querySelectorAll('[data-rs]'), rsBars = document.getElementById('rsBars');
+  rsBars.innerHTML = RS.sem.bars.map(function () { return '<div class="ps-row"><span></span><div class="ps-track"><div class="ps-fill"></div></div></div>'; }).join('');
+  function setRs(k) {
+    var r = RS[k];
+    pressGroup(rsBtns, function (x) { return x.dataset.rs === k; });
+    document.getElementById('rsAsk').textContent = r.ask;
+    rsBars.querySelectorAll('.ps-row').forEach(function (row, i) {
+      var b = r.bars[i];
+      row.querySelector('span').textContent = b[0] + (b[1] === 0 ? ' · fora do foco' : '');
+      var f = row.querySelector('.ps-fill'); f.className = 'ps-fill' + (b[2] ? ' ' + b[2] : ''); f.style.width = b[1] + '%';
+    });
+    document.getElementById('rsOut').innerHTML = r.out;
+  }
+  rsBtns.forEach(function (b) { b.addEventListener('click', function () { setRs(b.dataset.rs); }); });
+  setRs('sem');
+
+  /* 2 · tipos de hipótese */
+  var TY = {
+    conf: { t: 'Confirmação', q: 'Você já está convencido e precisa de evidência organizada para defender a ideia, numa apresentação ou num pedido de verba.', f: '“Acredito que a principal causa dos cancelamentos é a dificuldade das duas primeiras semanas de uso. Reúna as evidências que sustentam isso e, com o mesmo cuidado, as que contradizem.”', r: 'É o tipo em que a IA mais concorda com você: peça prova a favor e ela acha. A metade contra entra no mesmo pedido, nunca depois. Por quê, em <a href="./limites-da-ia--a-ia-concorda.html#s-material">prova a favor, prova contra</a>.' },
+    ref: { t: 'Refutação', q: 'Você vai investir ou mudar algo caro, e quer achar o furo antes de se comprometer.', f: '“Minha hipótese é que o preço não explica os cancelamentos. Procure o que derrubaria essa ideia: o que eu veria nos dados se o preço fosse, sim, a causa?”', r: 'Mandar destruir também engana: ela acha defeito até onde não há. Peça que separe o defeito com prova do defeito apenas possível. Mais em <a href="./limites-da-ia--a-ia-concorda.html#s-teatro">crítica de verdade, não teatro</a>.' },
+    map: { t: 'Mapeamento', q: 'Você ainda não conhece o assunto e não saberia formular um palpite honesto.', f: '“Ainda não tenho hipótese sobre por que clientes de sistema de gestão cancelam. Mapeie as três explicações mais defendidas, quem defende cada uma e com que tipo de evidência, antes de eu formular a minha.”', r: 'Mapeamento é ponto de partida, não de chegada: termina quando você escolhe uma das explicações e volta para confirmar ou derrubar. Pesquisa que para no mapa vira o “pesquise sobre” do começo da página.' }
+  };
+  var tyBtns = document.querySelectorAll('[data-ty]'), tyPanel = document.getElementById('tyPanel');
+  function setTy(k) { var t = TY[k]; pressGroup(tyBtns, function (x) { return x.dataset.ty === k; }); tyPanel.innerHTML = '<h3>' + t.t + '</h3><p><b>Quando:</b> ' + t.q + '</p><p class="ps-ask">' + t.f + '</p><p class="hint"><b>O cuidado:</b> ' + t.r + '</p>'; }
+  tyBtns.forEach(function (b) { b.addEventListener('click', function () { setTy(b.dataset.ty); }); });
+  setTy('conf');
+  quiz(document.getElementById('tyQuiz'), document.getElementById('tyScore'), [
+    { s: 'Você vai pedir verba para um acompanhamento de clientes novos, tem certeza do problema e precisa organizar as evidências para a diretoria.', a: 'conf', why: 'Convicção formada e evidência para defender. Com a metade contra pedida junto, porque é aí que ela mais concorda.' },
+    { s: 'A diretoria quer trocar o sistema de atendimento, que é caro, porque “os clientes reclamam do atendimento”. Você desconfia que o motivo é outro.', a: 'ref', why: 'Decisão cara e uma explicação que todos já aceitaram: é a hora de procurar o que a derruba.' },
+    { s: 'Você assumiu uma área nova e precisa entender por que um indicador que nunca acompanhou piorou.', a: 'map', why: 'Sem repertório, qualquer palpite seria chute. Primeiro conhecer as explicações; depois escolher uma e testar.' },
+    { s: 'Você acha que mudar o horário de entrega vai reduzir as reclamações e quer saber se alguém já tentou e deu errado, antes de mexer na operação.', a: 'ref', why: 'Você tem a ideia, e o que interessa é o furo dela antes de mudar a operação.' },
+    { s: 'Pediram um panorama de um tema que ninguém da empresa conhece, para escolher por onde começar.', a: 'map', why: 'Panorama para escolher por onde ir: o mapa é o próprio entregável, e a hipótese vem depois.' }
+  ], [['conf', 'Confirmação'], ['ref', 'Refutação'], ['map', 'Mapeamento']], 'o tipo sai de quanto você já sabe e de quanto custa errar.');
+
+  /* 3 · filtro de fontes */
+  var FX = [
+    { n: 'Relatório anual de uma associação do setor de software, com o método descrito', s: 'publicado no ano passado', x: '' },
+    { n: 'Estudo de caso de uma empresa de sistema de gestão que mudou a primeira semana do cliente e mediu o antes e o depois', s: 'porte parecido com o da XPTO', x: '' },
+    { n: 'Comentário anônimo num fórum: “cancelei porque é caro”', s: 'sem autor', x: 'a' },
+    { n: 'Artigo de uma empresa que vende treinamento de clientes: “a maioria cancela por falta de treinamento”', s: 'quem escreveu vende a solução', x: 'c' },
+    { n: 'Pesquisa acadêmica sobre adoção de sistemas em pequenas empresas', s: 'de oito anos atrás', x: 'b' },
+    { n: 'Os chamados de suporte da própria XPTO, exportados do sistema', s: 'dado interno, anexado por você', x: '' },
+    { n: 'Vídeo de um vendedor de outro sistema comparando preços', s: 'quem fala vende a concorrência', x: 'c' },
+    { n: 'Pesquisa com grandes empresas de outro país sobre por que trocam de fornecedor de software', s: 'outro país, outro porte', x: 'd' }
+  ];
+  var FXT = {
+    a: 'Só use fonte com autor ou instituição identificada.',
+    b: 'Só use material publicado nos últimos dois anos; se usar algo mais antigo, diga a data junto.',
+    c: 'Ignore texto de quem vende a solução que está sendo avaliada, e de quem vende a concorrência.',
+    d: 'Se usar dado de outro país, setor ou porte de empresa, marque isso junto do dado.'
+  };
+  var fxBtns = document.querySelectorAll('[data-fx]'), fxOn = {}, fxList = document.getElementById('fxList');
+  function renderFx() {
+    var n = 0, flagged = 0, loose = 0;
+    fxList.innerHTML = FX.map(function (f) {
+      var out = f.x && f.x !== 'd' && fxOn[f.x], flag = f.x === 'd' && fxOn.d, cls = 'fx-item' + (out ? ' out' : '') + (flag ? ' flag' : '');
+      if (!out) n++; if (flag) flagged++; if (!out && f.x && f.x !== 'd') loose++;
+      var st = out ? 'fica de fora' : (flag ? 'entra marcado' : 'entra');
+      return '<li class="' + cls + '"><span class="st">' + st + '</span><b>' + f.n + '</b><small>' + f.s + '</small></li>';
+    }).join('');
+    var v = document.getElementById('fxVer');
+    if (loose === 0 && fxOn.d) { v.className = 'verdict ok'; v.innerHTML = '<b>Entram ' + n + ' de 8.</b> Sobrou o que dá para citar, e o dado de outro país chega com a etiqueta.'; }
+    else if (loose === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Entram ' + n + ' de 8.</b> O ruído saiu, mas o dado de grandes empresas de outro país entra como se valesse para a XPTO.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Entram ' + n + ' de 8.</b> Ainda há ' + loose + (loose === 1 ? ' fonte que' : ' fontes que') + ' a resposta vai citar no mesmo tom do relatório do setor.'; }
+    var txt = 'Fontes que valem: relatórios do setor com método descrito, estudos de caso de empresas de porte parecido e os dados internos que eu anexei.';
+    ['a', 'b', 'c', 'd'].forEach(function (k) { if (fxOn[k]) txt += '\n' + FXT[k]; });
+    txt += '\nCite a fonte de cada dado. Não apresente número sem fonte.';
+    document.getElementById('fxOut').textContent = txt;
+  }
+  fxBtns.forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.fx; fxOn[k] = !fxOn[k]; b.setAttribute('aria-pressed', String(!!fxOn[k])); renderFx(); }); });
+  renderFx();
+
+  /* 4 · memória × busca */
+  var MM = {
+    sem: '<div class="ps-mail bad"><span class="eyebrow">Sem marcação</span><p>Cerca de 40% dos cancelamentos acontecem nos primeiros 90 dias de contrato, segundo estudos do setor. Por isso, investir no acompanhamento inicial costuma ter o maior retorno.</p><div class="verdict no"><b>De onde saiu o 40%?</b> “Estudos do setor” não é endereço. Pode ser lembrança de um texto real, de outro país e de outra época, ou uma combinação que soa plausível. Na tela, as três possibilidades têm a mesma cara.</div></div>',
+    mar: '<div class="ps-mail good"><span class="eyebrow">Marcada, sem busca na internet</span><ul><li><span class="tg mem">DE MEMÓRIA</span> Em sistemas por assinatura, é comum o cancelamento se concentrar nos primeiros meses, quando o cliente ainda não viu valor.</li><li><span class="tg ver">PRECISA VERIFICAR</span> Não tenho um número com fonte. Qualquer porcentagem que eu desse aqui seria estimativa.</li><li><span class="tg ver">PRECISA VERIFICAR</span> Onde procurar: relatórios de associações do setor; e, mais forte que eles, os seus próprios dados de cancelamento por mês de entrada.</li></ul><div class="verdict ok"><b>Menos impressionante, e muito mais útil.</b> Você sabe o que é lembrança, o que falta e onde buscar.</div></div>',
+    bus: '<div class="ps-mail good"><span class="eyebrow">Marcada, com busca na internet</span><ul><li><span class="tg bus">BUSCADO</span> Relatório anual da associação do setor, capítulo sobre retenção: traz o trecho e o link. Amostra de empresas pequenas e médias.</li><li><span class="tg bus">BUSCADO</span> Estudo de caso de uma empresa de porte parecido, com o antes e o depois medidos.</li><li><span class="tg mem">DE MEMÓRIA</span> A explicação de por que os primeiros meses pesam mais.</li><li><span class="tg ver">PRECISA VERIFICAR</span> O relatório é de outro país; o porte das empresas é parecido, o mercado não.</li></ul><div class="verdict ok"><b>Busca ligada não dispensa abrir o link.</b> Ela pode citar uma fonte real que diz outra coisa, ou diz a mesma coisa sobre outro público. A etiqueta diz onde olhar; olhar continua com você.</div></div>'
+  };
+  var mmBtns = document.querySelectorAll('[data-mm]'), mmOut = document.getElementById('mmOut');
+  function setMm(k) { pressGroup(mmBtns, function (x) { return x.dataset.mm === k; }); mmOut.innerHTML = MM[k]; }
+  mmBtns.forEach(function (b) { b.addEventListener('click', function () { setMm(b.dataset.mm); }); });
+  setMm('sem');
+
+  /* 5 · escolher três fontes */
+  var FC = [
+    { t: '“Acompanhar o cliente nos primeiros dias reduz o cancelamento em 80%”', o: 'página de uma empresa', r: 'É a página de venda de uma ferramenta de acompanhamento. O número não tem método, amostra nem data. Prova que a empresa quer vender.', g: 0 },
+    { t: 'Relatório anual do setor de software por assinatura', o: 'associação do setor', r: 'Método descrito, amostra de empresas pequenas e médias, um capítulo inteiro sobre os primeiros meses de contrato. Serve.', g: 1 },
+    { t: 'Estudo de caso: como uma empresa de sistema de gestão mudou a primeira semana do cliente', o: 'publicação especializada', r: 'Empresa de porte parecido; mostra o que mudou e mede o antes e o depois. Um caso só, mas com número que dá para conferir. Serve.', g: 1 },
+    { t: '15 motivos pelos quais seus clientes cancelam', o: 'blog', r: 'Lista genérica sem nenhuma fonte, montada com trechos de outras listas. É o “pesquise sobre” em forma de artigo.', g: 0 },
+    { t: 'Pesquisa sobre preço em sistemas para pequenas empresas', o: 'instituto de pesquisa', r: 'Boa pesquisa, mas sobre por que as empresas contratam, não por que cancelam. O título promete uma coisa e o texto mede outra.', g: 0 },
+    { t: 'Adoção de sistemas de gestão em pequenas empresas: o peso da curva de aprendizado', o: 'artigo acadêmico, de oito anos atrás', r: 'Antigo, mas o achado sobre a dificuldade de aprender o sistema conversa direto com a hipótese. Serve, com a data dita junto.', g: 1 }
+  ];
+  var fcGrid = document.getElementById('fcGrid'), fcOpen = {}, fcUsed = [];
+  fcGrid.innerHTML = FC.map(function (c, i) {
+    return '<div class="fc-card" data-fc="' + i + '"><span class="eyebrow">' + c.o + '</span><h3>' + c.t + '</h3><p class="fc-read" hidden>' + c.r + '</p><div class="fc-btns"><button type="button" class="btn fc-open">Abrir e ler</button><button type="button" class="btn fc-use" disabled>Usar</button></div></div>';
+  }).join('');
+  function renderFc() {
+    fcGrid.querySelectorAll('.fc-card').forEach(function (card) {
+      var i = +card.dataset.fc, used = fcUsed.indexOf(i) > -1, ub = card.querySelector('.fc-use');
+      card.classList.toggle('used', used);
+      card.querySelector('.fc-read').hidden = !fcOpen[i];
+      card.querySelector('.fc-open').textContent = fcOpen[i] ? 'Lido' : 'Abrir e ler';
+      ub.disabled = !fcOpen[i] || (!used && fcUsed.length >= 3);
+      ub.textContent = used ? 'Em uso · tirar' : 'Usar';
+      ub.setAttribute('aria-pressed', String(used));
+    });
+    var opened = Object.keys(fcOpen).length;
+    document.getElementById('fcScore').textContent = 'Abertas: ' + opened + ' de 6 · em uso: ' + fcUsed.length + ' de 3';
+    var v = document.getElementById('fcVer'), bad = fcUsed.filter(function (i) { return !FC[i].g; });
+    if (!opened) { v.className = 'verdict no'; v.innerHTML = '<b>Abra antes de escolher.</b> O botão de usar só acende depois da leitura, que é a regra: título não é conteúdo.'; }
+    else if (fcUsed.length < 3) { v.className = 'verdict no'; v.innerHTML = '<b>Em uso: ' + fcUsed.length + ' de 3.</b> Abra as outras antes de decidir; o título de cada uma promete mais do que algumas entregam.'; }
+    else if (bad.length) { v.className = 'verdict no'; v.innerHTML = '<b>Três escolhidas, ' + bad.length + ' sem sustentar a hipótese.</b> Releia: ' + bad.map(function (i) { return '“' + FC[i].t.replace(/“|”/g, '') + '”'; }).join('; ') + '.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Três fontes que você leu.</b> O relatório dá o quadro, o caso dá o número que se confere, o artigo antigo dá o mecanismo, com a data dita. Agora é conferir as três entre si.'; }
+  }
+  fcGrid.addEventListener('click', function (e) {
+    var card = e.target.closest('.fc-card'); if (!card) return; var i = +card.dataset.fc;
+    if (e.target.closest('.fc-open')) { fcOpen[i] = true; renderFc(); }
+    else if (e.target.closest('.fc-use')) { var k = fcUsed.indexOf(i); if (k > -1) fcUsed.splice(k, 1); else if (fcUsed.length < 3) fcUsed.push(i); renderFc(); }
+  });
+  renderFc();
+
+  /* 6 · as três conferências */
+  var CF = [
+    { t: 'Onde as fontes brigam', ex: 'O relatório do setor diz que o cancelamento se concentra no começo do contrato; o estudo de caso diz que aquela empresa perdia mais clientes no mês do reajuste anual. Nenhum dos dois está errado: são empresas diferentes.', fz: 'Quando brigam, descubra qual é a mais recente ou a mais oficial, e escreva na conclusão qual você seguiu e por quê. Quando concordam, siga com mais confiança.' },
+    { t: 'O que falta', ex: 'Nenhuma das três fontes fala de negócios com menos de dez funcionários, que é boa parte dos clientes da XPTO.', fz: 'A lacuna vira uma busca nova, de novo com poucas fontes abertas. Ou vira uma linha no resultado: “isto não foi pesquisado”.' },
+    { t: 'Quem não foi ouvido', ex: 'Todas as fontes ouvem quem vende sistema. Ninguém ouviu o contador do cliente, que muitas vezes é quem recomenda o sistema, ou recomenda trocar.', fz: 'Evita a pesquisa em que todas as fontes pensam igual e, por isso, concordam com você. Se a perspectiva que falta pesa, ela entra antes da análise, não depois.' }
+  ];
+  var cfBtns = document.querySelectorAll('[data-cf]'), cfPanel = document.getElementById('cfPanel');
+  function setCf(k) { var c = CF[k]; pressGroup(cfBtns, function (x) { return +x.dataset.cf === k; }); cfPanel.innerHTML = '<span class="eyebrow">conferência ' + (k + 1) + ' de 3</span><h3>' + c.t + '</h3><p><b>No exemplo:</b> ' + c.ex + '</p><p class="hint"><b>O que fazer com a resposta:</b> ' + c.fz + '</p>'; }
+  cfBtns.forEach(function (b) { b.addEventListener('click', function () { setCf(+b.dataset.cf); }); });
+  setCf(0);
+
+  /* 7 · montador */
+  var mtBtns = document.querySelectorAll('[data-mt]'), mtTipo = 'ref';
+  var ids = ['mtCad', 'mtDec', 'mtHip', 'mtFon', 'mtIgn', 'mtEnt'], F = {};
+  ids.forEach(function (id) { F[id] = document.getElementById(id); });
+  var TIPO = {
+    conf: 'Reúna o que sustenta essa hipótese e, com o mesmo cuidado, o que a contradiz.',
+    ref: 'Procure o que derrubaria essa hipótese. Separe o que tem prova do que é apenas possível.',
+    map: 'Ainda não tenho hipótese firme. Mapeie as três explicações mais defendidas, quem defende cada uma e com que evidência, antes de eu escolher a minha.'
+  };
+  function v(id) { return F[id].value.trim(); }
+  function mt() {
+    var hip = v('mtHip'), lines = [];
+    if (v('mtCad')) lines.push('<b>Quem pergunta:</b> ' + esc(v('mtCad')));
+    if (v('mtDec')) lines.push('<b>A decisão que esta pesquisa vai apoiar:</b> ' + esc(v('mtDec')));
+    lines.push('');
+    if (mtTipo === 'map') lines.push('<b>O que eu acho, por enquanto:</b> ' + (hip ? esc(hip) : 'nada formado'));
+    else lines.push('<b>Minha hipótese:</b> ' + (hip ? esc(hip) : '<i>[escreva a hipótese]</i>'));
+    lines.push(TIPO[mtTipo]);
+    lines.push('');
+    lines.push('<b>Fontes que valem:</b> ' + (v('mtFon') ? esc(v('mtFon')) : '<i>[diga que fontes valem]</i>') + '.');
+    if (v('mtIgn')) lines.push('<b>Ignore:</b> ' + esc(v('mtIgn')) + '.');
+    lines.push('Marque cada afirmação: [DE MEMÓRIA], [BUSCADO] com o link e o trecho, ou [PRECISA VERIFICAR]. Não dê número sem fonte.');
+    lines.push('');
+    lines.push('Antes de escrever, liste as três maiores incertezas desta pesquisa e o que contradiz a hipótese. Só então responda.');
+    lines.push('');
+    lines.push('<b>Entregue:</b> ' + (v('mtEnt') ? esc(v('mtEnt')) : 'um resumo de uma página') + '.');
+    document.getElementById('mtOut').innerHTML = lines.join('\n');
+    var ver = document.getElementById('mtVer');
+    if (!hip && mtTipo !== 'map') { ver.className = 'verdict no'; ver.innerHTML = '<b>Sem hipótese, o pedido volta a ser “pesquise sobre”.</b> Escreva o que você acha, ou escolha mapeamento.'; }
+    else if (/\?\s*$/.test(hip)) { ver.className = 'verdict no'; ver.innerHTML = '<b>A hipótese está como pergunta.</b> Escreva como afirmação: algo que você acredita e quer testar. Pergunta não dá para derrubar.'; }
+    else if (!v('mtFon')) { ver.className = 'verdict no'; ver.innerHTML = '<b>Falta dizer o que vale como prova.</b> Sem isso, o fórum e o relatório entram no mesmo parágrafo.'; }
+    else if (mtTipo === 'map') { ver.className = 'verdict ok'; ver.innerHTML = '<b>Pedido de mapa.</b> Quando ele voltar, escolha uma das explicações, troque o tipo e pesquise de novo.'; }
+    else { ver.className = 'verdict ok'; ver.innerHTML = '<b>Pronto para colar.</b> Hipótese como afirmação, tipo escolhido, prova combinada e a ordem de olhar o contrário antes.'; }
+  }
+  mtBtns.forEach(function (b) { b.addEventListener('click', function () { mtTipo = b.dataset.mt; pressGroup(mtBtns, function (x) { return x === b; }); mt(); }); });
+  ids.forEach(function (id) { F[id].addEventListener('input', mt); });
+  mt();
+})();
+</script>
+</body>
+</html>

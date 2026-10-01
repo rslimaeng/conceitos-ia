@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--comunicar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comunicar o resultado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.3. Peças: só o número × a frase completa com as quatro marcas, stepper com diagrama dos três parágrafos nascendo da análise, montador ao vivo do pedido do e-mail com teto de palavras, informar × convencer no mesmo caso, quiz informar ou convencer, títulos de assunto × de conclusão, testador de título, roteiro × o que voltou do visual, conferência clicável das frases contra a análise. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+.sec > * { min-width: 0; }
+
+/* ---- só desta peça ---- */
+/* 1 · número sozinho × frase completa */
+.cm-mail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; font-size: .97rem; display: grid; gap: 8px; }
+.cm-mail.bad { border-color: var(--atencao); }
+.cm-mail.good { border-color: var(--ok); }
+.cm-mail ul, .cm-mail ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; }
+.mk { border-radius: 3px; padding: 0 3px; }
+.mk-n { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.mk-s { background: var(--ok-soft); color: var(--ok-texto); }
+.mk-c { background: var(--atencao-soft); color: var(--atencao-texto); }
+.mk-a { border-bottom: 2px solid var(--text); }
+.cm-four { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.cm-four div { border: 1px dashed var(--border-strong); border-radius: 6px; padding: 8px 10px; font-size: .88rem; color: var(--text-dim); display: grid; gap: 2px; }
+.cm-four div b { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.cm-four div.has { border-style: solid; border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+
+/* 2 · três parágrafos (svg) */
+.svg-640 { min-width: 640px; }
+.si-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.si-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.si-box.src rect { fill: var(--bg-elev); stroke: var(--text); }
+.si-box.src.on rect { fill: var(--ok-soft); stroke: var(--ok); }
+.si-box .h { font: 600 12px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.si-box.on .h { fill: var(--accent); }
+.si-box.src.on .h { fill: var(--ok-texto); }
+.si-box .t { font: 400 12.5px var(--font-body); fill: var(--text); }
+.si-box .q { font: 400 11.5px var(--font-body); fill: var(--text-muted); }
+.si-arr { stroke: var(--border-strong); stroke-width: 1.6; fill: none; }
+.si-arr.on { stroke: var(--accent); stroke-width: 2; }
+.si-mk { fill: var(--accent); }
+.cm-tab { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.cm-tab td { padding: 4px 8px; border-top: 1px solid var(--border); vertical-align: top; color: var(--text-muted); }
+.cm-tab td:first-child { color: var(--text); font-weight: 500; }
+
+/* 3 · montador do e-mail */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.mt-form { display: grid; gap: 14px; }
+.mt-form label { display: grid; gap: 4px; font-size: .92rem; }
+.mt-form input[type=text] { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.mt-out { display: grid; gap: 10px; }
+
+/* 4 · informar × convencer */
+.cv-row { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; align-items: baseline; }
+.cv-row b { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.cv-row span { color: var(--text-muted); font-size: .93rem; }
+
+/* 5 · títulos */
+.tt-deck { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; counter-reset: sl; }
+.tt-deck li { counter-increment: sl; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px 14px; display: grid; gap: 6px; align-content: start; min-height: 120px; }
+.tt-deck li::before { content: "slide " counter(sl); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.tt-deck li b { font-weight: 500; font-size: .95rem; line-height: 1.3; }
+.tt-deck li small { color: var(--text-dim); font-size: .8rem; }
+.tt-deck.good li { border-color: var(--ok); }
+.tt-test { display: grid; gap: 10px; }
+.tt-test input { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 12px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.tt-checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.tt-checks span { border: 1px dashed var(--border-strong); border-radius: 999px; padding: 2px 12px; font-size: .86rem; color: var(--text-dim); }
+.tt-checks span.has { border-style: solid; border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+.tt-checks span.lab { border-style: solid; border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+
+/* 6 · argumento × visual */
+.sp-lost { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.sp-kept { background: var(--ok-soft); color: var(--ok-texto); border-radius: 3px; padding: 0 3px; }
+
+/* 7 · nenhum número novo */
+.cf-mail { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; line-height: 1.75; }
+.cf-s { cursor: pointer; border-radius: 3px; padding: 1px 2px; border-bottom: 1px dashed var(--border-strong); }
+.cf-s:hover { background: var(--bg); }
+.cf-s[aria-pressed="true"] { background: var(--atencao-soft); color: var(--atencao-texto); border-bottom-color: var(--atencao); }
+.cf-s.r-ok { background: var(--ok-soft); color: var(--ok-texto); border-bottom: 2px solid var(--ok); }
+.cf-s.r-new { background: var(--atencao-soft); color: var(--atencao-texto); border-bottom: 2px solid var(--atencao); }
+.cf-s:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cf-res { display: grid; gap: 8px; }
+.cf-res ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .93rem; display: grid; gap: 4px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .mt-grid { grid-template-columns: 1fr; }
+  .tt-deck { grid-template-columns: 1fr 1fr; }
+  .cm-four { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 520px) { .tt-deck { grid-template-columns: 1fr; } .tt-deck li { min-height: 0; } .cv-row { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .si-box rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--pesquisa.html">← 9.2 Pesquisa</a><a href="./dados.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html" aria-current="page"><b>9.3</b>Comunicar</a></div>
+  </nav>
+  <span class="eyebrow">9.3 · 3 de 3</span>
+  <h1>Comunicar o resultado</h1>
+  <p class="sub">Mandar só o número deixa quem decide com o trabalho mais difícil: dizer o que ele quer dizer e o que fazer</p>
+  <p class="lead">A análise terminou e os números estão certos. Falta o que o gestor vai ler: um texto curto que diga <strong>o que os dados mostram, o que isso quer dizer e o que precisa acontecer</strong>. A IA escreve esse texto em segundos. Também escreve, com a mesma rapidez, a versão que abre com “Com base nos dados fornecidos” e não pede nada a ninguém. Esta página mostra como pedir a primeira, quando o texto precisa informar e quando precisa convencer, e o que conferir antes de enviar.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-numero">Número sozinho não é resultado</a><a href="#s-tres">O que mostra, o que quer dizer, o que fazer</a><a href="#s-email">O e-mail para quem decide</a><a href="#s-convencer">Informar ou pedir aprovação</a><a href="#s-titulos">Ler só os títulos</a><a href="#s-separar">Primeiro o argumento, depois a aparência</a><a href="#s-conferir">Nenhum número novo no caminho</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-numero" aria-labelledby="h-numero">
+  <span class="eyebrow">Número sozinho não é resultado</span>
+  <h2 id="h-numero">Entregar só os números deixa o gestor sozinho com o trabalho mais difícil</h2>
+  <p class="intro">O contador que manda o balancete sem uma linha de comentário deixa o dono da empresa adivinhando se o mês foi bom. Com a análise feita pela IA acontece igual: a nota está certa, e ninguém sabe o que fazer com ela. <strong>A frase que serve tem quatro coisas: o número, o grupo onde ele dói, a causa e a ação.</strong> Compare as duas versões da mesma notícia.</p>
+  <div class="seg" role="group" aria-label="Versão do resultado">
+    <button type="button" data-nb="so" aria-pressed="true">Só o número</button>
+    <button type="button" data-nb="frase" aria-pressed="false">A frase completa</button>
+  </div>
+  <div id="nbOut" aria-live="polite"></div>
+  <div class="cm-four" id="nbFour"></div>
+  <p class="hint">O <strong>grupo</strong> é o que a análise chama de segmento: um corte das linhas da planilha com algo em comum, como o canal por onde o cliente agendou. Como achar esse corte está em <a href="./dados--planilha.html#s-segmento">analisar planilha</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tres" aria-labelledby="h-tres">
+  <span class="eyebrow">O que mostra, o que quer dizer, o que fazer</span>
+  <h2 id="h-tres">Três parágrafos: situação, interpretação, implicação</h2>
+  <p class="intro">O laudo do médico não para no resultado do exame: diz o que o resultado indica e o que você faz a seguir. O resultado de uma análise se escreve na mesma ordem. <strong>Situação</strong> é o que os dados mostram. <strong>Interpretação</strong> é o que isso quer dizer: o problema, quem foi afetado e a causa. <strong>Implicação</strong> é o que precisa acontecer, e quem precisa entrar. Avance e veja cada parágrafo nascer da análise.</p>
+  <div class="stepbar"><span class="eyebrow" id="siLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="siPrev">← Anterior</button><button type="button" class="btn primary" id="siNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="svg-640" viewBox="0 0 760 200" role="img" aria-labelledby="si-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="si-t">A análise alimenta três parágrafos em sequência: situação, o que os dados mostram; interpretação, o que isso quer dizer; implicação, o que precisa acontecer</title>
+      <defs><marker id="mksi" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="10" refX="10" refY="5" orient="auto"><path d="M0,0.5 L11,5 L0,9.5 z" class="si-mk"/></marker></defs>
+      <g class="si-box src" data-si="0"><rect x="10" y="30" width="150" height="140" rx="8"/><text class="h" x="24" y="56">A ANÁLISE</text><text class="t" x="24" y="84">notas, grupos,</text><text class="t" x="24" y="104">comentários,</text><text class="t" x="24" y="124">a causa</text><text class="q" x="24" y="152">o que você já tem</text></g>
+      <path class="si-arr" data-ar="1" d="M162,100 L192,100" marker-end="url(#mksi)"/>
+      <g class="si-box" data-si="1"><rect x="196" y="30" width="176" height="140" rx="8"/><text class="h" x="210" y="56">1 · SITUAÇÃO</text><text class="t" x="210" y="84">o que os dados</text><text class="t" x="210" y="104">mostram</text><text class="q" x="210" y="140">dois ou três números</text><text class="q" x="210" y="158">e o grupo mais afetado</text></g>
+      <path class="si-arr" data-ar="2" d="M374,100 L380,100" marker-end="url(#mksi)"/>
+      <g class="si-box" data-si="2"><rect x="384" y="30" width="176" height="140" rx="8"/><text class="h" x="398" y="56">2 · INTERPRETAÇÃO</text><text class="t" x="398" y="84">o que isso</text><text class="t" x="398" y="104">quer dizer</text><text class="q" x="398" y="140">o problema, quem foi</text><text class="q" x="398" y="158">afetado e a causa</text></g>
+      <path class="si-arr" data-ar="3" d="M562,100 L568,100" marker-end="url(#mksi)"/>
+      <g class="si-box" data-si="3"><rect x="572" y="30" width="176" height="140" rx="8"/><text class="h" x="586" y="56">3 · IMPLICAÇÃO</text><text class="t" x="586" y="84">o que precisa</text><text class="t" x="586" y="104">acontecer</text><text class="q" x="586" y="140">a ação, quem entra</text><text class="q" x="586" y="158">e até quando</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="siCap" aria-live="polite"></div>
+  <p class="hint">Se a causa ainda é suspeita, ela não entra como fato no parágrafo 2: ou vai escrita como suspeita, ou você testa antes. Como testar está em <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-email" aria-labelledby="h-email">
+  <span class="eyebrow">O e-mail para quem decide</span>
+  <h2 id="h-email">O pedido do e-mail: três parágrafos, teto de palavras e nada de abertura de cartório</h2>
+  <p class="intro">Quem já recebeu e-mail começando com “Venho por meio deste” sabe que a primeira linha gastou a atenção e não disse nada. Pedir “resuma a análise para a diretoria” devolve exatamente isso: “Com base nos dados fornecidos, observa-se um cenário desafiador”. <strong>O pedido que funciona fixa os três parágrafos, um teto de palavras (o máximo que o texto pode ter) e as aberturas proibidas</strong>, e diz o que o leitor precisa conseguir fazer depois de ler. Monte o seu.</p>
+  <div class="mt-grid">
+    <div class="mt-form">
+      <div class="field"><span>Quem lê</span>
+        <div class="seg" role="group" aria-label="Quem lê">
+          <button type="button" data-mq="a diretoria" aria-pressed="true">Diretoria</button>
+          <button type="button" data-mq="o gerente da área" aria-pressed="false">Gerente da área</button>
+          <button type="button" data-mq="o conselho" aria-pressed="false">Conselho</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="mtTeto">Teto de palavras no corpo do e-mail</label>
+        <div class="row"><input type="range" id="mtTeto" min="100" max="250" step="10" value="150"><output id="mtTetoOut" for="mtTeto">150</output></div>
+      </div>
+      <label>O que você precisa que aconteça<input type="text" id="mtAcao" value="o OK da TI para integrar as duas agendas até dia 15"></label>
+      <div class="verdict" id="mtVer" aria-live="polite"></div>
+    </div>
+    <div class="mt-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O pedido · cole na conversa da análise</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+        <pre id="mtOut"></pre>
+      </div>
+    </div>
+  </div>
+  <p class="hint">A última linha do pedido descreve o que o leitor consegue fazer quando o e-mail estiver pronto. É o jeito de dizer o que você quer ver em vez de ditar cada passo: mais em <a href="./prompt.html#s-destino">prompt</a>. Se o e-mail voltar vago, responda na mesma conversa: “No parágrafo 2, cite o grupo afetado, a nota dele contra a dos demais e a causa com nome.”</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-convencer" aria-labelledby="h-convencer">
+  <span class="eyebrow">Informar ou pedir aprovação</span>
+  <h2 id="h-convencer">Relatório informa; pedido de aprovação precisa convencer, e começa pela resposta</h2>
+  <p class="intro">O relatório mensal da frota e o pedido de verba para trocar três caminhões usam os mesmos números, mas um termina em “fica registrado” e o outro em “preciso da sua assinatura”. Para <strong>informar</strong>, a estrutura de relatório basta: o que aconteceu, o que isso quer dizer, a ação. Para <strong>convencer</strong>, a ordem muda: situação, complicação, pergunta e resposta, com a resposta abrindo a apresentação. <strong>O critério: se o próximo passo depende de alguém aprovar, é convencer.</strong> O mesmo caso, nos dois jeitos.</p>
+  <div class="seg" role="group" aria-label="Objetivo do texto">
+    <button type="button" data-cv="inf" aria-pressed="true">Informar</button>
+    <button type="button" data-cv="con" aria-pressed="false">Convencer</button>
+  </div>
+  <div id="cvOut" aria-live="polite"></div>
+  <p class="hint">As duas estruturas têm sigla conhecida. A de relatório aparece como <strong>OIA</strong>: observação, insight (o que o dado quer dizer) e ação. A de convencer, como <strong>SCQA</strong>: as iniciais, em inglês, de situação, complicação, questão e resposta. Na hora de pedir, elas entram em lugares diferentes: a de relatório vai na tarefa (você pede que a IA organize assim); a de convencer vai no contexto (você já escreve o argumento, e ela monta a apresentação em cima dele).</p>
+  <h3>Qual é o caso?</h3>
+  <div class="qz" id="cvQuiz"></div>
+  <p class="qz-score" id="cvScore" aria-live="polite"></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido para convencer · você traz o argumento</span><button type="button" class="btn" data-copy="cvPrompt">Copiar</button></div>
+<pre id="cvPrompt">Vou te dar o argumento pronto. Organize uma apresentação de no máximo 8 slides para pedir uma aprovação.
+<b>Situação</b> (o que todos já sabem): <i>[ex.: a pesquisa de atendimento é trimestral e a meta é 7,0]</i>
+<b>Complicação</b> (o que mudou ou está errado): <i>[ex.: quem agendou por telefone deu 4,1, porque a agenda do telefone não vê os horários do site]</i>
+<b>Pergunta</b> (a que isso leva): <i>[ex.: como evitar que a campanha de novembro repita isso?]</i>
+<b>Resposta</b> (o que eu recomendo): <i>[ex.: integrar as duas agendas antes da campanha; preciso do OK até dia 15]</i>
+O primeiro slide é a resposta. Os seguintes constroem o argumento, cada um com um título que já diz a conclusão. Não deixe a recomendação para o último slide.
+Use só os números que estão acima. Se faltar um, escreva [FALTA: ...] no lugar.
+Está pronto se quem aprova ler só o primeiro slide e souber o que eu peço e por que é urgente.</pre>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-titulos" aria-labelledby="h-titulos">
+  <span class="eyebrow">Ler só os títulos</span>
+  <h2 id="h-titulos">Leia só os títulos, em sequência: a história tem que fechar sem abrir nenhum slide</h2>
+  <p class="intro">Quem folheia o jornal pela manchete sabe o que aconteceu sem ler matéria nenhuma; uma manchete que diz só “Economia” não conta nada. O título de slide funciona igual, e o gestor costuma ler os títulos antes de ouvir você. <strong>O teste: leia só os títulos, em sequência. Se o problema, a causa e o que fazer ficam claros, estão certos.</strong> Título bom tem um número, uma comparação ou uma consequência. Troque os títulos da mesma apresentação.</p>
+  <div class="seg" role="group" aria-label="Tipo de título">
+    <button type="button" data-tt="dado" aria-pressed="true">Títulos de assunto</button>
+    <button type="button" data-tt="conc" aria-pressed="false">Títulos de conclusão</button>
+  </div>
+  <ol class="tt-deck" id="ttDeck"></ol>
+  <div class="verdict" id="ttVer" aria-live="polite"></div>
+  <h3>Teste um título seu</h3>
+  <div class="tt-test">
+    <input type="text" id="ttIn" value="Satisfação por canal" aria-label="Um título de slide">
+    <div class="tt-checks" id="ttChecks"></div>
+    <div class="verdict" id="ttInVer" aria-live="polite"></div>
+    <p class="hint">A simulação procura algarismo, comparação (uma palavra como “contra”, ou dois números) e palavra de consequência. É uma versão tosca do teste de verdade, que é perguntar: depois de ler o título, o gestor sabe algo que não sabia? Se o título pode ser trocado por “Análise de X”, ainda é rótulo.</p>
+  </div>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Área</th><th>Título de assunto</th><th>Título de conclusão</th></tr>
+      <tr><td>Financeiro</td><td>Receita do trimestre</td><td>Receita subiu 8%, e a margem caiu pelo terceiro trimestre seguido</td></tr>
+      <tr><td>Comercial</td><td>Análise do funil</td><td>6 em cada 10 contatos se perdem na proposta, não na primeira conversa</td></tr>
+      <tr><td>RH</td><td>Processo seletivo</td><td>4 em cada 10 candidatos desistem antes da entrevista técnica</td></tr>
+      <tr><td>Compras</td><td>Avaliação de fornecedores</td><td>O fornecedor B custa R$ 14 a mais por pessoa e não atrasou nenhuma entrega</td></tr>
+    </table>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O teste dos títulos · cole com o texto dos slides</span><button type="button" class="btn" data-copy="ttPrompt">Copiar</button></div>
+<pre id="ttPrompt">Leia só os títulos dos slides, em sequência, sem o conteúdo de nenhum.
+1. Escreva em três linhas o que alguém entenderia só por eles: qual é o problema, qual é a causa, o que vai ser feito.
+2. Aponte todo título que diz só o assunto (como "Análise de X", "Resultados" ou "Próximos passos").
+3. Reescreva esses títulos para que digam a conclusão, com um número, uma comparação ou uma consequência que já esteja no conteúdo do slide.
+Não invente número para caber no título.</pre>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-separar" aria-labelledby="h-separar">
+  <span class="eyebrow">Primeiro o argumento, depois a aparência</span>
+  <h2 id="h-separar">O pedido que escreve o argumento é separado do pedido que faz o slide</h2>
+  <p class="intro">Na agência, o redator fecha o texto antes de o diagramador abrir o arquivo; quando quem diagrama também escreve, sai bonito e vazio. Com a IA vale o mesmo. Primeiro, numa conversa, ela escreve o <strong>roteiro</strong>: o título de cada slide, dois ou três pontos e o tipo de gráfico. Só depois o roteiro vai para a ferramenta que faz o visual. <strong>E o que volta passa por duas conferências: os títulos sobreviveram? Os números continuam lá?</strong> Ferramenta de slide costuma reescrever título e enxugar ponto, e o enxugado quase sempre é o número.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · o argumento</span><h3>O roteiro, em texto</h3><p>Na conversa da análise. Títulos de conclusão, pontos curtos, o gráfico sugerido. Passe o teste dos títulos aqui, antes de qualquer cor.</p></div>
+    <div class="card"><span class="eyebrow">02 · a aparência</span><h3>O visual, a partir do roteiro</h3><p>Cole o roteiro inteiro e peça que o texto seja mantido como está. O trabalho dessa etapa é a forma, não o conteúdo.</p></div>
+    <div class="card focal"><span class="eyebrow">03 · as duas conferências</span><h3>Títulos e números</h3><p>Leia de novo só os títulos. Depois procure, slide a slide, cada número do roteiro.</p></div>
+  </div>
+  <div class="seg" role="group" aria-label="Momento">
+    <button type="button" data-sp="antes" aria-pressed="true">O roteiro aprovado</button>
+    <button type="button" data-sp="depois" aria-pressed="false">O que voltou do visual</button>
+  </div>
+  <div id="spOut" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Para restaurar · cole com o roteiro e o texto dos slides</span><button type="button" class="btn" data-copy="spPrompt">Copiar</button></div>
+<pre id="spPrompt">Compare o texto destes slides com o roteiro que eu aprovei, que vai abaixo.
+1. Liste todo título que mudou, e o título do roteiro que ele substituiu.
+2. Liste todo número do roteiro que sumiu ou mudou de valor.
+3. Devolva o texto dos slides com os títulos e os números do roteiro restaurados. O resto pode ficar como está.
+<i>[cole o roteiro]</i>
+<i>[cole o texto dos slides]</i></pre>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-conferir" aria-labelledby="h-conferir">
+  <span class="eyebrow">Nenhum número novo no caminho</span>
+  <h2 id="h-conferir">Antes de enviar: cada frase do texto está na análise?</h2>
+  <p class="intro">Antes de assinar o ofício, a secretária confere o valor por extenso contra a planilha, e não contra a memória. Na hora de escrever bonito, a IA completa: arredonda, generaliza, traz uma comparação com o ano passado que ninguém calculou. Sai no mesmo tom das frases certas. Abaixo, a análise e um e-mail que voltou. <strong>Clique nas frases que não dá para defender com a análise</strong>, e depois confira.</p>
+  <div class="two">
+    <div class="card"><span class="eyebrow">A análise · o que você tem</span>
+      <table class="cm-tab">
+        <tr><td>Respostas</td><td>1.400 clientes, pesquisa do trimestre</td></tr>
+        <tr><td>Nota de atendimento</td><td>5,8 · meta 7,0</td></tr>
+        <tr><td>Por canal</td><td>telefone 4,1 (640 clientes) · site 7,2 (760)</td></tr>
+        <tr><td>Comentário mais citado</td><td>“cheguei e o horário já estava ocupado”, o mais citado entre quem ligou</td></tr>
+        <tr><td>Causa</td><td>a equipe confirmou: a agenda do telefone não mostra os horários marcados pelo site</td></tr>
+        <tr><td>O que você precisa</td><td>o OK da TI até dia 15, antes da campanha de novembro</td></tr>
+      </table>
+    </div>
+    <div class="cf-res">
+      <div class="cf-mail" id="cfMail"></div>
+      <div class="nav"><button type="button" class="btn primary" id="cfGo">Conferir</button><button type="button" class="btn" id="cfReset">Recomeçar</button></div>
+    </div>
+  </div>
+  <div class="cf-res" id="cfOut" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A conferência · na mesma conversa, antes de enviar</span><button type="button" class="btn" data-copy="cfPrompt">Copiar</button></div>
+<pre id="cfPrompt">Releia o texto frase por frase e compare com a análise desta conversa. Para cada frase, diga uma destas três:
+(a) está na análise, com o mesmo número;
+(b) está na análise, mas mudou: arredondou, generalizou, virou certeza ou trocou o grupo;
+(c) não está na análise.
+Não reescreva nada ainda. Só a lista, com a frase e a letra.</pre>
+  </div>
+  <p class="hint">Os números do texto vêm da análise, e cada um deles precisa ter endereço lá: como pedir isso está em <a href="./dados--planilha.html">analisar planilha</a>. A conferência rápida de fonte, número e consistência, e quanto pesa o erro, está em <a href="./limites-da-ia--alucinacao.html#s-trinta">alucinação</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>O número, o sentido e a ação</h3><p>Situação, interpretação e implicação. Entregar só a primeira deixa com quem lê o trabalho mais difícil.</p></div>
+    <div class="take-card"><h3>Os títulos contam a história</h3><p>Leia só os títulos, em sequência. Se o problema, a causa e a ação não aparecem, ainda é rótulo.</p></div>
+    <div class="take-card"><h3>Nenhum número novo no caminho</h3><p>Argumento primeiro, aparência depois, e todo número do texto final está na análise.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Situação</dt><dd>O primeiro parágrafo: o que os dados mostram, com dois ou três números e o grupo mais afetado.</dd>
+    <dt>Interpretação</dt><dd>O segundo: o que isso quer dizer. O problema, quem foi afetado e a causa, em palavras de quem não é da área.</dd>
+    <dt>Implicação</dt><dd>O terceiro: o que precisa acontecer, quem precisa entrar e até quando.</dd>
+    <dt>Teto de palavras</dt><dd>O máximo de palavras que o texto pode ter. Escrito no pedido, impede o relatório disfarçado de e-mail.</dd>
+    <dt>Título de conclusão</dt><dd>O título que já diz o ponto do slide, com número, comparação ou consequência. O contrário é o título de assunto.</dd>
+    <dt>OIA e SCQA</dt><dd>As siglas das duas estruturas: a de relatório, para informar, e a de situação, complicação, questão e resposta, para pedir aprovação.</dd>
+    <dt>Roteiro</dt><dd>O texto da apresentação antes do visual: título, pontos e gráfico sugerido de cada slide.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. As estruturas de informar e de convencer têm várias versões e nomes; o que importa é a ordem das perguntas, e o teto de palavras é uma escolha sua, não uma regra fixa. A rede que agenda por telefone e pelo site, as notas, os 1.400 e os 640 clientes, o prazo, o custo, os títulos e os casos do quiz são inventados para o exemplo; os pares de títulos de outras áreas foram adaptados de exercícios de aula, com números de exercício. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--planilha.html">analisar planilha</a>, <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados--pesquisa.html"><span>← anterior</span><b>9.2 · Pesquisa com hipótese</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <a class="famfoot-next" href="./dados.html"><span>volta ao começo ↺</span><b>Visão geral · Trabalhar com dados</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · número sozinho × frase completa */
+  var NB = {
+    so: { html: '<div class="cm-mail bad"><span class="eyebrow">O que foi para a diretoria</span><p><span class="mk mk-n">A nota de atendimento ficou 5,8.</span></p><p class="hint">Está certo. E deixa três perguntas para quem lê: isso é ruim? Onde? O que eu faço com isso? Quem responde é o gestor, sozinho, sem a análise na mão.</p></div>', has: [1, 0, 0, 0] },
+    frase: { html: '<div class="cm-mail good"><span class="eyebrow">O que foi para a diretoria</span><p>O atendimento foi o pior ponto do trimestre: <span class="mk mk-n">nota 4,1</span> entre <span class="mk mk-s">os 640 clientes que agendaram por telefone</span>, contra <span class="mk mk-n">7,2</span> de quem agendou pelo site. A causa é que <span class="mk mk-c">a agenda do telefone não mostra os horários marcados pelo site</span>, e o cliente chega para um horário já ocupado. <span class="mk mk-a">Integrar as duas agendas antes da campanha de novembro resolve; preciso do OK da TI até dia 15.</span></p><p class="hint">Mesma análise, mesmos dados. A diferença é que o trabalho de dizer o que o número quer dizer foi feito por quem fez a análise.</p></div>', has: [1, 1, 1, 1] }
+  };
+  var FOUR = [['número', 'o dado, com comparação'], ['grupo', 'onde ele dói'], ['causa', 'por que aconteceu'], ['ação', 'o que fazer, e até quando']];
+  var nbBtns = document.querySelectorAll('[data-nb]');
+  function setNb(k) {
+    pressGroup(nbBtns, function (x) { return x.dataset.nb === k; });
+    document.getElementById('nbOut').innerHTML = NB[k].html;
+    document.getElementById('nbFour').innerHTML = FOUR.map(function (f, i) { var h = NB[k].has[i]; return '<div class="' + (h ? 'has' : '') + '"><b>' + f[0] + ' · ' + (h ? 'tem' : 'falta') + '</b>' + f[1] + '</div>'; }).join('');
+  }
+  nbBtns.forEach(function (b) { b.addEventListener('click', function () { setNb(b.dataset.nb); }); });
+  setNb('so');
+
+  /* 2 · três parágrafos */
+  var PAR = [
+    'O atendimento ficou com nota 5,8 no trimestre, abaixo da meta de 7,0. A queda está concentrada em quem agenda por telefone: 4,1 entre 640 clientes, contra 7,2 de quem agenda pelo site.',
+    'O problema não é falta de gente no balcão. A agenda do telefone não mostra os horários já marcados pelo site, e o cliente chega para um horário que foi ocupado; é o comentário mais citado por quem ligou.',
+    'Integrar as duas agendas antes da campanha de novembro resolve a causa. Para isso, preciso do OK da TI até dia 15, numa reunião com o atendimento e a TI juntos.'
+  ];
+  function words(t) { return t.trim().split(/\s+/).filter(Boolean).length; }
+  var SI = [
+    { on: [0], t: 'O ponto de partida: o que a análise já tem', d: '<table class="cm-tab"><tr><td>Nota de atendimento</td><td>5,8 · meta 7,0</td></tr><tr><td>Por canal</td><td>telefone 4,1 (640 clientes) · site 7,2 (760)</td></tr><tr><td>Comentário mais citado</td><td>“cheguei e o horário já estava ocupado”</td></tr><tr><td>Causa</td><td>a agenda do telefone não mostra os horários do site</td></tr></table><p class="hint">Tudo o que vai para o texto já está aqui. Escrever o resultado não é descobrir nada novo: é pôr em ordem.</p>' },
+    { on: [0, 1], t: '1 · Situação: o que os dados mostram', d: '<p>' + PAR[0] + '</p><p class="hint">Responde “o que aconteceu?”. Dois ou três números e o grupo mais afetado. Se parar aqui, é o balancete sem comentário.</p>' },
+    { on: [0, 1, 2], t: '2 · Interpretação: o que isso quer dizer', d: '<p>' + PAR[1] + '</p><p class="hint">Responde “por quê?”. O problema, quem foi afetado e a causa, em palavras de quem não é da área. É aqui que a frase “não é falta de gente” evita a decisão errada.</p>' },
+    { on: [0, 1, 2, 3], t: '3 · Implicação: o que precisa acontecer', d: '<p>' + PAR[2] + '</p><p class="hint">Responde “e agora?”. A ação, quem entra e até quando. Sem este parágrafo, o gestor lê, concorda e não faz nada.</p>' },
+    { on: [1, 2, 3], t: 'O e-mail inteiro', d: '<p>' + PAR.join('</p><p>') + '</p><p class="hint">' + words(PAR.join(' ')) + ' palavras, três parágrafos, nenhum tópico. Cabe numa tela, e nenhum número apareceu que não estivesse na análise.</p>' }
+  ];
+  var siBoxes = document.querySelectorAll('.si-box'), siArrs = document.querySelectorAll('.si-arr');
+  stepper(SI.length, document.getElementById('siPrev'), document.getElementById('siNext'), document.getElementById('siLab'), 'Passo', function (k) {
+    var s = SI[k - 1];
+    siBoxes.forEach(function (g) { g.classList.toggle('on', s.on.indexOf(+g.dataset.si) > -1); });
+    siArrs.forEach(function (a) { var i = +a.dataset.ar; a.classList.toggle('on', s.on.indexOf(i) > -1 && s.on.indexOf(i - 1) > -1); });
+    document.getElementById('siCap').innerHTML = '<h3>' + s.t + '</h3>' + s.d;
+  });
+
+  /* 3 · montador do e-mail */
+  var mqBtns = document.querySelectorAll('[data-mq]'), mtTeto = document.getElementById('mtTeto'), mtAcao = document.getElementById('mtAcao'), mq = 'a diretoria';
+  function mt() {
+    var t = +mtTeto.value, ac = mtAcao.value.trim();
+    document.getElementById('mtTetoOut').textContent = t;
+    document.getElementById('mtOut').innerHTML = 'Com base na análise que fizemos nesta conversa, escreva um e-mail para <b>' + esc(mq) + '</b> em exatamente 3 parágrafos, sem tópicos:\n1. <b>Situação</b>: o que os dados mostram. Dois ou três números e o grupo mais afetado.\n2. <b>Interpretação</b>: o que isso quer dizer. O problema principal, quem foi afetado e a causa, em palavras de quem não é da área. Se a causa ainda for suspeita, escreva que é suspeita.\n3. <b>Implicação</b>: o que precisa acontecer. ' + (ac ? 'Peça ' + esc(ac) + '.' : '<i>[o que você precisa que aconteça]</i>') + ' Diga quem precisa ser envolvido e até quando.\nMáximo de <b>' + t + ' palavras</b> no corpo, com assunto.\nComece direto pela conclusão principal. Não abra com "Com base nos dados fornecidos" nem com "Venho por meio deste". Não use "satisfatório", "desafiador" nem "robusto".\nUse só números que estão na análise. Se precisar de um que não está lá, escreva [FALTA: ...] no lugar.\nO e-mail está pronto se ' + esc(mq) + ' ler e souber o que aconteceu, por quê e o que fazer, sem abrir a planilha.';
+    var v = document.getElementById('mtVer');
+    if (!ac) { v.className = 'verdict no'; v.innerHTML = '<b>Falta a ação.</b> Sem dizer o que você precisa, o parágrafo 3 vira “é importante acompanhar o indicador”.'; }
+    else if (t > 200) { v.className = 'verdict no'; v.innerHTML = '<b>' + t + ' palavras já é relatório.</b> Os pedidos que funcionam ficam entre 150 e 200; o detalhe vai em anexo.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Cabe numa tela.</b> Três parágrafos de até ' + t + ' palavras, com a ação nomeada.'; }
+  }
+  mqBtns.forEach(function (b) { b.addEventListener('click', function () { mq = b.dataset.mq; pressGroup(mqBtns, function (x) { return x === b; }); mt(); }); });
+  mtTeto.addEventListener('input', mt); mtAcao.addEventListener('input', mt);
+  mt();
+
+  /* 4 · informar × convencer */
+  function rows(r) { return '<div class="cv-row">' + r.map(function (x) { return '<b>' + x[0] + '</b><span>' + x[1] + '</span>'; }).join('') + '</div>'; }
+  var CV = {
+    inf: '<div class="cm-mail"><span class="eyebrow">Fechamento do trimestre · para registro</span>' + rows([['o que aconteceu', 'Nota de atendimento 5,8, meta 7,0. Telefone 4,1; site 7,2.'], ['o que quer dizer', 'Quem liga chega para horário já ocupado: a agenda do telefone não vê a do site.'], ['ação', 'A integração das agendas entra no plano de novembro; a nota volta a ser medida no próximo trimestre.']]) + '<p class="hint">Ninguém precisa aprovar nada: a ação já está decidida e o texto informa. Termina em “fica registrado”.</p></div>',
+    con: '<div class="cm-mail"><span class="eyebrow">Pedido à diretoria · depende de aprovação</span>' + rows([['resposta · abre', 'Integrar as duas agendas antes da campanha de novembro. Preciso do OK até dia 15.'], ['situação', 'A pesquisa de atendimento é trimestral, e a meta é 7,0.'], ['complicação', 'Neste trimestre, quem agendou por telefone deu 4,1, porque a agenda do telefone não vê os horários do site.'], ['pergunta', 'Como evitar que a campanha de novembro, que concentra as ligações, repita isso?']]) + '<p class="hint">A recomendação vem primeiro; o resto constrói o argumento. Deixar a resposta para o último slide obriga quem aprova a esperar para saber o que você quer.</p></div>'
+  };
+  var cvBtns = document.querySelectorAll('[data-cv]');
+  function setCv(k) { pressGroup(cvBtns, function (x) { return x.dataset.cv === k; }); document.getElementById('cvOut').innerHTML = CV[k]; }
+  cvBtns.forEach(function (b) { b.addEventListener('click', function () { setCv(b.dataset.cv); }); });
+  setCv('inf');
+  quiz(document.getElementById('cvQuiz'), document.getElementById('cvScore'), [
+    { s: 'O fechamento mensal do atendimento para a diretoria. Nada a pedir.', a: 'inf', why: 'Ninguém precisa aprovar: o texto registra o que aconteceu e o que já está sendo feito.' },
+    { s: 'Pedir verba para integrar as duas agendas.', a: 'con', why: 'O próximo passo depende de alguém dizer sim. A resposta abre o texto.' },
+    { s: 'Mostrar ao conselho o resultado da troca de fornecedor, já feita em junho.', a: 'inf', why: 'A decisão já foi tomada. Mostrar que deu certo é informar, mesmo para o conselho.' },
+    { s: 'Propor que o plantão de sábado passe a ser por escala.', a: 'con', why: 'Mudar a regra depende de aprovação. Se o texto só descrever o problema, a proposta fica para depois.' },
+    { s: 'Recomendar qual de dois fornecedores contratar, com prazo até sexta.', a: 'con', why: 'Recomendação com prazo é pedido de aprovação. A escolha vai no primeiro slide, não no último.' }
+  ], [['inf', 'Informar'], ['con', 'Convencer']], 'a pergunta é sempre a mesma: depende de alguém aprovar?');
+
+  /* 5 · títulos */
+  var TT = {
+    dado: { l: [['Resultados do trimestre', ''], ['Satisfação por canal', ''], ['Causa raiz', ''], ['Plano de ação', ''], ['Próximos passos', '']], ok: false, v: '<b>Só pelos títulos, ninguém sabe o que aconteceu.</b> Os cinco cabem em qualquer apresentação de qualquer empresa. O gestor vai esperar você explicar, e pode perder o fio antes.' },
+    conc: { l: [['Atendimento foi o único ponto abaixo da meta: 5,8 contra 7,0', 'número e comparação'], ['Quem agenda por telefone dá 4,1; pelo site, 7,2', 'número e comparação'], ['A agenda do telefone não vê a do site, e não falta gente', 'consequência'], ['Integrar as agendas antes da campanha de novembro', 'consequência'], ['Preciso do OK da TI até dia 15', 'número e consequência']], ok: true, v: '<b>Problema, causa e ação, só pelos títulos.</b> Cada slide agora confirma o que o gestor já entendeu ao bater o olho.' }
+  };
+  var ttBtns = document.querySelectorAll('[data-tt]');
+  function setTt(k) {
+    pressGroup(ttBtns, function (x) { return x.dataset.tt === k; });
+    var d = TT[k], deck = document.getElementById('ttDeck');
+    deck.className = 'tt-deck' + (d.ok ? ' good' : '');
+    deck.innerHTML = d.l.map(function (x) { return '<li><b>' + x[0] + '</b>' + (x[1] ? '<small>' + x[1] + '</small>' : '') + '</li>'; }).join('');
+    var v = document.getElementById('ttVer'); v.className = 'verdict ' + (d.ok ? 'ok' : 'no'); v.innerHTML = d.v;
+  }
+  ttBtns.forEach(function (b) { b.addEventListener('click', function () { setTt(b.dataset.tt); }); });
+  setTt('dado');
+  function plain(t) { return ' ' + t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9%× ]/g, ' ').replace(/\s+/g, ' ') + ' '; }
+  var COMP = ['contra', 'versus', ' vs ', 'mais', 'menos', 'acima', 'abaixo', 'maior', 'menor', 'dobro', 'metade', 'que o', 'que a', 'enquanto', 'em cada', '×'];
+  var CONS = ['cai', 'caiu', 'sobe', 'subiu', 'perde', 'perdem', 'perdeu', 'risco', 'precisa', 'preciso', 'antes', 'por isso', 'porque', 'causa', 'sem', 'atrasa', 'atrasou', 'evita', 'custa', 'resolve', 'desistem', 'nao', 'unico', 'pior', 'melhor'];
+  var LAB = ['analise', 'resultado', 'resultados', 'visao geral', 'panorama', 'proximos passos', 'introducao', 'conclusao', 'dados', 'avaliacao', 'relatorio', 'satisfacao', 'indicadores', 'causa raiz', 'plano de acao', 'pipeline', 'processo'];
+  function has(p, list) { return list.some(function (w) { return w.charAt(0) === ' ' || w === '×' ? p.indexOf(w) > -1 : p.indexOf(' ' + w + ' ') > -1; }); }
+  var ttIn = document.getElementById('ttIn');
+  function ttTest() {
+    var raw = ttIn.value.trim(), p = plain(raw);
+    var n = /\d/.test(raw), c = has(p, COMP) || (raw.match(/\d+([.,]\d+)?/g) || []).length >= 2, q = has(p, CONS);
+    var isLab = !n && LAB.some(function (w) { return p.indexOf(' ' + w + ' ') === 0 || p.trim().indexOf(w) === 0; }) && words(raw) <= 4;
+    document.getElementById('ttChecks').innerHTML = '<span class="' + (n ? 'has' : '') + '">número</span><span class="' + (c ? 'has' : '') + '">comparação</span><span class="' + (q ? 'has' : '') + '">consequência</span>' + (isLab ? '<span class="lab">parece rótulo</span>' : '');
+    var v = document.getElementById('ttInVer'), k = (n ? 1 : 0) + (c ? 1 : 0) + (q ? 1 : 0);
+    if (!raw) { v.className = 'verdict no'; v.innerHTML = '<b>Escreva um título.</b>'; }
+    else if (isLab || k === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Ainda é assunto.</b> Diz do que o slide fala, não o que ele conclui. Pergunte: e daí? A resposta é o título.'; }
+    else if (k === 1) { v.className = 'verdict no'; v.innerHTML = '<b>Quase.</b> Já tem ' + (n ? 'um número' : c ? 'uma comparação' : 'uma consequência') + '. Com mais um dos três, o gestor entende sem abrir o slide.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Diz a conclusão.</b> Quem lê só este título sabe algo que não sabia.'; }
+  }
+  ttIn.addEventListener('input', ttTest);
+  ttTest();
+
+  /* 6 · argumento × visual */
+  var SP = {
+    antes: '<div class="cm-mail good"><span class="eyebrow">O roteiro aprovado · 5 títulos, 7 números</span><ol><li><b>Atendimento foi o único ponto abaixo da meta: 5,8 contra 7,0</b></li><li><b>Quem agenda por telefone dá 4,1; pelo site, 7,2</b> · 640 e 760 clientes</li><li><b>A agenda do telefone não vê a do site, e não falta gente</b></li><li><b>Integrar as agendas antes da campanha de novembro</b></li><li><b>Preciso do OK da TI até dia 15</b></li></ol><p class="hint">É isto que vai para a ferramenta de slide, inteiro, com o pedido de manter o texto.</p></div>',
+    depois: '<div class="cm-mail bad"><span class="eyebrow">O que voltou · bonito, e mais raso</span><ol><li><span class="sp-lost">Visão geral do atendimento</span> · nota <span class="sp-kept">5,8</span> e meta <span class="sp-kept">7,0</span> no corpo</li><li><span class="sp-lost">Satisfação por canal</span> · “o telefone teve <span class="sp-lost">notas abaixo da média</span>”</li><li><span class="sp-lost">Causa raiz identificada</span></li><li><span class="sp-kept">Integrar as agendas antes da campanha de novembro</span></li><li><span class="sp-lost">Próximos passos</span> · “alinhar com a TI”</li></ol><p class="hint"><b>Conferência dos títulos:</b> 4 de 5 voltaram como assunto. <b>Conferência dos números:</b> 4,1 e 7,2, os 640 e 760 clientes e o “dia 15” sumiram; 5,8 e 7,0 ficaram. Nada disso aparece como erro: o slide continua bonito.</p></div>'
+  };
+  var spBtns = document.querySelectorAll('[data-sp]');
+  function setSp(k) { pressGroup(spBtns, function (x) { return x.dataset.sp === k; }); document.getElementById('spOut').innerHTML = SP[k]; }
+  spBtns.forEach(function (b) { b.addEventListener('click', function () { setSp(b.dataset.sp); }); });
+  setSp('antes');
+
+  /* 7 · nenhum número novo */
+  var CF = [
+    { t: 'O atendimento foi o pior ponto do trimestre: nota 4,1 entre os 640 clientes que agendaram por telefone, contra 7,2 de quem agendou pelo site.', bad: false, why: 'Está na análise, com os mesmos números.' },
+    { t: 'É uma queda de 15% em relação ao ano passado.', bad: true, why: 'Não está na análise: ela não tem o ano passado. A comparação foi escrita porque soa bem.' },
+    { t: 'O comentário mais citado por quem ligou é ter chegado para um horário já ocupado.', bad: false, why: 'Está na análise.' },
+    { t: 'Todos os 640 clientes do telefone tiveram o horário ocupado.', bad: true, why: 'Mudou no caminho: a análise diz que é o comentário mais citado, não que aconteceu com todos. Virou certeza.' },
+    { t: 'Integrar as duas agendas custa cerca de R$ 20 mil.', bad: true, why: 'Não está na análise. O custo pode até estar certo, mas ninguém calculou; se for para o e-mail, vai de uma fonte que você conhece.' },
+    { t: 'Preciso do OK da TI até dia 15, antes da campanha de novembro.', bad: false, why: 'Veio de você, na análise: é o que você precisa.' }
+  ];
+  var cfMail = document.getElementById('cfMail'), cfOut = document.getElementById('cfOut');
+  cfMail.addEventListener('keydown', function (e) { var t = e.target; if (t.classList && t.classList.contains('cf-s') && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } });
+  function cfRender() {
+    cfMail.innerHTML = CF.map(function (c, i) { return '<span class="cf-s" role="button" tabindex="0" aria-pressed="false" data-cf="' + i + '">' + c.t + '</span>'; }).join(' ');
+    cfOut.innerHTML = '<p class="hint">Nenhuma frase marcada ainda. Clique nas que você não defenderia com a análise na mão.</p>';
+    cfMail.querySelectorAll('.cf-s').forEach(function (s) {
+      s.addEventListener('click', function () { if (cfMail.dataset.done) return; s.setAttribute('aria-pressed', String(s.getAttribute('aria-pressed') !== 'true')); var m = cfMail.querySelectorAll('[aria-pressed="true"]').length; cfOut.innerHTML = '<p class="hint">' + m + (m === 1 ? ' frase marcada.' : ' frases marcadas.') + ' Quando terminar, clique em Conferir.</p>'; });
+    });
+    delete cfMail.dataset.done;
+  }
+  document.getElementById('cfGo').addEventListener('click', function () {
+    var hit = 0;
+    cfMail.dataset.done = '1';
+    cfMail.querySelectorAll('.cf-s').forEach(function (s) { var c = CF[+s.dataset.cf], m = s.getAttribute('aria-pressed') === 'true'; if (m === c.bad) hit++; s.className = 'cf-s ' + (c.bad ? 'r-new' : 'r-ok'); });
+    var ok = hit === CF.length;
+    cfOut.innerHTML = '<div class="verdict ' + (ok ? 'ok' : 'no') + '"><b>' + hit + ' de ' + CF.length + ' frases classificadas certo.</b> ' + (ok ? 'Você pegou as três que não se defendem.' : 'Três frases não se defendem com a análise: duas são novas e uma mudou no caminho.') + '</div><ol>' + CF.map(function (c) { return '<li><b>' + (c.bad ? 'Não se defende.' : 'Se defende.') + '</b> ' + c.why + '</li>'; }).join('') + '</ol>';
+  });
+  document.getElementById('cfReset').addEventListener('click', cfRender);
+  cfRender();
+
+})();
+</script>
+</body>
+</html>
