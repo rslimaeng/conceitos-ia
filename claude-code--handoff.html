@@ -238,30 +238,30 @@ code { font-family: var(--font-mono); font-size: .88em; }
   <span class="eyebrow">8.4 · 4 de 7</span>
   <h1>Handoff</h1>
   <p class="sub">Fechar a sessão deixando por escrito o que a próxima precisa saber, antes de a conversa degradar</p>
-  <p class="lead">A conversa acaba; o trabalho, não. Handoff é o gesto de encerrar escrevendo: <strong>o que foi decidido, onde o trabalho está, qual é o próximo passo e o que ainda espera decisão</strong>. No chat, vira um bloco para colar na conversa nova. No Claude Code, vira um arquivo que a próxima conversa lê sozinha. Nos dois casos, você troca de conversa na hora certa, e não quando ela já piorou.</p>
+  <p class="lead">A conversa acaba; o trabalho, não. Cada rodada de trabalho numa conversa, do começo ao fim, é uma sessão. Handoff (em inglês, a passagem de bastão) é o gesto de encerrar escrevendo: <strong>o que foi decidido, onde o trabalho está, qual é o próximo passo e o que ainda espera decisão</strong>. No chat, vira um bloco para colar na conversa nova. No Claude Code, que é o Claude trabalhando dentro de uma pasta do seu computador, vira um arquivo que a próxima conversa lê sozinha. Nos dois casos, você troca de conversa na hora certa, e não quando ela já piorou.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-fechar">Fechar escrevendo</a><a href="#s-cansa">A conversa que cansa</a><a href="#s-frente">Frente, não tamanho</a><a href="#s-decide">Decisão, não narrativa</a><a href="#s-continuidade">O prompt de continuidade</a><a href="#s-gatilhos">Os gatilhos de fim de dia</a><a href="#s-tropecos">Três tropeços do handoff</a>
+    <a href="#s-fechar">Encerrar por escrito</a><a href="#s-cansa">A conversa longa piora</a><a href="#s-frente">Assunto novo, conversa nova</a><a href="#s-decide">O que decidimos, não como foi</a><a href="#s-continuidade">Um bloco para a conversa nova</a><a href="#s-gatilhos">As frases de fim de dia</a><a href="#s-tropecos">Três erros comuns</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-fechar" aria-labelledby="h-fechar">
-  <span class="eyebrow">Fechar escrevendo</span>
+  <span class="eyebrow">Encerrar por escrito</span>
   <h2 id="h-fechar">A sessão termina, e o que ela decidiu fica num lugar que a próxima lê</h2>
-  <p class="intro">O modelo não lembra de nada entre uma conversa e outra. Quem lembra é o que ficou escrito. <strong>O handoff é a última coisa que a sessão faz: reescrever o estado do trabalho para quem vem depois</strong>, que pode ser você amanhã, uma conversa nova, ou um colega.</p>
+  <p class="intro">Na central de atendimento, quem sai do turno deixa escrito o que ficou pendente para quem entra; ninguém confia que vai lembrar de contar. O modelo (a IA que responde) não lembra de nada entre uma conversa e outra. Quem lembra é o que ficou escrito. <strong>O handoff é a última coisa que a sessão faz: reescrever o estado do trabalho para quem vem depois</strong>, que pode ser você amanhã, uma conversa nova, ou um colega.</p>
   <div class="three">
-    <div class="card"><span class="hf-num">01 · decide</span><h3>Se é hora de trocar</h3><p>Nem toda conversa longa pede conversa nova. O critério é a frente de trabalho, e ele está logo abaixo.</p></div>
+    <div class="card"><span class="hf-num">01 · decide</span><h3>Se é hora de trocar</h3><p>Nem toda conversa longa pede conversa nova. O critério é a frente de trabalho (cada assunto com começo e fim: o relatório, a proposta), e ele está logo abaixo.</p></div>
     <div class="card focal"><span class="hf-num">02 · escreve</span><h3>O estado, não a história</h3><p>Quatro respostas curtas. Quem lê não precisa saber como se chegou até ali; precisa saber onde está.</p></div>
     <div class="card"><span class="hf-num">03 · guarda</span><h3>Fora da conversa</h3><p>Num bloco que você cola, ou num arquivo da pasta. Handoff que fica só na conversa some com ela.</p></div>
   </div>
-  <p class="hint">No Claude Code, esse gesto pode ser uma skill de fim de sessão: ela decide se é hora de trocar e escreve o handoff na memória do projeto, o arquivo que conta <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
+  <p class="hint">No Claude Code, esse gesto pode ser uma skill de fim de sessão (um passo a passo guardado, que o Claude abre quando o seu pedido bate com a descrição dele): ela decide se é hora de trocar e escreve o handoff na memória do projeto, o arquivo que conta <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
 </section>
 
 <!-- 2 -->
 <section class="sec" id="s-cansa" aria-labelledby="h-cansa">
-  <span class="eyebrow">A conversa que cansa</span>
+  <span class="eyebrow">A conversa longa piora</span>
   <h2 id="h-cansa">Quem só usa o chat vai até a conversa piorar, e aí recomeça do zero</h2>
-  <p class="intro">Numa conversa longa, o que foi combinado no começo disputa espaço com tudo o que veio depois. Ninguém avisa: a resposta só fica um pouco pior a cada volta. <strong>O handoff troca de conversa antes disso, e sem perder nada.</strong> Arraste pelo dia de uma conversa sobre o relatório mensal de vendas.</p>
+  <p class="intro">Lembra da reunião de três horas em que, no fim, ninguém sabe mais o que foi combinado na primeira meia hora? Numa conversa longa, o que foi combinado no começo disputa espaço com tudo o que veio depois. Ninguém avisa: a resposta só fica um pouco pior a cada volta. <strong>O handoff troca de conversa antes disso, e sem perder nada.</strong> Arraste pelo dia de uma conversa sobre o relatório mensal de vendas.</p>
   <div class="cv">
     <div class="field">
       <label for="cvRange">Onde a conversa está</label>
@@ -271,14 +271,14 @@ code { font-family: var(--font-mono); font-size: .88em; }
     <div class="cv-scale" aria-hidden="true"><span>o combinado do começo</span><span>a mensagem de agora</span></div>
     <div class="caption" id="cvCap" aria-live="polite"></div>
   </div>
-  <p class="hint">A forma, não a medida: nenhuma ferramenta mostra quanto o começo ainda pesa. Por que a conversa longa perde o combinado está explicado em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>; aqui a pergunta é outra: <strong>em que ponto trocar</strong>.</p>
+  <p class="hint">A forma, não a medida: nenhuma ferramenta mostra quanto o começo ainda pesa. Por que a conversa longa perde o combinado está explicado em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (o espaço limitado que a conversa tem para guardar o que foi dito); aqui a pergunta é outra: <strong>em que ponto trocar</strong>.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-frente" aria-labelledby="h-frente">
-  <span class="eyebrow">Frente, não tamanho</span>
+  <span class="eyebrow">Assunto novo, conversa nova</span>
   <h2 id="h-frente">Compactar ou abrir conversa nova</h2>
-  <p class="intro"><strong>Compactar</strong> é pedir para a conversa se resumir dentro dela mesma, para liberar espaço e seguir no mesmo lugar. Serve quando o trabalho continua o mesmo; o resumo pode perder detalhe, por isso o que importa precisa estar escrito antes. <strong>Conversa nova com handoff</strong> é fechar esta, escrever o estado e abrir outra limpa. A regra que decide entre os dois: <strong>o critério é a mudança de frente, não o tamanho da conversa.</strong></p>
+  <p class="intro">Ninguém discute o orçamento e a contratação na mesma pauta só porque a primeira reunião acabou cedo: assunto novo pede pauta nova. <strong>Compactar</strong> é pedir para a conversa se resumir dentro dela mesma, para liberar espaço e seguir no mesmo lugar. Serve quando o trabalho continua o mesmo; o resumo pode perder detalhe, por isso o que importa precisa estar escrito antes. <strong>Conversa nova com handoff</strong> é fechar esta, escrever o estado e abrir outra limpa. A regra que decide entre os dois: <strong>o critério é a mudança de frente, não o tamanho da conversa.</strong></p>
   <div class="tablewrap">
     <table class="vtable">
       <tr><th>Situação</th><th>O que fazer</th></tr>
@@ -296,9 +296,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <!-- 4 -->
 <section class="sec" id="s-decide" aria-labelledby="h-decide">
-  <span class="eyebrow">Decisão, não narrativa</span>
+  <span class="eyebrow">O que decidimos, não como foi</span>
   <h2 id="h-decide">Quatro coisas que a próxima conversa precisa, e nenhuma delas é a história</h2>
-  <p class="intro">Todo handoff responde quatro perguntas: <strong>o que foi decidido nesta sessão · o estado atual, pronto e pela metade · o próximo passo concreto · os fios em aberto, que esperam decisão</strong>. Abaixo, dois handoffs da mesma sessão. Alterne entre eles e ligue o marcador para ver o que a próxima conversa realmente usa.</p>
+  <p class="intro">Ata boa não transcreve a reunião: lista o que foi decidido, o que ficou pendente e quem faz o quê. Todo handoff responde quatro perguntas: <strong>o que foi decidido nesta sessão · o estado atual, pronto e pela metade · o próximo passo concreto · os fios em aberto, que esperam decisão</strong>. Abaixo, dois handoffs da mesma sessão. Alterne entre eles e ligue o marcador para ver o que a próxima conversa realmente usa.</p>
   <div class="hd-bar">
     <div class="seg" role="group" aria-label="Qual handoff">
       <button type="button" data-hd="narra" aria-pressed="true">O que narra</button>
@@ -312,9 +312,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <!-- 5 -->
 <section class="sec" id="s-continuidade" aria-labelledby="h-continuidade">
-  <span class="eyebrow">O prompt de continuidade</span>
+  <span class="eyebrow">Um bloco para a conversa nova</span>
   <h2 id="h-continuidade">No chat, hoje, sem instalar nada</h2>
-  <p class="intro">Quem não usa o Claude Code faz o mesmo gesto com um <strong>prompt de continuidade</strong>: um bloco único, pronto para colar na conversa nova, com contexto, decisões, estado e próximos passos, sem a narrativa da conversa. Preencha e veja o bloco se montar.</p>
+  <p class="intro">É o e-mail de repasse que você manda a quem vai assumir um cliente: um texto só, lido de cima a baixo, com o que é preciso para começar. Quem não usa o Claude Code faz o mesmo gesto com um <strong>prompt de continuidade</strong> (prompt é o texto que você escreve para a IA): um bloco único, pronto para colar na conversa nova, com contexto, decisões, estado e próximos passos, sem a narrativa da conversa. Preencha e veja o bloco se montar.</p>
   <div class="mt-grid">
     <div class="mt-form">
       <label>Contexto em uma frase<input id="mtCtx" value="Relatório mensal de vendas da regional, para a diretoria."></label>
@@ -340,9 +340,9 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
 
 <!-- 6 -->
 <section class="sec" id="s-gatilhos" aria-labelledby="h-gatilhos">
-  <span class="eyebrow">Os gatilhos de fim de dia</span>
+  <span class="eyebrow">As frases de fim de dia</span>
   <h2 id="h-gatilhos">Uma skill que avisa antes, e as frases que a chamam</h2>
-  <p class="intro">No Claude Code, o handoff pode morar numa <a href="./assistente--skill.html">skill</a>. Duas coisas fazem ela funcionar. A primeira está no começo do texto dela: <strong>avisar sozinha quando for hora de trocar de sessão, antes de perder qualidade, e nunca deixar a conversa degradar em silêncio.</strong> A segunda é a descrição, que é o que o Claude lê para decidir quando usá-la: ela traz os gatilhos com as palavras do dia a dia.</p>
+  <p class="intro">Na recepção, uma lista de palavras diz quando chamar o gerente: “reclamação”, “reembolso”, “advogado”. A descrição de uma skill faz o mesmo papel. No Claude Code, o handoff pode morar numa <a href="./assistente--skill.html">skill</a>. Duas coisas fazem ela funcionar. A primeira está no começo do texto dela: <strong>avisar sozinha quando for hora de trocar de sessão, antes de perder qualidade, e nunca deixar a conversa degradar em silêncio.</strong> A segunda é a descrição, que é o que o Claude lê para decidir quando usá-la: ela traz os gatilhos (as frases que fazem o Claude abrir a skill) com as palavras do dia a dia.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">A descrição da skill · o exemplo real, adaptado</span><button type="button" class="btn" data-copy="gtDesc">Copiar</button></div>
 <pre id="gtDesc"><b>name:</b> fim-de-sessao
@@ -364,8 +364,9 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
 
 <!-- 7 -->
 <section class="sec" id="s-tropecos" aria-labelledby="h-tropecos">
-  <span class="eyebrow">Três tropeços do handoff</span>
+  <span class="eyebrow">Três erros comuns</span>
   <h2 id="h-tropecos">Contar a história, deixar na conversa, trocar pelo tamanho</h2>
+  <p class="intro">Quem já recebeu um projeto pela metade conhece os três defeitos do repasse: a pessoa conta a história inteira, deixa o que importa numa conversa que ninguém mais abre, ou passa adiante na hora errada.</p>
   <div class="three">
     <div class="card"><h3>Handoff que conta a história</h3><p>“Começamos olhando a planilha, depois tentamos…” A próxima sessão não precisa saber como se chegou; precisa saber onde está.</p></div>
     <div class="card"><h3>Handoff que fica na conversa</h3><p>Escrito lá dentro e nunca copiado para fora. Some com a conversa, justamente quando ia ser usado.</p></div>
@@ -373,7 +374,7 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
   </div>
   <div class="two">
     <div class="panel"><span class="eyebrow">Hoje · no chat</span><h3>O prompt de continuidade</h3><p>Ao fim de uma conversa longa, peça o bloco da seção acima: decisões, estado, próximo passo e o que está em aberto, sem narrar a conversa. Cole na conversa nova e comece dali.</p></div>
-    <div class="panel"><span class="eyebrow">Depois · no Claude Code</span><h3>O mesmo pedido, gravando num arquivo</h3><p>O bloco vai para o <code>00-aqui-paramos.md</code> da pasta do projeto. A conversa seguinte lê o arquivo ao abrir, e você pode abrir e corrigir o que ela acha que é o estado. Como esse arquivo é montado: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p></div>
+    <div class="panel"><span class="eyebrow">Depois · no Claude Code</span><h3>O mesmo pedido, gravando num arquivo</h3><p>O bloco vai para o <code>00-aqui-paramos.md</code>, o arquivo de memória da pasta do projeto. A conversa seguinte lê o arquivo ao abrir, e você pode abrir e corrigir o que ela acha que é o estado. Como esse arquivo é montado: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p></div>
   </div>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">No Claude Code · o pedido de fim de sessão</span><button type="button" class="btn" data-copy="trAsk">Copiar</button></div>

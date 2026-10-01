@@ -258,10 +258,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <span class="eyebrow">8.7 · 7 de 7</span>
   <h1>Obsidian</h1>
   <p class="sub">A pasta de conhecimento que sintetiza, e onde o trabalho acumula em vez de ficar espalhado. Não é o primeiro passo.</p>
-  <p class="lead">O Obsidian é um aplicativo gratuito que abre uma pasta de arquivos de texto e mostra como eles se ligam. Num jeito de trabalhar que funciona, cada projeto tem uma <strong>pasta de conhecimento</strong> (em inglês, <em>vault</em>) aberta nele: a síntese das reuniões, as decisões, as pendências, o estado de cada frente. <strong>O Claude escreve nessa pasta pelos arquivos; você navega por ela no Obsidian.</strong></p>
-  <p class="verdict no"><b>Não comece por aqui.</b> A recomendação desta família é a ordem: primeiro a <a href="./claude-code--pasta.html">pasta com dono</a>, o <a href="./claude-code--claude-md.html">CLAUDE.md</a> e a <a href="./claude-code--onde-paramos.html">memória do projeto</a>. O vault vem depois, quando já existe trabalho para ligar. Sem os três, ele é só mais uma pasta.</p>
+  <p class="lead">O Obsidian é um aplicativo gratuito que abre uma pasta de arquivos de texto e mostra como eles se ligam. Num jeito de trabalhar que funciona, cada projeto tem uma <strong>pasta de conhecimento</strong> (em inglês, <em>vault</em>) aberta nele: a síntese das reuniões (o resumo organizado de cada uma), as decisões, as pendências, o estado de cada frente. <strong>O Claude escreve nessa pasta pelos arquivos; você navega por ela no Obsidian.</strong></p>
+  <p class="verdict no"><b>Não comece por aqui.</b> A recomendação desta família é a ordem: primeiro a <a href="./claude-code--pasta.html">pasta com dono</a>, o <a href="./claude-code--claude-md.html">CLAUDE.md</a> (o manual que o Claude lê ao abrir a pasta) e a <a href="./claude-code--onde-paramos.html">memória do projeto</a>. O vault vem depois, quando já existe trabalho para ligar. Sem os três, ele é só mais uma pasta.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-abre">O que o Obsidian abre</a><a href="#s-grafo">De onde veio a decisão</a><a href="#s-fora">Síntese dentro, bruta fora</a><a href="#s-cabecalho">O cabeçalho de cada nota</a><a href="#s-marcadores">Cinco marcadores</a><a href="#s-depois">Depois de cada reunião</a><a href="#s-dez">Dez sínteses primeiro</a>
+    <a href="#s-abre">O que o Obsidian abre</a><a href="#s-grafo">De onde veio a decisão</a><a href="#s-fora">O resumo dentro, o original fora</a><a href="#s-cabecalho">O cabeçalho de cada nota</a><a href="#s-marcadores">Uma cor para cada tipo de frase</a><a href="#s-depois">Depois de cada reunião</a><a href="#s-dez">Quando vale instalar</a>
   </nav>
 </header>
 
@@ -269,7 +269,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-abre" aria-labelledby="h-abre">
   <span class="eyebrow">O que o Obsidian abre</span>
   <h2 id="h-abre">Os mesmos arquivos de texto, vistos como uma rede em vez de uma lista</h2>
-  <p class="intro">No explorador de arquivos, a pasta é uma lista de nomes. No Obsidian, cada arquivo que cita outro vira uma ligação, e você anda de um para o outro com um clique. <strong>Nada muda nos arquivos</strong>: continuam sendo texto simples, que o Claude lê e escreve como qualquer outro. O Obsidian só dá a você um jeito melhor de ler o que já está lá.</p>
+  <p class="intro">É como o organograma da empresa: as pessoas são as mesmas da lista do RH, mas desenhadas pelas ligações entre elas. No explorador de arquivos, a pasta é uma lista de nomes. No Obsidian, cada arquivo que cita outro vira uma ligação, e você anda de um para o outro com um clique. <strong>Nada muda nos arquivos</strong>: continuam sendo texto simples, que o Claude lê e escreve como qualquer outro. O Obsidian só dá a você um jeito melhor de ler o que já está lá.</p>
   <div class="three">
     <div class="card"><span class="eyebrow">quem escreve</span><h3>O Claude, pelos arquivos</h3><p>Depois de cada reunião, ele cria a síntese, atualiza as decisões e as pendências. Não precisa do Obsidian aberto para isso.</p></div>
     <div class="card focal"><span class="eyebrow">quem navega</span><h3>Você, no Obsidian</h3><p>Abre uma decisão, vê de que reunião ela veio. Abre uma pessoa, vê em que reuniões ela apareceu.</p></div>
@@ -282,7 +282,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-grafo" aria-labelledby="h-grafo">
   <span class="eyebrow">De onde veio a decisão</span>
   <h2 id="h-grafo">Clique numa decisão e veja a reunião de onde ela saiu e o que ela abriu</h2>
-  <p class="intro">Três semanas de um projeto, desenhadas como o Obsidian mostra: pessoas, reuniões, decisões e pendências, cada uma um arquivo, ligadas pelas citações entre eles. <strong>A ligação não é desenhada à mão</strong>: ela existe porque a síntese da reunião cita a decisão, e a decisão cita a pendência. Clique em qualquer nó.</p>
+  <p class="intro">Pense na cadeia de e-mails encaminhados, em que cada resposta carrega a anterior: puxando a última, você chega à origem. Abaixo, três semanas de um projeto, desenhadas como o Obsidian mostra no grafo (o mapa de pontos e linhas que liga os arquivos): pessoas, reuniões, decisões e pendências, cada uma um arquivo, ligadas pelas citações entre eles. <strong>A ligação não é desenhada à mão</strong>: ela existe porque a síntese da reunião cita a decisão, e a decisão cita a pendência. Clique em qualquer ponto do mapa.</p>
   <div class="scroll">
     <svg viewBox="0 0 800 330" role="img" aria-labelledby="gr-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
       <title id="gr-t">Grafo de um vault: duas pessoas ligadas a três reuniões, as reuniões ligadas a quatro decisões, e as decisões ligadas a três pendências</title>
@@ -296,9 +296,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 3 -->
 <section class="sec" id="s-fora" aria-labelledby="h-fora">
-  <span class="eyebrow">Síntese dentro, bruta fora</span>
+  <span class="eyebrow">O resumo dentro, o original fora</span>
   <h2 id="h-fora">O vault guarda o que foi entendido. O original fica fora, e recebe um link.</h2>
-  <p class="intro">É a regra mais importante desta página. A transcrição inteira, o contrato assinado, a planilha técnica: <strong>nada disso é copiado para dentro</strong>. Se fosse, haveria duas cópias, e a do vault envelheceria sem ninguém perceber. O vault aponta para o original com um link e guarda só a síntese. Classifique.</p>
+  <p class="intro">O livro de registro do arquivo morto diz “orçamento de 2024, caixa 12”, sem fotocopiar o orçamento para dentro do livro. É a regra mais importante desta página. A transcrição inteira, o contrato assinado, a planilha técnica: <strong>nada disso é copiado para dentro</strong>. Se fosse, haveria duas cópias, e a do vault envelheceria sem ninguém perceber. O vault aponta para o original (a fonte bruta, do jeito que chegou) com um link e guarda só a síntese. Classifique.</p>
   <div class="qz" id="fxQuiz"></div>
   <p class="qz-score" id="fxScore" aria-live="polite"></p>
   <div class="three">
@@ -319,7 +319,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-cabecalho" aria-labelledby="h-cabecalho">
   <span class="eyebrow">O cabeçalho de cada nota</span>
   <h2 id="h-cabecalho">Quatro linhas no topo dizem se o arquivo está vivo</h2>
-  <p class="intro">Todo arquivo do vault começa com um bloco curto entre dois tracejados: <strong>o estado, as etiquetas, a data da última atualização e os arquivos relacionados</strong>. Sem ele, uma pendência de março e uma de ontem parecem iguais. Monte o seu.</p>
+  <p class="intro">É a capa do processo, com a situação e a data da última movimentação: sem abrir, dá para saber se ele está andando ou parado. Todo arquivo do vault começa com um bloco curto entre dois tracejados: <strong>o estado, as etiquetas, a data da última atualização e os arquivos relacionados</strong>. Sem ele, uma pendência de março e uma de ontem parecem iguais. Monte o seu.</p>
   <div class="hd-grid">
     <div class="hd-form">
       <label>Estado<select id="hdSt"><option value="ativo" selected>ativo</option><option value="rascunho">rascunho</option><option value="obsoleto">obsoleto</option></select></label>
@@ -337,15 +337,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   </div>
   <div class="two">
     <div class="card"><span class="eyebrow">link para dentro do vault</span><h3>Colchetes duplos</h3><p class="lk">[[2026-08-19-sintese]]</p><p>Só o nome do arquivo. É esse tipo de link que o Obsidian desenha como ligação, e que continua valendo se o arquivo mudar de pasta.</p></div>
-    <div class="card"><span class="eyebrow">link para fora do vault</span><h3>Texto e caminho</h3><p class="lk">[transcrição de 19/08](../reunioes/2026-08-19.md)</p><p>Para a fonte bruta, que mora fora. O caminho mostra que o arquivo não é parte da síntese.</p></div>
+    <div class="card"><span class="eyebrow">link para fora do vault</span><h3>Texto e caminho</h3><p class="lk">[transcrição de 19/08](../reunioes/2026-08-19.md)</p><p>Para a fonte bruta, que mora fora (o <code>.md</code> no fim é a marca de arquivo de texto simples). O caminho mostra que o arquivo não é parte da síntese.</p></div>
   </div>
 </section>
 
 <!-- 5 -->
 <section class="sec" id="s-marcadores" aria-labelledby="h-marcadores">
-  <span class="eyebrow">Cinco marcadores</span>
+  <span class="eyebrow">Uma cor para cada tipo de frase</span>
   <h2 id="h-marcadores">Decisão, pendência, risco, hipótese e critério não podem ter a mesma cara</h2>
-  <p class="intro">Numa síntese corrida, “fechamos que…” e “achamos que…” ficam iguais. O vault usa <strong>marcadores com significado</strong>: uma linha como <code>&gt; [!decisao]</code> vira uma caixa com cor e título próprios, e o tipo da frase salta aos olhos. Cada um tem um uso só.</p>
+  <p class="intro">Na planilha de acompanhamento, quem pinta de vermelho o que atrasou e de amarelo o que está em risco faz o tipo da linha aparecer antes da leitura. Numa síntese corrida, “fechamos que…” e “achamos que…” ficam iguais. O vault usa <strong>marcadores com significado</strong>: uma linha como <code>&gt; [!decisao]</code> vira uma caixa com cor e título próprios, e o tipo da frase salta aos olhos. Cada um tem um uso só.</p>
   <div class="co-row">
     <div class="co co-decisao"><b>decisão</b><span>tomada, sempre com o porquê</span></div>
     <div class="co co-pendencia"><b>pendência</b><span>fio em aberto</span></div>
@@ -362,7 +362,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-depois" aria-labelledby="h-depois">
   <span class="eyebrow">Depois de cada reunião</span>
   <h2 id="h-depois">Quatro passos, sempre na mesma ordem, e cada um mexe num arquivo</h2>
-  <p class="intro">O fluxo está escrito no CLAUDE.md do vault, então o Claude o segue sem você pedir passo a passo. Na raiz ficam os arquivos de índice: <code>00-home.md</code> (o painel), <code>00-decisoes.md</code>, <code>00-fios-em-aberto.md</code>, e a pasta <code>03-reunioes/</code> com uma síntese por reunião. <strong>Avance e veja quais arquivos mudam em cada passo.</strong></p>
+  <p class="intro">É o fechamento de caixa no fim do expediente: sempre os mesmos passos, na mesma ordem, cada um num livro diferente. O fluxo está escrito no CLAUDE.md do vault, então o Claude o segue sem você pedir passo a passo. Soltos na pasta principal do vault ficam os arquivos de índice: <code>00-home.md</code> (o painel), <code>00-decisoes.md</code>, <code>00-fios-em-aberto.md</code>, e a pasta <code>03-reunioes/</code> com uma síntese por reunião. <strong>Avance e veja quais arquivos mudam em cada passo.</strong></p>
   <div class="stepbar"><span class="eyebrow" id="flLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
   <div class="fl-wrap">
     <div class="fl-tree" id="flTree">
@@ -378,14 +378,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     </div>
     <div class="caption" id="flCap" aria-live="polite"></div>
   </div>
-  <p class="hint">Atualizar a memória do projeto e esquecer o vault é o descuido mais comum. Por isso o vault entra no checklist de encerramento de cada sessão: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
+  <p class="hint">Atualizar a memória do projeto e esquecer o vault é o descuido mais comum. Por isso o vault entra no checklist de encerramento de cada sessão de trabalho: <a href="./claude-code--onde-paramos.html">onde paramos</a>.</p>
 </section>
 
 <!-- 7 -->
 <section class="sec" id="s-dez" aria-labelledby="h-dez">
-  <span class="eyebrow">Dez sínteses primeiro</span>
+  <span class="eyebrow">Quando vale instalar</span>
   <h2 id="h-dez">O vault aparece quando já existe o que ligar</h2>
-  <p class="intro">Com três arquivos, o grafo não mostra nada que você já não saiba. <strong>Com umas dez sínteses de reunião, as ligações começam a aparecer sozinhas</strong>, e é aí que o Obsidian paga o tempo de instalar.</p>
+  <p class="intro">Ninguém contrata um sistema de gestão de documentos para uma gaveta com cinco papéis: a ferramenta se paga quando o volume já existe. Com três arquivos, o grafo não mostra nada que você já não saiba. <strong>Com umas dez sínteses de reunião, as ligações começam a aparecer sozinhas</strong>, e é aí que o Obsidian paga o tempo de instalar.</p>
   <div class="three">
     <div class="card"><span class="eyebrow">01 · antes</span><h3>Pasta, manual e memória</h3><p>Não comece por aqui. Comece pela <a href="./claude-code--pasta.html">pasta</a>, pelo <a href="./claude-code--claude-md.html">CLAUDE.md</a> e pela <a href="./claude-code--onde-paramos.html">memória</a>.</p></div>
     <div class="card focal"><span class="eyebrow">02 · com umas dez sínteses</span><h3>Abra a pasta no Obsidian</h3><p>Aponte o aplicativo para a pasta que já existe e olhe as ligações. Nada precisa ser movido.</p></div>

@@ -99,6 +99,7 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 .gamebar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .gamenote { border-radius: 6px; padding: 12px 16px; background: var(--atencao-soft); border: 1px solid var(--atencao); color: var(--atencao-texto); font-size: .98rem; }
 .runs { display: grid; gap: 6px; }
+.runs[hidden] { display: none; }
 .runs li { font-size: .95rem; color: var(--text-muted); }
 .runs ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .nots { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
@@ -216,6 +217,7 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 .dl-pre .risk { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 2px; }
 .dl-side { display: grid; gap: 12px; }
 .dl-tags { display: grid; gap: 6px; }
+.dl-tags[hidden] { display: none; }
 .dl-tags button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 8px 12px; display: grid; gap: 2px; }
 .dl-tags button code { font-family: var(--font-mono); font-size: .85rem; color: var(--accent); }
 .dl-tags button span { font-size: .85rem; color: var(--text-dim); }
@@ -348,15 +350,15 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
   <p class="sub">Por que o pedido volta genérico, e o que muda quando você conta antes de pedir</p>
   <p class="lead">Prompt é o texto que você manda para a IA. Ela não guarda uma resposta certa em algum lugar: ela escreve, prevendo o próximo pedaço a partir do que está escrito. <strong>O que você não escreveu, ela preenche com o que é comum no mundo.</strong></p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-palavra">A próxima palavra</a><a href="#s-funil">Cada informação fecha uma porta</a><a href="#s-campos">Os seis campos</a><a href="#s-dois">Completo × enxuto</a><a href="#s-destino">Destino × trajeto</a><a href="#s-delim">Delimitadores</a><a href="#s-verbo">O verbo</a><a href="#s-rodadas">O que o pedido curto custa</a><a href="#s-copiar">Prompts para copiar</a><a href="#s-cerca">Quando não resolve</a>
+    <a href="#s-palavra">Como a IA escreve</a><a href="#s-funil">Cada informação estreita a resposta</a><a href="#s-campos">Os seis campos</a><a href="#s-dois">Completo × enxuto</a><a href="#s-destino">Destino × trajeto</a><a href="#s-delim">Etiquetas que separam as partes</a><a href="#s-verbo">O verbo do pedido</a><a href="#s-rodadas">O que o pedido curto custa</a><a href="#s-copiar">Prompts para copiar</a><a href="#s-cerca">Quando o problema não é o pedido</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-palavra" aria-labelledby="h-palavra">
-  <span class="eyebrow">A próxima palavra</span>
+  <span class="eyebrow">Como a IA escreve</span>
   <h2 id="h-palavra">Ela escolhe a próxima palavra, e não procura a resposta</h2>
-  <p class="intro">Faça você o papel da IA. A cada passo aparecem os pedaços de texto mais prováveis depois do que já está escrito. <strong>Escolha um, ou deixe o sorteio escolher</strong>, e rode de novo para ver outra frase nascer do mesmo começo.</p>
+  <p class="intro">Pense no corretor do celular sugerindo a próxima palavra enquanto você digita: a IA faz o mesmo, só que depois de ter lido uma quantidade enorme de texto. Faça você o papel da IA. A cada passo aparecem os pedaços de texto mais prováveis depois do que já está escrito. <strong>Escolha um, ou deixe o sorteio escolher</strong>, e rode de novo para ver outra frase nascer do mesmo começo.</p>
   <div class="game">
     <p class="sentence" id="sentence" aria-live="polite"></p>
     <div class="cands" id="cands" role="group" aria-label="Próximos pedaços possíveis"></div>
@@ -377,9 +379,9 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 
 <!-- 2 -->
 <section class="sec" id="s-funil" aria-labelledby="h-funil">
-  <span class="eyebrow">Cada informação fecha uma porta</span>
+  <span class="eyebrow">Cada informação estreita a resposta</span>
   <h2 id="h-funil">Sem contexto, a previsão passeia</h2>
-  <p class="intro">Siga o mesmo pedido ganhando uma informação por vez. Nenhum acréscimo é educação ou capricho: <strong>é informação que você já tinha na cabeça e não tinha escrito.</strong></p>
+  <p class="intro">É como pedir ao fornecedor: “quero cadeiras” traz o catálogo inteiro; “trinta cadeiras pretas, empilháveis, até sexta” traz o orçamento certo. Siga o mesmo pedido ganhando uma informação por vez. Nenhum acréscimo é educação ou capricho: <strong>é informação que você já tinha na cabeça e não tinha escrito.</strong> É isso que se chama contexto: o que a IA precisa saber da situação, além da tarefa.</p>
   <div class="stepbar">
     <span class="eyebrow" id="fLab">Passo 1 de 4</span>
     <div class="nav"><button type="button" class="btn" id="fPrev">← Anterior</button><button type="button" class="btn primary" id="fNext">Próximo →</button></div>
@@ -422,7 +424,7 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 <section class="sec" id="s-dois" aria-labelledby="h-dois">
   <span class="eyebrow">Pedido completo × pedido enxuto</span>
   <h2 id="h-dois">Dois jeitos de escrever o mesmo pedido, e o que mudou entre eles</h2>
-  <p class="intro">Os seis campos são o jeito mais ensinado, e continuam funcionando. Com os modelos mais recentes apareceu um jeito mais enxuto, vindo de quem constrói as próprias ferramentas: <strong>menos campos, e mais peso em dizer o que é pronto e como conferir.</strong></p>
+  <p class="intro">É o briefing para uma agência: a que acabou de ser contratada recebe o formulário inteiro; a que atende a empresa há anos recebe três linhas, com o objetivo, o que não pode e como vai ser aprovado. Os seis campos são o jeito mais ensinado, e continuam funcionando. Com os modelos mais recentes (as versões novas da IA que roda por trás do chat) apareceu um jeito mais enxuto, vindo de quem constrói as próprias ferramentas: <strong>menos campos, e mais peso em dizer o que é pronto e como conferir.</strong></p>
   <!-- citacao A15 -->
   <div class="dj-quote">
     <blockquote>“Um erro comum é dar instrução específica demais: faça desse jeito, primeiro 1, depois 2, depois 3, depois 4. Para os modelos de hoje, <strong>não é esse o caminho</strong>. Suba um nível: descreva a tarefa, descreva os limites, descreva o critério de pronto, e deixe rodar.”</blockquote>
@@ -472,7 +474,7 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 <section class="sec" id="s-destino" aria-labelledby="h-destino">
   <span class="eyebrow">Onde o pedido pode ser comprido</span>
   <h2 id="h-destino">Comprido no lugar certo descreve o destino. No lugar errado, dita o trajeto</h2>
-  <p class="intro">Os dois jeitos concordam num ponto: o problema nunca foi o tamanho do pedido. Um pedido de sessenta linhas pode estar ótimo, se todas elas dizem <strong>aonde chegar</strong>. <strong>Classifique cada frase</strong> e veja a regra.</p>
+  <p class="intro">Ao chamar um táxi você dá o endereço com número e ponto de referência, mas não ensina o motorista a dirigir. Os dois jeitos concordam num ponto: o problema nunca foi o tamanho do pedido. Um pedido de sessenta linhas pode estar ótimo, se todas elas dizem <strong>aonde chegar</strong>. <strong>Classifique cada frase</strong> e veja a regra.</p>
   <div class="dt-list" id="dtList"></div>
   <div class="dt-score"><span class="hint" id="dtHint">Responda as oito.</span><span><span class="n" id="dtN">0</span> <span class="hint">de 8</span></span><button type="button" class="btn" id="dtReset">Refazer</button></div>
   <div class="dt-rule">
@@ -484,9 +486,9 @@ details.trap p { margin-top: 8px; color: var(--text-muted); }
 
 <!-- 3d -->
 <section class="sec" id="s-delim" aria-labelledby="h-delim">
-  <span class="eyebrow">Delimitadores</span>
+  <span class="eyebrow">Etiquetas que separam as partes</span>
   <h2 id="h-delim">Etiquetas que separam o que é pedido, o que é regra e o que é material</h2>
-  <p class="intro">Quando o pedido cresce, ou traz um texto colado, a IA recebe tudo como um bloco só. Etiquetas como <code>&lt;tarefa&gt;</code> … <code>&lt;/tarefa&gt;</code> marcam onde cada parte começa e termina. <strong>Troque entre os dois e repare na frase destacada.</strong></p>
+  <p class="intro">É o malote com envelopes etiquetados, “para assinar” e “para arquivar”: ninguém confunde a carta do cliente com a ordem do chefe. Quando o pedido cresce, ou traz um texto colado, a IA recebe tudo como um bloco só. Etiquetas como <code>&lt;tarefa&gt;</code> … <code>&lt;/tarefa&gt;</code>, os delimitadores, marcam onde cada parte começa e termina. <strong>Troque entre os dois e repare na frase destacada.</strong></p>
   <div class="seg" role="group" aria-label="Formato do pedido">
     <button type="button" data-dl="corrido" aria-pressed="true">Texto corrido</button>
     <button type="button" data-dl="tags" aria-pressed="false">Com etiquetas</button>
@@ -543,9 +545,9 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 
 <!-- 4 -->
 <section class="sec" id="s-verbo" aria-labelledby="h-verbo">
-  <span class="eyebrow">O verbo</span>
-  <h2 id="h-verbo">Mesmo com tudo preenchido, o verbo vago devolve bullet genérico</h2>
-  <p class="intro">Quando o verbo é vago, a IA escolhe a interpretação por conta própria. <strong>Clique num verbo vago</strong> e veja por quais trocar.</p>
+  <span class="eyebrow">O verbo do pedido</span>
+  <h2 id="h-verbo">Mesmo com tudo preenchido, o verbo vago devolve lista genérica</h2>
+  <p class="intro">Na ordem de serviço, “ver a copiadora” pode virar visita, orçamento ou conserto; “trocar o toner da copiadora do 2º andar” só vira uma coisa. Quando o verbo é vago, a IA escolhe a interpretação por conta própria. <strong>Clique num verbo vago</strong> e veja por quais trocar.</p>
   <div class="verbs">
     <div class="vague" id="vague" role="group" aria-label="Verbos vagos"></div>
     <div class="sharp" id="sharp" aria-live="polite"></div>
@@ -567,7 +569,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 <section class="sec" id="s-rodadas" aria-labelledby="h-rodadas">
   <span class="eyebrow">O que o pedido curto custa</span>
   <h2 id="h-rodadas">Mesmo trabalho, mesmo arquivo, mesma pessoa</h2>
-  <p class="intro">O que muda é só o que estava escrito na primeira mensagem. <strong>Rode as duas conversas</strong> e conte as mensagens em que você não produziu nada, só explicou o que já sabia desde o começo.</p>
+  <p class="intro">É o e-mail de pedido que volta com “qual o prazo?”, depois “para qual unidade?”, depois “em que formato?”: cada ida e volta é trabalho que uma linha a mais teria poupado. Aqui, o que muda é só o que estava escrito na primeira mensagem. <strong>Rode as duas conversas</strong> e conte as mensagens em que você não produziu nada, só explicou o que já sabia desde o começo.</p>
   <div class="gamebar"><button type="button" class="btn primary" id="playBtn">Rodar as duas conversas</button><span class="hint" id="playHint"></span></div>
   <div class="convs">
     <div class="conv"><div class="head"><span class="eyebrow">Pedido pela tarefa</span><span class="n" id="nA">0</span></div><div id="convA" style="display:grid;gap:8px"></div></div>
@@ -580,7 +582,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 <section class="sec" id="s-copiar" aria-labelledby="h-copiar">
   <span class="eyebrow">Prompts para copiar</span>
   <h2 id="h-copiar">Oito pedidos que resolvem a maior parte da semana</h2>
-  <p class="intro">Todos já vêm nos seis campos. <strong>O que está marcado é o que você troca</strong> pelo seu caso; o resto pode ficar como está.</p>
+  <p class="intro">Funciona como os modelos de contrato do jurídico: a estrutura já vem pronta, e você só preenche o que está em destaque. Todos já vêm nos seis campos. <strong>O que está marcado é o que você troca</strong> pelo seu caso; o resto pode ficar como está.</p>
   <div class="lib">
     <div class="tabs" id="tabs" role="tablist" aria-label="Situações"></div>
     <div class="libpane" id="libpane" role="tabpanel"></div>
@@ -589,9 +591,9 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 
 <!-- 7 -->
 <section class="sec" id="s-cerca" aria-labelledby="h-cerca">
-  <span class="eyebrow">Quando não resolve</span>
+  <span class="eyebrow">Quando o problema não é o pedido</span>
   <h2 id="h-cerca">Três casos em que o problema não é o pedido</h2>
-  <p class="intro">Saber a diferença evita que você fique reescrevendo um pedido que já estava bom.</p>
+  <p class="intro">Nenhum formulário de reembolso bem preenchido faz aparecer a nota fiscal que ninguém pediu. Saber a diferença evita que você fique reescrevendo um pedido que já estava bom.</p>
   <div class="fence">
     <div class="fcard"><b>A informação não existe em lugar nenhum</b><p>Nenhum campo faz a IA saber o que ninguém escreveu. Se a regra só existe na cabeça de alguém, ela precisa virar texto antes.</p></div>
     <div class="fcard"><b>Ela não tem acesso ao material</b><p>Pedido perfeito sobre um arquivo que ela não abriu devolve suposição bem escrita.</p></div>

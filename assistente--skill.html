@@ -252,15 +252,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">Um procedimento escrito, com etiqueta, que a IA só abre quando a tarefa bate com a etiqueta</p>
   <p class="lead">A instrução diz quem você é e vale sempre. A skill diz <strong>como uma tarefa específica se faz</strong>: os passos, as exceções, o material que se consulta. Ela fica guardada e fechada; na mesa fica só o nome e uma frase dizendo quando usar. O nome do recurso muda de ferramenta para ferramenta (no Claude, por exemplo, aparece como Skills ou Habilidades); <strong>o mecanismo da etiqueta que abre o conteúdo é o que interessa</strong>.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-etiqueta">Quando ela abre</a><a href="#s-hora">A hora errada</a><a href="#s-pasta">A pasta</a><a href="#s-gaveta">Qual gaveta</a><a href="#s-descricao">A etiqueta</a><a href="#s-parentes">Os parentes</a><a href="#s-prova">A prova</a><a href="#s-nasce">Como nasce</a><a href="#s-esqueleto">O esqueleto</a>
+    <a href="#s-etiqueta">Quando o procedimento abre</a><a href="#s-hora">Lido na hora errada</a><a href="#s-pasta">Uma pasta com gavetas</a><a href="#s-gaveta">Cada arquivo na sua gaveta</a><a href="#s-descricao">A frase que decide quando usar</a><a href="#s-parentes">Quem puxa o gatilho</a><a href="#s-prova">Como saber se ela consultou</a><a href="#s-nasce">Como nasce uma skill</a><a href="#s-esqueleto">As partes de uma skill confiável</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-etiqueta" aria-labelledby="h-etiqueta">
-  <span class="eyebrow">Quando ela abre</span>
+  <span class="eyebrow">Quando o procedimento abre</span>
   <h2 id="h-etiqueta">Ela lê por partes, e cada parte tem a sua hora</h2>
-  <p class="intro">Na largada entram só as etiquetas. O passo a passo abre quando o pedido bate com uma delas. O anexo abre só se o passo a passo mandar consultar. <strong>Por isso uma skill pode ser longa sem pesar.</strong> Avance.</p>
+  <p class="intro">Na estante de manuais, você lê a lombada e só tira da prateleira o que vai usar. Aqui, na largada entram só as etiquetas. O passo a passo abre quando o pedido bate com uma delas. O anexo abre só se o passo a passo mandar consultar. <strong>Por isso uma skill pode ser longa sem pesar.</strong> Avance.</p>
   <div class="stepbar"><span class="eyebrow" id="skLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="skPrev">← Anterior</button><button type="button" class="btn primary" id="skNext">Próximo →</button></div></div>
   <div class="scroll">
     <svg viewBox="0 0 760 320" role="img" aria-labelledby="sk-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
@@ -283,9 +283,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 2 -->
 <section class="sec" id="s-hora" aria-labelledby="h-hora">
-  <span class="eyebrow">A hora errada</span>
+  <span class="eyebrow">Lido na hora errada</span>
   <h2 id="h-hora">O mesmo procedimento, colado nas instruções ou guardado como skill</h2>
-  <p class="intro">Texto idêntico, palavra por palavra. A diferença é o lugar, e ela aparece num pedido que não tem nada a ver com ele. <strong>Colado nas instruções, o procedimento é lido sempre, e aplicado onde não devia.</strong></p>
+  <p class="intro">Imagine o procedimento de fechamento contábil impresso no verso de todo papel da empresa: até o bilhete da copa viria com doze passos. Abaixo, texto idêntico, palavra por palavra. A diferença é o lugar, e ela aparece num pedido que não tem nada a ver com ele. <strong>Colado nas instruções, o procedimento é lido sempre, e aplicado onde não devia.</strong></p>
   <p class="sk-cmd">Pedido: “Escreva um e-mail curto avisando a unidade que o prazo mudou.”</p>
   <div class="seg" role="group" aria-label="Onde o procedimento está">
     <button type="button" data-hr="col" aria-pressed="true">Colado nas instruções</button>
@@ -297,9 +297,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 3 -->
 <section class="sec" id="s-pasta" aria-labelledby="h-pasta">
-  <span class="eyebrow">A pasta</span>
+  <span class="eyebrow">Uma pasta com gavetas</span>
   <h2 id="h-pasta">A skill não é um texto: é uma pasta com gavetas</h2>
-  <p class="intro">Só a primeira gaveta é obrigatória. As outras levam junto o material que a sua área já tem: a norma, o modelo, uma conta que não pode variar. <strong>Gaveta vazia não é skill incompleta: é skill do tamanho do problema.</strong> Troque de skill e clique nas gavetas.</p>
+  <p class="intro">Pense no kit que o RH entrega na admissão: a folha de instruções, a norma, o formulário em branco, cada um no seu envelope. Na skill, só a primeira gaveta é obrigatória: o arquivo SKILL.md, um texto simples (é o que o .md no fim quer dizer). As outras levam junto o material que a sua área já tem: a norma, o modelo, uma conta que não pode variar. <strong>Gaveta vazia não é skill incompleta: é skill do tamanho do problema.</strong> Troque de skill e clique nas gavetas.</p>
   <div class="seg" role="group" aria-label="Exemplo de skill" id="paSeg">
     <button type="button" data-pa="0" aria-pressed="true">pauta-do-dia</button>
     <button type="button" data-pa="1" aria-pressed="false">fechar-cotacao</button>
@@ -320,18 +320,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 4 -->
 <section class="sec" id="s-gaveta" aria-labelledby="h-gaveta">
-  <span class="eyebrow">Qual gaveta</span>
+  <span class="eyebrow">Cada arquivo na sua gaveta</span>
   <h2 id="h-gaveta">A gaveta depende do verbo, não do documento</h2>
-  <p class="intro">Ela <strong>lê para decidir</strong>, <strong>copia para produzir</strong>, <strong>roda para calcular</strong>, ou aquilo é o próprio método? O mesmo arquivo pode cair em gavetas diferentes conforme o uso.</p>
+  <p class="intro">Um mesmo contrato antigo pode servir de consulta para o jurídico e de modelo para a secretária: o que decide onde ele fica é o que se faz com ele. Ela <strong>lê para decidir</strong>, <strong>copia para produzir</strong>, <strong>roda para calcular</strong>, ou aquilo é o próprio método? O mesmo arquivo pode cair em gavetas diferentes conforme o uso.</p>
   <div class="qz" id="gvQuiz"></div>
   <p class="qz-score" id="gvScore" aria-live="polite"></p>
 </section>
 
 <!-- 5 -->
 <section class="sec" id="s-descricao" aria-labelledby="h-descricao">
-  <span class="eyebrow">A etiqueta</span>
+  <span class="eyebrow">A frase que decide quando usar</span>
   <h2 id="h-descricao">Etiqueta vaga é procedimento perfeito que nunca abre</h2>
-  <p class="intro">A descrição é o que ela lê para decidir se a skill entra. Ela precisa dizer <strong>o que faz e quando usar, com as palavras que você usaria no pedido</strong>. Escreva a sua e teste com um pedido: a simulação procura as palavras em comum, que é uma versão tosca do que a IA faz.</p>
+  <p class="intro">Na recepção, o atendente encaminha pela plaquinha de cada sala: se a plaquinha diz só “Sala 3”, ninguém sabe que é ali que se resolve o reembolso. A descrição (o campo “description”, no topo do arquivo) é o que ela lê para decidir se a skill entra. Ela precisa dizer <strong>o que faz e quando usar, com as palavras que você usaria no pedido</strong>. Escreva a sua e teste com um pedido: a simulação procura as palavras em comum, que é uma versão tosca do que a IA faz.</p>
   <div class="et-grid">
     <div class="et-form">
       <label>Nome curto, em minúsculas com hífen<input id="etName" value="fechar-cotacao"></label>
@@ -353,9 +353,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 6 -->
 <section class="sec" id="s-parentes" aria-labelledby="h-parentes">
-  <span class="eyebrow">Os parentes</span>
+  <span class="eyebrow">Quem puxa o gatilho</span>
   <h2 id="h-parentes">Skill, instrução, prompt salvo e comando</h2>
-  <p class="intro">Os quatro guardam texto. <strong>O que muda é quem puxa o gatilho, e quando.</strong></p>
+  <p class="intro">No escritório há o regulamento que vale sempre, o modelo de e-mail que você copia quando lembra, e o formulário que só sai quando alguém pede no balcão: tudo é papel, muda quem decide usar. Aqui, o prompt salvo é um pedido pronto que você guarda para colar de novo. Os quatro guardam texto. <strong>O que muda é quem puxa o gatilho, e quando.</strong></p>
   <div class="seg" role="group" aria-label="Comparar com">
     <button type="button" data-pr="ins" aria-pressed="true">× instrução</button>
     <button type="button" data-pr="pro" aria-pressed="false">× prompt salvo</button>
@@ -367,9 +367,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 7 -->
 <section class="sec" id="s-prova" aria-labelledby="h-prova">
-  <span class="eyebrow">A prova</span>
+  <span class="eyebrow">Como saber se ela consultou</span>
   <h2 id="h-prova">A citação do item é o que prova que ela abriu o anexo</h2>
-  <p class="intro">Uma contratação de acabamento especial, estimada em R$ 3.200. Pela regra geral, abaixo de cinco mil, basta uma proposta e o comprador aprova. <strong>Pelo anexo de exceções, que ninguém abre há dois anos, é outra coisa.</strong> Nenhuma linha do passo a passo mudou entre os dois lados.</p>
+  <p class="intro">Quem diz que conferiu o estoque mostra a contagem com o código de cada item; “está tudo certo” não prova que alguém foi ao depósito. Aqui, uma contratação de acabamento especial, estimada em R$ 3.200. Pela regra geral, abaixo de cinco mil, basta uma proposta e o comprador aprova. <strong>Pelo anexo de exceções, que ninguém abre há dois anos, é outra coisa.</strong> Nenhuma linha do passo a passo mudou entre os dois lados.</p>
   <div class="seg" role="group" aria-label="Gavetas">
     <button type="button" data-pv="sem" aria-pressed="true">Só o passo a passo</button>
     <button type="button" data-pv="com" aria-pressed="false">Com a política na gaveta</button>
@@ -384,9 +384,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 8 -->
 <section class="sec" id="s-nasce" aria-labelledby="h-nasce">
-  <span class="eyebrow">Como nasce</span>
+  <span class="eyebrow">Como nasce uma skill</span>
   <h2 id="h-nasce">O pior jeito de fazer uma skill é sentar para escrever uma skill</h2>
-  <p class="intro">A sua área já escreveu quase todos os procedimentos: norma, checklist, o passo a passo que você explicou para quem entrou. <strong>O caminho que funciona é fazer a tarefa uma vez, junto com a IA, e só depois empacotar o que deu certo.</strong></p>
+  <p class="intro">A melhor receita da cozinha industrial não nasce numa reunião: nasce do cozinheiro que fez o prato, acertou o sal e só depois escreveu. A sua área já escreveu quase todos os procedimentos: norma, checklist, o passo a passo que você explicou para quem entrou. <strong>O caminho que funciona é fazer a tarefa uma vez, junto com a IA, e só depois empacotar o que deu certo.</strong></p>
   <div class="three">
     <div class="card"><span class="eyebrow">01 · faça</span><h3>A tarefa, uma vez, corrigindo</h3><p>“Faltou o frete.” “Põe em preço por milheiro.” Vá até a resposta ficar do jeito que você entregaria. As correções são o material da skill.</p></div>
     <div class="card focal"><span class="eyebrow">02 · empacote</span><h3>Peça para virar skill</h3><p>Na mesma conversa. Mandar listar as correções antes de escrever é o que impede metade delas de sumir.</p></div>
@@ -412,9 +412,9 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
 
 <!-- 8b -->
 <section class="sec" id="s-esqueleto" aria-labelledby="h-esqueleto">
-  <span class="eyebrow">O esqueleto</span>
+  <span class="eyebrow">As partes de uma skill confiável</span>
   <h2 id="h-esqueleto">Uma skill de confiança diz onde para, o que não muda e o que não é dela</h2>
-  <p class="intro">O passo a passo diz como fazer. Uma skill que roda toda semana precisa de mais quatro partes, e é nelas que moram as correções que você não quer fazer de novo. <strong>Clique em cada parte.</strong></p>
+  <p class="intro">Um bom procedimento operacional diz, além dos passos, onde parar para a assinatura do chefe, o que nunca se muda e o que é decisão de outro setor. Na skill, o passo a passo diz como fazer. Uma skill que roda toda semana precisa de mais quatro partes, e é nelas que moram as correções que você não quer fazer de novo. <strong>Clique em cada parte.</strong></p>
   <div class="pa-wrap">
     <div class="pa-folder" data-name="status-semanal/SKILL.md">
       <button type="button" data-es="0" aria-pressed="true"><b>Antes de qualquer coisa</b><small>o que ler primeiro, e a lista fechada do que entra</small></button>
@@ -431,7 +431,7 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
     <button type="button" data-fn="fina" aria-pressed="false">A skill que aponta</button>
   </div>
   <div id="fnOut" aria-live="polite"></div>
-  <p class="hint">No Claude Code, a skill é uma pasta dentro do projeto ou da sua pasta de usuário, lida pelo mesmo mecanismo da etiqueta. Como ela conversa com o manual, a memória e a pasta está na família <a href="./claude-code.html">Claude Code</a>.</p>
+  <p class="hint">No Claude Code (o Claude que trabalha dentro de uma pasta do seu computador), a skill é uma pasta dentro do projeto ou da sua pasta de usuário, lida pelo mesmo mecanismo da etiqueta. Como ela conversa com o manual, a memória e a pasta está na família <a href="./claude-code.html">Claude Code</a>.</p>
 </section>
 
 <!-- 9 -->

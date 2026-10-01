@@ -290,14 +290,14 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <p class="sub">Por que a IA inventa com a mesma segurança de quando acerta, e como conferir</p>
   <p class="lead">Quando a informação está no que ela enxerga, o pedaço de texto mais provável é o certo. Quando não está, ela não para nem avisa: <strong>continua escolhendo o mais provável, que agora é só o mais comum no mundo.</strong> O texto sai igualmente fluente, porque fluência e verdade são coisas diferentes.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-sem-base">Sem base</a><a href="#s-prova">O chute</a><a href="#s-voltou">O que voltou a mais</a><a href="#s-caca">Caça ao erro</a><a href="#s-camadas">Quatro camadas</a><a href="#s-jeitos">Quatro jeitos de errar</a><a href="#s-instrucao">A instrução</a><a href="#s-trinta">Trinta segundos</a><a href="#s-fechado">O caso fechado</a>
+    <a href="#s-sem-base">Quando falta a informação</a><a href="#s-prova">O chute</a><a href="#s-voltou">O que voltou a mais</a><a href="#s-caca">Caça ao erro</a><a href="#s-camadas">A ordem de conferir</a><a href="#s-jeitos">Quatro jeitos de errar</a><a href="#s-instrucao">Pedir que avise o que faltou</a><a href="#s-trinta">Conferir antes de enviar</a><a href="#s-fechado">Testar num trabalho já entregue</a>
   </nav>
 </header>
 
 <section class="sec" id="s-sem-base" aria-labelledby="h-sem-base">
-  <span class="eyebrow">Sem base</span>
+  <span class="eyebrow">Quando falta a informação</span>
   <h2 id="h-sem-base">Faltando base, ela preenche, e preenche com o mesmo tom</h2>
-  <p class="intro">A planilha tinha as vendas por loja. Não tinha nada sobre o setor. A frase já está escrita até a vírgula. <strong>Escolha o próximo pedaço</strong>, ou deixe o sorteio escolher, do jeito que ela faz.</p>
+  <p class="intro">Lembra do formulário em que todo campo é obrigatório? Quem não sabe a resposta preenche com o que parece razoável, porque o sistema não aceita em branco. A base, o material que ela tem à vista para responder, era uma planilha com as vendas por loja. Não tinha nada sobre o setor. A frase já está escrita até a vírgula. <strong>Escolha o próximo pedaço</strong>, ou deixe o sorteio escolher, do jeito que ela faz.</p>
   <div class="fn-box">
     <p class="fn-sent" id="fnSent" aria-live="polite"></p>
     <div class="fn-cands" id="fnCands"></div>
@@ -308,7 +308,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     <div class="al-fact is"><span class="tag">É</span><h3>Preenchimento onde faltou base</h3><p>O buraco é fechado com o que costuma aparecer nesse tipo de texto.</p></div>
     <div class="al-fact is"><span class="tag">É</span><h3>Mais provável em número e nome</h3><p>Valor, data, artigo de lei e nome próprio são onde a invenção mais aparece.</p></div>
     <div class="al-fact not"><span class="tag">Não é</span><h3>Mentira</h3><p>Não há intenção do outro lado. Tratar como má-fé leva a cobrar em vez de conferir.</p></div>
-    <div class="al-fact not"><span class="tag">Não é</span><h3>Defeito que some com modelo melhor</h3><p>Modelo melhor inventa menos e continua inventando. Cai a frequência, não o sinal.</p></div>
+    <div class="al-fact not"><span class="tag">Não é</span><h3>Defeito que some com modelo melhor</h3><p>Modelo melhor (a versão mais nova da IA) inventa menos e continua inventando. Cai a frequência, não o sinal.</p></div>
   </div>
   <p class="punch">É como o colega que nunca diz "não sei": ele te dá o ramal errado <em>no mesmo tom firme</em> com que te deu o certo na semana passada.</p>
   <p class="hint">O jogo completo da próxima palavra está na página <a href="./prompt.html">Prompt</a>. E o número inventado que aparece quando o combinado sai da mesa está em <a href="./limites-da-ia--janela-de-contexto.html">Janela de contexto</a>.</p>
@@ -317,7 +317,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-prova" aria-labelledby="h-prova">
   <span class="eyebrow">O chute</span>
   <h2 id="h-prova">Por que ela não diz "não sei"</h2>
-  <p class="intro">Pense numa prova de múltipla escolha com quatro alternativas. Se só o acerto conta, chutar rende em média um quarto do ponto, e deixar em branco rende zero. <strong>Quem é treinado nessa prova aprende a chutar com confiança.</strong> Troque a regra da prova.</p>
+  <p class="intro">Pense numa prova de concurso, de múltipla escolha, com quatro alternativas. Se só o acerto conta, chutar rende em média um quarto do ponto, e deixar em branco rende zero. <strong>Quem é treinado nessa prova aprende a chutar com confiança.</strong> Troque a regra da prova.</p>
   <div class="seg" role="group" aria-label="Regra da prova"><button type="button" data-pv="so" aria-pressed="true">Só o acerto conta</button><button type="button" data-pv="desconta" aria-pressed="false">O erro desconta</button></div>
   <div class="pv-wrap">
     <div class="pv-chart">
@@ -340,7 +340,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-voltou" aria-labelledby="h-voltou">
   <span class="eyebrow">O que voltou a mais</span>
   <h2 id="h-voltou">Tudo o que aparece do lado direito precisa ter origem no esquerdo</h2>
-  <p class="intro">Compare a matéria-prima com o produto. <strong>Marque o que não tem origem</strong> e repare onde isso acontece: no ponto em que o texto passa de relatar para explicar.</p>
+  <p class="intro">É a conferência do almoxarifado: tudo o que aparece na nota de saída precisa ter entrado antes por uma nota de entrada. Compare a matéria-prima com o produto. <strong>Marque o que não tem origem</strong> e repare onde isso acontece: no ponto em que o texto passa de relatar para explicar.</p>
   <div class="seg" role="group" aria-label="Destaque"><button type="button" data-ev="nada" aria-pressed="true">Ler como chegou</button><button type="button" data-ev="origem" aria-pressed="false">Marcar o que não tem origem</button></div>
   <div class="ev-grid">
     <div class="ev-col"><span class="eyebrow">O que você deu · a base</span><ul><li>Uma planilha com vendas por loja</li><li>Quatro semanas de dados</li><li>O pedido: "resuma o desempenho"</li><li>e mais nada</li></ul></div>
@@ -357,7 +357,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-caca" aria-labelledby="h-caca">
   <span class="eyebrow">Caça ao erro</span>
   <h2 id="h-caca">Conferir contra um trabalho fechado, linha por linha</h2>
-  <p class="intro">Ler procurando erro só pega o erro que se denuncia sozinho. O que funciona é ter do lado uma versão que você já sabe que está certa. <strong>Classifique cada linha da resposta contra a planilha.</strong></p>
+  <p class="intro">No fechamento do caixa, ninguém confere lendo o relatório com atenção: põe o extrato do banco ao lado e bate linha por linha. Ler procurando erro só pega o erro que se denuncia sozinho. O que funciona é ter do lado uma versão que você já sabe que está certa. <strong>Classifique cada linha da resposta contra a planilha.</strong></p>
   <div class="ce-grid">
     <div class="ce-sheet"><span class="eyebrow">A planilha · cupons por semana</span>
       <table><thead><tr><th>Loja</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Total</th></tr></thead>
@@ -369,9 +369,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 </section>
 
 <section class="sec" id="s-camadas" aria-labelledby="h-camadas">
-  <span class="eyebrow">Quatro camadas</span>
+  <span class="eyebrow">A ordem de conferir</span>
   <h2 id="h-camadas">Conferir tem ordem, da camada mais barata para a mais cara</h2>
-  <p class="intro">A conferência que a maioria faz para na primeira camada, porque é a que se enxerga rápido. <strong>É também a única que a ferramenta já faria sozinha.</strong> Clique em cada uma.</p>
+  <p class="intro">Numa nota fiscal, primeiro se olha se tem data e assinatura; só depois se pergunta se aquela compra devia ter sido feita. A conferência que a maioria faz para na primeira camada, porque é a que se enxerga rápido. <strong>É também a única que a ferramenta já faria sozinha.</strong> Clique em cada uma.</p>
   <div class="cm-wrap">
     <div><div class="cm-stack" id="cmStack" role="group" aria-label="As quatro camadas"></div><div class="cm-cost" aria-hidden="true"><span>mais barata</span><span>mais cara</span></div></div>
     <div class="cm-detail" id="cmDetail" aria-live="polite"></div>
@@ -381,15 +381,15 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-jeitos" aria-labelledby="h-jeitos">
   <span class="eyebrow">Quatro jeitos de errar</span>
   <h2 id="h-jeitos">Nenhum é erro de conta, e todos saem plausíveis na tela</h2>
-  <p class="intro">São erros de leitura do material. Por isso reler a resposta procurando coisa estranha não pega nenhum deles. <strong>Clique em cada um</strong> para ver o sintoma, a causa e o conserto.</p>
+  <p class="intro">Erro de digitação se pega relendo; erro de quem leu errado o pedido de compra chega com a nota bonita e o produto trocado. São erros de leitura do material. Por isso reler a resposta procurando coisa estranha não pega nenhum deles. <strong>Clique em cada um</strong> para ver o sintoma, a causa e o conserto.</p>
   <div class="jm-grid" id="jmGrid" role="group" aria-label="Quatro jeitos de errar"></div>
   <div class="jm-detail" id="jmDetail" aria-live="polite"></div>
 </section>
 
 <section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
-  <span class="eyebrow">A instrução</span>
+  <span class="eyebrow">Pedir que avise o que faltou</span>
   <h2 id="h-instrucao">A mesma pergunta, antes e depois de duas linhas no fim do pedido</h2>
-  <p class="intro">Mesma planilha, mesma pergunta: <strong>"Qual loja vendeu mais no trimestre, e quanto isso representa do total?"</strong> A única diferença é o parágrafo que manda declarar o que não foi encontrado.</p>
+  <p class="intro">É a diferença entre o fornecedor que completa o pedido por conta própria quando falta um item e o que liga avisando: “esse não tinha”. Mesma planilha, mesma pergunta: <strong>"Qual loja vendeu mais no trimestre, e quanto isso representa do total?"</strong> A única diferença é o parágrafo que manda declarar o que não foi encontrado.</p>
   <div class="seg" role="group" aria-label="Pedido"><button type="button" data-in="sem" aria-pressed="true">Sem a instrução</button><button type="button" data-in="com" aria-pressed="false">Com a instrução</button></div>
   <div class="in-out" id="inOut" aria-live="polite"></div>
   <div class="copy"><div class="copy-head"><span class="eyebrow">O trecho de conferência · cole no fim de qualquer pedido</span><button type="button" class="btn" data-copy="cpTrecho">Copiar</button></div>
@@ -401,9 +401,9 @@ Na dúvida: pergunte antes de decidir por mim. Deixar um item em aberto é o res
 </section>
 
 <section class="sec" id="s-trinta" aria-labelledby="h-trinta">
-  <span class="eyebrow">Trinta segundos</span>
+  <span class="eyebrow">Conferir antes de enviar</span>
   <h2 id="h-trinta">Fonte, número, consistência, e o peso do erro</h2>
-  <p class="intro">Antes de colar, enviar ou assinar, três perguntas. <strong>O rigor é proporcional ao risco:</strong> quanto mais irreversível a decisão, mais devagar você lê. Pense numa resposta que você recebeu hoje.</p>
+  <p class="intro">Rascunho de e-mail interno a gente relê uma vez; contrato que vai para outra empresa passa por mais olhos e mais tempo. Antes de colar, enviar ou assinar, três perguntas. <strong>O rigor é proporcional ao risco:</strong> quanto mais irreversível a decisão, mais devagar você lê. Pense numa resposta que você recebeu hoje.</p>
   <div class="vl-wrap">
     <div class="vl-steps" id="vlSteps">
       <div class="vl-risk"><label for="vlRisk"><b>Se estiver errada, o que acontece?</b></label><input type="range" id="vlRisk" min="0" max="2" step="1" value="1"><div class="vl-scale" aria-hidden="true"><span>rascunho interno</span><span>vai para outra área</span><span>sai assinado ou para fora</span></div></div>
@@ -414,9 +414,9 @@ Na dúvida: pergunte antes de decidir por mim. Deixar um item em aberto é o res
 </section>
 
 <section class="sec" id="s-fechado" aria-labelledby="h-fechado">
-  <span class="eyebrow">O caso fechado</span>
+  <span class="eyebrow">Testar num trabalho já entregue</span>
   <h2 id="h-fechado">Não estreie o pedido num caso novo</h2>
-  <p class="intro">Num trabalho novo você não tem contra o que comparar: se a resposta vier errada, ela vai parecer certa. <strong>Estreie num trabalho que você já entregou.</strong> Os dois passos marcados são os que quase todo mundo pula.</p>
+  <p class="intro">Ninguém testa a planilha nova da folha de pagamento direto no mês corrente: roda primeiro com o mês passado, que já se sabe quanto deu. Num trabalho novo você não tem contra o que comparar: se a resposta vier errada, ela vai parecer certa. <strong>Estreie num trabalho que você já entregou.</strong> Os dois passos marcados são os que quase todo mundo pula.</p>
   <div class="lp" id="lp" role="group" aria-label="Os quatro passos"></div>
   <div class="lp-back"><span class="arr" aria-hidden="true">↶</span><span><b>E roda de novo, no mesmo caso fechado, até a diferença sumir.</b> Só então o pedido vai para um trabalho que você ainda não fez.</span></div>
   <div class="lp-detail" id="lpDetail" aria-live="polite"></div>

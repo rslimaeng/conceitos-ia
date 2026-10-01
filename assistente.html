@@ -296,7 +296,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">A mesma IA de sempre, com três coisas guardadas: como trabalhar, o que consultar, e a prova de que consulta</p>
   <p class="lead">Um assistente é um texto que a IA lê sozinha no começo de toda conversa de um trabalho, mais o material que ela abre quando a pergunta pede. <strong>Você escreve uma vez e para de reexplicar.</strong> O que você continua digitando é uma frase curta com o dado da vez.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-pedido">O mesmo pedido</a><a href="#s-partes">As três partes</a><a href="#s-montar">Montar o seu</a><a href="#s-lugar">Onde cada frase vai</a><a href="#s-nunca">A linha que dá para conferir</a><a href="#s-prova">A prova</a><a href="#s-desvio">Quando ele erra</a><a href="#s-conta">Vale a pena?</a><a href="#s-familia">A família</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-pedido">O mesmo pedido</a><a href="#s-partes">As três partes</a><a href="#s-montar">Montar o seu</a><a href="#s-lugar">Onde cada frase vai</a><a href="#s-nunca">A linha que dá para conferir</a><a href="#s-prova">O teste das quatro perguntas</a><a href="#s-desvio">Quando ele erra</a><a href="#s-conta">Vale a pena?</a><a href="#s-familia">As quatro partes em detalhe</a>
   </nav>
 </header>
 
@@ -318,7 +318,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-pedido" aria-labelledby="h-pedido">
   <span class="eyebrow">O mesmo pedido</span>
   <h2 id="h-pedido">A mesma frase, no chat solto e no assistente</h2>
-  <p class="intro">O pedido é idêntico, letra por letra, e chega com o mesmo anexo. <strong>A única diferença é haver ou não um texto guardado antes dele.</strong> Troque o lado e compare linha com linha.</p>
+  <p class="intro">Peça a mesma cotação a dois fornecedores, um que recebeu o seu caderno de especificações e outro que não: a frase do pedido é igual, a proposta que volta não. Aqui, o pedido é idêntico, letra por letra, e chega com o mesmo anexo. <strong>A única diferença é haver ou não um texto guardado antes dele.</strong> Troque o lado e compare linha com linha.</p>
   <p class="as-cmd">Segue o pedido do cliente. Monte a proposta.</p>
   <div class="seg" role="group" aria-label="Onde o pedido roda">
     <button type="button" data-ped="solto" aria-pressed="true">Chat solto</button>
@@ -332,7 +332,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-partes" aria-labelledby="h-partes">
   <span class="eyebrow">As três partes</span>
   <h2 id="h-partes">O que separa as partes é a frequência, não a importância</h2>
-  <p class="intro">Um assistente não é um texto só. São três, e cada um muda num ritmo diferente. <strong>A confusão mais cara é misturar a instrução com o material de consulta.</strong> Clique em cada parte.</p>
+  <p class="intro">Num departamento, o manual de procedimentos muda uma vez por ano, a tabela de preços muda quando o fornecedor reajusta, e o pedido do cliente muda todo dia: ninguém guarda os três na mesma pasta. Um assistente não é um texto só. São três, e cada um muda num ritmo diferente. <strong>A confusão mais cara é misturar a instrução com o material de consulta.</strong> Clique em cada parte.</p>
   <div class="as-parts">
     <div class="scroll">
       <svg viewBox="0 0 560 300" role="img" aria-labelledby="ap-t" xmlns="http://www.w3.org/2000/svg" style="min-width:460px">
@@ -356,7 +356,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-montar" aria-labelledby="h-montar">
   <span class="eyebrow">Montar o seu</span>
   <h2 id="h-montar">A instrução nasce de um trabalho que você já sabe fazer</h2>
-  <p class="intro">Ninguém inventa uma instrução do zero: ela é o seu processo, escrito para quem vai executar. Preencha os campos com um trabalho seu, ou carregue o exemplo da proposta comercial. <strong>O texto se monta ao lado, pronto para colar no campo de instruções.</strong></p>
+  <p class="intro">Quem já deixou um roteiro para o colega que cobre as suas férias sabe: o melhor roteiro é o que você faz de olhos fechados, só que passado para o papel. Ninguém inventa uma instrução do zero: ela é o seu processo, escrito para quem vai executar. Preencha os campos com um trabalho seu, ou carregue o exemplo da proposta comercial. <strong>O texto se monta ao lado, pronto para colar no campo de instruções</strong> (a caixa onde a ferramenta guarda o texto que a IA lê antes de toda conversa).</p>
   <div class="nav"><button type="button" class="btn" id="asEx">Carregar exemplo</button><button type="button" class="btn" id="asClr">Limpar</button></div>
   <div class="as-build">
     <div class="as-form" id="asForm">
@@ -384,7 +384,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-lugar" aria-labelledby="h-lugar">
   <span class="eyebrow">Onde cada frase vai</span>
   <h2 id="h-lugar">Instrução, base ou comando?</h2>
-  <p class="intro">Seis frases do mesmo assistente de proposta. <strong>Pergunte de cada uma: com que frequência isso muda?</strong></p>
+  <p class="intro">É a triagem da caixa de entrada: o que vale sempre vira regra, o que é referência vai para a pasta de consulta, e o que é do dia se responde e pronto. Seis frases do mesmo assistente de proposta. <strong>Pergunte de cada uma: com que frequência isso muda?</strong></p>
   <div class="qz" id="asQuiz"></div>
   <p class="qz-score" id="asScore" aria-live="polite"></p>
 </section>
@@ -393,7 +393,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-nunca" aria-labelledby="h-nunca">
   <span class="eyebrow">A linha que dá para conferir</span>
   <h2 id="h-nunca">Adjetivo vira decoração; comportamento vira regra</h2>
-  <p class="intro">O assistente concorda com “seja preciso” e continua igual. <strong>Uma linha só funciona se você consegue olhar a resposta e dizer se ela foi cumprida.</strong> Clique numa preferência para ver a versão que dá para conferir.</p>
+  <p class="intro">Numa avaliação de desempenho, “ser proativo” não se cobra; “responder o cliente em até um dia útil” se cobra. O assistente concorda com “seja preciso” e continua igual. <strong>Uma linha só funciona se você consegue olhar a resposta e dizer se ela foi cumprida.</strong> Clique numa preferência para ver a versão que dá para conferir.</p>
   <div class="as-adj" role="group" aria-label="Preferências vagas">
     <button type="button" data-adj="0" aria-pressed="true">“Seja preciso com os números”</button>
     <button type="button" data-adj="1" aria-pressed="false">“Seja mais objetivo”</button>
@@ -405,9 +405,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 6 -->
 <section class="sec" id="s-prova" aria-labelledby="h-prova">
-  <span class="eyebrow">A prova</span>
+  <span class="eyebrow">O teste das quatro perguntas</span>
   <h2 id="h-prova">Quatro perguntas separam o assistente que consulta do que inventa</h2>
-  <p class="intro">Mesma instrução nos dois lados. A diferença é um arquivo: a tabela de preços, com uma seção final dizendo o que ela não cobre. <strong>Repare na pergunta 3.</strong></p>
+  <p class="intro">É a auditoria que pede o comprovante: quem consultou mostra a nota, quem chutou não tem o que mostrar. Mesma instrução nos dois lados. A diferença é um arquivo: a tabela de preços, com uma seção final dizendo o que ela não cobre. <strong>Repare na pergunta 3.</strong></p>
   <div class="seg" role="group" aria-label="Com ou sem o arquivo">
     <button type="button" data-bat="sem" aria-pressed="true">Sem o arquivo</button>
     <button type="button" data-bat="com" aria-pressed="false">Com o arquivo</button>
@@ -420,7 +420,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-desvio" aria-labelledby="h-desvio">
   <span class="eyebrow">Quando ele erra</span>
   <h2 id="h-desvio">Ele vai errar, e o conserto é uma linha no fim</h2>
-  <p class="intro">O reflexo é reescrever a instrução inteira, e isso quebra o que já funcionava. <strong>O conserto é nomear o que ele fez e acrescentar uma linha reversível no fim.</strong> Siga o ciclo.</p>
+  <p class="intro">Quando um procedimento da empresa falha num caso, ninguém reimprime o manual: grampeia-se uma nota com data, e o resto continua valendo. Com o assistente, o reflexo é reescrever a instrução inteira, e isso quebra o que já funcionava. <strong>O conserto é nomear o que ele fez e acrescentar uma linha reversível no fim.</strong> Siga o ciclo.</p>
   <div class="stepbar"><span class="eyebrow" id="dvLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="dvPrev">← Anterior</button><button type="button" class="btn primary" id="dvNext">Próximo →</button></div></div>
   <div class="scroll">
     <svg viewBox="0 0 640 300" role="img" aria-labelledby="dv-t" xmlns="http://www.w3.org/2000/svg" style="min-width:560px">
@@ -448,7 +448,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-conta" aria-labelledby="h-conta">
   <span class="eyebrow">Vale a pena?</span>
   <h2 id="h-conta">A pergunta não é “é importante?”, é “quantas vezes volta?”</h2>
-  <p class="intro">Montar custa antes e devolve depois, cada vez que a tarefa volta. <strong>A tarefa chata que volta toda semana paga rápido; a importantíssima que acontece uma vez por ano não paga nunca.</strong> Ponha os números de uma tarefa sua.</p>
+  <p class="intro">É a conta de comprar uma máquina para o escritório: ela custa uma vez, e só se paga se o serviço que faz se repetir. Montar custa antes e devolve depois, cada vez que a tarefa volta. <strong>A tarefa chata que volta toda semana paga rápido; a importantíssima que acontece uma vez por ano não paga nunca.</strong> Ponha os números de uma tarefa sua.</p>
   <div class="as-calc">
     <div class="as-in">
       <div class="field"><label for="cVol">Quantas vezes a tarefa volta por ano</label><div class="row"><input type="range" id="cVol" min="1" max="200" value="48"><output id="oVol">48</output></div></div>
@@ -469,16 +469,16 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 9 -->
 <section class="sec" id="s-familia" aria-labelledby="h-familia">
-  <span class="eyebrow">A família</span>
+  <span class="eyebrow">As quatro partes em detalhe</span>
   <h2 id="h-familia">Quatro verbetes abrem cada parte do assistente</h2>
-  <p class="intro">Esta página é a porta. Cada peça do assistente tem um verbete próprio, com mais detalhe e mais para mexer.</p>
+  <p class="intro">Como o sumário de um relatório, que aponta o capítulo de cada assunto, esta página é a porta. Cada peça do assistente tem um verbete próprio, com mais detalhe e mais para mexer.</p>
   <div class="fam">
     <a href="./assistente--resposta-ancorada.html"><span>4.1 · a base</span><b>Resposta ancorada</b><small>fazer a IA responder só pelo seu material, e por que material demais atrapalha</small></a>
     <a href="./assistente--onde-a-regra-mora.html"><span>4.2 · o lugar</span><b>Onde a regra mora</b><small>instrução, memória, skill, conector: em qual campo cada coisa fica</small></a>
     <a href="./assistente--skill.html"><span>4.3 · o procedimento</span><b>Skill</b><small>o passo a passo que a IA só abre quando a tarefa aparece</small></a>
     <a href="./assistente--time.html"><span>4.4 · o próximo degrau</span><b>Time de assistentes</b><small>quando a pergunta cruza áreas e um assistente só devolve o meio-termo</small></a>
   </div>
-  <p class="hint">Antes de montar: o pedido bem escrito continua sendo a base (<a href="./prompt.html">prompt</a>), e o assistente é o primeiro degrau da escada de <a href="./ai-first.html">AI First</a>.</p>
+  <p class="hint">Antes de montar: o pedido bem escrito continua sendo a base (<a href="./prompt.html">prompt</a>), e o assistente é o primeiro degrau da escada de <a href="./ai-first.html">AI First</a> (pôr a IA no desenho do trabalho desde o começo, não só no fim).</p>
 </section>
 
 <!-- 10 -->

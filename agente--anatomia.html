@@ -254,9 +254,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
   <span class="eyebrow">6.1 · 1 de 1</span>
   <h1>Anatomia do agente</h1>
   <p class="sub">Quatro peças: o modelo, a instrução, a memória e as ferramentas</p>
-  <p class="lead">Por fora, um agente parece uma coisa só. <strong>Por dentro são quatro peças, e todo agente que falha falha em uma delas.</strong> Saber qual é a peça transforma tentativa e erro em conserto: você lê o sintoma e mexe no lugar certo.</p>
+  <p class="lead">Por fora, um agente (a IA que, além de responder, usa outros sistemas para fazer o trabalho) parece uma coisa só. <strong>Por dentro são quatro peças, e todo agente que falha falha em uma delas.</strong> Saber qual é a peça transforma tentativa e erro em conserto: você lê o sintoma e mexe no lugar certo.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-pecas">As quatro peças</a><a href="#s-defeito">Onde está o defeito</a><a href="#s-dentro">Dentro de uma mensagem</a><a href="#s-instrucao">A instrução</a><a href="#s-linha">Uma linha por vez</a><a href="#s-memoria">A memória</a><a href="#s-ferramentas">As ferramentas</a>
+    <a href="#s-pecas">As quatro peças</a><a href="#s-defeito">Onde está o defeito</a><a href="#s-dentro">Dentro de uma mensagem</a><a href="#s-instrucao">O texto fixo que ele lê antes</a><a href="#s-linha">Uma linha por vez</a><a href="#s-memoria">A memória</a><a href="#s-ferramentas">As ferramentas</a>
   </nav>
 </header>
 
@@ -279,7 +279,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-defeito" aria-labelledby="h-defeito">
   <span class="eyebrow">Onde está o defeito</span>
   <h2 id="h-defeito">Leia o sintoma, mexa na peça certa</h2>
-  <p class="intro">Seis queixas de quem usa um agente no dia a dia. Para cada uma, aponte a peça que você abriria primeiro.</p>
+  <p class="intro">É o raciocínio do eletricista do prédio: com a luz piscando, ele abre o quadro certo antes de trocar a fiação inteira. Seis queixas de quem usa um agente no dia a dia. Para cada uma, aponte a peça que você abriria primeiro.</p>
   <div class="dg" id="dg"></div>
   <p class="dg-score" id="dgScore" aria-live="polite"></p>
 </section>
@@ -288,7 +288,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-dentro" aria-labelledby="h-dentro">
   <span class="eyebrow">Dentro de uma mensagem</span>
   <h2 id="h-dentro">O que cada peça faz entre a pergunta e a resposta</h2>
-  <p class="intro">Uma mensagem chega: “qual o orçamento do cliente Souza?”. Siga as seis coisas que acontecem por dentro, e repare em qual peça acende a cada passo. O laço completo, com as voltas, está em <a href="./agente.html">Agente</a>.</p>
+  <p class="intro">Pense no atendente do balcão de pedidos: antes de responder, ele olha a ficha do cliente, confere o procedimento na parede e, se precisa, liga para o estoque. Uma mensagem chega: “qual o orçamento do cliente Souza?”. Siga as seis coisas que acontecem por dentro, e repare em qual peça acende a cada passo. O laço completo (o agente pensando, agindo e conferindo várias vezes seguidas) está em <a href="./agente.html">Agente</a>.</p>
   <div class="stepbar">
     <span class="eyebrow" id="inLab">Passo 1 de 6</span>
     <div class="nav"><button type="button" class="btn" id="inPrev">← Anterior</button><button type="button" class="btn primary" id="inNext">Próximo →</button></div>
@@ -321,9 +321,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <!-- 4 -->
 <section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
-  <span class="eyebrow">A instrução</span>
+  <span class="eyebrow">O texto fixo que ele lê antes</span>
   <h2 id="h-instrucao">Seis gavetas para o que não muda</h2>
-  <p class="intro">A instrução (o <em>system prompt</em>) é lida antes de qualquer mensagem e pesa mais do que tudo. <strong>O que não muda a cada uso vai aqui; o que muda vai na mensagem.</strong> Quando ela passa de cinco ou seis linhas, organize em seis partes. Escolha um exemplo ou escreva o seu.</p>
+  <p class="intro">É o formulário padrão do setor de compras: os campos fixos já vêm impressos, e a cada pedido só se preenche o que muda. A instrução (o <em>system prompt</em>) é lida antes de qualquer mensagem e pesa mais do que tudo. <strong>O que não muda a cada uso vai aqui; o que muda vai na mensagem.</strong> Quando ela passa de cinco ou seis linhas, organize em seis partes. Escolha um exemplo ou escreva o seu.</p>
   <div class="seg" role="group" aria-label="Exemplo">
     <button type="button" data-pre="agenda" aria-pressed="true">Agente de reuniões</button>
     <button type="button" data-pre="clientes" aria-pressed="false">Consulta de clientes</button>
@@ -345,7 +345,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-linha" aria-labelledby="h-linha">
   <span class="eyebrow">Uma linha por vez</span>
   <h2 id="h-linha">Comece vazio e corrija só o que o teste mostrou</h2>
-  <p class="intro">Ninguém escreve o manual inteiro antes de ver o funcionário trabalhar. <strong>Teste com a instrução vazia, veja o que sai errado, acrescente uma linha, e teste de novo com a mesma entrada.</strong> Nunca mude duas coisas ao mesmo tempo, ou você não sabe o que consertou. O exemplo é um agente que qualifica contatos comerciais.</p>
+  <p class="intro">Ninguém escreve o manual inteiro antes de ver o funcionário trabalhar. <strong>Teste com a instrução vazia, veja o que sai errado, acrescente uma linha, e teste de novo com a mesma entrada.</strong> Nunca mude duas coisas ao mesmo tempo, ou você não sabe o que consertou. O exemplo é um agente que qualifica contatos comerciais e devolve um JSON (uma ficha de campos com nome e valor, que outro programa consegue ler).</p>
   <div class="stepbar">
     <span class="eyebrow" id="olLab">Rodada 1 de 4</span>
     <div class="nav"><button type="button" class="btn" id="olPrev">← Anterior</button><button type="button" class="btn primary" id="olNext">Próximo →</button></div>
@@ -361,7 +361,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-memoria" aria-labelledby="h-memoria">
   <span class="eyebrow">A memória</span>
   <h2 id="h-memoria">Curta, longa, e a etiqueta que separa as conversas</h2>
-  <p class="intro">Sem memória, cada mensagem é a primeira: você diz o seu nome e, na seguinte, ele pergunta de novo. Existem dois tipos, e quase todo agente começa só com o primeiro.</p>
+  <p class="intro">Pense no atendimento por telefone em que cada transferência começa do zero: você repete nome, pedido e problema para cada atendente. Sem memória, cada mensagem é a primeira: você diz o seu nome e, na seguinte, ele pergunta de novo. Existem dois tipos, e quase todo agente começa só com o primeiro.</p>
   <div class="seg" role="group" aria-label="Tipo de memória">
     <button type="button" data-mk="curta" aria-pressed="true">Memória curta</button>
     <button type="button" data-mk="longa" aria-pressed="false">Memória longa</button>
@@ -388,7 +388,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-ferramentas" aria-labelledby="h-ferramentas">
   <span class="eyebrow">As ferramentas</span>
   <h2 id="h-ferramentas">A mesma pergunta, com e sem a ferramenta</h2>
-  <p class="intro">Ferramenta é o que transforma o agente de quem responde em quem faz. <strong>Ele não recebe um roteiro dizendo quando usá-la: lê o nome e a descrição, e decide.</strong> Por isso a descrição é, ela mesma, uma instrução.</p>
+  <p class="intro">Pense na lista de ramais do escritório: ninguém liga para “ramal 7” se a lista diz só o número, mas liga para “Financeiro: segunda via de boleto”. Ferramenta é o que transforma o agente de quem responde em quem faz. <strong>Ele não recebe um roteiro dizendo quando usá-la: lê o nome e a descrição, e decide.</strong> Por isso a descrição é, ela mesma, uma instrução.</p>
   <div class="tl">
     <div class="tl-card">
       <div class="seg" role="group" aria-label="Ferramenta">
@@ -561,7 +561,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
   /* 5 · uma linha por vez */
   var OL = [
     { ins: '(vazia)', out: 'Olá! O contato parece interessante. Ele trabalha numa empresa média e demonstrou interesse no produto. Recomendo entrar em contato em breve para entender melhor as necessidades...', w: 'Texto corrido, sem nota, impossível de pôr numa planilha. Primeiro conserto: o formato.' },
-    { ins: '<mark>Retorne APENAS um JSON com os campos: nome, nota, recomendacao.</mark>', out: '```json\n{ "nome": "Paulo", "nota": 7, "recomendacao": "ligar" }\n```', w: 'Veio o JSON, mas embrulhado em marcação. Quem lê a saída depois vai quebrar. Uma linha a mais.' },
+    { ins: '<mark>Retorne APENAS um JSON com os campos: nome, nota, recomendacao.</mark>', out: '```json\n{ "nome": "Paulo", "nota": 7, "recomendacao": "ligar" }\n```', w: 'Veio o JSON, mas embrulhado em marcação (as crases que o chat usa para mostrar código). Quem lê a saída depois vai quebrar. Uma linha a mais.' },
     { ins: 'Retorne APENAS um JSON com os campos: nome, nota, recomendacao.\n<mark>Não use blocos de marcação. Apenas o JSON puro.</mark>', out: '{ "nome": "Paulo", "nota": 7, "recomendacao": "ligar" }', w: 'Formato certo. Mas o contato não disse orçamento nenhum, e a nota 7 veio de onde?' },
     { ins: 'Retorne APENAS um JSON com os campos: nome, nota, recomendacao.\nNão use blocos de marcação. Apenas o JSON puro.\n<mark>Se uma informação não estiver no texto, nota = 0 e\nrecomendacao = "informação não fornecida". Nunca invente.</mark>', out: '{ "nome": "Paulo", "nota": 0, "recomendacao": "informação não fornecida" }', w: 'Pronto para esta entrada. Continue até ele responder igual em cinco testes seguidos, e volte a acrescentar quando aparecer um erro real.' }
   ];
@@ -596,7 +596,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
     winList.innerHTML = MSG.map(function (m, i) { return '<li class="' + (i >= start ? 'in' : 'out') + '">' + m + '</li>'; }).join('') + '<li class="in"><b>você: e qual é o meu nome mesmo?</b></li>';
     var v = document.getElementById('winVer');
     if (start <= 0) { v.className = 'verdict ok'; v.innerHTML = '<b>“Rita.”</b> A primeira mensagem ainda está no caderno.'; }
-    else { v.className = 'verdict no'; v.innerHTML = '<b>“Não sei o seu nome.”</b> A mensagem com o nome saiu da janela. Janela maior lembra mais, e custa mais a cada pergunta.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>“Não sei o seu nome.”</b> A mensagem com o nome saiu da janela (o trecho da conversa que o agente recebe). Janela maior lembra mais, e custa mais a cada pergunta.'; }
   }
   winN.addEventListener('input', win); win();
   var tagBtns = document.querySelectorAll('[data-tag]'), ses = document.getElementById('ses');

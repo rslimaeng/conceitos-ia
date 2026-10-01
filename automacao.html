@@ -275,9 +275,9 @@ a { color: var(--accent); }
   <span class="eyebrow">Visão geral</span>
   <h1>Pensar como automação</h1>
   <p class="sub">Toda automação é uma frase em três partes: quando, faz, para</p>
-  <p class="lead">Quando algo acontece, eu faço estas coisas, para entregar isto. <strong>Se a sua tarefa cabe nessa frase, ela cabe em qualquer ferramenta de automação.</strong> Se não cabe, o problema não é a ferramenta: é que o processo ainda não está claro nem para você. O mapa vem antes de abrir qualquer programa.</p>
+  <p class="lead">Quando algo acontece, eu faço estas coisas, para entregar isto. <strong>Se a sua tarefa cabe nessa frase, ela cabe em qualquer ferramenta de automação</strong> (um programa que liga os seus aplicativos e roda passos sozinho). Se não cabe, o problema não é a ferramenta: é que o processo ainda não está claro nem para você. O mapa vem antes de abrir qualquer programa.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O gatilho</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Fluxo ou agente</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-frase">A frase de três partes</a><a href="#s-vale">Vale automatizar?</a><a href="#s-gatilho">O que dispara</a><a href="#s-mapa">A sua tarefa</a><a href="#s-partes">Três partes separadas</a><a href="#s-fluxo">Roteiro fixo ou assistente</a>
   </nav>
 </header>
 
@@ -296,9 +296,9 @@ a { color: var(--accent); }
 
 <!-- 1 -->
 <section class="sec" id="s-frase" aria-labelledby="h-frase">
-  <span class="eyebrow">A frase</span>
+  <span class="eyebrow">A frase de três partes</span>
   <h2 id="h-frase">Quando, faz, para</h2>
-  <p class="intro"><strong>Gatilho</strong> é o que dispara. <strong>Execução</strong> é o trabalho do meio, sempre em verbos concretos. <strong>Entrega</strong> é onde o resultado para, com destino específico. Monte um fluxo: escolha um exemplo pronto ou clique nas peças. Os passos entram na ordem em que você clica.</p>
+  <p class="intro">É o formato de uma ordem de serviço bem preenchida: quando o chamado abre, o que o técnico faz e onde ele entrega o equipamento. <strong>Gatilho</strong> é o que dispara. <strong>Execução</strong> é o trabalho do meio, sempre em verbos concretos. <strong>Entrega</strong> é onde o resultado para, com destino específico. Monte um fluxo (a sequência de passos que a automação roda): escolha um exemplo pronto ou clique nas peças. Os passos entram na ordem em que você clica.</p>
   <div class="bd-pre">
     <span class="eyebrow">Exemplos</span>
     <div class="seg" role="group" aria-label="Exemplos prontos">
@@ -323,14 +323,14 @@ a { color: var(--accent); }
     <div class="copy-head"><span class="eyebrow">A frase do seu fluxo</span><button type="button" class="btn" id="frCopy">Copiar</button></div>
     <pre id="frTxt" aria-live="polite"></pre>
   </div>
-  <p class="hint">Buscar dado em outro sistema costuma passar por uma <a href="./automacao--api.html">API</a>; o que viaja de um passo para o outro costuma ser um <a href="./automacao--json.html">JSON</a>. O mapa, porém, existe antes de qualquer um dos dois: repare que nenhuma frase acima exige saber ferramenta.</p>
+  <p class="hint">Buscar dado em outro sistema costuma passar por uma <a href="./automacao--api.html">API</a> (a porta pela qual um sistema aceita pedidos de outro); o que viaja de um passo para o outro costuma ser um <a href="./automacao--json.html">JSON</a> (uma ficha de texto com campos e valores). O mapa, porém, existe antes de qualquer um dos dois: repare que nenhuma frase acima exige saber ferramenta.</p>
 </section>
 
 <!-- 2 -->
 <section class="sec" id="s-vale" aria-labelledby="h-vale">
   <span class="eyebrow">Vale automatizar?</span>
   <h2 id="h-vale">Três sinais ao mesmo tempo: repete, é previsível, custa tempo</h2>
-  <p class="intro">Faltando um dos três, pense duas vezes. E cuidado com a tarefa que parece repetitiva mas tem exceção demais: <strong>se você diz “depende” toda vez que tenta explicar como faz, estabilize a regra antes de automatizar.</strong> Marque o que vale para uma tarefa sua.</p>
+  <p class="intro">É a mesma conta de quem decide se vale montar um modelo de planilha: só compensa se você usa toda semana, sempre do mesmo jeito, e se cada vez leva mais que um minuto. Faltando um dos três, pense duas vezes. E cuidado com a tarefa que parece repetitiva mas tem exceção demais: <strong>se você diz “depende” toda vez que tenta explicar como faz, estabilize a regra antes de automatizar.</strong> Marque o que vale para uma tarefa sua.</p>
   <div class="sg">
     <div class="sg-sw" role="group" aria-label="Sinais da sua tarefa">
       <button type="button" data-sg="rep" aria-pressed="false"><b>Repete</b><small>faço mais de uma vez por semana</small></button>
@@ -352,9 +352,9 @@ a { color: var(--accent); }
 
 <!-- 3 -->
 <section class="sec" id="s-gatilho" aria-labelledby="h-gatilho">
-  <span class="eyebrow">O gatilho</span>
+  <span class="eyebrow">O que dispara</span>
   <h2 id="h-gatilho">Cinco jeitos de uma automação acordar</h2>
-  <p class="intro">Sem gatilho não há automação: há alguém rodando o fluxo na mão para sempre. Clique em cada um e veja, num dia de trabalho, <strong>quando ele dispara</strong>.</p>
+  <p class="intro">No escritório, todo trabalho começa por um motivo: o chefe pede, chega o dia do fechamento, o cliente preenche a ficha, o e-mail cai na caixa, o banco liga avisando. Sem gatilho não há automação: há alguém rodando o fluxo na mão para sempre. Clique em cada um e veja, num dia de trabalho, <strong>quando ele dispara</strong>.</p>
   <div class="gt" role="group" aria-label="Os cinco gatilhos">
     <button type="button" data-g="manual" aria-pressed="false"><span class="et">MANUAL</span><b>Um clique</b><small>você decide a hora</small></button>
     <button type="button" data-g="agendado" aria-pressed="true"><span class="et">AGENDADO</span><b>Um horário</b><small>o despertador</small></button>
@@ -378,7 +378,7 @@ a { color: var(--accent); }
 <section class="sec" id="s-mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">A sua tarefa</span>
   <h2 id="h-mapa">Mapeie uma tarefa sua em três linhas</h2>
-  <p class="intro">Escolha uma tarefa real, mesmo pequena, que tenha os três sinais. Escreva como explicaria para um amigo. <strong>O mapa está pronto quando cada linha passa na conferência ao lado dela.</strong> Se travar em “tem várias coisas, não sei explicar”, o processo ainda não está claro, e isso já é uma descoberta.</p>
+  <p class="intro">Antes de passar um serviço a outra pessoa, você anota quando começa, o que fazer e para quem entregar; se não consegue anotar, também não consegue delegar. Escolha uma tarefa real, mesmo pequena, que tenha os três sinais. Escreva como explicaria para um amigo. <strong>O mapa está pronto quando cada linha passa na conferência ao lado dela.</strong> Se travar em “tem várias coisas, não sei explicar”, o processo ainda não está claro, e isso já é uma descoberta.</p>
   <div class="mp">
     <div class="mp-in">
       <div class="mp-f"><label for="mG">GATILHO · quando isso acontece?</label><textarea id="mG" rows="2" placeholder="toda segunda às 9h"></textarea><span class="mp-chk" id="kG"></span></div>
@@ -399,7 +399,7 @@ a { color: var(--accent); }
 <section class="sec" id="s-partes" aria-labelledby="h-partes">
   <span class="eyebrow">Três partes separadas</span>
   <h2 id="h-partes">Troque a entrega, e o resto fica igual</h2>
-  <p class="intro">Separar execução de entrega parece detalhe e não é. <strong>Quando as três partes estão separadas, dá para trocar uma sem mexer nas outras</strong>, e quando algo quebra você sabe onde olhar. Troque o destino do mesmo relatório.</p>
+  <p class="intro">Funciona como trocar a transportadora sem mudar a fábrica: o produto sai igual, só muda quem leva. Separar execução de entrega parece detalhe e não é. <strong>Quando as três partes estão separadas, dá para trocar uma sem mexer nas outras</strong>, e quando algo quebra você sabe onde olhar. Troque o destino do mesmo relatório.</p>
   <div class="seg" role="group" aria-label="Entrega">
     <button type="button" data-to="email" aria-pressed="true">E-mail</button>
     <button type="button" data-to="chat" aria-pressed="false">Mensagem no chat</button>
@@ -421,9 +421,9 @@ a { color: var(--accent); }
 
 <!-- 6 -->
 <section class="sec" id="s-fluxo" aria-labelledby="h-fluxo">
-  <span class="eyebrow">Fluxo ou agente</span>
+  <span class="eyebrow">Roteiro fixo ou assistente</span>
   <h2 id="h-fluxo">A tarefa é sempre a mesma, ou muda toda vez?</h2>
-  <p class="intro">Existem dois jeitos de a IA trabalhar sem você do lado. <strong>O fluxo automático</strong> roda sozinho num servidor, a qualquer hora, sempre os mesmos passos. <strong>O assistente que age</strong> trabalha quando você pede, adapta o caminho e para para perguntar antes do que não tem volta. Responda as cinco perguntas sobre uma tarefa sua.</p>
+  <p class="intro">É a diferença entre o relógio de ponto, que faz a mesma coisa toda vez sem ninguém olhar, e o assistente pessoal, que resolve cada pedido de um jeito e liga antes de fechar algo caro. Existem dois jeitos de a IA trabalhar sem você do lado. <strong>O fluxo automático</strong> roda sozinho num servidor (um computador que fica ligado o tempo todo, na internet), a qualquer hora, sempre os mesmos passos. <strong>O assistente que age</strong> trabalha quando você pede, adapta o caminho e para para perguntar antes do que não tem volta. Responda as cinco perguntas sobre uma tarefa sua.</p>
   <div class="ch">
     <div class="ch-list" id="chList"></div>
     <div class="ch-res">
@@ -433,7 +433,7 @@ a { color: var(--accent); }
       <div class="verdict ok" id="chVer" aria-live="polite"></div>
     </div>
   </div>
-  <p class="hint">Um cabe dentro do outro: é comum o fluxo capturar o gatilho e organizar o dado, e um passo de IA ou um <a href="./agente.html">agente</a> entrar só na ponta que pede julgamento.</p>
+  <p class="hint">Um cabe dentro do outro: é comum o fluxo capturar o gatilho e organizar o dado, e um passo de IA ou um <a href="./agente.html">agente</a> (o assistente que age) entrar só na ponta que pede julgamento.</p>
 </section>
 
 <!-- 7 -->

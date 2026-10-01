@@ -266,7 +266,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <p class="lead">Existem dois jeitos de saber que um pagamento foi aprovado. Um é abrir o sistema de meia em meia hora e conferir. O outro é o sistema te chamar no instante em que aprova. <strong>Webhook é o segundo jeito:</strong> você dá ao outro sistema um endereço seu, e ele bate nesse endereço, com os dados na mão, toda vez que algo acontece.</p>
   <p class="fam">Família <a href="./automacao.html">Automação</a> · nesta família também: <a href="./automacao--api.html">API</a> · <a href="./automacao--json.html">JSON</a></p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-perguntar">Perguntar ou ser avisado</a><a href="#s-campainha">A campainha</a><a href="#s-pacote">O que chega</a><a href="#s-enderecos">Dois endereços</a><a href="#s-responder">Responder o aviso</a><a href="#s-quiz">Relógio ou aviso</a><a href="#s-ligar">Antes de ligar</a><a href="#s-levar">Para levar</a>
+    <a href="#s-perguntar">Perguntar ou ser avisado</a><a href="#s-campainha">A campainha</a><a href="#s-pacote">O que chega</a><a href="#s-enderecos">Teste e uso de verdade</a><a href="#s-responder">Responder o aviso</a><a href="#s-quiz">Relógio ou aviso</a><a href="#s-ligar">Antes de ligar</a><a href="#s-levar">Para levar</a>
   </nav>
 </header>
 
@@ -274,7 +274,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-perguntar" aria-labelledby="h-perguntar">
   <span class="eyebrow">Perguntar ou ser avisado</span>
   <h2 id="h-perguntar">Um dia de trabalho, dos dois jeitos</h2>
-  <p class="intro">Num dia de oito horas chegam cinco pagamentos. Na linha de cima, a sua automação pergunta de tempos em tempos "chegou alguma coisa?". Na de baixo, ela é avisada. <strong>Mude o intervalo das perguntas e rode o dia.</strong> Os pontos vazios são perguntas que voltaram com "nada novo".</p>
+  <p class="intro">Pense em quem atualiza a caixa de entrada a cada cinco minutos esperando um e-mail importante, comparado a quem liga a notificação do celular. Num dia de oito horas chegam cinco pagamentos. Na linha de cima, a sua automação pergunta de tempos em tempos "chegou alguma coisa?". Na de baixo, ela é avisada. <strong>Mude o intervalo das perguntas e rode o dia.</strong> Os pontos vazios são perguntas que voltaram com "nada novo".</p>
   <div class="wh-ctrl">
     <div class="wh-range"><label for="whInt">Perguntar a cada</label><input type="range" id="whInt" min="5" max="120" step="5" value="30"><output id="whIntO" for="whInt">30 min</output></div>
     <button type="button" class="btn primary" id="whRun">Rodar o dia</button>
@@ -335,7 +335,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pacote" aria-labelledby="h-pacote">
   <span class="eyebrow">O que chega</span>
   <h2 id="h-pacote">O aviso chega num pacote, e os seus dados estão num compartimento</h2>
-  <p class="intro">Quando alguém preenche o formulário de contato, o seu endereço recebe um pacote com várias partes. <strong>O que a pessoa preencheu não fica solto: fica dentro de uma parte chamada corpo.</strong> Clique nas partes para ver o que cada uma traz e como se chega nela.</p>
+  <p class="intro">Pense na encomenda que chega na recepção: tem a etiqueta de fora, o remetente, e o que interessa vem dentro da caixa. Quando alguém preenche o formulário de contato, o seu endereço recebe um pacote com várias partes, escrito em JSON (o formato de ficha, com nome e valor, que os sistemas trocam). <strong>O que a pessoa preencheu não fica solto: fica dentro de uma parte chamada corpo.</strong> Clique nas partes para ver o que cada uma traz e como se chega nela.</p>
   <div class="wh-pkg">
     <div class="wh-json" role="group" aria-label="O pacote que chegou">
       <div>{</div>
@@ -355,9 +355,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 <!-- 4 -->
 <section class="sec" id="s-enderecos" aria-labelledby="h-enderecos">
-  <span class="eyebrow">Dois endereços</span>
+  <span class="eyebrow">Teste e uso de verdade</span>
   <h2 id="h-enderecos">O endereço de teste não é o de verdade</h2>
-  <p class="intro">Muitas ferramentas de automação dão dois endereços para a mesma campainha. <strong>Um serve para testar enquanto você monta; o outro, para o uso de verdade.</strong> O erro mais comum é cadastrar o de teste no outro sistema e esquecer de trocar. Ligue e desligue as duas chaves e toque a campainha.</p>
+  <p class="intro">É como o ramal provisório que a telefonia instala antes de liberar a linha: serve para conferir, mas se ele for impresso no cartão de visita, depois ninguém atende. Muitas ferramentas de automação dão dois endereços para a mesma campainha. <strong>Um serve para testar enquanto você monta; o outro, o de produção, para o uso de verdade.</strong> O erro mais comum é cadastrar o de teste no outro sistema e esquecer de trocar. Ligue e desligue as duas chaves e toque a campainha.</p>
   <div class="wh-urls">
     <div class="wh-panel">
       <div class="wh-url"><span class="eyebrow">Endereço de teste</span><br>https://sua-ferramenta.exemplo/<b>webhook-test</b>/contato</div>
@@ -382,7 +382,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-responder" aria-labelledby="h-responder">
   <span class="eyebrow">Responder o aviso</span>
   <h2 id="h-responder">Quem tocou a campainha pode estar esperando uma resposta</h2>
-  <p class="intro">Na maior parte das vezes basta dizer "recebi". Às vezes, quem chamou precisa de conteúdo de volta: o chat espera o texto para mostrar, o site espera a confirmação. <strong>E quem espera desiste depois de um tempo</strong>, em geral perto de trinta segundos. Escolha o jeito de responder e o tempo que o seu fluxo leva.</p>
+  <p class="intro">É a ligação para a central de atendimento: quem liga espera ouvir “anotado”, ou fica na linha esperando a resposta, e desliga se demorar demais. Na maior parte das vezes basta dizer "recebi". Às vezes, quem chamou precisa de conteúdo de volta: o chat espera o texto para mostrar, o site espera a confirmação. <strong>E quem espera desiste depois de um tempo</strong>, em geral perto de trinta segundos. Escolha o jeito de responder e o tempo que o seu fluxo leva.</p>
   <div class="seg" role="group" aria-label="Jeito de responder">
     <button type="button" data-r="ja" aria-pressed="true">"Recebi", na hora</button>
     <button type="button" data-r="fim" aria-pressed="false">Espera o fluxo inteiro</button>
@@ -419,7 +419,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-quiz" aria-labelledby="h-quiz">
   <span class="eyebrow">Relógio ou aviso</span>
   <h2 id="h-quiz">Gatilho agendado ou webhook?</h2>
-  <p class="intro">Toda automação começa com um gatilho. <strong>Agendado</strong> é o relógio: roda num horário fixo. <strong>Webhook</strong> é o aviso: roda quando outro sistema chama. A pergunta que decide é "o que dispara isto: uma hora do dia, ou algo que aconteceu lá fora?".</p>
+  <p class="intro">Na rotina do escritório, umas tarefas têm hora marcada, como o relatório de segunda, e outras começam porque algo aconteceu, como o cliente ligar. Toda automação começa com um gatilho (o que a faz começar). <strong>Agendado</strong> é o relógio: roda num horário fixo. <strong>Webhook</strong> é o aviso: roda quando outro sistema chama. A pergunta que decide é "o que dispara isto: uma hora do dia, ou algo que aconteceu lá fora?".</p>
   <div class="wh-quiz" id="whQuiz"></div>
   <p class="wh-score" id="whScore" aria-live="polite"></p>
 </section>
@@ -428,7 +428,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-ligar" aria-labelledby="h-ligar">
   <span class="eyebrow">Antes de ligar</span>
   <h2 id="h-ligar">Seis conferências antes de deixar a campainha ligada</h2>
-  <p class="intro">Quase todo problema com webhook aparece depois que tudo funcionou no teste. <strong>Marque o que já conferiu</strong>, e copie a lista para usar no seu próximo fluxo.</p>
+  <p class="intro">É a conferência antes de enviar uma proposta: anexo, destinatário e valor. O erro não aparece no rascunho; aparece depois que saiu. Quase todo problema com webhook aparece depois que tudo funcionou no teste. <strong>Marque o que já conferiu</strong>, e copie a lista para usar no seu próximo fluxo.</p>
   <div class="wh-check" id="whCheck"></div>
   <p class="wh-prog" id="whProg" aria-live="polite"></p>
   <div class="copy">
@@ -523,12 +523,12 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
   /* 2 · campainha */
   var ST = [
-    { t: 'Uma vez só: você entrega o seu endereço', b: [3, 1], a: [0], d: 'A sua ferramenta de automação cria um endereço único. Você copia e cola no outro sistema, no campo de avisos. É como deixar o número da campainha com o porteiro.' },
+    { t: 'Uma vez só: você entrega o seu endereço', b: [3, 1], a: [0], d: 'A sua ferramenta de automação (o programa onde você monta o fluxo, a sequência de passos que roda sozinha) cria um endereço único. Você copia e cola no outro sistema, no campo de avisos. É como deixar o número da campainha com o porteiro.' },
     { t: 'Algo acontece do lado de lá', b: [1], a: [], d: 'Um pagamento é aprovado, alguém preenche o formulário, uma reunião é marcada. Você não está olhando, e não precisa estar.' },
     { t: 'O outro sistema toca a campainha', b: [1, 2], a: [1], d: 'Ele manda um pedido para o seu endereço, com os dados do que aconteceu dentro. Na hora, sem ninguém perguntar.' },
     { t: 'O seu fluxo acorda com o que chegou', b: [3], a: [2], d: 'O aviso vira o primeiro passo do fluxo. Os dados que vieram no pacote ficam disponíveis para os passos seguintes.' },
     { t: 'O endereço responde "recebi"', b: [2], a: [3], d: 'Quem tocou fica sabendo que o aviso chegou. Se ninguém responder, muitos sistemas tentam de novo mais tarde, e o aviso pode chegar duas vezes.' },
-    { t: 'O fluxo segue o trabalho', b: [3], a: [4], d: 'Registrar na planilha, avisar a equipe, ou pedir mais detalhes ao outro sistema pela <a href="./automacao--api.html">API</a>: o aviso costuma ser curto, e a busca completa vem depois.' }
+    { t: 'O fluxo segue o trabalho', b: [3], a: [4], d: 'Registrar na planilha, avisar a equipe, ou pedir mais detalhes ao outro sistema pela <a href="./automacao--api.html">API</a> (a porta por onde um sistema faz pedidos ao outro): o aviso costuma ser curto, e a busca completa vem depois.' }
   ];
   var sc = 1, SN = ST.length;
   var bx = document.querySelectorAll('.wh-box'), ar = document.querySelectorAll('.wh-arr'), lb = document.querySelectorAll('.wh-lbl');

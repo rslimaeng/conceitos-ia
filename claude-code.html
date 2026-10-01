@@ -254,9 +254,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <span class="eyebrow">Visão geral</span>
   <h1>Claude Code</h1>
   <p class="sub">O modelo não lembra de nada entre uma conversa e outra. Quem lembra é a pasta.</p>
-  <p class="lead">No chat, cada conversa começa do zero: você sobe o arquivo de novo, explica de novo quem é, corrige de novo o mesmo nome. O Claude Code é <a href="./llm-e-harness.html">o mesmo modelo com outro aplicativo em volta</a>: ele trabalha dentro de uma pasta do seu computador, lê o que está lá e grava o resultado lá. <strong>O que você quer que continue valendo amanhã precisa estar escrito num arquivo que ele lê na hora certa.</strong> Esta família mostra que arquivos são esses, quem escreve cada um e quando cada um é lido.</p>
+  <p class="lead">No chat, cada conversa começa do zero: você sobe o arquivo de novo, explica de novo quem é, corrige de novo o mesmo nome. O Claude Code é <a href="./llm-e-harness.html">o mesmo modelo com outro aplicativo em volta</a> (o modelo é a IA que escreve as respostas, a mesma do chat): ele trabalha dentro de uma pasta do seu computador, lê o que está lá e grava o resultado lá. <strong>O que você quer que continue valendo amanhã precisa estar escrito num arquivo que ele lê na hora certa.</strong> Esta família mostra que arquivos são esses, quem escreve cada um e quando cada um é lido.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-ordem">A ordem de chegada</a><a href="#s-segunda">Segunda-feira, duas vezes</a><a href="#s-resolve">Que arquivo resolve</a><a href="#s-tres">Três arquivos primeiro</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-ordem">O que ele lê, e em que ordem</a><a href="#s-segunda">A mesma rotina, no chat e na pasta</a><a href="#s-resolve">Cada incômodo tem um arquivo</a><a href="#s-tres">Três arquivos para começar</a>
   </nav>
 </header>
 
@@ -279,9 +279,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 1 -->
 <section class="sec" id="s-ordem" aria-labelledby="h-ordem">
-  <span class="eyebrow">A ordem de chegada</span>
+  <span class="eyebrow">O que ele lê, e em que ordem</span>
   <h2 id="h-ordem">Antes da sua primeira palavra, ele já leu quatro coisas</h2>
-  <p class="intro">Toda conversa aberta numa pasta de projeto começa do mesmo jeito. <strong>Cada tipo de arquivo tem a sua vez, e é a vez que decide o que ele sabe quando você pede.</strong> Avance e veja a mesa da conversa enchendo, na ordem.</p>
+  <p class="intro">Pense na recepção de um hotel no começo do expediente: antes do primeiro hóspede, o recepcionista lê o regulamento da rede, o aviso da gerência daquele hotel e o livro de ocorrências da noite, sempre nessa ordem. Toda conversa aberta numa pasta de projeto começa do mesmo jeito. <strong>Cada tipo de arquivo tem a sua vez, e é a vez que decide o que ele sabe quando você pede.</strong> Na fila aparecem nomes que voltam em toda a família: o CLAUDE.md é o manual, um arquivo de texto simples (é isso que o .md no fim do nome quer dizer); o 00-aqui-paramos.md é a memória, o arquivo que diz onde o trabalho parou; uma skill é um passo a passo guardado para uma tarefa; e o handoff é a passagem de turno por escrito no fim da sessão, que é cada rodada de trabalho numa conversa. Avance e veja a mesa da conversa enchendo, na ordem.</p>
   <div class="stepbar"><span class="eyebrow" id="orLab">Passo 1 de 6</span><div class="nav"><button type="button" class="btn" id="orPrev">← Anterior</button><button type="button" class="btn primary" id="orNext">Próximo →</button></div></div>
   <div class="scroll">
     <svg class="wide" viewBox="0 0 760 380" role="img" aria-labelledby="or-t" xmlns="http://www.w3.org/2000/svg">
@@ -315,9 +315,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 2 -->
 <section class="sec" id="s-segunda" aria-labelledby="h-segunda">
-  <span class="eyebrow">Segunda-feira, duas vezes</span>
+  <span class="eyebrow">A mesma rotina, no chat e na pasta</span>
   <h2 id="h-segunda">A ata da reunião semanal, três semanas seguidas, no chat e na pasta</h2>
-  <p class="intro">A mesma rotina: toda segunda, a transcrição da reunião vira ata. <strong>No chat, o que você ensinou fica na conversa e morre com ela. Na pasta, cada correção vira arquivo, uma vez.</strong> Troque o modo e avance as semanas.</p>
+  <p class="intro">É a diferença entre ditar o mesmo pedido de compra por telefone toda semana e deixar um formulário-padrão já preenchido com o que não muda. A mesma rotina: toda segunda, a transcrição da reunião vira ata. <strong>No chat, o que você ensinou fica na conversa e morre com ela. Na pasta, cada correção vira arquivo, uma vez.</strong> Troque o modo e avance as semanas.</p>
   <div class="sg-ctrl">
     <div class="seg" role="group" aria-label="Onde a rotina acontece">
       <button type="button" data-sgm="chat" aria-pressed="true">Só no chat</button>
@@ -341,20 +341,20 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 3 -->
 <section class="sec" id="s-resolve" aria-labelledby="h-resolve">
-  <span class="eyebrow">Que arquivo resolve</span>
+  <span class="eyebrow">Cada incômodo tem um arquivo</span>
   <h2 id="h-resolve">Oito incômodos de quem usa só o chat, e o arquivo que acaba com cada um</h2>
-  <p class="intro">Cada página desta família é um tipo de arquivo, com um dono e uma hora de ser lido. <strong>O jeito de saber qual você precisa é olhar o incômodo, não a ferramenta.</strong> Escolha o arquivo para cada situação.</p>
+  <p class="intro">Num escritório, cada papel tem o seu setor: nota fiscal vai para o financeiro, contrato vai para o jurídico, e ninguém leva tudo ao diretor. Cada página desta família é um tipo de arquivo, com um dono e uma hora de ser lido. <strong>O jeito de saber qual você precisa é olhar o incômodo, não a ferramenta.</strong> Escolha o arquivo para cada situação.</p>
   <div class="qz" id="rsQuiz"></div>
   <p class="qz-score" id="rsScore" aria-live="polite"></p>
 </section>
 
 <!-- 4 -->
 <section class="sec" id="s-tres" aria-labelledby="h-tres">
-  <span class="eyebrow">Três arquivos primeiro</span>
+  <span class="eyebrow">Três arquivos para começar</span>
   <h2 id="h-tres">Pasta, manual e memória. O resto espera o trabalho pedir</h2>
-  <p class="intro">Não se monta tudo no primeiro dia. <strong>Três peças já mudam a segunda-feira:</strong> um lugar para cada coisa, um manual que ele lê sozinho e um arquivo que diz onde o trabalho parou.</p>
+  <p class="intro">Para pôr ordem nas contas de um setor, ninguém começa comprando um sistema de contabilidade: começa com uma pasta para as notas, uma folha com as regras e uma lista do que falta pagar. Aqui também não se monta tudo no primeiro dia. <strong>Três peças já mudam a segunda-feira:</strong> um lugar para cada coisa, um manual que ele lê sozinho e um arquivo que diz onde o trabalho parou.</p>
   <div class="three">
-    <div class="card focal"><span class="eyebrow">01 · a pasta</span><h3>Um lugar para cada coisa</h3><p>A transcrição bruta de um lado, o que ele produz do outro. Pasta nasce quando o trabalho pede, não antes.</p><p class="go"><a href="./claude-code--pasta.html">Pasta com dono →</a></p></div>
+    <div class="card focal"><span class="eyebrow">01 · a pasta</span><h3>Um lugar para cada coisa</h3><p>A transcrição bruta (do jeito que o gravador entregou) de um lado, o que ele produz do outro. Pasta nasce quando o trabalho pede, não antes.</p><p class="go"><a href="./claude-code--pasta.html">Pasta com dono →</a></p></div>
     <div class="card focal"><span class="eyebrow">02 · o manual</span><h3>Umas cinco linhas de <code>CLAUDE.md</code></h3><p>O papel dele ali, o que tem em cada pasta, duas regras que não mudam e a linha que manda ler a memória.</p><p class="go"><a href="./claude-code--claude-md.html">O manual de chegada →</a></p></div>
     <div class="card focal"><span class="eyebrow">03 · a memória</span><h3>Estado, decidido, próximo passo, em aberto</h3><p>Quatro blocos num arquivo que ele lê no começo e reescreve no fim. Um retrato, não um diário.</p><p class="go"><a href="./claude-code--onde-paramos.html">Onde paramos →</a></p></div>
   </div>
@@ -444,7 +444,7 @@ Antes de criar, me mostre o que vai escrever em cada arquivo e espere o meu OK.<
 
   /* 1 · a ordem de chegada */
   var OR = [
-    { t: 'O manual do usuário', d: 'Lido antes da sua primeira palavra, em qualquer pasta que você abrir. Diz quem você é, como gosta de receber o trabalho e o que não se faz nunca. No chat, é a explicação que você digitaria no começo de toda conversa.', go: 'Na família: <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
+    { t: 'O manual do usuário', d: 'Lido antes da sua primeira palavra, em qualquer pasta que você abrir. Fica em ~/.claude/, a pasta de configurações do Claude no seu computador. Diz quem você é, como gosta de receber o trabalho e o que não se faz nunca. No chat, é a explicação que você digitaria no começo de toda conversa.', go: 'Na família: <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
     { t: 'O manual da pasta, e os das pastas de cima', d: 'Depois vem o CLAUDE.md da pasta onde a conversa abriu, e os das pastas acima dela. As camadas se somam: o do projeto herda o da área e não repete o que já está lá. Cada uma carrega só o que é verdade nela.', go: 'Na família: <a href="./claude-code--claude-md.html">o manual de chegada</a>.' },
     { t: 'A memória, lida porque o manual manda', d: 'O arquivo que diz onde o trabalho está e qual é o próximo passo. Ele não é lido por conta própria: uma linha do manual manda ler. Sem essa linha, o arquivo fica esquecido na pasta. Uma memória boa cabe em umas sessenta linhas; uma que nunca foi podada chegou a 2.396.', go: 'Na família: <a href="./claude-code--onde-paramos.html">onde paramos</a>.' },
     { t: 'As etiquetas das skills, e só elas', d: 'De cada skill instalada entram o nome e a descrição. O passo a passo continua fechado até o pedido bater com a descrição. É por isso que dá para ter muitas sem pesar a conversa.', go: 'Mais em: <a href="./assistente--skill.html">skill</a>.' },

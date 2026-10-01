@@ -97,6 +97,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 .chip-model { font-family: var(--font-mono); font-size: 12px; border: 1px solid var(--border-strong); border-radius: 4px; padding: 2px 8px; color: var(--text-muted); white-space: nowrap; }
 .seen-note { color: var(--text-muted); font-size: .98rem; }
 .harness { border: 1.5px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 16px; display: grid; gap: 14px; }
+.harness[hidden] { display: none; } /* o display: grid acima vence o hidden do navegador; sem isto a aba "O que você vê" não esconde nada */
 .harness-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
 .harness-head .eyebrow { color: var(--accent); }
 .parts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -256,13 +257,14 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
   <span class="eyebrow">Fundamento · a base das sete famílias</span>
   <h1>LLM e harness</h1>
   <p class="sub">Por que o mesmo modelo faz coisas diferentes em cada aplicativo</p>
-  <p class="lead">Uma LLM só gera texto. Tudo o que você vê uma IA fazer, como pesquisar na web, salvar um arquivo ou acender uma luz, vem do sistema que existe em volta dela. Esse sistema se chama <strong>harness</strong>.</p>
+  <p class="lead">Uma LLM (sigla em inglês para grande modelo de linguagem: o programa treinado para escrever texto) só gera texto. Tudo o que você vê uma IA fazer, como pesquisar na web, salvar um arquivo ou acender uma luz, vem do sistema que existe em volta dela. Esse sistema se chama <strong>harness</strong>, palavra inglesa para arreio: a peça que liga o cavalo à carroça.</p>
 </header>
 
 <!-- A · O MODELO -->
 <section class="sec" aria-labelledby="h-modelo">
   <span class="eyebrow">O modelo</span>
   <h2 id="h-modelo">Uma LLM recebe texto e devolve texto</h2>
+  <p class="intro">Pense num redator terceirizado que só recebe e devolve texto por e-mail: escreve muito bem, mas não entra no seu sistema, não salva nada no seu computador e não aperta botão nenhum na empresa.</p>
   <div class="io">
     <div class="io-card"><span class="eyebrow">Texto que entra</span><p>Escreva um e-mail de cobrança educado para o Marcos.</p></div>
     <span class="io-arrow" aria-hidden="true">→</span>
@@ -283,7 +285,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 <section class="sec" aria-labelledby="h-app">
   <span class="eyebrow">O aplicativo</span>
   <h2 id="h-app">Entre você e o modelo existe um sistema</h2>
-  <p class="intro">O aplicativo parece uma conversa direta com a IA. Por baixo, existe um sistema pronto que liga o app ao modelo. É o <strong>harness</strong>: ele define o que o modelo pode fazer, o que não pode e quais ferramentas ele pode acionar.</p>
+  <p class="intro">Quem liga para a central de atendimento fala com a atendente, mas por trás dela há o roteiro, o sistema de cadastro e a lista do que ela pode resolver. O aplicativo parece uma conversa direta com a IA. Por baixo, existe um sistema pronto que liga o app ao modelo (no exemplo, o Opus, um dos modelos da Claude). É o <strong>harness</strong>: ele define o que o modelo pode fazer, o que não pode e quais ferramentas ele pode acionar.</p>
 
   <div class="seg" role="group" aria-label="Camada do aplicativo">
     <button type="button" id="viewSeeBtn" aria-pressed="false">O que você vê</button>
@@ -315,7 +317,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 <section class="sec" aria-labelledby="h-fluxo">
   <span class="eyebrow">O fluxo</span>
   <h2 id="h-fluxo">O que acontece quando você pede uma pesquisa</h2>
-  <p class="intro">Siga o pedido “quem é o presidente atual da Argentina?” do seu teclado até a resposta. Repare em quem escreve texto e em quem executa.</p>
+  <p class="intro">É o caminho de um pedido de compra numa empresa: quem precisa escreve o pedido, o setor de compras confere se aquilo está liberado, e é ele quem compra. Siga o pedido “quem é o presidente atual da Argentina?” do seu teclado até a resposta. Repare em quem escreve texto e em quem executa.</p>
 
   <div class="stepbar">
     <div class="dots" id="dots" role="group" aria-label="Passos do fluxo"></div>
@@ -413,9 +415,9 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 
 <!-- D · O TESTE -->
 <section class="sec" aria-labelledby="h-teste">
-  <span class="eyebrow">O teste</span>
+  <span class="eyebrow">Mesmo modelo, outras ferramentas</span>
   <h2 id="h-teste">Mude o harness, mude o que a IA faz</h2>
-  <p class="intro">Ligue e desligue as ferramentas do harness e faça o mesmo pedido de novo. O modelo é sempre o mesmo.</p>
+  <p class="intro">Um estagiário com acesso ao sistema de pedidos emite o pedido; sem o acesso, ele só consegue dizer que não consegue. A pessoa é a mesma. Ligue e desligue as ferramentas do harness e faça o mesmo pedido de novo. O modelo é sempre o mesmo. Duas ferramentas pedem tradução: o <strong>terminal</strong> é a janela onde se digitam comandos para o computador, e “rodar os testes” é pedir a ele a conferência automática que diz se um programa ainda funciona.</p>
 
   <div class="sim">
     <div class="panel focal">
@@ -456,9 +458,9 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
 
 <!-- D2 · SEGUNDO EXEMPLO -->
 <section class="sec" aria-labelledby="h-code">
-  <span class="eyebrow">Segundo exemplo</span>
+  <span class="eyebrow">O Claude Code por dentro</span>
   <h2 id="h-code">Claude Code é outro harness</h2>
-  <p class="intro">O Claude Code também é um harness em volta de um modelo da Claude. O que muda é o que o harness oferece: ele foi feito para trabalhar dentro de um projeto no seu computador.</p>
+  <p class="intro">É a mesma pessoa trocando de crachá: com o da recepção, atende visitante; com o do almoxarifado, mexe no estoque. O Claude Code também é um harness em volta de um modelo da Claude. O que muda é o que o harness oferece: ele foi feito para trabalhar dentro de um projeto no seu computador.</p>
   <div class="vs">
     <div class="vs-card">
       <h3>App de chat (ex.: Claude Web)</h3>
@@ -471,7 +473,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
     <div class="vs-card focal">
       <h3>Claude Code</h3>
       <dl>
-        <div><dt>Interface</dt><dd>Terminal, app desktop ou editor de código.</dd></div>
+        <div><dt>Interface</dt><dd>Terminal, app desktop (o programa instalado no computador) ou editor de código (o programa onde se escreve software).</dd></div>
         <div><dt>Ferramentas</dt><dd>Ler e editar arquivos, executar comandos no terminal e buscar na web.</dd></div>
         <div><dt>Serve para</dt><dd>Construir e alterar coisas dentro de uma pasta de projeto.</dd></div>
       </dl>

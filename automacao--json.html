@@ -311,7 +311,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-tipos" aria-labelledby="h-tipos">
   <span class="eyebrow">Cinco tipos de linha</span>
   <h2 id="h-tipos">Toda linha da ficha é de um destes cinco tipos</h2>
-  <p class="intro">Você não precisa decorar os nomes em inglês que a ferramenta mostra. Precisa <strong>reconhecê-los quando aparecerem</strong>, e saber que o primeiro é palavra e o segundo é quantidade. Clique em cada um.</p>
+  <p class="intro">Num formulário impresso, nem todo espaço é igual: tem o de escrever o nome, o de valor em reais, o de marcar sim ou não. O JSON separa do mesmo jeito. Você não precisa decorar os nomes em inglês que a ferramenta (o programa de automação onde você vê o JSON) mostra. Precisa <strong>reconhecê-los quando aparecerem</strong>, e saber que o primeiro é palavra e o segundo é quantidade. Clique em cada um.</p>
   <div class="jt-cards" role="group" aria-label="Os cinco tipos">
     <button type="button" class="jt-card" data-t="s" aria-pressed="true"><span class="sym">"…"</span><b>Palavra</b><span>com aspas</span></button>
     <button type="button" class="jt-card" data-t="n" aria-pressed="false"><span class="sym">32</span><b>Quantidade</b><span>sem aspas</span></button>
@@ -326,7 +326,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-aspas" aria-labelledby="h-aspas">
   <span class="eyebrow">Texto ou número</span>
   <h2 id="h-aspas">A única regra: eu somaria dois desses?</h2>
-  <p class="intro">CPF, CEP, telefone e número do pedido são feitos de algarismos, e ninguém soma dois deles: <strong>são etiqueta, e etiqueta é palavra</strong>. Idade, preço e dias de atraso, somados, significam alguma coisa: são quantidade. O computador não consegue decidir isso sozinho; quem decide é você, pelo uso. Classifique os oito.</p>
+  <p class="intro">É a mesma diferença entre o ramal e o saldo: os dois são números, mas só um entra na soma do mês. CPF, CEP, telefone e número do pedido são feitos de algarismos, e ninguém soma dois deles: <strong>são etiqueta, e etiqueta é palavra</strong>. Idade, preço e dias de atraso, somados, significam alguma coisa: são quantidade. O computador não consegue decidir isso sozinho; quem decide é você, pelo uso. Classifique os oito.</p>
   <div class="jq-grid" id="jqGrid"></div>
   <p class="jq-score" id="jqScore" aria-live="polite"></p>
 </section>
@@ -335,7 +335,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-soma" aria-labelledby="h-soma">
   <span class="eyebrow">Quando 10 + 5 dá 105</span>
   <h2 id="h-soma">Somar duas palavras cola uma na outra</h2>
-  <p class="intro">Se um sistema manda o valor como palavra, o próximo passo não faz conta: <strong>junta os pedaços</strong>. E a comparação "maior que 18" nem começa. Mude os valores e o tipo de cada um.</p>
+  <p class="intro">É o que acontece quando a planilha recebe valores colados como texto: a soma do rodapé sai errada, e ninguém percebe de cara. Se um sistema manda o valor como palavra, o próximo passo (a etapa seguinte da automação) não faz conta: <strong>junta os pedaços</strong>. E a comparação "maior que 18" nem começa. Mude os valores e o tipo de cada um.</p>
   <div class="js-calc">
     <div class="js-in">
       <div class="js-val"><label for="jsA">Valor A</label><input type="text" id="jsA" value="10" maxlength="8" autocomplete="off"></div>
@@ -358,7 +358,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-dentro" aria-labelledby="h-dentro">
   <span class="eyebrow">Ficha dentro da ficha</span>
   <h2 id="h-dentro">Para chegar num valor, vá de fora para dentro, separando por ponto</h2>
-  <p class="intro">Um pedido de uma loja tem o cliente, e o cliente tem o endereço. Os itens são uma lista, e cada item é uma ficha. <strong>Abra e feche as partes, e clique num valor</strong> para ver o caminho até ele. É a mesma lógica de pasta dentro de pasta no computador.</p>
+  <p class="intro">Pense no endereço de uma correspondência interna: prédio, andar, sala, mesa. Cada nível fica dentro do anterior, e se faltar um, a carta não chega. Um pedido de uma loja tem o cliente, e o cliente tem o endereço. Os itens são uma lista, e cada item é uma ficha. <strong>Abra e feche as partes, e clique num valor</strong> para ver o caminho até ele. É a mesma lógica de pasta dentro de pasta no computador.</p>
   <div class="jx-grid">
     <div class="jx-tree" id="jxTree" role="group" aria-label="Explorador do pedido"></div>
     <div class="jx-det" id="jxDet" aria-live="polite"></div>
@@ -370,7 +370,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-lista" aria-labelledby="h-lista">
   <span class="eyebrow">Tudo chega em lista</span>
   <h2 id="h-lista">Três fichas numa lista, e o passo que roda três vezes</h2>
-  <p class="intro">Uma planilha de 50 linhas chega ao passo seguinte como uma lista de 50 fichas, e o passo roda <strong>uma vez para cada uma</strong>, sozinho. Mesmo quando aparece "1 item", ele está dentro de uma lista. Troque a visão e rode o passo.</p>
+  <p class="intro">É a mala direta do editor de texto: uma carta-modelo, uma planilha com 50 nomes, e sai uma carta para cada linha, sem ninguém mandar repetir. Uma planilha de 50 linhas chega ao passo seguinte como uma lista de 50 fichas, e o passo roda <strong>uma vez para cada uma</strong>, sozinho. Mesmo quando aparece "1 item", ele está dentro de uma lista. Troque a visão e rode o passo.</p>
   <div class="seg" role="group" aria-label="Visão">
     <button type="button" data-lv="tab" aria-pressed="true">Ver como tabela</button>
     <button type="button" data-lv="json" aria-pressed="false">Ver como JSON</button>
@@ -391,7 +391,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-calado" aria-labelledby="h-calado">
   <span class="eyebrow">O erro que não avisa</span>
   <h2 id="h-calado">Tudo verde, e o resultado errado</h2>
-  <p class="intro">Erro que aparece é fácil: a ferramenta avisa e você conserta. <strong>O caro é o que passa calado</strong>: o e-mail vai para quem não devia, o cliente satisfeito cai na lista dos insatisfeitos. Quase sempre é a regra das aspas aparecendo de outro jeito. Abra cada cartão.</p>
+  <p class="intro">É como o boleto pago com o valor errado: o banco aceita, o comprovante sai, e o problema só aparece no fechamento do mês. Erro que aparece é fácil: a ferramenta avisa e você conserta. <strong>O caro é o que passa calado</strong>: o e-mail vai para quem não devia, o cliente satisfeito cai na lista dos insatisfeitos. Quase sempre é a regra das aspas aparecendo de outro jeito. Abra cada cartão.</p>
   <div class="jc-cards" id="jcCards"></div>
 </section>
 
@@ -399,7 +399,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pedir" aria-labelledby="h-pedir">
   <span class="eyebrow">Pedir para a IA</span>
   <h2 id="h-pedir">Ninguém escreve essa ficha do zero</h2>
-  <p class="intro">Nem quem programa. O que se faz é descrever em português o que você quer guardar, <strong>pedir para a IA montar o formato, e conferir a resposta olhando as aspas</strong>. Dois pedidos prontos: um para montar, outro para quando a ferramenta recusar. Veja também como escrever pedidos na página <a href="./prompt.html">Prompt</a>.</p>
+  <p class="intro">Funciona como contrato de aluguel: ninguém redige do zero, pede um modelo e confere as cláusulas que importam. Com o JSON, nem quem programa escreve do zero. O que se faz é descrever em português o que você quer guardar, <strong>pedir para a IA montar o formato, e conferir a resposta olhando as aspas</strong>. Dois pedidos prontos: um para montar, outro para quando a ferramenta recusar. Veja também como escrever pedidos na página <a href="./prompt.html">Prompt</a>.</p>
   <div class="jp-lib">
     <div class="jp-tabs" id="jpTabs" role="tablist" aria-label="Pedidos"></div>
     <div class="jp-pane" id="jpPane" role="tabpanel"></div>
@@ -587,7 +587,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   }
   function showLeaf(path, v) {
     var k = kind(v);
-    var extra = k === 'vazio' ? 'Não foi preenchido. Não é zero: uma conta ou comparação com ele dá errado sem avisar.' : (path.indexOf('[') > -1 ? 'Passa por uma lista: o número entre colchetes é a posição, contando do zero.' : (path.split('.').length > 2 ? 'Três níveis: pedido, cliente, endereço. Se algum cadastro não tiver endereço, este caminho quebra.' : 'Um valor direto, a um passo da raiz.'));
+    var extra = k === 'vazio' ? 'Não foi preenchido. Não é zero: uma conta ou comparação com ele dá errado sem avisar.' : (path.indexOf('[') > -1 ? 'Passa por uma lista: o número entre colchetes é a posição, contando do zero.' : (path.split('.').length > 2 ? 'Três níveis: pedido, cliente, endereço. Se algum cadastro não tiver endereço, este caminho quebra.' : 'Um valor direto, a um passo do começo da ficha.'));
     det.innerHTML = '<span class="eyebrow">O caminho até aqui</span><div class="jx-path">' + esc(path) + '</div><p><b>Valor:</b> <code>' + esc(JSON.stringify(v)) + '</code> · <b>tipo:</b> ' + k + '</p><p class="hint">' + extra + '</p>';
   }
   var root = document.createElement('ul'); root.appendChild(build(PED, '', null));
@@ -627,7 +627,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   var CC = [
     { et: 'sim escrito por extenso', t: 'O cliente satisfeito caiu na lista errada', ln: '"satisfeito": "true"', m: 'Um sistema de fora mandou <code>"true"</code> entre aspas. Virou palavra, e a regra que espera sim ou não trata como se não fosse sim.', f: 'Confira as aspas no JSON do passo anterior. Sim e não, sem aspas.' },
     { et: 'vazio não é zero', t: 'O pedido sumiu do filtro "valor abaixo de 100"', ln: '"valor": null', m: 'O campo chegou vazio. Vazio não vale zero: vale nada, e comparar nada com um número dá falso. O item sai do filtro sem reclamar.', f: 'Trate o vazio antes de comparar: decida o que ele deve valer.' },
-    { et: 'o quadrinho não existe', t: 'Funcionou em 40 cadastros e parou no 41º', ln: 'cliente.endereco.cidade', m: 'O caminho funciona enquanto o endereço está lá. No cadastro em que a pessoa não preencheu endereço, o fluxo quebra nessa linha.', f: 'Teste com uma ficha incompleta antes de ligar o fluxo.' },
+    { et: 'o quadrinho não existe', t: 'Funcionou em 40 cadastros e parou no 41º', ln: 'cliente.endereco.cidade', m: 'O caminho funciona enquanto o endereço está lá. No cadastro em que a pessoa não preencheu endereço, o fluxo (a automação montada) quebra nessa linha.', f: 'Teste com uma ficha incompleta antes de ligar o fluxo.' },
     { et: 'a ferramenta obedece o tipo', t: 'Você digitou 85 e saiu "85"', ln: '"nota": "85"', m: 'O campo foi criado como palavra, e a ferramenta não adivinha o que você quis dizer, nem avisa. A comparação "nota maior que 70" falha em silêncio.', f: 'Escolha o tipo na hora de criar o campo, ou converta antes de comparar.' }
   ];
   var cc = document.getElementById('jcCards');

@@ -259,15 +259,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">Cada coisa que você quer que a IA saiba tem um lugar, e o lugar decide quando ela lê</p>
   <p class="lead">A mesma frase pode ser digitada no pedido, guardada nas instruções, empacotada num procedimento ou buscada na hora num sistema. <strong>Não existe o lugar melhor: existe o lugar certo para aquela frase.</strong> E quem escolhe o lugar não é a importância da regra, é uma pergunta: ela precisa estar à mão sempre, às vezes, ou nunca?</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-acessos">Quatro acessos</a><a href="#s-lugares">O mapa</a><a href="#s-classificar">Classifique</a><a href="#s-pilha">Elas se somam</a><a href="#s-mesa">Por que não tudo junto</a><a href="#s-memoria">Regra, fato e lembrança</a><a href="#s-tranca">A regra que não é texto</a>
+    <a href="#s-acessos">Quatro níveis de acesso</a><a href="#s-lugares">Onde guardar cada coisa</a><a href="#s-classificar">Oito regras, quatro lugares</a><a href="#s-pilha">Todas as regras valem juntas</a><a href="#s-mesa">Por que não pôr tudo nas instruções</a><a href="#s-memoria">Regra, fato e lembrança</a><a href="#s-tranca">Quando a regra vira trava</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-acessos" aria-labelledby="h-acessos">
-  <span class="eyebrow">Quatro acessos</span>
+  <span class="eyebrow">Quatro níveis de acesso</span>
   <h2 id="h-acessos">O mesmo modelo, com crachás diferentes</h2>
-  <p class="intro">Conversa, projeto, pasta e rotina não são quatro ferramentas para aprender uma por uma. É a mesma IA, <strong>com acesso a mais ou a menos do seu trabalho</strong>. O crachá não a deixa mais competente: decide de quanta coisa ela chega perto sem você trazer na mão. Clique em cada anel.</p>
+  <p class="intro">Na empresa, o crachá de visitante, o de funcionário e a chave do arquivo abrem portas diferentes para a mesma pessoa. Conversa, projeto, pasta e rotina não são quatro ferramentas para aprender uma por uma. É a mesma IA, o mesmo modelo (o motor que gera as respostas), <strong>com acesso a mais ou a menos do seu trabalho</strong>. O crachá não a deixa mais competente: decide de quanta coisa ela chega perto sem você trazer na mão. Clique em cada anel.</p>
   <div class="ac-wrap">
     <div class="scroll">
       <svg viewBox="0 0 560 330" role="img" aria-labelledby="ac-t" xmlns="http://www.w3.org/2000/svg" style="min-width:420px">
@@ -286,9 +286,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 2 -->
 <section class="sec" id="s-lugares" aria-labelledby="h-lugares">
-  <span class="eyebrow">O mapa</span>
+  <span class="eyebrow">Onde guardar cada coisa</span>
   <h2 id="h-lugares">Sempre, às vezes, nunca, e uma quarta coluna que não é lugar</h2>
-  <p class="intro">Os nomes mudam de ferramenta para ferramenta e de versão para versão. <strong>A coluna em que cada lugar cai não muda.</strong> Clique em qualquer um para ver o que guardar ali, quando é lido e quanto custa.</p>
+  <p class="intro">No escritório, o regimento fica no mural, o manual de um processo fica na estante, e o extrato se puxa do banco na hora: ninguém pendura o extrato no mural. Com a IA, os nomes desses lugares mudam de ferramenta para ferramenta e de versão para versão. <strong>A coluna em que cada lugar cai não muda.</strong> Clique em qualquer um para ver o que guardar ali, quando é lido e quanto custa.</p>
   <div class="mp" id="mpMap"></div>
   <div class="panel" id="mpPanel" aria-live="polite"></div>
   <p class="hint">Um exemplo de como o nome muda: as instruções do trabalho são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
@@ -297,18 +297,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 3 -->
 <section class="sec" id="s-classificar" aria-labelledby="h-classificar">
-  <span class="eyebrow">Classifique</span>
+  <span class="eyebrow">Oito regras, quatro lugares</span>
   <h2 id="h-classificar">Oito regras de uma área comercial</h2>
-  <p class="intro">Responda só a pergunta. <strong>O lugar aparece sozinho na resposta.</strong> Uma delas admite duas respostas defensáveis, e a explicação diz qual.</p>
+  <p class="intro">É a pergunta do almoxarife ao receber material: isso sai todo dia, de vez em quando, ou fica no depósito até alguém pedir? Responda só a pergunta. <strong>O lugar aparece sozinho na resposta.</strong> Uma delas admite duas respostas defensáveis, e a explicação diz qual.</p>
   <div class="qz" id="clQuiz"></div>
   <p class="qz-score" id="clScore" aria-live="polite"></p>
 </section>
 
 <!-- 4 -->
 <section class="sec" id="s-pilha" aria-labelledby="h-pilha">
-  <span class="eyebrow">Elas se somam</span>
+  <span class="eyebrow">Todas as regras valem juntas</span>
   <h2 id="h-pilha">As camadas não obedecem hierarquia: são lidas juntas</h2>
-  <p class="intro">A regra da empresa, as suas preferências, as instruções do trabalho e o arquivo da pasta chegam coladas uma na outra. <strong>Enquanto falam de coisas diferentes, funciona. Quando duas falam da mesma coisa e discordam, ela obedece uma, e você não controla qual.</strong></p>
+  <p class="intro">O regulamento da empresa, a norma do setor e o combinado da equipe valem ao mesmo tempo; se dois dizem o contrário, cada um segue um, e ninguém sabe qual. Com a IA é igual: a regra da empresa, as suas preferências, as instruções do trabalho e o arquivo da pasta chegam coladas uma na outra. <strong>Enquanto falam de coisas diferentes, funciona. Quando duas falam da mesma coisa e discordam, ela obedece uma, e você não controla qual.</strong></p>
   <div class="seg" role="group" aria-label="Estado das camadas">
     <button type="button" data-pl="ok" aria-pressed="true">Cada camada no seu assunto</button>
     <button type="button" data-pl="clash" aria-pressed="false">Duas camadas se contradizem</button>
@@ -324,9 +324,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 5 -->
 <section class="sec" id="s-mesa" aria-labelledby="h-mesa">
-  <span class="eyebrow">Por que não tudo junto</span>
+  <span class="eyebrow">Por que não pôr tudo nas instruções</span>
   <h2 id="h-mesa">O mesmo conteúdo pesa diferente conforme a hora em que é lido</h2>
-  <p class="intro">Colar os doze passos do fechamento nas instruções funciona por uma semana. Depois, <strong>o procedimento fica na mesa em toda conversa</strong>, e você pede um e-mail curto e recebe oito seções numeradas. Guardado como procedimento, só a etiqueta fica à vista.</p>
+  <p class="intro">Se toda reunião começasse com a leitura em voz alta de todos os manuais da empresa, ninguém ouviria a pauta. Colar os doze passos do fechamento do mês nas instruções funciona por uma semana. Depois, <strong>o procedimento fica na mesa em toda conversa</strong>, e você pede um e-mail curto e recebe oito seções numeradas. Guardado como procedimento, só a etiqueta (o nome e uma linha dizendo para que serve) fica à vista.</p>
   <div class="scroll">
     <svg viewBox="0 0 720 250" role="img" aria-labelledby="ms-t" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
       <title id="ms-t">Ocupação da mesa em três casos: quarenta procedimentos guardados só com a etiqueta à vista; um deles aberto porque a tarefa pediu; os mesmos quarenta colados nas instruções, ocupando quase tudo</title>
@@ -341,14 +341,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
       <text class="ms-b" x="292" y="224">tudo, sempre, inclusive no e-mail curto</text>
     </svg>
   </div>
-  <p class="hint">A forma, não a medida. O mecanismo é o do <a href="./assistente--skill.html">verbete skill</a>: na largada, entram só nome e descrição de cada procedimento; o conteúdo abre quando a tarefa bate. E a mesa em si tem tamanho fixo, como mostra <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+  <p class="hint">A forma, não a medida. O mecanismo é o do <a href="./assistente--skill.html">verbete skill</a>: na largada, entram só nome e descrição de cada procedimento; o conteúdo abre quando a tarefa bate. E a mesa em si tem tamanho fixo, como mostra <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (quanto texto ela consegue ter à vista de uma vez).</p>
 </section>
 
 <!-- 6 -->
 <section class="sec" id="s-memoria" aria-labelledby="h-memoria">
   <span class="eyebrow">Regra, fato e lembrança</span>
   <h2 id="h-memoria">O que você mandou, o que mudou, e o que ela lembrou</h2>
-  <p class="intro">Três coisas parecem a mesma e moram em lugares diferentes. <strong>Regra prescreve comportamento e fica. Fato descreve algo que pode mudar. Lembrança é o resumo que a própria IA faz das conversas.</strong></p>
+  <p class="intro">Numa equipe, há o regulamento assinado, o quadro de avisos que muda toda semana e a lembrança de cada um sobre a última reunião: só o primeiro você pode cobrar. Com a IA, três coisas parecem a mesma e moram em lugares diferentes. <strong>Regra prescreve comportamento e fica. Fato descreve algo que pode mudar. Lembrança é o resumo que a própria IA faz das conversas.</strong></p>
   <div class="tablewrap"><table class="vtable">
     <tr><th></th><th>A instrução</th><th>O caderno de fatos</th><th>A memória automática</th></tr>
     <tr><td>Quem escreve</td><td>Você, linha por linha</td><td>Você, ou ela quando você diz “lembre disso”</td><td>Ela, resumindo sozinha</td></tr>
@@ -369,9 +369,9 @@ Quando eu disser "lembre disso", escreva no <i>[caderno de fatos]</i> na hora e 
 
 <!-- 7 -->
 <section class="sec" id="s-tranca" aria-labelledby="h-tranca">
-  <span class="eyebrow">A regra que não é texto</span>
+  <span class="eyebrow">Quando a regra vira trava</span>
   <h2 id="h-tranca">O porteiro lê o regulamento; a catraca não lê nada</h2>
-  <p class="intro">Tudo o que é texto é lido e interpretado por quem decide, e quem decide erra em alguma frequência. Caixa alta e negrito mudam a sua confiança, não o mecanismo. <strong>A pergunta que separa: se ela esquecer isso uma vez em cem, qual o tamanho do estrago?</strong></p>
+  <p class="intro">Num pagamento grande, ninguém confia só no aviso “confira antes de pagar”: exige-se a segunda assinatura. Tudo o que é texto é lido e interpretado por quem decide, e quem decide erra em alguma frequência. Caixa alta e negrito mudam a sua confiança, não o mecanismo. <strong>A pergunta que separa: se ela esquecer isso uma vez em cem, qual o tamanho do estrago?</strong></p>
   <div class="tr-calc">
     <div class="card">
       <div class="field"><label for="trAc">Quantas vezes em cada mil ela cumpre a regra</label><div class="row"><input type="range" id="trAc" min="900" max="999" value="990"><output id="trAcO">990</output></div></div>

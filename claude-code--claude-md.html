@@ -257,17 +257,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <span class="eyebrow">8.2 · 2 de 7</span>
   <h1>CLAUDE.md</h1>
   <p class="sub">O manual que o Claude lê antes da sua primeira mensagem, em toda conversa</p>
-  <p class="lead">No chat, cada conversa começa do zero: você reexplica quem é, o que é o projeto e como quer o resultado. O CLAUDE.md é essa explicação <strong>escrita uma vez</strong>, num arquivo de texto dentro da pasta. A frase que você digitava toda vez passa a ser lida sozinha. E o manual bom não nasce pronto: <strong>ele cresce com os erros que você corrigiu duas vezes, e emagrece quando você poda</strong>.</p>
+  <p class="lead">No chat, cada conversa começa do zero: você reexplica quem é, o que é o projeto e como quer o resultado. O CLAUDE.md é essa explicação <strong>escrita uma vez</strong>, num arquivo de texto simples (é isso que o .md no fim do nome quer dizer) dentro da pasta. Quem lê é o Claude Code: o Claude trabalhando dentro de uma pasta do seu computador, lendo e gravando arquivos ali. A frase que você digitava toda vez passa a ser lida sozinha. E o manual bom não nasce pronto: <strong>ele cresce com os erros que você corrigiu duas vezes, e emagrece quando você poda</strong>.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-camadas">Três camadas</a><a href="#s-corte">Usuário ou pasta</a><a href="#s-partes">Por dentro do manual</a><a href="#s-linha">Duas correções</a><a href="#s-tirar">Se eu tirar</a><a href="#s-historia">Como é, não como foi</a><a href="#s-poda">252 para 83</a><a href="#s-comecar">Cinco linhas</a>
+    <a href="#s-camadas">Três manuais que se somam</a><a href="#s-corte">Vale sempre ou só aqui</a><a href="#s-partes">Por dentro do manual</a><a href="#s-linha">A segunda correção vira regra</a><a href="#s-tirar">Cada linha precisa fazer falta</a><a href="#s-historia">Regra de hoje, não histórico</a><a href="#s-poda">O manual que só cresce</a><a href="#s-comecar">O primeiro manual</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-camadas" aria-labelledby="h-camadas">
-  <span class="eyebrow">Três camadas</span>
+  <span class="eyebrow">Três manuais que se somam</span>
   <h2 id="h-camadas">O Claude lê três manuais, de cima para baixo, e soma os três</h2>
-  <p class="intro">Existe um manual seu, que vale em qualquer pasta. Um da pasta-mãe, que vale para tudo dentro de uma área (um cliente, uma frente de trabalho). E um de cada projeto. Abrindo a conversa dentro do projeto, <strong>os três entram juntos, antes de você digitar nada</strong>. Por isso o do projeto herda os de cima e não precisa repeti-los. Ligue e desligue as camadas; depois, faça o do projeto repetir uma regra do seu com outra redação.</p>
+  <p class="intro">Funciona como as normas de uma empresa com filiais: o código de conduta vale em todas, a norma da regional vale para as lojas dela, e o aviso na parede vale só naquela loja; ninguém reimprime o código de conduta no aviso da parede. Aqui é igual. Existe um manual seu, que vale em qualquer pasta (ele fica em <code>~/.claude/</code>, a pasta de configurações do Claude no seu computador). Um da pasta-mãe, a pasta que guarda as outras, que vale para tudo dentro de uma área (um cliente, uma frente de trabalho). E um de cada projeto. Abrindo a conversa dentro do projeto, <strong>os três entram juntos, antes de você digitar nada</strong>. Por isso o do projeto herda os de cima e não precisa repeti-los. Ligue e desligue as camadas; depois, faça o do projeto repetir uma regra do seu com outra redação.</p>
   <div class="cm-lay">
     <div class="chart">
       <div class="seg" role="group" aria-label="Camadas ligadas">
@@ -292,18 +292,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
       <div class="verdict" id="cmVer"></div>
     </div>
   </div>
-  <p class="hint">Os tamanhos são de uma área de trabalho real (84, 270 e 102 linhas); os nomes de pasta e as regras são exemplos. A mesma lógica de camadas que se somam aparece no chat e nos projetos da ferramenta: <a href="./assistente--onde-a-regra-mora.html#s-pilha">onde a regra mora</a>.</p>
+  <p class="hint">Os tamanhos são de uma área de trabalho real (84, 270 e 102 linhas); os nomes de pasta e as regras são exemplos. A mesma lógica de camadas que se somam aparece no chat e nos projetos da ferramenta: <a href="./assistente--onde-a-regra-mora.html#s-pilha">onde a regra mora</a>. O <code>00-aqui-paramos.md</code> da última linha do projeto é a memória: o arquivo que diz onde o trabalho parou.</p>
 </section>
 
 <!-- 2 -->
 <section class="sec" id="s-corte" aria-labelledby="h-corte">
-  <span class="eyebrow">Usuário ou pasta</span>
+  <span class="eyebrow">Vale sempre ou só aqui</span>
   <h2 id="h-corte">Cada camada só carrega o que é verdade nela</h2>
-  <p class="intro">O corte é uma pergunta: <strong>isso vale em qualquer pasta, ou só aqui?</strong> O jeito de trabalhar (escopo da entrega, mudança pequena, dizer o que é dado e o que é opinião) vai no seu. O que só é verdade num lugar (o modelo, o caminho, o que ler primeiro, o que não se pode tocar) vai no da pasta.</p>
+  <p class="intro">Pense no que vai no seu contrato de trabalho e no que vai na ordem de serviço de um cliente: um vale em qualquer trabalho, a outra só naquele. O corte é uma pergunta: <strong>isso vale em qualquer pasta, ou só aqui?</strong> O jeito de trabalhar (escopo da entrega, mudança pequena, dizer o que é dado e o que é opinião) vai no seu. O que só é verdade num lugar (o modelo de documento, o caminho dos arquivos, o que ler primeiro, o que não se pode tocar) vai no da pasta.</p>
   <div class="tablewrap">
     <table class="vtable">
       <tr><th>Vai no do usuário</th><th>Vai no da pasta</th></tr>
-      <tr><td>disposição que vale em qualquer pasta: o que entregar e o que não, mudar só o que foi pedido, sinalizar a confiança</td><td>o que só é verdade ali: o modelo, o contrato, o caminho dos arquivos, o que nunca muda, o que ler primeiro</td></tr>
+      <tr><td>disposição que vale em qualquer pasta: o que entregar e o que não, mudar só o que foi pedido, sinalizar a confiança</td><td>o que só é verdade ali: o modelo de documento, o contrato, o caminho dos arquivos, o que nunca muda, o que ler primeiro</td></tr>
     </table>
   </div>
   <div class="qz" id="crQuiz"></div>
@@ -316,7 +316,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-partes" aria-labelledby="h-partes">
   <span class="eyebrow">Por dentro do manual</span>
   <h2 id="h-partes">O que um manual de projeto costuma ter, em 102 linhas</h2>
-  <p class="intro">Um exemplo curto e bom, medido: <strong>102 linhas, cinco partes</strong>. Clique em cada uma. O conteúdo abaixo é de um projeto inventado (as propostas comerciais de uma área); a forma é a do exemplo real.</p>
+  <p class="intro">O manual de integração que o RH entrega costuma ter sempre as mesmas partes: o que a empresa faz, o que ler primeiro, como as coisas andam, onde fica cada coisa, a quem recorrer. O do Claude também. Um exemplo curto e bom, medido: <strong>102 linhas, cinco partes</strong>. Clique em cada uma. O conteúdo abaixo é de um projeto inventado (as propostas comerciais de uma área); a forma é a do exemplo real.</p>
   <div class="cm-parts">
     <div class="cm-file" id="ptFile" role="group" aria-label="As cinco partes">
       <button type="button" data-pt="0" aria-pressed="true"><b>01</b><span>Propósito e escopo</span></button>
@@ -337,9 +337,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 4 -->
 <section class="sec" id="s-linha" aria-labelledby="h-linha">
-  <span class="eyebrow">Duas correções</span>
+  <span class="eyebrow">A segunda correção vira regra</span>
   <h2 id="h-linha">O manual nasce do erro: uma linha entra quando você corrigiu a mesma coisa duas vezes</h2>
-  <p class="intro">No chat, a correção fica na conversa e morre com ela. Por isso o mesmo erro volta amanhã. <strong>Corrigiu duas vezes a mesma coisa, vira uma linha.</strong> E a linha descreve comportamento, não intenção; de preferência, com um número que dá para contar. Troque a redação e veja o que o Claude consegue conferir sozinho, no fim de uma sessão longa.</p>
+  <p class="intro">Norma interna costuma nascer de um erro que se repetiu: o segundo boleto pago em duplicidade vira uma linha no procedimento do financeiro. No chat, a correção fica na conversa e morre com ela. Por isso o mesmo erro volta amanhã. <strong>Corrigiu duas vezes a mesma coisa, vira uma linha.</strong> E a linha descreve comportamento, não intenção; de preferência, com um número que dá para contar. Troque a redação e veja o que o Claude consegue conferir sozinho, no fim de uma sessão longa (horas de trabalho na mesma conversa).</p>
   <div class="seg" role="group" aria-label="Como a linha foi escrita">
     <button type="button" data-rw="int" aria-pressed="true">Escrita como intenção</button>
     <button type="button" data-rw="com" aria-pressed="false">Escrita como comportamento</button>
@@ -351,18 +351,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 5 -->
 <section class="sec" id="s-tirar" aria-labelledby="h-tirar">
-  <span class="eyebrow">Se eu tirar</span>
+  <span class="eyebrow">Cada linha precisa fazer falta</span>
   <h2 id="h-tirar">Cada linha passa por uma pergunta: se eu tirar, ele erra?</h2>
-  <p class="intro">Se não erra, a linha sai. Se é algo que muda toda semana, não é manual: é estado, e vai para a memória. Dez linhas candidatas de um manual de projeto. <strong>O manual de usuário deste exemplo já diz “responda em português, frases curtas”.</strong></p>
+  <p class="intro">Formulário com campo que ninguém preenche só atrasa quem usa; na revisão, o campo sai. Aqui, a revisão é a pergunta do título, linha por linha. Se não erra, a linha sai. Se é algo que muda toda semana, não é manual: é estado, e vai para a memória. Dez linhas candidatas de um manual de projeto. <strong>O manual de usuário deste exemplo já diz “responda em português, frases curtas”.</strong></p>
   <div class="qz" id="trQuiz"></div>
   <p class="qz-score" id="trScore" aria-live="polite"></p>
 </section>
 
 <!-- 6 -->
 <section class="sec" id="s-historia" aria-labelledby="h-historia">
-  <span class="eyebrow">Como é, não como foi</span>
+  <span class="eyebrow">Regra de hoje, não histórico</span>
   <h2 id="h-historia">O manual diz como é. A história mora em outro lugar</h2>
-  <p class="intro">Três regras de manutenção, escritas no manual de uma área real, que dizem <strong>quem muda o quê sem perguntar</strong> e onde fica o registro da mudança.</p>
+  <p class="intro">O regimento do condomínio diz a regra que vale hoje; a assembleia que a mudou fica no livro de atas, não no regimento. Três regras de manutenção, escritas no manual de uma área real, que dizem <strong>quem muda o quê sem perguntar</strong> e onde fica o registro da mudança.</p>
   <div class="two">
     <div class="card"><span class="eyebrow">corrige sem perguntar</span><h3>Fato datado errado</h3><p>Caminho de arquivo que não existe mais, contador, versão, prazo sem dia. É manutenção: quem achou, corrige.</p></div>
     <div class="card focal"><span class="eyebrow">só sinaliza</span><h3>Contradição sobre uma decisão</h3><p>Se o manual diz uma coisa e o trabalho mostra outra sobre algo que alguém decidiu, não se resolve sozinho. O Claude aponta e você decide.</p></div>
@@ -377,9 +377,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 7 -->
 <section class="sec" id="s-poda" aria-labelledby="h-poda">
-  <span class="eyebrow">252 para 83</span>
+  <span class="eyebrow">O manual que só cresce</span>
   <h2 id="h-poda">O manual que só cresce passa a obedecer a regra velha</h2>
-  <p class="intro">Acrescentar é fácil; ninguém sente falta de uma linha nova. O problema aparece quando a regra nova convive com a velha que ela substituiu, e as duas estão lá. <strong>Mova os meses e troque o hábito.</strong></p>
+  <p class="intro">Sabe a pasta de procedimentos que ninguém revisa, com o aviso de 2019 ao lado do de 2024 que o contradiz? Quem chega não sabe qual vale. Acrescentar é fácil; ninguém sente falta de uma linha nova. O problema aparece quando a regra nova convive com a velha que ela substituiu, e as duas estão lá. <strong>Mova os meses e troque o hábito.</strong></p>
   <div class="chart">
     <div class="seg" role="group" aria-label="Hábito">
       <button type="button" data-hb="add" aria-pressed="true">Só acrescenta</button>
@@ -432,9 +432,9 @@ Não apague nada. Me mostre a lista e eu decido o que sai, o que fica e o que va
 
 <!-- 8 -->
 <section class="sec" id="s-comecar" aria-labelledby="h-comecar">
-  <span class="eyebrow">Cinco linhas</span>
+  <span class="eyebrow">O primeiro manual</span>
   <h2 id="h-comecar">O primeiro manual cabe em cinco linhas</h2>
-  <p class="intro">Comece pequeno: o papel do Claude ali, as pastas, duas regras que não mudam e a linha que manda ler a memória. <strong>O resto entra quando você corrigir alguma coisa pela segunda vez.</strong> Preencha e copie.</p>
+  <p class="intro">O primeiro procedimento de um setor costuma caber num lembrete colado no monitor: quem faz, onde ficam as coisas, os dois cuidados que não podem falhar. Comece pequeno: o papel do Claude ali, as pastas, duas regras que não mudam e a linha que manda ler a memória. <strong>O resto entra quando você corrigir alguma coisa pela segunda vez.</strong> Preencha e copie.</p>
   <div class="cm-build">
     <div class="cm-form">
       <label>Nome do projeto<input type="text" id="bdNome" value="Relatório semanal de vendas"></label>
@@ -456,7 +456,7 @@ modelos/: o relatório em branco</textarea></label>
   </div>
   <div class="three">
     <div class="card"><span class="eyebrow">01 · sem manual</span><h3>Pergunte o que ele sabe</h3><p>Abra o Claude Code na pasta, sem CLAUDE.md, e pergunte o que ele sabe sobre ela. É a linha de base.</p></div>
-    <div class="card focal"><span class="eyebrow">02 · cinco linhas</span><h3>Salve o arquivo acima</h3><p>Na raiz da pasta, com o nome CLAUDE.md, exatamente assim, em maiúsculas.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · cinco linhas</span><h3>Salve o arquivo acima</h3><p>Solto na pasta principal, fora de qualquer subpasta, com o nome CLAUDE.md, exatamente assim, em maiúsculas.</p></div>
     <div class="card"><span class="eyebrow">03 · conversa nova</span><h3>Faça a mesma pergunta</h3><p>A diferença entre as duas respostas é o manual trabalhando.</p></div>
   </div>
   <div class="copy">

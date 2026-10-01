@@ -267,7 +267,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <span class="eyebrow">7.1 · 1 de 3</span>
   <h1>API</h1>
   <p class="sub">Um sistema pedindo coisas a outro, por um balcão com regras</p>
-  <p class="lead">Quando a sua planilha busca a cotação do dia, quando o site mostra o frete antes de você pagar, quando uma automação cria um cliente no sistema de vendas: por trás existe um pedido de um sistema para outro. <strong>API é o balcão por onde esse pedido passa.</strong> Quem pede não entra na cozinha: pede o que está no cardápio, do jeito combinado, e recebe o prato ou um aviso de por que ele não veio.</p>
+  <p class="lead">Quando a sua planilha busca a cotação do dia, quando o site mostra o frete antes de você pagar, quando uma automação (uma sequência de passos que roda sozinha, também chamada de fluxo) cria um cliente no sistema de vendas: por trás existe um pedido de um sistema para outro. <strong>API é o balcão por onde esse pedido passa.</strong> Quem pede não entra na cozinha: pede o que está no cardápio, do jeito combinado, e recebe o prato ou um aviso de por que ele não veio.</p>
   <p class="fam">Família <a href="./automacao.html">Automação</a> · nesta família também: <a href="./automacao--webhook.html">Webhook</a> · <a href="./automacao--json.html">JSON</a></p>
   <nav class="toc" aria-label="Nesta página">
     <a href="#s-balcao">O balcão</a><a href="#s-pedido">Do que um pedido é feito</a><a href="#s-verbos">Os quatro verbos</a><a href="#s-simular">Faça um pedido</a><a href="#s-numero">O número que volta</a><a href="#s-cracha">O crachá</a><a href="#s-direcao">Puxar ou ser avisado</a><a href="#s-levar">Para levar</a>
@@ -278,7 +278,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-balcao" aria-labelledby="h-balcao">
   <span class="eyebrow">O balcão</span>
   <h2 id="h-balcao">Você não entra na cozinha: faz o pedido no balcão</h2>
-  <p class="intro">Pense num restaurante. Você tem fome, a cozinha tem a comida, e você não pode entrar lá. <strong>O garçom leva o pedido e traz o prato.</strong> Numa automação, você é o sistema que pede, a cozinha é o servidor da outra empresa, e o garçom é a API. Siga um pedido do começo ao fim.</p>
+  <p class="intro">Pense num restaurante. Você tem fome, a cozinha tem a comida, e você não pode entrar lá. <strong>O garçom leva o pedido e traz o prato.</strong> Numa automação, você é o sistema que pede, a cozinha é o servidor da outra empresa (o computador onde o sistema dela roda), e o garçom é a API. Siga um pedido do começo ao fim.</p>
   <div class="stepbar">
     <span class="eyebrow" id="apLab">Passo 1 de 6</span>
     <div class="nav"><button type="button" class="btn" id="apPrev">← Anterior</button><button type="button" class="btn primary" id="apNext">Próximo →</button></div>
@@ -312,7 +312,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pedido" aria-labelledby="h-pedido">
   <span class="eyebrow">Do que um pedido é feito</span>
   <h2 id="h-pedido">Cinco palavras leem quase toda documentação</h2>
-  <p class="intro">O garçom só entende pedido em formato fixo: pedido confuso, cozinha não entende, e volta erro. Este é um pedido real no formato, para uma loja de exemplo que quer os dados do cliente 42. <strong>Clique em cada parte.</strong></p>
+  <p class="intro">É como a requisição do almoxarifado: se faltar o setor ou o código do item, ela volta sem ser atendida. O garçom só entende pedido no formato fixo que a documentação (o manual que o serviço publica dizendo como pedir) descreve: pedido confuso, cozinha não entende, e volta erro. Este é um pedido real no formato, para uma loja de exemplo que quer os dados do cliente 42. <strong>Clique em cada parte.</strong></p>
   <div class="ap-anat">
     <div class="ap-req" role="group" aria-label="Partes do pedido e da resposta">
       <span class="lab">O pedido</span>
@@ -326,14 +326,14 @@ Content-Type: application/json</button></div>
     </div>
     <div class="ap-detail" id="apDet" aria-live="polite"></div>
   </div>
-  <p class="hint">Toda documentação decente mostra três coisas para cada operação: o endereço, o que ele aceita e como é a resposta. Procure primeiro a seção de início rápido, depois a de autenticação, depois o limite de pedidos.</p>
+  <p class="hint">Toda documentação decente mostra três coisas para cada operação: o endereço, o que ele aceita e como é a resposta. Procure primeiro a seção de início rápido, depois a de autenticação (como provar quem você é), depois o limite de pedidos.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-verbos" aria-labelledby="h-verbos">
   <span class="eyebrow">Os quatro verbos</span>
   <h2 id="h-verbos">Buscar, criar, mudar, apagar</h2>
-  <p class="intro">O verbo diz o que você quer que a cozinha faça. São quatro, e <strong>buscar e criar resolvem a maior parte do dia a dia</strong>. Troque o verbo e veja o que acontece com a tabela de clientes do outro lado.</p>
+  <p class="intro">Todo pedido ao setor de cadastro é um de quatro: consultar uma ficha, abrir uma nova, corrigir uma que existe ou dar baixa. O verbo diz o que você quer que a cozinha faça. São quatro, e <strong>buscar e criar resolvem a maior parte do dia a dia</strong>. Troque o verbo e veja o que acontece com a tabela de clientes do outro lado.</p>
   <div class="seg" role="group" aria-label="Verbo">
     <button type="button" data-v="get" aria-pressed="true">GET · buscar</button>
     <button type="button" data-v="post" aria-pressed="false">POST · criar</button>
@@ -357,7 +357,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-simular" aria-labelledby="h-simular">
   <span class="eyebrow">Faça um pedido</span>
   <h2 id="h-simular">Monte o pedido e veja o que a cozinha responde</h2>
-  <p class="intro">A loja de exemplo tem um cardápio pequeno: clientes, e um cliente pelo número. Monte o pedido, envie e <strong>leia o número antes de ler o resto</strong>. Tente tirar a credencial, pedir o cliente 999 ou mandar cinquenta pedidos de uma vez.</p>
+  <p class="intro">É como testar um formulário novo com a equipe antes de liberar: você erra de propósito para ver que aviso volta. A loja de exemplo tem um cardápio pequeno: clientes, e um cliente pelo número. Monte o pedido, envie e <strong>leia o número antes de ler o resto</strong>. Tente tirar a credencial, pedir o cliente 999 ou mandar cinquenta pedidos de uma vez.</p>
   <div class="ap-sim">
     <div class="ap-ctrl">
       <div class="row"><span class="eyebrow">Verbo</span>
@@ -393,7 +393,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-numero" aria-labelledby="h-numero">
   <span class="eyebrow">O número que volta</span>
   <h2 id="h-numero">Leia o número antes de mexer em qualquer coisa</h2>
-  <p class="intro">O erro mais caro não é o erro: é ver o aviso vermelho e refazer tudo sem ler o número. <strong>Cada número aponta para um lugar diferente.</strong> Diga o que você confere primeiro em cada caso.</p>
+  <p class="intro">Funciona como o aviso da transportadora: “endereço não encontrado” é problema de quem mandou; “atraso no centro de distribuição” é dela. O erro mais caro não é o erro: é ver o aviso vermelho e refazer tudo sem ler o número. <strong>Cada número aponta para um lugar diferente.</strong> Diga o que você confere primeiro em cada caso.</p>
   <div class="ap-quiz" id="apQuiz"></div>
   <p class="ap-score" id="apScore" aria-live="polite"></p>
 </section>
@@ -407,7 +407,7 @@ Content-Type: application/json</button></div>
     <button type="button" class="ap-cred" data-c="chave" aria-pressed="true"><span class="et">Chave de API</span><b>Um código que você cola</b><p>O serviço gera, você copia e guarda.</p></button>
     <button type="button" class="ap-cred" data-c="oauth" aria-pressed="false"><span class="et">Entrar com a conta</span><b>Você autoriza numa janela</b><p>O famoso "entrar com Google".</p></button>
     <button type="button" class="ap-cred" data-c="cab" aria-pressed="false"><span class="et">Cabeçalho próprio</span><b>A chave num campo com nome</b><p>Quando a API tem o seu próprio padrão.</p></button>
-    <button type="button" class="ap-cred rare" data-c="basic" aria-pressed="false"><span class="et">Usuário e senha</span><b>O jeito antigo</b><p>Aparece em sistema legado.</p></button>
+    <button type="button" class="ap-cred rare" data-c="basic" aria-pressed="false"><span class="et">Usuário e senha</span><b>O jeito antigo</b><p>Aparece em sistema antigo.</p></button>
   </div>
   <div class="ap-cdet" id="apCred" aria-live="polite"></div>
   <span class="eyebrow">Onde a chave mora</span>
@@ -425,7 +425,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-direcao" aria-labelledby="h-direcao">
   <span class="eyebrow">Puxar ou ser avisado</span>
   <h2 id="h-direcao">Pedir é uma direção; ser avisado é a outra</h2>
-  <p class="intro">Tudo nesta página é você indo buscar: o seu sistema liga para o garçom. Existe a direção contrária, em que <strong>o outro sistema toca a sua campainha</strong> quando algo acontece. A maior parte das automações usa as duas.</p>
+  <p class="intro">É a diferença entre ligar para o fornecedor perguntando se a mercadoria saiu e receber a mensagem dele quando ela sai. Tudo nesta página é você indo buscar: o seu sistema liga para o garçom. Existe a direção contrária, em que <strong>o outro sistema toca a sua campainha</strong> quando algo acontece. A maior parte das automações usa as duas.</p>
   <div class="ap-dir">
     <div class="ap-dcard"><span class="eyebrow">API · você puxa</span><span class="arrow">seu sistema → outro sistema</span><p>Você decide quando pedir: agora, toda manhã, quando alguém clicar. Serve para buscar, criar, mudar e apagar.</p></div>
     <div class="ap-dcard focal"><span class="eyebrow">Webhook · você é avisado</span><span class="arrow">outro sistema → seu sistema</span><p>O outro lado decide quando avisar: chegou um pagamento, alguém preencheu o formulário. Está na página <a href="./automacao--webhook.html">Webhook</a>.</p></div>
@@ -498,7 +498,7 @@ Content-Type: application/json</button></div>
     { t: 'O pedido sai pela internet até o balcão', b: [], a: [1], d: 'O pedido viaja do seu sistema até o endereço da API. Isso leva, em geral, menos de um segundo.' },
     { t: 'O garçom confere o formato e leva à cozinha', b: [2], a: [2], d: 'A API só aceita o que está no cardápio, a documentação. Pedido fora do formato volta daqui mesmo, com um número que começa com 4.' },
     { t: 'A cozinha confere o crachá e prepara', b: [3], a: [], d: 'O servidor confere se a credencial vale, consulta o que precisa e monta a resposta. Você não vê nada disso, e não precisa.' },
-    { t: 'A resposta volta: um número e o conteúdo', b: [], a: [3, 4], d: 'Sempre um <b>número</b> que resume o que aconteceu (200 é tudo certo) e, quase sempre, o <b>conteúdo</b> no formato <a href="./automacao--json.html">JSON</a>.' },
+    { t: 'A resposta volta: um número e o conteúdo', b: [], a: [3, 4], d: 'Sempre um <b>número</b> que resume o que aconteceu (200 é tudo certo) e, quase sempre, o <b>conteúdo</b> no formato <a href="./automacao--json.html">JSON</a>, uma ficha de texto com campos e valores.' },
     { t: 'O seu sistema usa o que voltou', b: [1], a: [], d: 'O conteúdo vira o dado do passo seguinte: vai para a planilha, para o e-mail, para a próxima decisão. O garçom já foi atender outra mesa.' }
   ];
   var cur = 1, N = ST.length;
@@ -522,7 +522,7 @@ Content-Type: application/json</button></div>
     verbo: { t: 'Verbo', tec: 'método', o: 'O que você quer que aconteça. GET é "me dá", o verbo de buscar.', r: 'É o "eu quero" do pedido: ver o cardápio, pedir um prato, trocar, cancelar.', c: 'Verbo errado volta recusado, mesmo com tudo o mais certo.' },
     end: { t: 'Endereço', tec: 'endpoint', o: 'Para onde vai o pedido. Cada operação tem o seu: um para a lista de clientes, outro para um cliente só.', r: 'É a mesa certa da cozinha certa.', c: 'O endereço da API não é o site da empresa. <code>loja-exemplo.com</code> é a vitrine; <code>api.loja-exemplo.com/clientes/42</code> é o balcão.' },
     param: { t: 'Parâmetros', tec: 'query params', o: 'Detalhes que vão grudados no endereço, depois do ponto de interrogação: quais campos, quantos itens, de qual cidade.', r: 'É o "sem cebola, porção pequena".', c: 'Tudo que vai no endereço fica visível e registrado. Dado sensível não vai aqui.' },
-    cab: { t: 'Cabeçalho', tec: 'header', o: 'A etiqueta do pedido: quem está pedindo (a credencial) e em que formato você está mandando.', r: 'É mostrar o crachá e dizer em que língua você fala.', c: 'Aqui aparece a chave. Num exemplo, ela é sempre <code>sua-chave-aqui</code>; a de verdade fica guardada no cofre da ferramenta.' },
+    cab: { t: 'Cabeçalho', tec: 'header', o: 'A etiqueta do pedido: quem está pedindo (a credencial) e em que formato você está mandando.', r: 'É mostrar o crachá e dizer em que língua você fala.', c: 'Aqui aparece a chave. Num exemplo, ela é sempre <code>sua-chave-aqui</code>; a de verdade fica guardada no cofre da ferramenta (a área de senhas protegidas do programa de automação).' },
     corpo: { t: 'Corpo', tec: 'body', o: 'O conteúdo do pedido. Quem busca, em geral, não manda corpo; quem cria ou muda, manda os dados do que quer criar.', r: 'É o recado escrito que acompanha o pedido.', c: 'Se você manda dados, diga no cabeçalho que eles estão em JSON, ou o outro lado lê tudo como texto solto.' },
     status: { t: 'Número da resposta', tec: 'status code', o: 'Um número de três algarismos que resume o que aconteceu. 200 é tudo certo; 201, criado.', r: 'É o garçom dizendo "saiu", "acabou" ou "a cozinha pegou fogo".', c: 'Leia o número antes de ler o resto. Ele diz se o problema é seu ou deles.' },
     resp: { t: 'Conteúdo da resposta', tec: 'response body', o: 'O prato: os dados que você pediu, quase sempre em JSON, prontos para o passo seguinte.', r: 'É o prato na mesa.', c: 'O formato do prato está no cardápio. Os valores mudam a cada pedido; o formato, não.' }
@@ -566,7 +566,7 @@ Content-Type: application/json</button></div>
   });
   var NAMES = { 200: 'OK', 201: 'Created · criado', 401: 'Unauthorized · sem permissão', 404: 'Not Found · não existe', 405: 'Method Not Allowed · verbo não serve', 429: 'Too Many Requests · devagar', 500: 'Internal Server Error · erro do outro lado' };
   function answer(burst) {
-    if (burst) return [429, 'Você passou do limite de pedidos. A cozinha pede para esperar. Numa automação que roda em lote, a saída é pôr uma pausa entre os pedidos.', { erro: 'limite de pedidos atingido', tente_de_novo_em_segundos: 60 }];
+    if (burst) return [429, 'Você passou do limite de pedidos. A cozinha pede para esperar. Numa automação que roda em lote (muitos itens de uma vez), a saída é pôr uma pausa entre os pedidos.', { erro: 'limite de pedidos atingido', tente_de_novo_em_segundos: 60 }];
     if (sim.k === 'fora') return [500, 'Começa com 5: o problema é do outro lado, não seu. Não mexa no pedido; tente de novo daqui a pouco.', { erro: 'erro interno' }];
     if (sim.c === 'nao') return [401, 'Faltou o crachá. Não é defeito do pedido nem da cozinha: confira a credencial, ou se ela expirou.', { erro: 'credencial ausente ou inválida' }];
     if (sim.e === '/clientes/999') return [404, 'O endereço não existe: não há cliente 999. Confira o endereço, letra por letra.', { erro: 'não encontrado' }];
@@ -618,7 +618,7 @@ Content-Type: application/json</button></div>
 
   /* 6 · credenciais */
   var CR = {
-    chave: { t: 'Chave de API', how: 'No site do serviço você gera um código comprido e cola no campo "chave" da sua ferramenta. Ela vai em cada pedido, no cabeçalho.', rec: 'Reconheça assim: o serviço diz "cole a sua chave" ou "gere um token".', c: 'Quase todo serviço mostra a chave <b>uma vez só</b>. Fechou a tela sem copiar, gere outra: a anterior não volta.' },
+    chave: { t: 'Chave de API', how: 'No site do serviço você gera um código comprido e cola no campo "chave" da sua ferramenta. Ela vai em cada pedido, no cabeçalho.', rec: 'Reconheça assim: o serviço diz "cole a sua chave" ou "gere um token" (outro nome para a chave).', c: 'Quase todo serviço mostra a chave <b>uma vez só</b>. Fechou a tela sem copiar, gere outra: a anterior não volta.' },
     oauth: { t: 'Entrar com a conta (OAuth)', how: 'Em vez de copiar código, abre uma janela do serviço, você entra com a sua conta e autoriza o que a ferramenta pode fazer: ler e-mails, criar eventos, editar planilhas.', rec: 'Reconheça assim: aparece um botão "entrar com" e uma lista do que você está autorizando.', c: 'A autorização pode expirar depois de muito tempo parada. O sintoma é o 401 de repente; a solução é entrar de novo.' },
     cab: { t: 'Cabeçalho próprio', how: 'A API pede a chave num campo com um nome que ela escolheu, como <code>X-API-Key</code>. Você guarda o nome do campo e o valor, juntos.', rec: 'Reconheça assim: a documentação mostra um exemplo com um nome de campo e <code>sua-chave-aqui</code> ao lado.', c: 'O nome do campo tem que ser exatamente o da documentação, com as mesmas maiúsculas e hífens.' },
     basic: { t: 'Usuário e senha', how: 'O jeito mais antigo: um usuário e uma senha que vão juntos em cada pedido.', rec: 'Reconheça assim: sistema antigo, interno, ou aviso de outro sistema que pede usuário e senha.', c: 'É o menos seguro dos quatro. Se o serviço oferece outro, prefira o outro.' }

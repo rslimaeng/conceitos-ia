@@ -274,9 +274,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
   <span class="eyebrow">Visão geral</span>
   <h1>Agente</h1>
   <p class="sub">O que muda quando o modelo ganha ferramentas, memória e um objetivo</p>
-  <p class="lead">Uma LLM recebe texto e devolve texto. <strong>Um agente é a mesma LLM com três coisas a mais: ferramentas para agir, memória para lembrar e um objetivo para saber quando terminou.</strong> Ele não segue um roteiro fixo: decide o próximo passo, faz, olha o resultado e decide de novo. E a maior parte do trabalho com IA não precisa dele.</p>
+  <p class="lead">Uma LLM (o modelo de linguagem, o motor que escreve as respostas no chat que você usa) recebe texto e devolve texto. <strong>Um agente é a mesma LLM com três coisas a mais: ferramentas para agir, memória para lembrar e um objetivo para saber quando terminou.</strong> Ele não segue um roteiro fixo: decide o próximo passo, faz, olha o resultado e decide de novo. E a maior parte do trabalho com IA não precisa dele.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-maos">Responder ou agir</a><a href="#s-laco">O laço</a><a href="#s-degraus">Chat, assistente, agente</a><a href="#s-precisa">Precisa de agente?</a><a href="#s-sem">IA sem agente</a><a href="#s-volta">O custo da volta</a><a href="#s-bolso">Antes de montar</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-maos">Responder ou agir</a><a href="#s-laco">As voltas do agente</a><a href="#s-degraus">Chat, assistente, agente</a><a href="#s-precisa">Precisa de agente?</a><a href="#s-sem">IA sem agente</a><a href="#s-volta">Quanto custa cada volta</a><a href="#s-bolso">Antes de montar</a>
   </nav>
 </header>
 
@@ -295,7 +295,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-maos" aria-labelledby="h-maos">
   <span class="eyebrow">Responder ou agir</span>
   <h2 id="h-maos">O mesmo pedido, com e sem as mãos</h2>
-  <p class="intro">O modelo é sempre o mesmo. Ligue e desligue as três coisas que fazem dele um agente e mande o mesmo pedido de novo. <strong>Repare no que acontece quando ele não tem ferramenta: ele escreve a frase de quem fez, e não faz.</strong></p>
+  <p class="intro">Pense numa secretária sem acesso à agenda: ela pode responder “marcado!” com toda a educação, e nada entra na agenda. Aqui, o modelo é sempre o mesmo. Ligue e desligue as três coisas que fazem dele um agente e mande o mesmo pedido de novo. <strong>Repare no que acontece quando ele não tem ferramenta: ele escreve a frase de quem fez, e não faz.</strong></p>
   <div class="sim">
     <div class="sim-ctrl">
       <div class="sim-sw" role="group" aria-label="O que o modelo tem">
@@ -317,9 +317,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <!-- 2 -->
 <section class="sec" id="s-laco" aria-labelledby="h-laco">
-  <span class="eyebrow">O laço</span>
+  <span class="eyebrow">As voltas do agente</span>
   <h2 id="h-laco">Pensar, agir, observar, e de novo</h2>
-  <p class="intro">Um fluxo comum segue os passos que alguém desenhou. O agente <strong>decide quantas voltas dar</strong>: pensa, pede uma ferramenta, lê o que voltou e decide se já dá para responder. Siga o pedido “o cliente Souza já recebeu a proposta? Se não, mande hoje”.</p>
+  <p class="intro">É o estagiário que resolve uma pendência ligando para um setor, ouvindo a resposta e decidindo para quem ligar depois: ninguém deu a ele a lista de ligações, só o objetivo. Um fluxo comum (a sequência de passos de uma automação) segue os passos que alguém desenhou. O agente <strong>decide quantas voltas dar</strong>: pensa, pede uma ferramenta, lê o que voltou e decide se já dá para responder. Esse ciclo se chama laço, e cada volta dele é uma chamada ao modelo: uma ida e volta de texto, que tem preço e tempo. Siga o pedido “o cliente Souza já recebeu a proposta? Se não, mande hoje”.</p>
   <div class="stepbar">
     <span class="eyebrow" id="lpLab">Passo 1 de 7</span>
     <span class="lp-count" id="lpCount">chamadas ao modelo: 0</span>
@@ -348,14 +348,14 @@ code { font-family: var(--font-mono); font-size: .88em; }
     </svg>
   </div>
   <div class="caption" id="lpCap" aria-live="polite"></div>
-  <p class="hint">Quem executa a ferramenta não é o modelo: é o sistema em volta dele. O modelo só escreve o pedido. Isso está desenhado em <a href="./llm-e-harness.html">LLM e harness</a>.</p>
+  <p class="hint">Quem executa a ferramenta não é o modelo: é o sistema em volta dele, que se chama harness. O modelo só escreve o pedido. Isso está desenhado em <a href="./llm-e-harness.html">LLM e harness</a>.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-degraus" aria-labelledby="h-degraus">
   <span class="eyebrow">Chat, assistente, agente</span>
   <h2 id="h-degraus">Três jeitos de usar o mesmo modelo</h2>
-  <p class="intro">Entre o chat solto e o agente existe um degrau que quase todo mundo já usa: <strong>a conversa preparada</strong>, com papel e material salvos, onde o pedido vira uma frase. Ela ainda não age fora da conversa. Clique em cada degrau.</p>
+  <p class="intro">É como passar trabalho a alguém de três jeitos: explicar tudo do zero a um freelancer a cada pedido, dar a um funcionário o manual com o modelo do relatório, ou dar a ele também as senhas dos sistemas. Entre o chat solto e o agente existe um degrau que quase todo mundo já usa: <strong>a conversa preparada</strong>, com papel e material salvos, onde o pedido vira uma frase. Ela ainda não age fora da conversa. Clique em cada degrau.</p>
   <div class="lad" role="group" aria-label="Os três degraus">
     <button type="button" data-l="0" aria-pressed="false"><span class="et">DEGRAU 1</span><b>Chat solto</b><small>você explica tudo, toda vez</small></button>
     <button type="button" data-l="1" aria-pressed="false"><span class="et">DEGRAU 2</span><b>Assistente preparado</b><small>papel e material salvos</small></button>
@@ -368,7 +368,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-precisa" aria-labelledby="h-precisa">
   <span class="eyebrow">Precisa de agente?</span>
   <h2 id="h-precisa">A pergunta que decide: ela precisa agir em algum lugar?</h2>
-  <p class="intro">Se a tarefa é <strong>transformar um texto que já chegou</strong> (tirar dados, pôr num balde, encurtar, ler o tom), um passo simples de IA resolve, mais barato e mais previsível. Agente é para quando é preciso buscar, mexer em sistema ou conversar lembrando. Classifique as seis.</p>
+  <p class="intro">Para revisar um contrato que já está na sua mesa, ninguém contrata um despachante: ele só entra quando alguém precisa ir ao banco, ao fornecedor, à prefeitura. Se a tarefa é <strong>transformar um texto que já chegou</strong> (tirar dados, pôr num balde, encurtar, ler o tom), um passo simples de IA (um único pedido ao modelo, sem ferramenta) resolve, mais barato e mais previsível. Agente é para quando é preciso buscar, mexer em sistema ou conversar lembrando. Classifique as seis.</p>
   <div class="aq" id="aq"></div>
   <p class="aq-score" id="aqScore" aria-live="polite"></p>
 </section>
@@ -377,7 +377,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-sem" aria-labelledby="h-sem">
   <span class="eyebrow">IA sem agente</span>
   <h2 id="h-sem">Quatro trabalhos que só transformam o que já chegou</h2>
-  <p class="intro">Cada um faz uma coisa só, sempre do mesmo jeito, sem laço e sem inventar ação. Clique para ver o que entra, o que sai e onde cada um tropeça. O quinto é o único que pede agente.</p>
+  <p class="intro">Lembra o trabalho da triagem do correio interno: abrir o envelope, anotar remetente e valor, separar por setor, resumir para o chefe. Tudo acontece com o papel que já chegou. Cada um faz uma coisa só, sempre do mesmo jeito, sem laço e sem inventar ação. Clique para ver o que entra, o que sai e onde cada um tropeça. O quinto é o único que pede agente.</p>
   <div class="jobs" role="group" aria-label="Os cinco trabalhos">
     <button type="button" data-j="0" aria-pressed="true"><span class="et">EXTRAIR</span><b>Tirar campos</b><small>texto bagunçado vira dado</small></button>
     <button type="button" data-j="1" aria-pressed="false"><span class="et">CLASSIFICAR</span><b>Pôr num balde</b><small>uma das categorias que você deu</small></button>
@@ -391,9 +391,9 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <!-- 6 -->
 <section class="sec" id="s-volta" aria-labelledby="h-volta">
-  <span class="eyebrow">O custo da volta</span>
+  <span class="eyebrow">Quanto custa cada volta</span>
   <h2 id="h-volta">Cada volta do laço é mais uma chamada ao modelo</h2>
-  <p class="intro">Um passo simples chama o modelo uma vez. O agente chama uma vez para decidir e <strong>mais uma a cada ferramenta que resolve usar</strong>. Em teste, ninguém sente. Em volume, aparece na conta e no tempo de espera.</p>
+  <p class="intro">Funciona como o motoboy pago por corrida: uma entrega é uma corrida; um recado que exige ir, voltar com a resposta e ir de novo são três. Um passo simples chama o modelo uma vez. O agente chama uma vez para decidir e <strong>mais uma a cada ferramenta que resolve usar</strong>. Em teste, ninguém sente. Em volume, aparece na conta e no tempo de espera.</p>
   <div class="cost">
     <div class="cost-in">
       <div class="cost-f"><label for="cTools">Ferramentas que o agente usa por pedido</label><div class="row"><input type="range" id="cTools" min="0" max="5" value="3"><output id="oTools">3</output></div></div>
@@ -421,7 +421,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <section class="sec" id="s-bolso" aria-labelledby="h-bolso">
   <span class="eyebrow">Antes de montar</span>
   <h2 id="h-bolso">Três perguntas, e só uma precisa ser sim</h2>
-  <p class="intro">Agente é o certo quando pelo menos uma destas é sim. Se as três são não, use um passo simples de IA. Leve a lista para a próxima vez que alguém disser “vamos colocar um agente”.</p>
+  <p class="intro">É o checklist que o gestor passa antes de abrir uma vaga nova: se a tarefa cabe em quem já está no time, a vaga não abre. Agente é o certo quando pelo menos uma destas é sim. Se as três são não, use um passo simples de IA. Leve a lista para a próxima vez que alguém disser “vamos colocar um agente”.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">Pergunta de bolso</span><button type="button" class="btn" id="bolsoCopy">Copiar</button></div>
     <pre id="bolsoTxt"><b>Isto precisa de agente?</b>

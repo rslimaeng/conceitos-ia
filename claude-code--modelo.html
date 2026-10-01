@@ -279,7 +279,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">O formato mora num arquivo: o Claude segue o modelo em vez de adivinhar a cada pedido.</p>
   <p class="lead">O <strong>modelo</strong> é um documento de verdade que mostra como a saída tem de ficar: a ata de exemplo, a planilha com as colunas certas, a apresentação com os slides certos. O <strong>padrão visual</strong> diz as cores, as fontes e a logo. Os dois são arquivos guardados na pasta do projeto. Com eles ali, você para de descrever o formato em cada conversa, e <strong>a correção de formato passa a ser feita uma vez, no arquivo</strong>.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-semanas">Duas semanas de atas</a><a href="#s-ata">A ata de referência</a><a href="#s-forma">Texto de um lado, forma do outro</a><a href="#s-cor">Cor com função</a><a href="#s-caixas">Quantas houver</a><a href="#s-abrir">Tabela cortada</a><a href="#s-melhor">A melhor ata que você já fez</a>
+    <a href="#s-semanas">Duas semanas de atas</a><a href="#s-ata">A ata de referência</a><a href="#s-forma">Texto de um lado, forma do outro</a><a href="#s-cor">A cor pelo que ela faz</a><a href="#s-caixas">Uma caixa por decisão</a><a href="#s-abrir">Abrir o arquivo antes de entregar</a><a href="#s-melhor">A melhor ata que você já fez</a>
   </nav>
 </header>
 
@@ -287,7 +287,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-semanas" aria-labelledby="h-semanas">
   <span class="eyebrow">Duas semanas de atas</span>
   <h2 id="h-semanas">No chat, o formato é pedido de novo toda semana, e sai de um jeito diferente</h2>
-  <p class="intro">Na primeira semana você pede “um ponto por linha, quatro cards para as decisões, participantes em lista”. Na segunda, esquece metade, ou pede igual e ela entende diferente. <strong>Com o modelo na pasta, o pedido encolhe para “no formato do modelo”, e as duas semanas saem iguais.</strong> Alterne.</p>
+  <p class="intro">É como explicar ao fornecedor, de boca e todo mês, como você quer o relatório: cada mês ele vem de um jeito, até alguém mandar um relatório pronto e dizer “igual a este”. Na primeira semana você pede “um ponto por linha, quatro caixas para as decisões, participantes em lista”. Na segunda, esquece metade, ou pede igual e ela entende diferente. <strong>Com o modelo na pasta, o pedido encolhe para “no formato do modelo”, e as duas semanas saem iguais.</strong> Alterne.</p>
   <div class="seg" role="group" aria-label="Como o formato chega">
     <button type="button" data-sm="chat" aria-pressed="true">Pedindo o formato no chat</button>
     <button type="button" data-sm="modelo" aria-pressed="false">Apontando o modelo</button>
@@ -301,19 +301,19 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-ata" aria-labelledby="h-ata">
   <span class="eyebrow">A ata de referência</span>
   <h2 id="h-ata">O modelo é uma ata real, guardada em <code>modelo/</code>, com os blocos em ordem</h2>
-  <p class="intro">Não é uma descrição do formato: é o próprio documento. No exemplo, uma ata de verdade, recebida de um parceiro do projeto e lida inteira. Ao lado dela, um arquivo curto chamado <code>COMO-EDITAR.md</code> lista os blocos na ordem e guarda <strong>as regras de formato que vieram do uso</strong>, como as três marcadas com a barra. Clique nos blocos.</p>
+  <p class="intro">Na cozinha industrial, o cozinheiro novo não recebe a descrição do prato: recebe a ficha técnica com a foto do prato montado. Aqui também não é uma descrição do formato: é o próprio documento. No exemplo, uma ata de verdade, recebida de um parceiro do projeto e lida inteira. Ao lado dela, um arquivo curto chamado <code>COMO-EDITAR.md</code> (o <code>.md</code> no fim indica texto simples) lista os blocos na ordem e guarda <strong>as regras de formato que vieram do uso</strong>, como as três marcadas com a barra. Clique nos blocos.</p>
   <div class="bl-wrap">
     <div class="bl-list" id="blList" role="group" aria-label="Blocos da ata"></div>
     <div class="panel" id="blPanel" aria-live="polite"></div>
   </div>
-  <p class="hint">No exemplo real, o formato foi ajustado <strong>uma vez</strong>, no piloto, e todas as atas seguintes saíram no formato ajustado. Onde as pastas <code>modelo/</code> e <code>fontes/</code> moram no projeto: <a href="./claude-code--pasta.html">pasta com dono</a>.</p>
+  <p class="hint">No exemplo real, o formato foi ajustado <strong>uma vez</strong>, no piloto (a primeira ata do projeto), e todas as atas seguintes saíram no formato ajustado. Onde as pastas <code>modelo/</code> e <code>fontes/</code> moram no projeto: <a href="./claude-code--pasta.html">pasta com dono</a>.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-forma" aria-labelledby="h-forma">
   <span class="eyebrow">Texto de um lado, forma do outro</span>
   <h2 id="h-forma">Corrigir uma ata é corrigir o texto. Mudar o formato de todas é mudar o gerador.</h2>
-  <p class="intro">O conteúdo de cada ata é um arquivo de texto simples em <code>fontes/</code>, que qualquer um revisa. Um gerador lê esse texto e monta o <code>.docx</code> e o <code>.pdf</code> no formato do modelo. <strong>Como as duas coisas estão separadas, cada tipo de correção tem um lugar só.</strong> Escolha uma correção e veja o que muda.</p>
+  <p class="intro">É a mala direta do Word: os nomes ficam numa planilha, a carta-modelo em outro arquivo, e corrigir um endereço não mexe na diagramação da carta. O conteúdo de cada ata é um arquivo de texto simples em <code>fontes/</code>, que qualquer um revisa. Um gerador (o passo automático que transforma o texto em documento) lê esse texto e monta o <code>.docx</code> (o arquivo do Word) e o <code>.pdf</code> no formato do modelo. <strong>Como as duas coisas estão separadas, cada tipo de correção tem um lugar só.</strong> Escolha uma correção e veja o que muda.</p>
   <div class="seg" role="group" aria-label="Tipo de correção">
     <button type="button" data-cf="txt" aria-pressed="true">Um nome errado na ata de 19/08</button>
     <button type="button" data-cf="fmt" aria-pressed="false">Participantes em três colunas, em todas</button>
@@ -329,9 +329,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 4 -->
 <section class="sec" id="s-cor" aria-labelledby="h-cor">
-  <span class="eyebrow">Cor com função</span>
+  <span class="eyebrow">A cor pelo que ela faz</span>
   <h2 id="h-cor">No padrão visual, cada cor tem o nome do que ela faz, não o nome da cor</h2>
-  <p class="intro">Em vez de “azul-escuro” e “laranja”, o arquivo diz <strong>cabeçalho</strong>, <strong>destaque</strong>, <strong>risco</strong>. Cada nome aponta para uma cor da marca. Assim, quem monta a peça escolhe pela função (“isto é um risco”), e se a marca trocar a cor, ela muda em todo lugar de uma vez. Clique num papel para ver onde ele aparece; depois troque a cor do destaque.</p>
+  <p class="intro">No almoxarifado, a prateleira tem a etiqueta “parafusos”, não “caixa azul”: troca-se a caixa e a etiqueta continua certa. No padrão visual, em vez de “azul-escuro” e “laranja”, o arquivo diz <strong>cabeçalho</strong>, <strong>destaque</strong>, <strong>risco</strong>. Cada nome desses, que os designers chamam de <strong>token</strong>, aponta para uma cor da marca. Assim, quem monta a peça escolhe pela função (“isto é um risco”), e se a marca trocar a cor, ela muda em todo lugar de uma vez. Clique num papel para ver onde ele aparece; depois troque a cor do destaque.</p>
   <div class="seg" role="group" aria-label="Papel da cor">
     <button type="button" data-tk="cab" aria-pressed="true">Cabeçalho</button>
     <button type="button" data-tk="dest" aria-pressed="false">Destaque</button>
@@ -366,9 +366,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 5 -->
 <section class="sec" id="s-caixas" aria-labelledby="h-caixas">
-  <span class="eyebrow">Quantas houver</span>
+  <span class="eyebrow">Uma caixa por decisão</span>
   <h2 id="h-caixas">Modelo rígido onde a realidade varia estoura na primeira semana diferente</h2>
-  <p class="intro">Um modelo com quatro caixas de decisão funciona na semana que teve quatro decisões. <strong>Na semana que teve sete, a IA espreme três numa caixa só, ou corta.</strong> O modelo certo não diz “quatro caixas”: diz “uma caixa por decisão, quantas houver”. Mova o controle.</p>
+  <p class="intro">O formulário de reembolso com quatro linhas funciona até a viagem com sete notas: aí alguém escreve três numa linha só ou deixa nota de fora. Um modelo com quatro caixas de decisão funciona na semana que teve quatro decisões. <strong>Na semana que teve sete, a IA espreme três numa caixa só, ou corta.</strong> O modelo certo não diz “quatro caixas”: diz “uma caixa por decisão, quantas houver”. Mova o controle.</p>
   <div class="field">
     <label for="qhN">Decisões que a sala fechou nesta semana</label>
     <div class="row"><input type="range" id="qhN" min="3" max="7" step="1" value="5"><output id="qhOut" for="qhN">5</output></div>
@@ -382,9 +382,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 6 -->
 <section class="sec" id="s-abrir" aria-labelledby="h-abrir">
-  <span class="eyebrow">Tabela cortada</span>
+  <span class="eyebrow">Abrir o arquivo antes de entregar</span>
   <h2 id="h-abrir">O texto pode estar certo e a página, quebrada: a prova é abrir</h2>
-  <p class="intro">A regra das atas do exemplo manda abrir as páginas antes de entregar: <strong>tabela cortada, cabeçalho órfão no fim da página, célula estourando</strong>. Nenhum desses defeitos aparece lendo o texto. Veja a mesma ata dos dois jeitos e, no arquivo aberto, clique nos cinco defeitos.</p>
+  <p class="intro">Quem manda proposta comercial em PDF abre o PDF antes de anexar: o texto pode estar certo e a tabela de preços ter saído cortada na margem. A regra das atas do exemplo manda abrir as páginas antes de entregar: <strong>tabela cortada, cabeçalho órfão no fim da página, célula estourando</strong>. Nenhum desses defeitos aparece lendo o texto. Veja a mesma ata dos dois jeitos e, no arquivo aberto, clique nos cinco defeitos.</p>
   <div class="seg" role="group" aria-label="Como conferir">
     <button type="button" data-ab="txt" aria-pressed="false">Ler o texto</button>
     <button type="button" data-ab="pag" aria-pressed="true">Abrir o arquivo</button>
@@ -441,7 +441,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-melhor" aria-labelledby="h-melhor">
   <span class="eyebrow">A melhor ata que você já fez</span>
   <h2 id="h-melhor">Comece guardando um documento, não escrevendo uma descrição</h2>
-  <p class="intro">O erro mais comum é <strong>descrever o formato no pedido</strong> em vez de mostrar o modelo. A descrição sempre deixa uma brecha que o exemplo fecha sozinho. Os outros dois erros já apareceram acima: o modelo rígido e aceitar o arquivo sem abrir.</p>
+  <p class="intro">Quem treina atendente novo não entrega a descrição de um bom e-mail: entrega três e-mails bons que já foram enviados. O erro mais comum é <strong>descrever o formato no pedido</strong> em vez de mostrar o modelo. A descrição sempre deixa uma brecha que o exemplo fecha sozinho. Os outros dois erros já apareceram acima: o modelo rígido e aceitar o arquivo sem abrir.</p>
   <div class="three">
     <div class="card"><span class="eyebrow">01 · guarde</span><h3>A melhor ata que você já fez</h3><p>Ponha em <code>modelo/</code>, do jeito que ela tem de sair. Um documento real, não um esqueleto em branco.</p></div>
     <div class="card focal"><span class="eyebrow">02 · escreva ao lado</span><h3>Cinco linhas do que não pode mudar</h3><p>“Um ponto por linha.” “Uma caixa por decisão, quantas houver.” “Participantes em três colunas.”</p></div>
@@ -521,9 +521,9 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
   function blk(lab, body) { return '<div class="ma-blk"><span class="ma-lab">' + lab + '</span>' + body + '</div>'; }
   var SM = {
     chat: {
-      ask: 'Pedido da semana 1: “Faça a ata. Um ponto por linha, quatro cards para as decisões, participantes em lista.” Pedido da semana 2: “Faça a ata igual à da semana passada.”',
+      ask: 'Pedido da semana 1: “Faça a ata. Um ponto por linha, quatro caixas para as decisões, participantes em lista.” Pedido da semana 2: “Faça a ata igual à da semana passada.”',
       a: '<div class="ma"><span class="flag ok">semana 1 · 05/08</span><h3>Ata da reunião semanal</h3>' + blk('Participantes', '<ul><li>Coordenadora · Instituição A</li><li>Analista · Instituição B</li></ul>') + blk('Decisões', boxes(['Piloto começa por compras', 'Ata em até dois dias', 'Aceite: 20 pedidos'], 4)) + blk('Encaminhamentos', '<ul><li>Enviar a planilha</li><li>Marcar a reunião</li></ul>') + '</div>',
-      b: '<div class="ma bad"><span class="flag">semana 2 · 12/08</span><h3>Resumo do encontro</h3>' + blk('Principais pontos', '<p>Enviar a planilha de pedidos; validar o critério; marcar a reunião de terça; revisar o cadastro.</p>') + blk('Decisões', boxes(DEC5, 4)) + '<span class="flag">sem participantes · quatro pontos numa linha · cinco decisões em quatro cards</span></div>'
+      b: '<div class="ma bad"><span class="flag">semana 2 · 12/08</span><h3>Resumo do encontro</h3>' + blk('Principais pontos', '<p>Enviar a planilha de pedidos; validar o critério; marcar a reunião de terça; revisar o cadastro.</p>') + blk('Decisões', boxes(DEC5, 4)) + '<span class="flag">sem participantes · quatro pontos numa linha · cinco decisões em quatro caixas</span></div>'
     },
     modelo: {
       ask: 'Pedido das duas semanas: “Gere a ata de hoje no formato de modelo/.” O formato não está no pedido: está no arquivo.',
@@ -542,7 +542,7 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
     { n: 'Data', d: 'Dia da reunião, não dia em que a ata foi feita. A mesma data abre o nome do arquivo, para a pasta ordenar sozinha.' },
     { n: 'Participantes', r: 'Participantes em três colunas: nome · instituição · time.', d: 'Numa reunião com várias instituições, a lista corrida esconde quem representa quem. A tabela de três colunas mostra na hora.' },
     { n: 'Pauta', d: 'O que estava previsto, antes do que aconteceu. Serve para ver o que ficou de fora.' },
-    { n: 'Síntese das discussões', r: 'Um título curto por tema, com bullets embaixo. Nunca um blocão de texto corrido.', d: 'O blocão corrido obriga a ler tudo para achar um assunto. Com o título por tema, quem só quer saber de compras pula direto.' },
+    { n: 'Síntese das discussões', r: 'Um título curto por tema, com marcadores (os pontinhos de lista) embaixo. Nunca um blocão de texto corrido.', d: 'O blocão corrido obriga a ler tudo para achar um assunto. Com o título por tema, quem só quer saber de compras pula direto.' },
     { n: 'Decisões', r: 'Decisão é o que a sala fechou, não o que a síntese destacou como achado.', d: 'A IA tende a promover a decisão tudo o que soou importante. A regra separa o que foi fechado do que foi só comentado com ênfase.' },
     { n: 'Riscos', d: 'O que pode atrapalhar, com quem está olhando. Fica separado das decisões para não se perder entre elas.' },
     { n: 'Encaminhamentos', d: 'Quem faz o quê, até quando. Um por linha: é daqui que sai a cobrança da semana seguinte.' },

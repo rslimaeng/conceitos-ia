@@ -263,15 +263,15 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="sub">Fazer a IA responder a partir do material que você deu, dizer de onde tirou, e admitir quando não está lá</p>
   <p class="lead">Sem o seu documento, a IA responde pela média do mundo, com a mesma fluência com que responderia por você. <strong>Ancorar é trocar “parece certo” por “está aqui, neste trecho”.</strong> E, do mesmo jeito, é fazer ela escrever “não consta” quando o trecho não existe.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-media">Média ou você</a><a href="#s-origem">De onde vem</a><a href="#s-endereco">A citação</a><a href="#s-naoconsta">Quando não tem</a><a href="#s-parecidos">Material demais</a><a href="#s-escolher">O que sobe</a><a href="#s-leu">Leu ou deduziu</a>
+    <a href="#s-media">Resposta genérica ou da casa</a><a href="#s-origem">De onde vem a resposta</a><a href="#s-endereco">A citação</a><a href="#s-naoconsta">Quando o documento não responde</a><a href="#s-parecidos">Material demais</a><a href="#s-escolher">Que arquivos entregar</a><a href="#s-leu">Leu ou deduziu</a>
   </nav>
 </header>
 
 <!-- 1 -->
 <section class="sec" id="s-media" aria-labelledby="h-media">
-  <span class="eyebrow">Média ou você</span>
+  <span class="eyebrow">Resposta genérica ou da casa</span>
   <h2 id="h-media">A mesma pergunta, com e sem a política da empresa</h2>
-  <p class="intro">Digitada igual nas duas. De um lado, uma conversa comum. Do outro, a política de desconto da empresa carregada. <strong>As duas respostas soam igualmente seguras.</strong></p>
+  <p class="intro">Pergunte a regra de reembolso a um consultor de fora e a alguém do seu financeiro: os dois respondem com segurança, só um responde pela sua empresa. Aqui, a pergunta foi digitada igual nas duas. De um lado, uma conversa comum. Do outro, a política de desconto da empresa carregada. <strong>As duas respostas soam igualmente seguras.</strong></p>
   <p class="ra-q">Um gerente pode aprovar sozinho um desconto de 15% para um cliente novo? Se não, quem aprova e em quanto tempo?</p>
   <div class="seg" role="group" aria-label="Com ou sem o documento">
     <button type="button" data-md="gen" aria-pressed="true">Sem o documento</button>
@@ -282,9 +282,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 2 -->
 <section class="sec" id="s-origem" aria-labelledby="h-origem">
-  <span class="eyebrow">De onde vem</span>
+  <span class="eyebrow">De onde vem a resposta</span>
   <h2 id="h-origem">Duas fontes misturadas, ou uma só</h2>
-  <p class="intro">Com o arquivo anexado a uma conversa comum, a resposta vem do arquivo <strong>e</strong> do que a IA já sabe do assunto, costurados sem aviso. A âncora é fechar a segunda porta. Algumas ferramentas já nascem fechadas; nas outras, <strong>quem fecha é a instrução que você escreve</strong>.</p>
+  <p class="intro">É o parecer que mistura o que está no contrato com “o que costuma ser assim”, sem dizer onde termina um e começa o outro. Com o arquivo anexado a uma conversa comum, a resposta vem do arquivo <strong>e</strong> do que a IA já sabe do assunto, costurados sem aviso. A âncora é fechar a segunda porta. Algumas ferramentas já nascem fechadas; nas outras, <strong>quem fecha é a instrução que você escreve</strong>.</p>
   <div class="seg" role="group" aria-label="Como a resposta é montada">
     <button type="button" data-or="mix" aria-pressed="true">Arquivo anexado, sem regra</button>
     <button type="button" data-or="anc" aria-pressed="false">Base fechada, ou regra escrita</button>
@@ -326,9 +326,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
 <!-- 4 -->
 <section class="sec" id="s-naoconsta" aria-labelledby="h-naoconsta">
-  <span class="eyebrow">Quando não tem</span>
+  <span class="eyebrow">Quando o documento não responde</span>
   <h2 id="h-naoconsta">“Não consta” é a resposta que prova que a âncora segura</h2>
-  <p class="intro">Pergunte algo que você sabe que não está no documento. <strong>Se vier uma resposta plausível, a porta da média está aberta</strong>, e tudo o que vier depois volta a ser texto sem endereço.</p>
+  <p class="intro">No balcão de informações, o atendente bom diz “isso não está no regulamento, confirme com o setor”, em vez de dar a resposta que acha provável. Pergunte algo que você sabe que não está no documento. <strong>Se vier uma resposta plausível, a porta da média está aberta</strong>, e tudo o que vier depois volta a ser texto sem endereço.</p>
   <p class="ra-q">Qual é o desconto máximo para o canal de exportação? <span class="hint">(a política não trata de exportação)</span></p>
   <div class="seg" role="group" aria-label="Com ou sem a regra">
     <button type="button" data-nc="sem" aria-pressed="true">Sem a regra de só usar o documento</button>
@@ -356,7 +356,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-parecidos" aria-labelledby="h-parecidos">
   <span class="eyebrow">Material demais</span>
   <h2 id="h-parecidos">O trecho certo disputa com os parecidos</h2>
-  <p class="intro">O instinto é subir o manual inteiro “para ela ter contexto”. Mas ela não lê o arquivo de ponta a ponta: <strong>procura o trecho que parece responder</strong>. O problema não são as páginas que não têm nada a ver. São as parecidas. Arraste.</p>
+  <p class="intro">Achar um contrato num arquivo morto cheio de contratos do mesmo fornecedor é mais difícil do que numa pasta com três: o problema não é o volume, é a semelhança. O instinto é subir o manual inteiro para a ferramenta “para ela ter contexto” (o pano de fundo do assunto). Mas ela não lê o arquivo de ponta a ponta: <strong>procura o trecho que parece responder</strong>. O problema não são as páginas que não têm nada a ver. São as parecidas. Arraste.</p>
   <div class="tp-wrap">
     <div class="tp-grid" id="tpGrid" role="img" aria-label="Páginas carregadas: a que responde, as parecidas e as que não têm a ver"></div>
     <div class="card">
@@ -367,14 +367,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     </div>
   </div>
   <div class="tp-leg" aria-hidden="true"><span><i class="r"></i>o trecho que responde</span><span><i class="a"></i>parecido, de outro caso</span><span><i></i>não tem a ver</span></div>
-  <p class="hint">A forma, não a medida: a proporção de páginas parecidas muda de manual para manual. O que não muda é a direção. E quando o material guardado num projeto passa do que cabe de uma vez, a ferramenta passa a procurar trechos sozinha, sem avisar quando virou. Mais sobre o espaço em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+  <p class="hint">A forma, não a medida: a proporção de páginas parecidas muda de manual para manual. O que não muda é a direção. E quando o material guardado num projeto (a área da ferramenta que junta os arquivos e as instruções de um trabalho) passa do que cabe de uma vez, a ferramenta passa a procurar trechos sozinha, sem avisar quando virou. Mais sobre o espaço em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a> (quanto texto ela consegue ter à vista de uma vez).</p>
 </section>
 
 <!-- 6 -->
 <section class="sec" id="s-escolher" aria-labelledby="h-escolher">
-  <span class="eyebrow">O que sobe</span>
+  <span class="eyebrow">Que arquivos entregar</span>
   <h2 id="h-escolher">Três perguntas para cada arquivo, e só sobe o que passa nas três</h2>
-  <p class="intro"><strong>P · preciso?</strong> trata de uma etapa do seu trabalho. <strong>S · suficiente?</strong> sozinho, entrega a informação inteira. <strong>N · necessário?</strong> sem ele, a resposta sai errada. A terceira é a que corta. Clique num candidato.</p>
+  <p class="intro">Antes de mandar o dossiê para o advogado, você separa só o que interessa ao caso: papel a mais faz ele perder tempo e, às vezes, se apoiar no documento errado. <strong>P · preciso?</strong> trata de uma etapa do seu trabalho. <strong>S · suficiente?</strong> sozinho, entrega a informação inteira. <strong>N · necessário?</strong> sem ele, a resposta sai errada. A terceira é a que corta. Clique num candidato.</p>
   <div class="ps-files" role="group" aria-label="Arquivos candidatos" id="psFiles"></div>
   <div class="panel" id="psPanel" aria-live="polite"></div>
   <div class="two">
@@ -387,7 +387,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-leu" aria-labelledby="h-leu">
   <span class="eyebrow">Leu ou deduziu</span>
   <h2 id="h-leu">Vinte segundos para saber se ela leu de verdade</h2>
-  <p class="intro">Onde não existe citação clicável, peça a transcrição literal do trecho que sustenta a resposta e confira contra o arquivo. <strong>Texto exato é leitura; paráfrase parecida é dedução.</strong> Classifique o que voltou.</p>
+  <p class="intro">Na conferência da nota fiscal, ninguém aceita “o valor era mais ou menos esse”: compara-se o número da nota com o do pedido, dígito por dígito. Onde não existe citação clicável, peça a transcrição literal do trecho que sustenta a resposta e confira contra o arquivo. <strong>Texto exato é leitura; paráfrase parecida é dedução.</strong> Classifique o que voltou.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O teste da transcrição</span><button type="button" class="btn" data-copy="raLeu">Copiar</button></div>
 <pre id="raLeu">Antes de eu usar a sua resposta: copie, entre aspas e palavra por palavra, o trecho do documento que sustenta cada afirmação que você fez, com o nome da seção de onde ele saiu.
@@ -536,7 +536,7 @@ Não resuma e não reescreva o trecho. Se alguma afirmação não tem trecho que
 
   /* 6 · P S N */
   var PS = [
-    { f: 'tabela-de-precos-2026.md', d: 'a tabela vigente, com código e prazo', r: [1, 1, 1], why: 'Sem ela, o preço sai inventado. Passa nas três: sobe.' },
+    { f: 'tabela-de-precos-2026.md', d: 'a tabela vigente, com código e prazo, em arquivo de texto simples (é o que o .md quer dizer)', r: [1, 1, 1], why: 'Sem ela, o preço sai inventado. Passa nas três: sobe.' },
     { f: 'e-mails-da-diretoria.pdf', d: 'decisões antigas, algumas revistas', r: [1, 0, 0], why: 'Carrega decisão que já caducou, e ela não tem como saber qual. Não sobe.' },
     { f: 'apresentacao-kickoff.pptx', d: '40 slides feitos para alguém falar por cima', r: [1, 0, 0], why: 'Sozinha, é título sem conteúdo. Meia resposta parece inteira. Não sobe.' },
     { f: 'guia-de-vendas-mercado.pdf', d: 'modelo genérico baixado da internet', r: [0, 1, 0], why: 'Ela já sabe o que é genérico. Você não ganha nada, e ganha páginas parecidas. Não sobe.' },
