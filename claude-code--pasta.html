@@ -297,9 +297,9 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
   <span class="eyebrow">8.1 · 1 de 7</span>
   <h1>Pasta com dono</h1>
   <p class="sub">Quando cada arquivo tem o seu lugar, a própria pasta diz ao Claude onde ler, onde gravar e onde não mexer</p>
-  <p class="lead">No chat não existe pasta: existe o que você sobe, e o resultado sai na tela para você copiar para o Word. No Claude Code, ele <strong>lê sozinho</strong> o que está na pasta e <strong>grava</strong> o resultado lá: a transcrição da semana entra na pasta, a ata sai na pasta. Por isso a forma da pasta vira instrução. <strong>Pasta com dono é a pasta em que cada arquivo tem um lugar e um momento de mudar</strong>, e em que dá para saber, só olhando, o que é prova, o que é rascunho e o que já foi aprovado.</p>
+  <p class="lead">No chat não existe pasta: existe o que você sobe, e o resultado sai na tela para você copiar para o Word. O Claude Code é o Claude trabalhando <strong>dentro de uma pasta do seu computador</strong>: ele <strong>lê sozinho</strong> o que está na pasta e <strong>grava</strong> o resultado lá: a transcrição da semana entra na pasta, a ata sai na pasta. Por isso a forma da pasta vira instrução. Pense no arquivo de um escritório bem organizado, em que um funcionário novo acha qualquer documento sem perguntar a ninguém. Aqui, o funcionário novo é o Claude. <strong>Pasta com dono é a pasta em que cada arquivo tem um lugar e um momento de mudar</strong>, e em que dá para saber, só olhando, o que é prova, o que é rascunho e o que já foi aprovado.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-atas">A pasta de atas</a><a href="#s-bruta">A bruta fica quieta</a><a href="#s-papel">Numeradas por papel</a><a href="#s-estagios">Estágios, não versões</a><a href="#s-nome">A data abre o nome</a><a href="#s-onde">Onde mora este arquivo</a><a href="#s-vinte">Vinte e duas atas</a><a href="#s-comeco">Quatro pastas no primeiro dia</a>
+    <a href="#s-atas">A pasta de atas</a><a href="#s-bruta">A gravação original não se edita</a><a href="#s-papel">Um número na frente de cada pasta</a><a href="#s-estagios">Aprovar é mudar de pasta</a><a href="#s-nome">A data no começo do nome</a><a href="#s-onde">Onde mora este arquivo</a><a href="#s-vinte">Uma pasta real, dois meses depois</a><a href="#s-comeco">Quatro pastas no primeiro dia</a>
   </nav>
 </header>
 
@@ -307,7 +307,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 <section class="sec" id="s-atas" aria-labelledby="h-atas">
   <span class="eyebrow">A pasta de atas</span>
   <h2 id="h-atas">A mesma pasta, sem dono e com dono</h2>
-  <p class="intro">Uma pasta de atas de reunião semanal, como costuma ficar depois de um mês, e a mesma pasta arrumada. <strong>Os arquivos são quase os mesmos. O que muda é que, na segunda, o lugar responde as perguntas que na primeira alguém precisa lembrar.</strong></p>
+  <p class="intro">É a diferença entre a gaveta onde tudo foi jogado e o arquivo com pastas etiquetadas: os papéis são os mesmos, mas numa você precisa perguntar e na outra a etiqueta responde. Abaixo, uma pasta de atas de reunião semanal, como costuma ficar depois de um mês, e a mesma pasta arrumada. <strong>Os arquivos são quase os mesmos. O que muda é que, na segunda, o lugar responde as perguntas que na primeira alguém precisa lembrar.</strong></p>
   <div class="seg" role="group" aria-label="Qual pasta">
     <button type="button" data-pt="antes" aria-pressed="true">Sem dono</button>
     <button type="button" data-pt="depois" aria-pressed="false">Com dono</button>
@@ -320,16 +320,16 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 
 <!-- 2 -->
 <section class="sec" id="s-bruta" aria-labelledby="h-bruta">
-  <span class="eyebrow">A bruta fica quieta</span>
+  <span class="eyebrow">A gravação original não se edita</span>
   <h2 id="h-bruta">A transcrição é a prova: tudo sai dela, e ela não muda</h2>
-  <p class="intro">A transcrição bruta é o registro do que foi dito. A ata, o resumo e a síntese saem dela, e <strong>toda dúvida volta a ela</strong>. Por isso ela mora separada do que se produz a partir dela, e ninguém edita, nem para “limpar”. Um mês depois da reunião:</p>
+  <p class="intro">Pense no contrato assinado: você tira cópia, faz anotação, resume, mas o original fica guardado sem um risco, porque é ele que encerra uma discussão. Na reunião, o original é a <strong>transcrição bruta</strong>: o texto exatamente como o gravador entregou, sem ninguém mexer. A ata, o resumo e a síntese (o resumo organizado do que importa) saem dela, e <strong>toda dúvida volta a ela</strong>. Por isso ela mora separada do que se produz a partir dela, e ninguém edita, nem para “limpar”. Um mês depois da reunião:</p>
   <p class="card focal">O coordenador diz que nunca aceitou entregar a fase 2 em 30 de outubro. A ata diz que aceitou. Quem tem razão?</p>
   <div class="seg" role="group" aria-label="Como a transcrição foi guardada">
     <button type="button" data-br="limpa" aria-pressed="true">Transcrição limpa à mão</button>
     <button type="button" data-br="bruta" aria-pressed="false">Bruta intacta, síntese ao lado</button>
   </div>
   <div id="brOut" aria-live="polite"></div>
-  <p class="intro">A mesma regra vale para a pasta de conhecimento, onde ficam as sínteses: <strong>ela sintetiza, e a fonte bruta fica fora</strong>. A síntese aponta para a transcrição por um link; não copia a transcrição para dentro. O manual dessa pasta diz, em duas listas, o que entra e o que não entra.</p>
+  <p class="intro">A mesma regra vale para a pasta de conhecimento, o lugar onde ficam as sínteses de todas as reuniões, ligadas umas às outras: <strong>ela sintetiza, e a fonte bruta fica fora</strong>. A síntese aponta para a transcrição por um link; não copia a transcrição para dentro. O manual dessa pasta diz, em duas listas, o que entra e o que não entra.</p>
   <div class="two">
     <div class="card sim"><span class="eyebrow">Entra na pasta de conhecimento</span><ul><li>a síntese de cada reunião</li><li>as decisões</li><li>a relação entre as informações: que decisão saiu de que reunião</li></ul></div>
     <div class="card nao"><span class="eyebrow">Não entra</span><ul><li>cópia da transcrição, inteira ou em pedaços</li><li>o documento formal original</li><li>a planilha técnica</li></ul></div>
@@ -339,19 +339,19 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 
 <!-- 3 -->
 <section class="sec" id="s-papel" aria-labelledby="h-papel">
-  <span class="eyebrow">Numeradas por papel</span>
+  <span class="eyebrow">Um número na frente de cada pasta</span>
   <h2 id="h-papel">Pastas numeradas pelo papel, que só nascem quando o projeto pede</h2>
-  <p class="intro">Um projeto com várias frentes usa sempre a mesma ordem. O número na frente faz a pasta se ordenar sozinha: primeiro o que se lê para se situar, depois o projeto, as frentes e as reuniões.</p>
+  <p class="intro">Funciona como as divisórias numeradas de um fichário: a ordem é sempre a mesma, e você abre direto no lugar certo. Um projeto com várias frentes usa sempre a mesma ordem. O número na frente faz a pasta se ordenar sozinha: primeiro o que se lê para se situar, depois o projeto, as frentes e as reuniões.</p>
   <div class="tablewrap">
     <table class="vtable">
       <tr><th>Pasta</th><th>Guarda</th></tr>
-      <tr><td><code>00-*</code> na raiz</td><td>o índice, as decisões e as pendências; a memória do projeto também fica aqui</td></tr>
+      <tr><td><code>00-…</code>, soltos na pasta principal</td><td>o índice, as decisões e as pendências; a memória do projeto também fica aqui</td></tr>
       <tr><td><code>01-projeto/</code></td><td>escopo, cronograma, equipe, critérios de aceite</td></tr>
       <tr><td><code>02-modulos/</code></td><td>uma pasta por frente de trabalho</td></tr>
       <tr><td><code>03-reunioes/</code></td><td>a síntese de cada reunião</td></tr>
     </table>
   </div>
-  <p class="intro">E uma regra que evita pasta vazia: <strong>as pastas nascem quando o projeto pedir</strong>. A estrutura cresce com o trabalho, não antes dele. Arraste o tempo do projeto.</p>
+  <p class="intro">E ninguém compra um fichário com cinquenta divisórias para um projeto que está começando. Daí a regra que evita pasta vazia: <strong>as pastas nascem quando o projeto pedir</strong>. A estrutura cresce com o trabalho, não antes dele. Arraste o tempo do projeto.</p>
   <div class="field">
     <label for="ppRange">Tempo de projeto</label>
     <div class="row"><input type="range" id="ppRange" min="0" max="3" step="1" value="0"><output id="ppOut" for="ppRange"></output></div>
@@ -367,9 +367,9 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 
 <!-- 4 -->
 <section class="sec" id="s-estagios" aria-labelledby="h-estagios">
-  <span class="eyebrow">Estágios, não versões</span>
+  <span class="eyebrow">Aprovar é mudar de pasta</span>
   <h2 id="h-estagios">Aprovar é mover o arquivo de pasta, e só uma pasta circula</h2>
-  <p class="intro">Um documento que alguém precisa aprovar não ganha <code>_v2</code>, <code>_final</code>, <code>_final-revisado</code>. <strong>Ele passa por pastas, e a pasta diz em que estado ele está.</strong> Siga uma ata, e veja em cada passo quem pode mexer.</p>
+  <p class="intro">Lembra da mesa com uma bandeja “a assinar” e outra “assinados”? Ninguém escreve “final” no papel: a bandeja já diz em que pé ele está. Na pasta é igual. Um documento que alguém precisa aprovar não ganha <code>_v2</code>, <code>_final</code>, <code>_final-revisado</code>. <strong>Ele passa por pastas, e a pasta diz em que estado ele está.</strong> Cada uma dessas pastas é um estágio, e <strong>só uma circula</strong>: só dela sai o que vai por e-mail ou para o comitê. Siga uma ata, e veja em cada passo quem pode mexer.</p>
   <div class="stepbar"><span class="eyebrow" id="stLab">Passo 1 de 6</span><div class="nav"><button type="button" class="btn" id="stPrev">← Anterior</button><button type="button" class="btn primary" id="stNext">Próximo →</button></div></div>
   <div class="scroll">
     <svg class="wide" viewBox="0 0 760 310" role="img" aria-labelledby="st-t" xmlns="http://www.w3.org/2000/svg">
@@ -398,9 +398,9 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 
 <!-- 5 -->
 <section class="sec" id="s-nome" aria-labelledby="h-nome">
-  <span class="eyebrow">A data abre o nome</span>
+  <span class="eyebrow">A data no começo do nome</span>
   <h2 id="h-nome">O nome começa pela data, para a pasta se ordenar sozinha</h2>
-  <p class="intro">O formato: <code>&lt;aaaa-mm-dd&gt;_ATA_&lt;Tipo&gt;_&lt;assunto&gt;</code>. A evidência do mesmo dia usa a mesma raiz e um número no fim. <strong>Com o ano primeiro, a ordem alfabética é a ordem do tempo</strong>, e a evidência fica encostada na ata que ela prova. Monte um nome e veja onde ele cai nas duas pastas.</p>
+  <p class="intro">É o mesmo motivo de o protocolo carimbar a data no documento: com a data à frente, a pilha se põe em ordem sozinha. O formato: <code>&lt;aaaa-mm-dd&gt;_ATA_&lt;Tipo&gt;_&lt;assunto&gt;</code>. A evidência do mesmo dia (o print da chamada, a foto da sala) usa o mesmo começo de nome e um número no fim. <strong>Com o ano primeiro, a ordem alfabética é a ordem do tempo</strong>, e a evidência fica encostada na ata que ela prova. Monte um nome e veja onde ele cai nas duas pastas.</p>
   <div class="nm-grid">
     <div class="nm-form">
       <label>Data da reunião<input type="date" id="nmData" value="2026-09-28"></label>
@@ -427,7 +427,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 <section class="sec" id="s-onde" aria-labelledby="h-onde">
   <span class="eyebrow">Onde mora este arquivo</span>
   <h2 id="h-onde">Oito arquivos de uma semana de reunião. Onde mora cada um?</h2>
-  <p class="intro">A pasta tem quatro tipos de lugar, e cada tipo responde uma pergunta: <strong>é a prova do que aconteceu? é o que o Claude usa para escrever? é a ata no caminho da aprovação? ou é o que saiu de uso?</strong> Descubra o tipo primeiro, e a pasta vem junto. Um arquivo por vez; a pasta, ao lado, vai se enchendo.</p>
+  <p class="intro">É como arrumar a mesa depois de uma semana de reuniões: antes de escolher a gaveta, você se pergunta para que serve aquele papel. A pasta tem quatro tipos de lugar, e cada tipo responde uma pergunta: <strong>é a prova do que aconteceu? é o que o Claude usa para escrever? é a ata no caminho da aprovação? ou é o que saiu de uso?</strong> Descubra o tipo primeiro, e a pasta vem junto. Um arquivo por vez; a pasta, ao lado, vai se enchendo.</p>
   <div class="on-grid">
     <div class="on-card">
       <div class="on-top"><span class="eyebrow" id="onLab">Arquivo 1 de 8</span><span class="qz-score" id="onScore" aria-live="polite"></span></div>
@@ -442,9 +442,9 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
 
 <!-- 7 -->
 <section class="sec" id="s-vinte" aria-labelledby="h-vinte">
-  <span class="eyebrow">Vinte e duas atas</span>
+  <span class="eyebrow">Uma pasta real, dois meses depois</span>
   <h2 id="h-vinte">Dois meses de reuniões com várias instituições, numa pasta só</h2>
-  <p class="intro">A pasta de atas de um projeto real, com reuniões semanais entre várias instituições, depois de cerca de dois meses. <strong>Nenhuma ata tem versão no nome, e dá para dizer o estado de cada uma sem abrir nenhuma.</strong> Clique numa ata.</p>
+  <p class="intro">No arquivo de um cartório, dá para saber se um documento está registrado sem abrir, só pelo lugar onde ele está. Aqui, a pasta de atas de um projeto real, com reuniões semanais entre várias instituições, depois de cerca de dois meses. <strong>Nenhuma ata tem versão no nome, e dá para dizer o estado de cada uma sem abrir nenhuma.</strong> Clique numa ata.</p>
   <div class="nums">
     <div><b>22</b><small>atas no mesmo padrão</small></div>
     <div><b>21</b><small>em <code>aprovadas/</code></small></div>
@@ -455,7 +455,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
   <div class="at-grid" id="atGrid" role="group" aria-label="As 22 atas"></div>
   <div class="at-leg"><span>em aprovadas/</span><span class="val">em em-validacao/</span></div>
   <div class="panel" id="atPanel" aria-live="polite"></div>
-  <p class="intro">A receita mora dentro da pasta. <strong>Toda pasta com trabalho repetitivo tem um <code>COMO-EDITAR.md</code></strong>: o padrão, o que tem em cada subpasta, os passos para gerar e as regras que vieram das primeiras atas. Quem chega, pessoa ou Claude, lê ali como se faz. O desta pasta cabe numa página.</p>
+  <p class="intro">A receita mora dentro da pasta, como a folha de instruções presa na impressora do escritório: quem chega lê ali, sem perguntar. <strong>Toda pasta com trabalho repetitivo tem um <code>COMO-EDITAR.md</code></strong>, um arquivo de texto simples (é isso que o <code>.md</code> no fim quer dizer) com o padrão, o que tem em cada subpasta, os passos para gerar e as regras que vieram das primeiras atas. Quem chega, pessoa ou Claude, lê ali como se faz. O desta pasta cabe numa página.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">Um COMO-EDITAR.md de uma página · para adaptar</span><button type="button" class="btn" data-copy="ceTxt">Copiar</button></div>
 <pre id="ceTxt"><b># COMO-EDITAR · atas</b>
@@ -486,11 +486,11 @@ Toda ata segue o arquivo em modelo/. Mudou o formato? Mude o modelo, não a ata.
 <section class="sec" id="s-comeco" aria-labelledby="h-comeco">
   <span class="eyebrow">Quatro pastas no primeiro dia</span>
   <h2 id="h-comeco">Quatro pastas, um modelo e três regras no manual</h2>
-  <p class="intro">Não se desenha a estrutura inteira antes de trabalhar. <strong>Três passos bastam para a ata da semana que vem</strong>, e o resto nasce quando o projeto pedir.</p>
+  <p class="intro">Ninguém monta o arquivo inteiro do escritório antes do primeiro cliente: começa pelas gavetas que vai usar amanhã. Aqui também não se desenha a estrutura inteira antes de trabalhar. <strong>Três passos bastam para a ata da semana que vem</strong>, e o resto nasce quando o projeto pedir.</p>
   <div class="three">
     <div class="card"><span class="eyebrow">01 · as pastas</span><h3>Quatro, e nenhuma a mais</h3><p><code>reunioes/brutas/</code>, <code>reunioes/leituras/</code>, <code>atas/em-validacao/</code> e <code>atas/aprovadas/</code>.</p></div>
     <div class="card"><span class="eyebrow">02 · o modelo</span><h3>A sua ata de hoje</h3><p>Ponha em <code>modelo/</code> a ata desta semana, do jeito que ela precisa sair. É dela que o formato sai daqui para a frente.</p></div>
-    <div class="card focal"><span class="eyebrow">03 · o manual</span><h3>Três regras no CLAUDE.md</h3><p>A bruta não se edita. Ata nova vai para <code>em-validacao/</code>. Só você move para <code>aprovadas/</code>.</p></div>
+    <div class="card focal"><span class="eyebrow">03 · o manual</span><h3>Três regras no CLAUDE.md</h3><p>O CLAUDE.md é o manual que o Claude lê toda vez que abre a pasta. A bruta não se edita. Ata nova vai para <code>em-validacao/</code>. Só você move para <code>aprovadas/</code>.</p></div>
   </div>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O pedido para colar no Claude Code, dentro da pasta</span><button type="button" class="btn" data-copy="coPrompt">Copiar</button></div>
@@ -766,7 +766,7 @@ Antes de mexer em qualquer coisa, me mostre a lista do que vai criar e espere o 
     if (onCur < ON.length - 1) { onCur++; onRender(); return; }
     if (this.textContent === 'Recomeçar ↺') { onCur = 0; onDone = []; onHits = 0; document.getElementById('onScore').textContent = ''; onRender(); return; }
     document.getElementById('onLab').textContent = 'A pasta pronta';
-    document.getElementById('onFile').textContent = 'Os oito arquivos no lugar. Repare que nenhuma resposta dependeu do tipo de arquivo (.txt, .docx, .png): dependeu do papel dele. Prova, insumo, caminho ou fora de uso.';
+    document.getElementById('onFile').textContent = 'Os oito arquivos no lugar. Repare que nenhuma resposta dependeu do tipo de arquivo (.txt, .docx, .png): dependeu do papel dele. Prova, material de trabalho do Claude, ata no caminho ou fora de uso.';
     document.getElementById('onGrps').innerHTML = ''; document.getElementById('onFb').hidden = true;
     this.textContent = 'Recomeçar ↺';
     onTree(null);
