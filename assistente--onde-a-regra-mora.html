@@ -292,7 +292,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <div class="mp" id="mpMap"></div>
   <div class="panel" id="mpPanel" aria-live="polite"></div>
   <p class="hint">Um exemplo de como o nome muda: as instruções do trabalho são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
-  <p class="punch">Os três primeiros guardam texto. O quarto <em>não guarda nada</em>: tira a decisão de quem lê.</p>
+  <p class="punch">Nas três primeiras colunas, ela lê ou busca o que precisa. Na quarta, <em>ela não lê nada</em>: a tranca tira a decisão de quem lê.</p>
 </section>
 
 <!-- 3 -->
@@ -443,7 +443,8 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -502,7 +503,7 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
       { t: 'Material de consulta', sm: 'documentos guardados', g: 'norma, tabela, manual, glossário: o que se consulta, não se decora', l: 'quando a pergunta tem a ver com ele', e: 'a casa, e você escolhe o que sobe', cu: 'muitos arquivos parecidos fazem ela achar o trecho vizinho. Ver resposta ancorada.', ex: 'a tabela de preços vigente' },
       { t: 'Procedimento', sm: 'skill, habilidade', g: 'o passo a passo de um tipo de tarefa, com as exceções no lugar', l: 'quando ela percebe, pela etiqueta, que a tarefa é aquela', e: 'você, a partir de uma tarefa já feita', cu: 'ela precisa reconhecer a tarefa: etiqueta vaga é procedimento perfeito que nunca abre.', ex: 'os doze passos do fechamento do mês' },
       { t: 'Comando', sm: 'o mesmo procedimento, chamado pelo nome', g: 'o mesmo conteúdo do procedimento, com outro gatilho', l: 'quando você chama', e: 'você', cu: 'você precisa lembrar de chamar. Vale quando errar o momento sai caro.', ex: '“gerar proposta”, que só sai quando você manda' } ] },
-    { c: 'Na hora', k: 'c3', items: [
+    { c: 'Nunca · busca na hora', k: 'c3', items: [
       { t: 'Conector', sm: 'o acesso a outro sistema', g: 'nada: é caminho até o dado que muda toda hora', l: 'enquanto estiver ligado, ocupa lugar mesmo sem uso', e: 'quem responde pela conta autoriza', cu: 'a porta aberta lê tudo que aquele sistema enxerga, não só o que você ia perguntar.', ex: 'a agenda de hoje, o saldo desta manhã' },
       { t: 'Anexo do dia', sm: 'o arquivo solto na conversa', g: 'o dado de hoje, que semana que vem está velho', l: 'só naquela conversa, enquanto ela durar', e: 'você', cu: 'subido como material fixo, vira duas planilhas, depois quatro, e ninguém sabe qual é a atual.', ex: 'a planilha de vendas desta semana' },
       { t: 'O pedido', sm: 'o que você digita', g: 'a tarefa da vez e o critério de sucesso dela', l: 'uma vez só, e some quando a conversa fecha', e: 'você, toda vez', cu: 'se você repete a mesma explicação toda vez, aquilo era regra e está no lugar errado.', ex: '“Feche o trimestre e me diga o que não entra no relatório.”' } ] },
@@ -572,10 +573,10 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
     var per100 = (1000 - ac) / 10, n = Math.max(ac < 1000 ? 1 : 0, Math.round(per100)), dots = '';
     for (var i = 0; i < 100; i++) dots += '<i class="' + (i < n ? 'x' : '') + '"></i>';
     document.getElementById('trDots').innerHTML = dots;
-    document.getElementById('trDotsTxt').textContent = 'Cada quadrado é uma passagem em cem. Em laranja, as vezes em que a regra não é seguida.';
+    document.getElementById('trDotsTxt').textContent = 'Cada quadrado é uma passagem em cem. Em laranja, as vezes em que a regra não é seguida.' + (per100 > 0 && per100 < 1 ? ' Aqui é menos de uma em cem; o quadrado laranja é para enxergar.' : '');
     var v = document.getElementById('trVer');
     if (trMode === 'conserta') { v.className = 'verdict ok'; v.innerHTML = '<b>Pode ser texto.</b> Instrução, procedimento ou comando. Ela acerta quase sempre, e o “quase” custa alguns minutos seus.'; }
-    else { v.className = 'verdict no'; v.innerHTML = '<b>Não é texto: é tranca.</b> A mesma taxa que era um analista excelente vira ' + (f < 1 ? 'um estrago de tempos em tempos' : 'cerca de ' + Math.round(f) + ' estragos por mês') + ' que ninguém desfaz. Tire a decisão de quem lê: etapa assinada, botão com alçada, arquivo fora da pasta.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Não é texto: é tranca.</b> A mesma taxa que era um analista excelente vira ' + (f < 1 ? 'um estrago de tempos em tempos' : 'cerca de ' + Math.round(f) + (Math.round(f) === 1 ? ' estrago por mês' : ' estragos por mês')) + ' que ninguém desfaz. Tire a decisão de quem lê: etapa assinada, botão com alçada, arquivo fora da pasta.'; }
   }
   [trAc, trVol].forEach(function (i) { i.addEventListener('input', tr); });
   tr();

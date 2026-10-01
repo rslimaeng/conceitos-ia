@@ -448,7 +448,8 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   var ns = 'http://www.w3.org/2000/svg';
   function el(tag, attrs, txt) { var e = document.createElementNS(ns, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (txt) e.textContent = txt; return e; }
@@ -500,7 +501,7 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     });
     ppGates.forEach(function (g, i) {
       var k = i + 1, cls = 'pp-gate';
-      if (!whole) { if (k === 2 && ppCur >= 3) cls += ppCur === 3 ? ' stop' : ' pass'; else if (k < ppCur) cls += ' pass'; }
+      if (!whole) { if (k === 2 && ppCur >= 3) cls += ppCur === 3 ? ' stop' : ' pass'; else if (k < ppCur || k === 1) cls += ' pass'; }
       g.setAttribute('class', cls);
     });
     var c = CAP[ppMode][ppCur - 1];
@@ -540,7 +541,7 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
   var CH = [
     ['1 · Preparação', 'O mesmo questionário, com as mesmas perguntas, para todas as áreas', 'Uma primeira leitura, com duas ou três suposições por área'],
     ['2 · Levantamento', 'As suposições da fase 1, para saber o que perguntar', 'Seis entrevistas gravadas, revisadas e sem nome de pessoa'],
-    ['3 · Análise', 'As seis entrevistas sem nome, e o levantamento dos sistemas', 'Um mapa de oportunidades, cada uma com a frase que a sustenta'],
+    ['3 · Análise', 'Seis entrevistas gravadas, revisadas e sem nome de pessoa', 'Um mapa de oportunidades, cada uma com a frase que a sustenta'],
     ['4 · Priorização', 'O mapa, e o critério da nota escrito antes de pontuar', 'Três prioridades propostas, na linguagem de quem vai ler'],
     ['5 · Entrega', 'As três prioridades', 'O relatório, a apresentação e o plano dos primeiros trinta dias']
   ];
@@ -603,11 +604,11 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
 
   /* 5 · você é o portão */
   var GQ = [
-    { g: 'Portão 1 · sobrou algum nome?', s: 'COORDENADORA: “O Marcos do financeiro sempre atrasa o fechamento, todo mês é a mesma coisa.”', a: 'd', why: 'Sobrou um nome dentro da fala. Se ele atravessa esta fase, atravessa todas e vai parar no documento final. Troque por FINANCEIRO.' },
-    { g: 'Portão 2 · cada achado tem a fala que o sustenta?', s: 'Achado: há retrabalho no cadastro de clientes.\nFonte: —', a: 'd', why: 'Achado sem a fala e o horário é achado que ninguém consegue defender depois. É a pergunta “de onde tiraram isso?” sem resposta.' },
-    { g: 'Portão 2 · cada achado tem a fala que o sustenta?', s: 'Achado: o fechamento atrasa dois dias todo mês.\nFonte: entrevista 3, fala às 00:14:32 · fato relatado', a: 'p', why: 'Tem a fala, o horário e a natureza: fato relatado, não opinião nem hipótese. Pode seguir.' },
-    { g: 'Portão 3 · o critério da nota veio antes?', s: 'Critério escrito antes de pontuar: incômodo 5 = citado como urgente por três pessoas ou mais.\nTema: cadastro · incômodo 5 (quatro pessoas citaram como urgente)', a: 'p', why: 'O critério existia antes da nota, e a nota aponta para ele. Nota sem critério é opinião com número; esta não é.' },
-    { g: 'Portão 4 · apareceu número que não está na entrevista?', s: 'Meta: reduzir as 40 horas mensais de retrabalho.\nNa entrevista: “acho que a gente perde muito tempo com isso”.', a: 'd', why: 'Quarenta horas não está em lugar nenhum. É invenção com cara de dado, e é o erro mais caro dos quatro. Se não dá para saber o valor de hoje, o certo é dizer isso.' }
+    { g: 'Portão 2 · sobrou algum nome?', s: 'COORDENADORA: “O Marcos do financeiro sempre atrasa o fechamento, todo mês é a mesma coisa.”', a: 'd', why: 'Sobrou um nome dentro da fala. Se ele atravessa esta fase, atravessa todas e vai parar no documento final. Troque por FINANCEIRO.' },
+    { g: 'Portão 3 · cada achado tem a fala que o sustenta?', s: 'Achado: há retrabalho no cadastro de clientes.\nFonte: —', a: 'd', why: 'Achado sem a fala e o horário é achado que ninguém consegue defender depois. É a pergunta “de onde tiraram isso?” sem resposta.' },
+    { g: 'Portão 3 · cada achado tem a fala que o sustenta?', s: 'Achado: o fechamento atrasa dois dias todo mês.\nFonte: entrevista 3, fala às 00:14:32 · fato relatado', a: 'p', why: 'Tem a fala, o horário e a natureza: fato relatado, não opinião nem hipótese. Pode seguir.' },
+    { g: 'Portão 4 · o critério da nota veio antes?', s: 'Critério escrito antes de pontuar: incômodo 5 = citado como urgente por três pessoas ou mais.\nTema: cadastro · incômodo 5 (quatro pessoas citaram como urgente)', a: 'p', why: 'O critério existia antes da nota, e a nota aponta para ele. Nota sem critério é opinião com número; esta não é.' },
+    { g: 'Antes de entregar · apareceu número que não está na entrevista?', s: 'Meta: reduzir as 40 horas mensais de retrabalho.\nNa entrevista: “acho que a gente perde muito tempo com isso”.', a: 'd', why: 'Quarenta horas não está em lugar nenhum. É invenção com cara de dado, e é o erro mais caro dos quatro que os portões procuram. Se não dá para saber o valor de hoje, o certo é dizer isso.' }
   ];
   var gqList = document.getElementById('gqList'), gqScore = document.getElementById('gqScore'), gqAns = {};
   GQ.forEach(function (q, i) {
@@ -627,7 +628,7 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
 
   /* 6 · trava */
   var tvR = document.getElementById('tvR'), tvM = document.getElementById('tvM'), tvP = document.getElementById('tvP'), tvRes = document.getElementById('tvRes');
-  function fill(r, m, p) { tvR.value = r; tvM.value = m; tvP.value = p; check(); }
+  function fill(r, m, p) { tvR.value = r; tvM.value = m; tvP.value = p; tvRes.innerHTML = '<span class="eyebrow">A trava</span><p class="hint">Agora passe pela trava.</p>'; }
   document.getElementById('tvBad').addEventListener('click', function () { fill('a equipe comercial', 'melhorar bastante o tempo de resposta', 'assim que possível'); });
   document.getElementById('tvGood').addEventListener('click', function () { fill('Carla, supervisora de atendimento', 'tempo médio de resposta de 48 h para 24 h', '30/11, depois do fechamento de outubro'); });
   function check() {
@@ -636,9 +637,10 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
     res.push(!r ? [0, 'Responsável', 'está vazio.'] : (vagoR.test(r) ? [0, 'Responsável', '“' + r + '” não é uma pessoa. Quem é que sabe que é ela?'] : [1, 'Responsável', 'nomeado.']));
     res.push(!m ? [0, 'Métrica', 'está vazia.'] : (!/\d/.test(m) ? [0, 'Métrica', 'sem número. “' + m + '” não diz de quanto para quanto.'] : [1, 'Métrica', 'quantificada.']));
     res.push(!p ? [0, 'Prazo', 'está vazio.'] : (!/\d/.test(p) || /possível|breve|logo|quando der/i.test(p) ? [0, 'Prazo', '“' + p + '” não é uma data que alguém assina.'] : [1, 'Prazo', 'com data.']));
-    var bad = res.filter(function (x) { return !x[0]; }).length;
+    var bad = res.filter(function (x) { return !x[0]; }).length, vaz = [r, m, p].filter(function (x) { return !x; }).length, vag = bad - vaz;
+    var falta = (vaz ? (vaz === 1 ? 'Falta um campo' : 'Faltam ' + vaz + ' campos') : '') + (vaz && vag ? ', e ' : '') + (vag ? (vag === 1 ? (vaz ? 'um está vago' : 'Um campo está vago') : (vaz ? vag + ' estão vagos' : vag + ' campos estão vagos')) : '') + '.';
     tvRes.innerHTML = '<span class="eyebrow">A trava</span><ul>' + res.map(function (x) { return '<li class="' + (x[0] ? 'tv-ok' : 'tv-no') + '"><span class="tv-i">' + (x[0] ? '✓' : '✕') + '</span><span><b>' + x[1] + ':</b> ' + x[2] + '</span></li>'; }).join('') + '</ul>' +
-      (bad ? '<div class="verdict no"><b>Devolvido para você.</b> ' + (bad === 1 ? 'Falta um campo.' : 'Faltam ' + bad + ' campos.') + ' A trava não preenche, não sugere e não estima: quem sabe a resposta é você.</div>' : '<div class="verdict ok"><b>Passa.</b> O plano tem dono, número e data. Agora dá para cobrar, e dá para saber daqui a trinta dias se funcionou.</div>');
+      (bad ? '<div class="verdict no"><b>Devolvido para você.</b> ' + falta + ' A trava não preenche, não sugere e não estima: quem sabe a resposta é você.</div>' : '<div class="verdict ok"><b>Passa.</b> O plano tem dono, número e data. Agora dá para cobrar, e dá para saber daqui a trinta dias se funcionou.</div>');
   }
   document.getElementById('tvGo').addEventListener('click', check);
 

@@ -582,7 +582,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
 <section class="sec" id="s-copiar" aria-labelledby="h-copiar">
   <span class="eyebrow">Prompts para copiar</span>
   <h2 id="h-copiar">Oito pedidos que resolvem a maior parte da semana</h2>
-  <p class="intro">Funciona como os modelos de contrato do jurídico: a estrutura já vem pronta, e você só preenche o que está em destaque. Todos já vêm nos seis campos. <strong>O que está marcado é o que você troca</strong> pelo seu caso; o resto pode ficar como está.</p>
+  <p class="intro">Funciona como os modelos de contrato do jurídico: a estrutura já vem pronta, e você só preenche o que está em destaque. Os sete primeiros já vêm nos seis campos; o último pede para a IA montá-los. <strong>O que está marcado é o que você troca</strong> pelo seu caso; o resto pode ficar como está.</p>
   <div class="lib">
     <div class="tabs" id="tabs" role="tablist" aria-label="Situações"></div>
     <div class="libpane" id="libpane" role="tabpanel"></div>
@@ -641,7 +641,8 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
   function press(btns, pred, attr) { btns.forEach(function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* 1 · próxima palavra */
@@ -754,7 +755,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
       tas[c.k].sem.hidden = !!v;
       if (v) { filled++; html += '<b>' + c.n + ':</b> ' + esc(v) + '\n'; } else missing.push(c.n);
     });
-    document.getElementById('built').innerHTML = html || 'Preencha os campos ao lado, ou carregue um exemplo.';
+    document.getElementById('built').innerHTML = html || 'Preencha os campos, ou carregue um exemplo.';
     dotsEl.querySelectorAll('.dot').forEach(function (d, i) { d.classList.toggle('on', i < filled); });
     document.getElementById('meterTxt').textContent = filled === 6 ? '6 de 6 campos. Pedido completo: agora compare com o que você mandaria sem ele.' : filled + ' de 6 campos. Faltando: ' + missing.join(', ') + '.';
   }
@@ -809,7 +810,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
       if (i < CB.length) { var m2 = CB[i]; var d2 = document.createElement('div'); d2.className = 'msg ' + m2[0]; d2.textContent = m2[1]; b.appendChild(d2); if (m2[0] === 'you') { nB++; document.getElementById('nB').textContent = nB; } }
       i++;
       if (i < Math.max(CA.length, CB.length)) setTimeout(tick, reduce ? 0 : 450);
-      else { playing = false; document.getElementById('playHint').textContent = 'À esquerda, 5 mensagens suas e 4 só corrigindo. À direita, 2, e a primeira resposta foi uma pergunta: foi a linha “se faltar, pergunte” que produziu isso.'; }
+      else { playing = false; document.getElementById('playHint').textContent = 'No pedido pela tarefa, 5 mensagens suas e 4 só corrigindo. No pedido pelo resultado, 2, e a primeira resposta foi uma pergunta: foi a linha “se faltar, pergunte” que produziu isso.'; }
     }
     tick();
   });

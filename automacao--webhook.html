@@ -499,7 +499,8 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
       news.forEach(function (e) { delays.push(t - e); });
       asks.push({ t: t, hit: news.length > 0 });
     }
-    return { asks: asks, wasted: asks.filter(function (a) { return !a.hit; }).length, delay: delays.length ? Math.round(delays.reduce(function (a, b) { return a + b; }, 0) / delays.length) : 0 };
+    var lastT = asks.length ? asks[asks.length - 1].t : 0;
+    return { missed: EV.filter(function (e) { return e > lastT; }).length, asks: asks, wasted: asks.filter(function (a) { return !a.hit; }).length, delay: delays.length ? Math.round(delays.reduce(function (a, b) { return a + b; }, 0) / delays.length) : 0 };
   }
   function draw(upTo) {
     var I = +inp.value; document.getElementById('whIntO').textContent = I + ' min';
@@ -510,16 +511,16 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     var done = upTo >= DAY;
     document.getElementById('whA').textContent = shown.length;
     document.getElementById('whW').textContent = shown.filter(function (a) { return !a.hit; }).length;
-    document.getElementById('whD').textContent = done ? (s.delay + ' min') : '…';
+    document.getElementById('whD').textContent = done ? (s.delay + ' min' + (s.missed ? ' · ' + s.missed + ' só amanhã' : '')) : '…';
     cur.style.opacity = done ? 0 : 1; cur.setAttribute('x1', X(upTo)); cur.setAttribute('x2', X(upTo));
   }
-  inp.addEventListener('input', function () { if (timer) { clearInterval(timer); timer = null; } draw(DAY); });
+  inp.addEventListener('input', function () { if (timer) { clearInterval(timer); timer = null; } draw(0); });
   document.getElementById('whRun').addEventListener('click', function () {
     if (timer) clearInterval(timer);
     if (reduce) { draw(DAY); return; }
     var m = 0; timer = setInterval(function () { m += 6; draw(Math.min(m, DAY)); if (m >= DAY) { clearInterval(timer); timer = null; } }, 30);
   });
-  draw(DAY);
+  draw(0);
 
   /* 2 · campainha */
   var ST = [
@@ -581,6 +582,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
     var v = document.getElementById('whRingV'), ok, msg;
     if (U.u === 'teste') {
       ok = U.l === 'sim';
+      if (ok) { U.l = 'nao'; pressGroup(document.querySelectorAll('.wh-sw [data-l]'), function (x) { return x.dataset.l === 'nao'; }); lamps(); }
       msg = ok ? '<b>Chegou, desta vez.</b> O endereço de teste recebe um toque e volta a ficar surdo. Serve para montar; se ficou cadastrado no outro sistema, amanhã o aviso se perde.' : '<b>Não chegou.</b> O outro sistema está chamando o endereço de teste, e ninguém está escutando. É o defeito clássico: funcionou no teste, parou em produção.';
     } else {
       ok = U.a === 'sim';
@@ -670,7 +672,8 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   document.getElementById('whCopy').addEventListener('click', function () {
     var btn = this, txt = document.getElementById('whList').textContent;
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   });
 })();
 </script>

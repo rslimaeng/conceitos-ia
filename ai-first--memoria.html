@@ -423,7 +423,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-caminhos" aria-labelledby="h-caminhos">
   <span class="eyebrow">Quem vê o erro escreve a regra</span>
   <h2 id="h-caminhos">O caminho de uma correção, contado em passos</h2>
-  <p class="intro">Se a placa da sala de reunião está com o número errado, o chamado para a manutenção leva semanas; a recepcionista imprimir uma etiqueta nova leva um minuto. Mesmo erro, percebido pela mesma pessoa. À esquerda, corrigir é pedir a outra área. À direita, <strong>quem enxerga o erro escreve a regra</strong>. Conte os passos, e depois destaque os que ficam esperando alguém.</p>
+  <p class="intro">Se a placa da sala de reunião está com o número errado, o chamado para a manutenção leva semanas; a recepcionista imprimir uma etiqueta nova leva um minuto. Mesmo erro, percebido pela mesma pessoa. No primeiro caminho, corrigir é pedir a outra área. No segundo, <strong>quem enxerga o erro escreve a regra</strong>. Conte os passos, e depois destaque os que ficam esperando alguém.</p>
   <div class="seg" role="group" aria-label="Destacar">
     <button type="button" data-cf="tudo" aria-pressed="true">Ver os dois</button>
     <button type="button" data-cf="wait" aria-pressed="false">Destacar os passos que esperam alguém</button>
@@ -557,7 +557,8 @@ Critério de sucesso: eu leio a linha e consigo olhar a próxima resposta e dize
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* 1 · semanas */
@@ -594,7 +595,7 @@ Critério de sucesso: eu leio a linha e consigo olhar a próxima resposta e dize
   /* 2 · desvio ou insatisfação */
   var DQ = [
     { s: '“Ficou ruim, não era isso que eu queria.”', a: 'ins', w: 'Não diz o que ele fez. Não há o que corrigir, nem como saber depois se a correção funcionou.' },
-    { s: '“O rodapé da proposta trouxe condição de 30 dias, e isso não está em arquivo nenhum.”', a: 'des', w: 'Um trecho literal, que dá para procurar na próxima resposta. Tem nome: é invenção.' },
+    { s: '“O rodapé da proposta trouxe condição de 30 dias, e isso não está em arquivo nenhum.”', a: 'des', w: 'Um trecho literal, que dá para procurar na próxima resposta. Tem nome: é alucinação.' },
     { s: '“Precisava ser mais profissional.”', a: 'ins', w: 'Profissional para quem? Volte à saída e aponte o trecho que soou fora do tom. Ali aparece o desvio.' },
     { s: '“Começou formal e terminou com ‘basicamente’ e ‘tipo’.”', a: 'des', w: 'O comportamento está descrito, com as palavras dele. Vira linha: mantenha o registro formal, sem essas expressões.' },
     { s: '“Duzentas palavras para uma consulta que cabia numa linha.”', a: 'des', w: 'Dá para medir. Vira linha com número: consulta direta, no máximo cinquenta palavras.' }

@@ -361,9 +361,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <!-- 6 -->
 <section class="sec" id="s-depois" aria-labelledby="h-depois">
   <span class="eyebrow">Depois de cada reunião</span>
-  <h2 id="h-depois">Quatro passos, sempre na mesma ordem, e cada um mexe num arquivo</h2>
+  <h2 id="h-depois">Quatro passos, sempre na mesma ordem, e cada um mexe em arquivos próprios</h2>
   <p class="intro">É o fechamento de caixa no fim do expediente: sempre os mesmos passos, na mesma ordem, cada um num livro diferente. O fluxo está escrito no CLAUDE.md do vault, então o Claude o segue sem você pedir passo a passo. Soltos na pasta principal do vault ficam os arquivos de índice: <code>00-home.md</code> (o painel), <code>00-decisoes.md</code>, <code>00-fios-em-aberto.md</code>, e a pasta <code>03-reunioes/</code> com uma síntese por reunião. <strong>Avance e veja quais arquivos mudam em cada passo.</strong></p>
-  <div class="stepbar"><span class="eyebrow" id="flLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
+  <div class="stepbar"><span class="eyebrow" id="flLab">Antes</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
   <div class="fl-wrap">
     <div class="fl-tree" id="flTree">
       <span class="fl-dir out">fora do vault</span>
@@ -455,7 +455,8 @@ Marcadores: [!decisao] com o porquê, [!pendencia], [!risco], [!hipotese], [!cri
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -579,8 +580,9 @@ Marcadores: [!decisao] com o porquê, [!pendencia], [!risco], [!hipotese], [!cri
   ];
   var LAB = { novo: 'novo', mud: 'mudou', ghost: 'ainda não existe', '': '' };
   var flFiles = document.querySelectorAll('.fl-f');
-  stepper(FL.length, document.getElementById('flPrev'), document.getElementById('flNext'), document.getElementById('flLab'), 'Passo', function (k) {
+  stepper(FL.length, document.getElementById('flPrev'), document.getElementById('flNext'), {}, 'Passo', function (k) {
     var s = FL[k - 1], n = 0;
+    document.getElementById('flLab').textContent = k === 1 ? 'Antes' : 'Passo ' + (k - 1) + ' de ' + (FL.length - 1);
     flFiles.forEach(function (f) { var st = s.s[f.dataset.fl] || ''; f.className = 'fl-f' + (st ? ' ' + st : ''); f.querySelector('.st').textContent = LAB[st]; if (st === 'novo' || st === 'mud') n++; });
     document.getElementById('flCap').innerHTML = '<span class="eyebrow">' + n + (n === 1 ? ' arquivo tocado' : ' arquivos tocados') + ' até aqui</span><h3>' + s.t + '</h3><p>' + s.d + '</p>' + (s.sn ? '<pre class="fl-snip">' + esc(s.sn) + '</pre>' : '');
   });

@@ -458,7 +458,8 @@ code { font-family: var(--font-mono); font-size: .88em; }
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* 1 · peças */
@@ -506,8 +507,8 @@ code { font-family: var(--font-mono); font-size: .88em; }
   /* 3 · dentro */
   var IN = [
     { b: [1], a: [], t: 'A mensagem chega', d: '“Qual o orçamento do cliente Souza?” Sozinha, ela é só uma frase. O resto das peças é que dá sentido a ela.' },
-    { b: [3], a: [3], t: 'A memória entrega o caderno', d: 'As últimas mensagens desta conversa, desta pessoa, entram junto. É assim que “e o prazo dele?” vai fazer sentido daqui a pouco.' },
     { b: [2], a: [2], t: 'A instrução é lida antes de tudo', d: 'Papel, objetivo, ferramentas disponíveis, regras. É aqui que está escrito “sempre busque o cliente antes de responder sobre ele”.' },
+    { b: [3], a: [3], t: 'A memória entrega o caderno', d: 'As últimas mensagens desta conversa, desta pessoa, entram junto. É assim que “e o prazo dele?” vai fazer sentido daqui a pouco.' },
     { b: [4], a: [1, 2, 3], t: 'O modelo decide', d: 'Com as três coisas na mesa, ele pergunta a si mesmo: preciso de uma ferramenta? Aqui, sim: o dado mora na planilha.' },
     { b: [5], a: [4, 5], t: 'A ferramenta roda e devolve', d: 'O modelo escreve o pedido; o sistema em volta executa a busca e devolve a linha da planilha. Se precisar, ele pede outra.' },
     { b: [6, 3], a: [6, 7], t: 'Responde, e anota', d: '“O orçamento é de R$ 18.400.” E a troca inteira vai para o caderno, para a próxima mensagem desta mesma pessoa.' }
@@ -544,7 +545,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
   SP.forEach(function (s, i) {
     var f = document.createElement('div'); f.className = 'sp-f';
     f.innerHTML = '<label for="sp' + i + '">' + s.k + ' <span>· ' + s.h + '</span></label><textarea id="sp' + i + '" rows="3"></textarea>';
-    spIn.appendChild(f); var ta = f.querySelector('textarea'); ta.addEventListener('input', spBuild); tas.push(ta);
+    spIn.appendChild(f); var ta = f.querySelector('textarea'); ta.addEventListener('input', function () { pressGroup(preBtns, function () { return false; }); spBuild(); }); tas.push(ta);
   });
   function spBuild() {
     var txt = [], miss = [];

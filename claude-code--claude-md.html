@@ -370,7 +370,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   <p class="cm-foot">v4 · da v3 para a v4: entra a seção 10, padrão visual, que aponta para o documento da área; nada das seções 1 a 9 mudou</p>
   <p class="hint">Um rodapé real, adaptado. Quem abre o arquivo depois sabe o que mudou sem comparar versões.</p>
   <div class="two">
-    <div class="card"><h3>O que nunca entra: a história</h3><p>“Na sessão de março revisamos os módulos 1 a 3.” Isso é como foi. A cronologia fica na memória do projeto ou no histórico de versões, nunca no manual, porque o manual é lido inteiro em toda conversa.</p></div>
+    <div class="card"><h3>O que nunca entra: a história</h3><p>“Na sessão de março revisamos os módulos 1 a 3.” Isso é como foi. A cronologia fica no histórico de versões, nunca no manual, porque o manual é lido inteiro em toda conversa.</p></div>
     <div class="card"><h3>O que sobe da memória para o manual</h3><p>A lição que vale para sempre. Uma regra que nasceu numa sessão e continua valendo em todas as próximas deixa de ser estado e vira linha do manual, com versão no rodapé.</p></div>
   </div>
 </section>
@@ -509,7 +509,8 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -523,7 +524,7 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
         var ok = b.dataset.v === q.a; ans[i] = ok;
         var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
         fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
-        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'A resposta é “' + lab + '”. ') + '</b>' + q.why;
         var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
         scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
       }); });
@@ -556,16 +557,16 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
       if (i === 2 && dup) { html += '<li class="dup"><span>projeto</span>' + esc(DUP) + '</li>'; total += 1; }
     });
     pressGroup(lyBtns, function (b) { return lyOn[+b.dataset.ly]; });
-    dupBtn.setAttribute('aria-pressed', String(dup));
+    dupBtn.setAttribute('aria-pressed', String(dup)); dupBtn.disabled = !lyOn[2];
     document.getElementById('cmKnow').innerHTML = html || '<li><span>nada</span>Nenhuma camada: ele começa do zero, como no chat.</li>';
     document.getElementById('cmSum').textContent = cnt ? cnt + (cnt === 1 ? ' camada · ' : ' camadas · ') + total + ' linhas' : 'nada: você reexplica tudo';
     var v = document.getElementById('cmVer');
     if (!cnt) { v.className = 'verdict no'; v.innerHTML = '<b>Página em branco.</b> Quem você é, onde está e como quer o resultado: tudo volta a ser digitado na primeira mensagem.'; }
     else if (dup && lyOn[0] && lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Duas versões da mesma regra.</b> Frases curtas ou completa e detalhada? As duas entram na mesma conversa, e você não controla qual ele segue.'; }
     else if (dup && lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Sem conflito à vista, por enquanto.</b> Com a camada do usuário desligada a repetição não briga com nada. Ligue de volta e veja.'; }
-    else if (!lyOn[2]) { v.className = 'verdict no'; v.innerHTML = '<b>Falta o do projeto.</b> Ele sabe quem você é e as regras da área, mas não sabe qual modelo usar, de onde sai o preço nem que precisa ler a memória.'; }
+    else if (!lyOn[2]) { var sabe = []; if (lyOn[0]) sabe.push('quem você é'); if (lyOn[1]) sabe.push('as regras da área'); v.className = 'verdict no'; v.innerHTML = '<b>Falta o do projeto' + (cnt === 1 ? (lyOn[0] ? ' e o da pasta-mãe' : ' e o seu') : '') + '.</b> Ele sabe ' + sabe.join(' e ') + ', mas não sabe qual modelo usar, de onde sai o preço nem que precisa ler a memória.'; }
     else if (cnt === 3) { v.className = 'verdict ok'; v.innerHTML = '<b>A soma das três.</b> Nenhuma linha repetida: o do projeto só carrega o que é do projeto e herda o resto.'; }
-    else { v.className = 'verdict no'; v.innerHTML = '<b>Uma camada a menos.</b> O que estava nela some da conversa, e ninguém avisa: ele simplesmente não sabe.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + (3 - cnt === 1 ? 'Uma camada a menos.' : 'Duas camadas a menos.') + '</b> O que estava ' + (3 - cnt === 1 ? 'nela' : 'nelas') + ' some da conversa, e ninguém avisa: ele simplesmente não sabe.'; }
   }
   lyBtns.forEach(function (b) { b.addEventListener('click', function () { var i = +b.dataset.ly; lyOn[i] = !lyOn[i]; renderLy(); }); });
   dupBtn.addEventListener('click', function () { dup = !dup; renderLy(); });
@@ -652,7 +653,7 @@ Toda mudança: versão, data e motivo no rodapé.</pre>
     if (hb === 'poda') { v.className = 'verdict ok'; v.innerHTML = '<b>' + tot + ' linhas, todas em uso.</b> A regra nova entra e a velha que ela substitui sai no mesmo mês. A história ficou no histórico, e o estado, na memória.'; }
     else if (m === 0) { v.className = 'verdict ok'; v.innerHTML = '<b>Começo limpo.</b> Trinta linhas, todas em uso. Mova os meses.'; }
     else if (con === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Ainda sem briga à vista</b>, mas já há ' + r.o + ' linhas velhas e ' + r.s + ' de história lidas em toda conversa, sem mudar nada.'; }
-    else { v.className = 'verdict no'; v.innerHTML = '<b>' + con + (con === 1 ? ' par' : ' pares') + ' de regras em conflito.</b> Exemplo: “relatório vai em PDF” (mês 2) e, mais abaixo, “relatório vai em planilha, o PDF foi abandonado” (mês 7). As duas continuam lá, e ele pode seguir a velha.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + con + (con === 1 ? ' par' : ' pares') + ' de regras em conflito.</b> Exemplo: “relatório vai em PDF” (mês 2) e, mais abaixo, “relatório vai em planilha, o PDF foi abandonado” (mês seguinte). As duas continuam lá, e ele pode seguir a velha.'; }
   }
   mes.addEventListener('input', renderPd);
   hbBtns.forEach(function (b) { b.addEventListener('click', function () { hb = b.dataset.hb; renderPd(); }); });

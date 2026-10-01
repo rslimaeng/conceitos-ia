@@ -239,6 +239,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   .gloss { grid-template-columns: 1fr; }
   .gloss dd { margin-bottom: 8px; }
   .bl-wrap, .cf, .tk-wrap, .qh { grid-template-columns: 1fr; }
+  .cf-gen .big { transform: rotate(90deg); }
 }
 @media (max-width: 520px) { .ma-boxes { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ma-cols { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .cf-f, .tk-dest, .tk-num, .tk-peca [data-role] { transition: none; } }
@@ -368,7 +369,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-caixas" aria-labelledby="h-caixas">
   <span class="eyebrow">Uma caixa por decisão</span>
   <h2 id="h-caixas">Modelo rígido onde a realidade varia estoura na primeira semana diferente</h2>
-  <p class="intro">O formulário de reembolso com quatro linhas funciona até a viagem com sete notas: aí alguém escreve três numa linha só ou deixa nota de fora. Um modelo com quatro caixas de decisão funciona na semana que teve quatro decisões. <strong>Na semana que teve sete, a IA espreme três numa caixa só, ou corta.</strong> O modelo certo não diz “quatro caixas”: diz “uma caixa por decisão, quantas houver”. Mova o controle.</p>
+  <p class="intro">O formulário de reembolso com quatro linhas funciona até a viagem com sete notas: aí alguém escreve quatro numa linha só ou deixa nota de fora. Um modelo com quatro caixas de decisão funciona na semana que teve quatro decisões. <strong>Na semana que teve sete, a IA espreme quatro numa caixa só, ou corta.</strong> O modelo certo não diz “quatro caixas”: diz “uma caixa por decisão, quantas houver”. Mova o controle.</p>
   <div class="field">
     <label for="qhN">Decisões que a sala fechou nesta semana</label>
     <div class="row"><input type="range" id="qhN" min="3" max="7" step="1" value="5"><output id="qhOut" for="qhN">5</output></div>
@@ -500,7 +501,8 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
@@ -578,9 +580,9 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
   /* 4 · tokens */
   var TK = {
     cab: { n: 'Cabeçalho', w: 'o título da peça e a faixa do cabeçalho da tabela', m: 'Vem da marca: é a cor principal.', r: 'Diz “aqui começa uma coisa nova”. Por isso não se usa para enfeitar texto no meio.' },
-    dest: { n: 'Destaque', w: 'o número grande e a frase que a peça quer que você leve', m: 'Vem da marca: é a cor de apoio.', r: 'Se tudo é destaque, nada é. Um ou dois por peça.' },
+    dest: { n: 'Destaque', w: 'o número grande e a frase que a peça quer que você leve', m: 'Vem da marca: é a cor secundária.', r: 'Se tudo é destaque, nada é. Um ou dois por peça.' },
     risco: { n: 'Risco', w: 'a faixa de risco, e mais nada', m: 'Vem da marca: é a cor de alerta.', r: 'Reservada. Quem lê aprende que essa cor quer dizer “atenção”, e a regra só funciona se ela nunca aparecer como enfeite.' },
-    apoio: { n: 'Texto de apoio', w: 'a linha da fonte, no rodapé', m: 'Não veio da marca: o manual não dizia. Foi decidido por quem montou, e está marcado como decisão.', r: 'Fica mais apagado de propósito: é para quem quer conferir, não para quem está lendo de passagem.' }
+    apoio: { n: 'Texto de apoio', w: 'a linha da fonte, no rodapé', m: 'Vem da marca: é o cinza.', r: 'Fica mais apagado de propósito: é para quem quer conferir, não para quem está lendo de passagem.' }
   };
   var tkBtns = document.querySelectorAll('[data-tk]'), tkEls = document.querySelectorAll('#tkPeca [data-role]');
   function setTk(k) {
@@ -594,7 +596,7 @@ Depois de gerar, abra o arquivo e me diga se tem tabela cortada, cabeçalho sozi
   var tkSwap = document.getElementById('tkSwap'), tkPeca = document.getElementById('tkPeca');
   function swapNote() {
     var on = tkPeca.classList.contains('trocou');
-    document.getElementById('tkSwapNote').textContent = on ? 'Uma linha mudou no arquivo de padrão visual; os 2 lugares de destaque mudaram juntos, sem ninguém editar a peça.' : 'O destaque aponta para a cor de apoio da marca.';
+    document.getElementById('tkSwapNote').textContent = on ? 'Uma linha mudou no arquivo de padrão visual; os 2 lugares de destaque mudaram juntos, sem ninguém editar a peça.' : 'O destaque aponta para a cor secundária da marca.';
     tkSwap.textContent = on ? 'Voltar a cor do destaque' : 'Trocar a cor do destaque na marca';
   }
   tkSwap.addEventListener('click', function () { tkPeca.classList.toggle('trocou'); swapNote(); });

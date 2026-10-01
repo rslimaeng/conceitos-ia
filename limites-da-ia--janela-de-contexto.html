@@ -410,7 +410,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <span class="eyebrow">Colar o manual inteiro</span>
   <h2 id="h-trechos">Mais informação não é melhor: o trecho certo disputa com os parecidos</h2>
   <p class="intro">Quem já procurou uma cláusula num contrato de oitenta páginas sabe: o difícil não é pular os anexos, é não confundir a cláusula certa com as três parecidas. O instinto é colar o manual inteiro “para ela ter contexto”. <strong>Contexto irrelevante demais piora a resposta.</strong> O problema não são as páginas que não têm nada a ver: são as parecidas.</p>
-  <div class="seg" role="group" aria-label="O que foi colado"><button type="button" data-ch="3" aria-pressed="true">As 3 páginas certas</button><button type="button" data-ch="40" aria-pressed="false">O manual de 40 páginas</button></div>
+  <div class="seg" role="group" aria-label="O que foi colado"><button type="button" data-ch="3" aria-pressed="true">Só as 3 páginas do assunto</button><button type="button" data-ch="40" aria-pressed="false">O manual de 40 páginas</button></div>
   <div class="chunks" id="chunks" role="img" aria-label="Páginas na mesa: a certa, as parecidas e as que não têm a ver"></div>
   <div class="legend" aria-hidden="true"><span><i class="sw r"></i>o trecho que responde</span><span><i class="sw a"></i>trecho parecido, de outro caso</span><span><i class="sw x"></i>não tem a ver com a pergunta</span></div>
   <div class="verdict" id="chVer"></div>
@@ -680,7 +680,8 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
   copyBtn.addEventListener('click', function () {
     var t = document.getElementById('copyText').innerText;
     var done = function () { copyBtn.textContent = 'Copiado'; setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, done); } else { done(); }
+    var falhou = function () { copyBtn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, falhou); } else { falhou(); }
   });
 })();
 </script>

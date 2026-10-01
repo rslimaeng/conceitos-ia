@@ -485,7 +485,8 @@ Ao terminar um trabalho, reescreva o 00-aqui-paramos.md: estado, decidido, próx
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -536,7 +537,7 @@ Ao terminar um trabalho, reescreva o 00-aqui-paramos.md: estado, decidido, próx
 
   /* 2 · retrato × diário */
   var RT = {
-    ret: { lin: '58', onde: 'Na terceira linha depois do cabeçalho: “Estado em 1 frase”.', mesa: 'Cabe em duas telas. Lido inteiro, custa quase nada.', peek: '---\natualizado: 29/09/2026\nestado: em andamento\n---\n<em>## Estado em 1 frase</em>\nMódulos 1 a 3 aprovados; o 4 em rascunho; o 5 não começou.\n\n<em>## Próximo passo</em>\nTerminar os dois exercícios do fim do módulo 4,\nem modulos/04-reclamacoes.md.\n\n## Frentes\n| módulo | estado |\n...\n## Fios em aberto (top 5)\n...\n## Vínculos\n...' },
+    ret: { lin: '58', onde: 'Na segunda linha depois do cabeçalho: “Estado em 1 frase”.', mesa: 'Cabe em duas telas. Lido inteiro, custa quase nada.', peek: '---\natualizado: 29/09/2026\nestado: em andamento\n---\n<em>## Estado em 1 frase</em>\nMódulos 1 a 3 aprovados; o 4 em rascunho; o 5 não começou.\n\n<em>## Próximo passo</em>\nTerminar os dois exercícios do fim do módulo 4,\nem modulos/04-reclamacoes.md.\n\n## Frentes\n| módulo | estado |\n...\n## Fios em aberto (top 5)\n...\n## Vínculos\n...' },
     dia: { lin: '2.396', onde: 'Em algum lugar entre a sessão 1 e a última. Várias frases falam do estado, e as mais antigas estão erradas.', mesa: '53 mil palavras lidas antes do trabalho começar. Dois meses de história na frente do estado de hoje.', peek: '## Sessão 1 · 02/07\nComeçamos pela estrutura. Estado: fase 1...\n\n## Sessão 2 · 03/07\nAjustes no modelo. Estado: fase 1, faltam testes...\n\n## Sessão 3 · 07/07\n...\n\n(… mais 2.300 linhas …)\n\n## Sessão 41 · 04/09\nRetomamos o que ficou da sessão 38. Ver também\no que foi dito na sessão 12 sobre o prazo...\n<em>Estado: fase 2?</em> (a sessão 39 dizia fase 3)' }
   };
   var rtBtns = document.querySelectorAll('[data-rt]');
@@ -559,7 +560,7 @@ Ao terminar um trabalho, reescreva o 00-aqui-paramos.md: estado, decidido, próx
     { f: '<b>## Estado em 1 frase</b>\nMódulos 1 a 3 aprovados; o 4 em rascunho; o 5 não começou.', t: 'Estado em uma frase', d: 'Em que ponto o trabalho está. Uma frase: se precisar de um parágrafo, o estado não está claro nem para quem escreveu.' },
     { f: '<b>## Próximo passo</b>\nTerminar os dois exercícios do fim do módulo 4,\nem modulos/04-reclamacoes.md, com os casos de\nreferencias/casos-reais.md.', t: 'Próximo passo concreto', d: 'A primeira ação da próxima conversa, com o arquivo onde ela acontece. É o bloco que mais economiza: a conversa nova começa trabalhando, não procurando.' },
     { f: '<b>## Frentes</b>\n| módulo | estado |\n| 1 · acolhimento | aprovado |\n| 2 · escuta | aprovado |\n| 3 · resposta | aprovado |\n| 4 · reclamações | rascunho |\n| 5 · pós-atendimento | não começou |', t: 'Estado das frentes', d: 'Uma tabela, uma linha por frente. É o mapa para quem precisa saber mais do que o próximo passo.' },
-    { f: '<b>## Fios em aberto (top 5)</b>\nF7 · a coordenadora não disse se o módulo 5 entra este ano\nF9 · faltam os áudios de exemplo do módulo 2\nF11 · o nome do curso ainda não foi aprovado\n(completo em 00-fios-em-aberto.md)', t: 'Fios em aberto, os cinco primeiros', d: 'O que espera decisão. Só os cinco mais importantes: a lista inteira mora no arquivo dela, numerada, e fio fechado ganha data.' },
+    { f: '<b>## Fios em aberto (top 5)</b>\nF7 · a coordenadora não disse se o módulo 5 entra este ano\nF9 · faltam os áudios de exemplo do módulo 2\nF11 · o nome do curso ainda não foi aprovado\nF12 · os casos de referencias/casos-reais.md não foram revisados pela equipe\nF14 · falta definir quem testa o módulo 4 antes da aprovação\n(completo em 00-fios-em-aberto.md)', t: 'Fios em aberto, os cinco primeiros', d: 'O que espera decisão. Só os cinco mais importantes: a lista inteira mora no arquivo dela, numerada, e fio fechado ganha data.' },
     { f: '<b>## Vínculos</b>\nManual: CLAUDE.md\nDecisões: 00-decisoes.md (D1 a D12)\nPendências: 00-fios-em-aberto.md (F1 a F14)\nLinha do tempo: 00-linha-do-tempo.md', t: 'Vínculos', d: 'Onde estão o manual, as decisões e as pendências. A memória aponta, não copia: o que se copia em dois lugares um dia diverge.' }
   ];
   var bkFile = document.getElementById('bkFile');

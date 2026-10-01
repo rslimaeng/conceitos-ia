@@ -239,7 +239,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   .sb-facts { grid-template-columns: 1fr 1fr; }
   .sb-analogy, .id-wrap, .ck-wrap, .take, .nu { grid-template-columns: 1fr; }
   .cx-row { grid-template-columns: 1fr; }
-  .cx-box.in, .cx-box.mid, .cx-box.out { min-height: 0; }
+  .cx-box.in { min-height: 90px; }
+  .cx-box.mid { min-height: 130px; }
+  .cx-box.out { min-height: 70px; }
   .tr-node { grid-template-columns: 1fr; gap: 8px; }
   .tr-node:not(:last-child)::before { display: none; }
 }
@@ -447,7 +449,8 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
   function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* reações */
@@ -517,7 +520,9 @@ Na dúvida: se um trecho parecer identificar alguém, marque e pergunte antes de
     d.innerHTML = '<div class="tr-q"><span class="n">' + (i + 1) + '</span><p>' + t.q + '</p><div class="opts" role="group" aria-label="Resposta"><button type="button" data-v="s" aria-pressed="false">Sim</button><button type="button" data-v="n" aria-pressed="false">Não</button></div></div><div class="tr-yes"><span class="k">se sim</span><b>' + t.y + '</b><span>' + t.d + '</span></div>';
     var bs = d.querySelectorAll('button');
     bs.forEach(function (b) { b.addEventListener('click', function () {
-      if (i !== trCur) return;
+      if (i > (trCur !== 99 ? trCur : trStop)) return;
+      for (var j = i; j < trNodes.length; j++) { trNodes[j].classList.remove('hit'); if (j > i) trNodes[j].querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); }
+      trEnd.hidden = true;
       press(bs, function (x) { return x === b; });
       if (b.dataset.v === 's') { d.classList.add('hit'); trCur = 99; trStop = i; trEnd.hidden = true; }
       else if (i === TR.length - 1) { trCur = 99; trStop = i; trEnd.hidden = false; trEnd.innerHTML = '<b>Pode ir, e a decisão é sua.</b> Escreva o critério que você adotou, para não decidir de novo toda semana. Ele vale até alguém da empresa dizer o contrário.'; }

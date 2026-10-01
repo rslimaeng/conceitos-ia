@@ -416,7 +416,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
       </ol>
     </div>
   </div>
-  <p class="punch">A coluna da direita exige uma coisa que a da esquerda não exige: <em>alguém escreveu a tabela de preços</em>, e esse alguém talvez não seja você.</p>
+  <p class="punch">O processo com a tabela escrita exige uma coisa que o de hoje não exige: <em>alguém escreveu a tabela de preços</em>, e esse alguém talvez não seja você.</p>
 </section>
 
 <!-- 8 -->
@@ -503,7 +503,8 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 
@@ -638,6 +639,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
     renderBars(all, work);
     var vz = document.getElementById('vzVer');
     if (n < 2) { vz.className = 'verdict mid'; vz.innerHTML = 'Monte ao menos dois passos com tempo para as barras dizerem alguma coisa.'; }
+    else if (topIn === -1) { vz.className = 'verdict mid'; vz.innerHTML = '<b>Nenhum passo IN:</b> todo o tempo é espera de outro setor.'; }
     else if (topAll !== topIn && topIn > -1) { vz.className = 'verdict no'; vz.innerHTML = '<b>Dois culpados diferentes.</b> O prazo mora no passo ' + (topAll + 1) + ' (' + Math.round(ma / all * 100) + '% do total); o seu dia mora no passo ' + (topIn + 1) + ' (' + Math.round(mi / work * 100) + '% do seu trabalho). Quer encurtar o prazo? Mexa no ' + (topAll + 1) + '. Quer a tarde de volta? No ' + (topIn + 1) + '.'; }
     else { vz.className = 'verdict ok'; vz.innerHTML = '<b>O mesmo passo nas duas contas: o ' + (topAll + 1) + '.</b> Confira se não esqueceu alguma espera; processo que atravessa outro setor quase nunca tem o mesmo campeão nas duas.'; }
   }

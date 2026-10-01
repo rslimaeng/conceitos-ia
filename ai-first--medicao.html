@@ -317,7 +317,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-ficha" aria-labelledby="h-ficha">
   <span class="eyebrow">A ficha de quatro campos</span>
   <h2 id="h-ficha">A ficha, preenchida ao vivo, e o campo vazio acusado</h2>
-  <p class="intro">Funciona como o pedido de compra que o financeiro devolve quando falta o centro de custo: o formulário não julga a compra, só aponta o campo vazio. Escolha uma iniciativa real da sua área, uma que você faria se pudesse começar na segunda-feira. No campo 1 você marca um destino só: o lugar do negócio que a iniciativa empurra. <strong>A ficha ao lado diz qual campo ainda não é campo.</strong> O exemplo já vem com dois problemas comuns.</p>
+  <p class="intro">Funciona como o pedido de compra que o financeiro devolve quando falta o centro de custo: o formulário não julga a compra, só aponta o campo vazio. Escolha uma iniciativa real da sua área, uma que você faria se pudesse começar na segunda-feira. No campo 1 você marca um destino só: o lugar do negócio que a iniciativa empurra. <strong>A ficha preenchida ao vivo diz qual campo ainda não é campo.</strong> O exemplo já vem com três problemas comuns.</p>
   <div class="fc">
     <div class="fc-in">
       <div class="fc-f"><label for="fcIni">A iniciativa<span>uma frase</span></label><input id="fcIni" value="Responder as dúvidas repetidas de cliente sem alguém lendo uma a uma"></div>
@@ -515,7 +515,8 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* 1 · funil */
@@ -616,7 +617,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   /* 4 · destinos */
   var DS = [
     { i: 'Escrever uma vez as respostas das dúvidas de cliente que se repetem, num lugar que a equipe consulta', n: 'Horas por semana respondendo dúvida já respondida antes', a: 6, b: 3, u: 'h / semana' },
-    { i: 'Padronizar o material de divulgação de produto novo, com o público escrito uma vez', n: 'Dias entre o produto ser aprovado e o material estar no ar', a: 9, b: 3, u: 'dias' },
+    { i: 'Padronizar o material de divulgação de produto novo, com o público escrito uma vez', n: 'Dias entre o produto ser aprovado e o material estar no ar', a: 9, b: 5, u: 'dias' },
     { i: 'Conferir os documentos do pedido com uma lista fixa antes de cobrar o cliente', n: 'Percentual de pedidos que voltam por documento faltando', a: 22, b: 10, u: '%' }
   ];
   var dsB = document.querySelectorAll('[data-ds]');

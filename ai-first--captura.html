@@ -386,7 +386,7 @@ svg.gc-conv .gc-on, svg.gc-reg .gc-off { opacity: 0; }
       <path class="cm-arr" data-a="5" d="M706,75 H734" marker-end="url(#cmM)"/>
     </svg>
   </div>
-  <div class="cm-reach"><span class="eyebrow">Quem consegue usar</span><div class="cm-track"><div class="cm-fill" id="cmFill"></div></div><output id="cmOut">1 pessoa</output></div>
+  <div class="cm-reach"><span class="eyebrow">Quem consegue usar</span><div class="cm-track"><div class="cm-fill" id="cmFill"></div></div><output id="cmOut">quem estava na reunião</output></div>
   <div class="caption" id="cmCap" aria-live="polite"></div>
 </section>
 
@@ -518,7 +518,8 @@ Responda em três linhas: quantas regras não escritas você encontrou, qual del
   function pressGroup(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
@@ -603,8 +604,8 @@ Responda em três linhas: quantas regras não escritas você encontrou, qual del
 
   /* 4 · caminho de uma regra */
   var CM = [
-    { t: 'Dita na conversa', r: 8, o: '1 pessoa', d: 'O gerente explica a regra numa reunião. Quem estava lá sabe. Quem não estava, e a IA, não sabem, e vão descobrir errando.', x: 'Se parar aqui: a regra vive na memória de quem ouviu, e some quando essa pessoa muda de área.' },
-    { t: 'Capturada', r: 22, o: 'quem anotou', d: 'Alguém escreve a regra em uma frase, no mesmo dia. Ainda está no caderno, no e-mail ou na ata de uma pessoa só.', x: 'Se parar aqui: existe escrita, mas só quem anotou sabe onde. É registro que ninguém acha.' },
+    { t: 'Dita na conversa', r: 22, o: 'quem estava na reunião', d: 'O gerente explica a regra numa reunião. Quem estava lá sabe. Quem não estava, e a IA, não sabem, e vão descobrir errando.', x: 'Se parar aqui: a regra vive na memória de quem ouviu, e some quando essa pessoa muda de área.' },
+    { t: 'Capturada', r: 8, o: 'quem anotou', d: 'Alguém escreve a regra em uma frase, no mesmo dia. Ainda está no caderno, no e-mail ou na ata de uma pessoa só.', x: 'Se parar aqui: existe escrita, mas só quem anotou sabe onde. É registro que ninguém acha.' },
     { t: 'Organizada', r: 45, o: 'quem procurar', d: 'A frase vai para a gaveta 2, “como aqui se faz”, ao lado das outras regras comerciais. Ganha um lugar, e um nome que dá para procurar.', x: 'Se parar aqui: está no lugar certo, e depende de alguém lembrar de abrir na hora de montar a proposta.' },
     { t: 'Guardada onde o trabalho passa', r: 75, o: 'quem faz a tarefa', d: 'A regra entra no modelo da proposta e no material que a IA lê antes de montar qualquer proposta. Não num manual à parte.', x: 'É aqui que o registro começa a funcionar: ele aparece sem ninguém ir buscar.' },
     { t: 'Lida na hora de fazer', r: 100, o: 'toda a equipe e a IA', d: 'Quem monta a próxima proposta, pessoa ou IA, encontra a regra no caminho. Ninguém precisa lembrar dela, e ela vale no dia corrido também.', x: 'O ciclo da visão geral da família é este mesmo caminho, visto de longe. Aqui ele é uma frase só.' }
@@ -701,7 +702,7 @@ Responda em três linhas: quantas regras não escritas você encontrou, qual del
     { k: 'a', l: 'Tipo 1 · o que alguém só aprendeu vendo você fazer', p: 'como eu confiro o total antes de fechar o mês' },
     { k: 'b', l: 'Tipo 2 · a regra que você segue e ninguém escreveu', p: 'proposta acima de 10% de desconto passa pelo gerente' },
     { k: 'c', l: 'Tipo 3 · o caso que só você resolve', p: 'a condição especial de prazo do cliente mais antigo' },
-    { k: 'd', l: 'Hoje, quando você não está, o que acontece?', p: 'o caso espera dois dias, ou sai errado e alguém corrige depois' }
+    { k: 'd', l: 'Sem você · hoje, quando você não está, o que acontece?', p: 'o caso espera dois dias, ou sai errado e alguém corrige depois' }
   ];
   var feFields = document.getElementById('feFields'), feOut = document.getElementById('feOut'), feVals = {};
   FE.forEach(function (f) {
@@ -710,7 +711,7 @@ Responda em três linhas: quantas regras não escritas você encontrou, qual del
     feFields.appendChild(d);
     d.querySelector('textarea').addEventListener('input', function (e) { feVals[f.k] = e.target.value.trim(); renderFe(); });
   });
-  function val(k) { return feVals[k] ? esc(feVals[k]) : '<i>escreva ao lado</i>'; }
+  function val(k) { return feVals[k] ? esc(feVals[k]) : '<i>escreva no campo</i>'; }
   function renderFe() {
     feOut.innerHTML = 'O que precisa estar escrito antes das minhas férias\n\n' +
       '1. O jeito que se aprende observando\n   ' + val('a') + '\n   → gaveta 3, o passo a passo. Escrevo enquanto faço, na próxima vez.\n\n' +

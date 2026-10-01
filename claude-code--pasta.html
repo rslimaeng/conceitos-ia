@@ -391,7 +391,7 @@ code, .mono { font-family: var(--font-mono); font-size: .86em; }
       <g class="st-tok" id="stTok" transform="translate(32,112)"><rect x="0" y="0" width="141" height="28" rx="4"/><text x="8" y="18" id="stTokT">ata-modelo.docx</text></g>
     </svg>
   </div>
-  <div class="st-who"><span class="hint">Quem mexe nesta pasta:</span><span class="st-chip" id="stClaude">o Claude grava</span><span class="st-chip" id="stVoce">você move</span></div>
+  <div class="st-who"><span class="hint">Quem mexe nesta pasta:</span><span class="st-chip" id="stClaude">o Claude grava</span><span class="st-chip" id="stVoce">você mexe</span></div>
   <div class="caption" id="stCap" aria-live="polite"></div>
   <p class="hint">O modelo tem página própria: <a href="./claude-code--modelo.html">modelo</a>. A lista de quem é quem, que mora em <code>fontes/</code> e vale para todas as atas: <a href="./claude-code--referencia.html">arquivo de referência</a>.</p>
 </section>
@@ -495,7 +495,7 @@ Toda ata segue o arquivo em modelo/. Mudou o formato? Mude o modelo, não a ata.
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O pedido para colar no Claude Code, dentro da pasta</span><button type="button" class="btn" data-copy="coPrompt">Copiar</button></div>
 <pre id="coPrompt">Vamos organizar esta pasta para as atas da reunião <b>[semanal da equipe]</b>. Faça só isto:
-1. Crie quatro pastas: reunioes/brutas/, reunioes/leituras/, atas/em-validacao/ e atas/aprovadas/. Não crie nenhuma outra.
+1. Crie quatro pastas: reunioes/brutas/, reunioes/leituras/, atas/em-validacao/ e atas/aprovadas/. Não crie nenhuma outra além da do passo 2.
 2. Crie atas/modelo/ e ponha lá o arquivo <b>[nome da ata desta semana]</b>, que é o formato que toda ata deve seguir.
 3. Acrescente ao CLAUDE.md desta pasta estas três regras, com estas palavras:
    - A transcrição em reunioes/brutas/ não se edita. Ela é a prova do que foi dito.
@@ -547,7 +547,8 @@ Antes de mexer em qualquer coisa, me mostre a lista do que vai criar e espere o 
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {

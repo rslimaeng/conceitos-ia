@@ -286,7 +286,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-ficha" aria-labelledby="h-ficha">
   <span class="eyebrow">A ficha</span>
   <h2 id="h-ficha">Preencha a ficha e veja a máquina escrevê-la</h2>
-  <p class="intro">É como a ficha de cadastro de uma recepção: linhas impressas (<strong>o nome do campo</strong>, que nunca muda) e o que você escreve ao lado (<strong>o valor</strong>, que muda a cada pessoa). Tem uma linha onde cabe mais de uma coisa, e um quadrinho separado para o endereço. Preencha à esquerda.</p>
+  <p class="intro">É como a ficha de cadastro de uma recepção: linhas impressas (<strong>o nome do campo</strong>, que nunca muda) e o que você escreve ao lado (<strong>o valor</strong>, que muda a cada pessoa). Tem uma linha onde cabe mais de uma coisa, e um quadrinho separado para o endereço. Preencha os campos da ficha.</p>
   <div class="jf-grid">
     <div class="jf-form">
       <div class="jf-row"><label for="jfNome">Nome</label><input type="text" id="jfNome" value="Ana Souza" maxlength="40" autocomplete="off"></div>
@@ -310,7 +310,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <!-- 2 -->
 <section class="sec" id="s-tipos" aria-labelledby="h-tipos">
   <span class="eyebrow">Cinco tipos de linha</span>
-  <h2 id="h-tipos">Toda linha da ficha é de um destes cinco tipos</h2>
+  <h2 id="h-tipos">Quase toda linha da ficha é de um destes cinco tipos</h2>
   <p class="intro">Num formulário impresso, nem todo espaço é igual: tem o de escrever o nome, o de valor em reais, o de marcar sim ou não. O JSON separa do mesmo jeito. Você não precisa decorar os nomes em inglês que a ferramenta (o programa de automação onde você vê o JSON) mostra. Precisa <strong>reconhecê-los quando aparecerem</strong>, e saber que o primeiro é palavra e o segundo é quantidade. Clique em cada um.</p>
   <div class="jt-cards" role="group" aria-label="Os cinco tipos">
     <button type="button" class="jt-card" data-t="s" aria-pressed="true"><span class="sym">"…"</span><b>Palavra</b><span>com aspas</span></button>
@@ -459,7 +459,8 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   /* realce: devolve HTML com as cores de cada tipo */
   function hl(v, ind) {

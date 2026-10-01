@@ -344,7 +344,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
         <g class="ap-box" data-ap="2"><rect x="16" y="200" width="260" height="70" rx="8"/><text class="ap-t" x="32" y="228">COMANDO DE USO</text><text class="ap-s" x="32" y="250">a frase curta com o dado da vez</text></g>
         <rect class="ap-bar" x="300" y="44" width="14" height="22" rx="3"/><text class="ap-lab" x="322" y="60">uma vez</text>
         <rect class="ap-bar" x="300" y="134" width="70" height="22" rx="3"/><text class="ap-lab" x="378" y="150">quando a tabela muda</text>
-        <rect class="ap-bar soft" x="300" y="224" width="236" height="22" rx="3"/><text class="ap-lab" x="310" y="262">toda semana</text>
+        <rect class="ap-bar soft" x="300" y="224" width="236" height="22" rx="3"/><text class="ap-lab" x="310" y="262">a cada uso</text>
       </svg>
     </div>
     <div class="panel" id="apPanel" aria-live="polite"></div>
@@ -356,7 +356,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 <section class="sec" id="s-montar" aria-labelledby="h-montar">
   <span class="eyebrow">Montar o seu</span>
   <h2 id="h-montar">A instrução nasce de um trabalho que você já sabe fazer</h2>
-  <p class="intro">Quem já deixou um roteiro para o colega que cobre as suas férias sabe: o melhor roteiro é o que você faz de olhos fechados, só que passado para o papel. Ninguém inventa uma instrução do zero: ela é o seu processo, escrito para quem vai executar. Preencha os campos com um trabalho seu, ou carregue o exemplo da proposta comercial. <strong>O texto se monta ao lado, pronto para colar no campo de instruções</strong> (a caixa onde a ferramenta guarda o texto que a IA lê antes de toda conversa).</p>
+  <p class="intro">Quem já deixou um roteiro para o colega que cobre as suas férias sabe: o melhor roteiro é o que você faz de olhos fechados, só que passado para o papel. Ninguém inventa uma instrução do zero: ela é o seu processo, escrito para quem vai executar. Preencha os campos com um trabalho seu, ou carregue o exemplo da proposta comercial. <strong>O texto se monta sozinho no quadro “ao vivo”, pronto para colar no campo de instruções</strong> (a caixa onde a ferramenta guarda o texto que a IA lê antes de toda conversa).</p>
   <div class="nav"><button type="button" class="btn" id="asEx">Carregar exemplo</button><button type="button" class="btn" id="asClr">Limpar</button></div>
   <div class="as-build">
     <div class="as-form" id="asForm">
@@ -413,7 +413,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     <button type="button" data-bat="com" aria-pressed="false">Com o arquivo</button>
   </div>
   <div class="as-bat" id="asBat" aria-live="polite"></div>
-  <p class="hint">As três primeiras quase sempre passam, e por isso enganam. A terceira é a única que importa: quem responde bonito sobre o que não tem é pior que nenhum assistente, porque você para de conferir. Mais sobre isso em <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>.</p>
+  <p class="hint">As outras três quase sempre passam, e por isso enganam. A pergunta 3 é a única que importa: quem responde bonito sobre o que não tem é pior que nenhum assistente, porque você para de conferir. Mais sobre isso em <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>.</p>
 </section>
 
 <!-- 7 -->
@@ -434,8 +434,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
       <g class="dv-node" data-dv="2"><circle cx="500" cy="70" r="46"/><text class="dv-t" x="500" y="66">NOME</text><text class="dv-s" x="500" y="84">qual desvio é</text></g>
       <g class="dv-node" data-dv="3"><circle cx="500" cy="230" r="46"/><text class="dv-t" x="500" y="226">UMA LINHA</text><text class="dv-s" x="500" y="244">no fim, com data</text></g>
       <g class="dv-node" data-dv="4"><circle cx="140" cy="230" r="46"/><text class="dv-t" x="140" y="226">RETESTE</text><text class="dv-s" x="140" y="244">o mesmo pedido</text></g>
-      <text class="dv-count" id="dvCount" x="320" y="160">1</text>
-      <text class="dv-s" x="320" y="182">linha de correção no fim</text>
+      <text class="dv-count" id="dvCount" x="320" y="160">0</text>
+      <text class="dv-s" x="320" y="182">linhas de correção no fim</text>
     </svg>
   </div>
   <div class="caption" id="dvCap" aria-live="polite"></div>
@@ -520,7 +520,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -603,6 +604,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     if (val('fronteira')) p.push('<b>## ONDE VOCÊ NÃO DECIDE</b>\n' + esc(val('fronteira')));
     out = p.length ? p.join('\n\n') : '<i>Comece pelo papel: quem ele é, e o que ele decide.</i>';
     built.innerHTML = out;
+    document.querySelector('[data-copy="asBuilt"]').disabled = !p.length;
     document.getElementById('asBase').textContent = val('base') ? lines(val('base')).join(' · ') : 'nada ainda';
     document.getElementById('asCmd').textContent = val('cmd') || 'nada ainda';
     var chk = document.getElementById('asCheck'), msg = [];
@@ -610,7 +612,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     if (vag.length) msg.push('<p class="as-warn"><b>Adjetivo no NUNCA:</b> “' + esc(vag[0]) + '”. Dá para olhar a resposta e dizer se foi cumprido? Se não, reescreva como comportamento.</p>');
     if (val('papel') && !val('fronteira')) msg.push('<p class="as-warn"><b>Falta a fronteira.</b> O que ele organiza mas não escolhe? Valor, aprovação, diagnóstico.</p>');
     if (val('cmd').split(/\s+/).length > 25) msg.push('<p class="as-warn"><b>Comando longo.</b> O que você repete toda vez ali provavelmente é instrução.</p>');
-    if (!msg.length && val('papel') && val('fronteira')) msg.push('<p class="as-okline">Tem papel, fronteira e um comando curto. Agora é testar com um trabalho que você já entregou.</p>');
+    if (!msg.length && val('papel') && val('fronteira') && val('cmd')) msg.push('<p class="as-okline">Tem papel, fronteira e um comando curto. Agora é testar com um trabalho que você já entregou.</p>');
     chk.innerHTML = msg.join('');
   }
   tas.forEach(function (t) { t.addEventListener('input', build); });
@@ -657,17 +659,17 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 
   /* 7 · ciclo do desvio */
   var DV = [
-    { n: [1], c: 1, t: 'Copie o sintoma, com as palavras dele', d: 'O rodapé da proposta trouxe “condição: 30 dias”, e isso não existe em arquivo nenhum. Copie o trecho literal. “Ficou ruim” é insatisfação, não desvio: não dá para conferir se foi corrigido.' },
-    { n: [2], c: 1, t: 'Dê nome ao desvio', d: 'É alucinação: ele inventou um dado que não está na base. Nomear antes de escrever a linha evita escrever um desejo, e desejo não corrige comportamento.' },
-    { n: [3], c: 2, t: 'Uma linha no fim, com rótulo e data', d: '“Correção anti-invenção, desde hoje: se o dado não estiver nos arquivos, escreva que não localizou.” No fim, porque o que vem depois refina o que veio antes. Nada do que já funcionava foi tocado.' },
-    { n: [4], c: 2, t: 'O mesmo pedido, palavra por palavra', d: 'O rodapé passou a dizer “condição de pagamento: não localizada nos arquivos”. Chato e verdadeiro, que é o que dá para enviar. Se não mudou, apague a linha em vez de acrescentar uma segunda.' },
+    { n: [1], c: 0, t: 'Copie o sintoma, com as palavras dele', d: 'O rodapé da proposta trouxe “condição: 30 dias”, e isso não existe em arquivo nenhum. Copie o trecho literal. “Ficou ruim” é insatisfação, não desvio: não dá para conferir se foi corrigido.' },
+    { n: [2], c: 0, t: 'Dê nome ao desvio', d: 'É alucinação: ele inventou um dado que não está na base. Nomear antes de escrever a linha evita escrever um desejo, e desejo não corrige comportamento.' },
+    { n: [3], c: 1, t: 'Uma linha no fim, com rótulo e data', d: '“Correção anti-invenção, desde hoje: se o dado não estiver nos arquivos, escreva que não localizou.” No fim, porque o que vem depois refina o que veio antes. Nada do que já funcionava foi tocado.' },
+    { n: [4], c: 1, t: 'O mesmo pedido, palavra por palavra', d: 'O rodapé passou a dizer “condição de pagamento: não localizada nos arquivos”. Chato e verdadeiro, que é o que dá para enviar. Se não mudou, apague a linha em vez de acrescentar uma segunda.' },
     { n: [1, 2, 3, 4], c: 5, t: 'Quando o fim acumula cinco linhas', d: 'Cinco correções penduradas quase sempre apontam para o mesmo bloco. Aí, e só aí, reescrever é a resposta: reescreva aquele bloco e apague as cinco. O que vira padrão sobe do fim para o meio da instrução.' }
   ];
   var dvNodes = document.querySelectorAll('.dv-node'), dvCount = document.getElementById('dvCount');
   stepper(DV.length, document.getElementById('dvPrev'), document.getElementById('dvNext'), document.getElementById('dvLab'), 'Passo', function (k) {
     var s = DV[k - 1];
     dvNodes.forEach(function (g) { g.classList.toggle('on', s.n.indexOf(+g.dataset.dv) > -1); });
-    dvCount.textContent = s.c; dvCount.setAttribute('class', 'dv-count' + (s.c >= 5 ? ' full' : ''));
+    dvCount.textContent = s.c; dvCount.nextElementSibling.textContent = (s.c === 1 ? 'linha' : 'linhas') + ' de correção no fim'; dvCount.setAttribute('class', 'dv-count' + (s.c >= 5 ? ' full' : ''));
     document.getElementById('dvCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
   });
   var DEV = [
@@ -691,6 +693,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
     var v = +cV.value, g = +cG.value, c = +cC.value;
     document.getElementById('oVol').textContent = v; document.getElementById('oGan').textContent = g; document.getElementById('oCus').textContent = c;
     var n = Math.ceil(c / g), dias = n / v * 365, ver = document.getElementById('cVer');
+    document.querySelector('.as-res .eyebrow').textContent = crit === 'nao' ? 'Ele se paga quando?' : 'Ele se paga na';
     document.getElementById('cBig').textContent = crit === 'nao' ? 'nunca' : n + 'ª volta';
     var dots = '', show = Math.min(40, Math.max(v, n + 4));
     for (var i = 1; i <= show; i++) { dots += '<i class="' + (crit === 'nao' ? '' : (i <= n ? 'pay' : 'gain')) + '"></i>'; }

@@ -393,7 +393,8 @@ Antes de cada pedido: eu já sei como a resposta certa deveria sair?
   /* bolso */
   document.getElementById('bolsoCopy').addEventListener('click', function () {
     var btn = this, done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(document.getElementById('bolso').innerText).then(done, done); else done();
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(document.getElementById('bolso').innerText).then(done, falhou); else falhou();
   });
 })();
 </script>

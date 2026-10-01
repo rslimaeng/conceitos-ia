@@ -647,7 +647,7 @@ button:focus-visible, [role="region"]:focus-visible { outline: 2px solid var(--a
       html += row(1, 'harness', 'Harness', 'Envia ao modelo: sua mensagem, as instruções e a lista de ferramentas (' + listTxt + '). Nada nela serve para esse pedido.');
       html += row(2, 'llm', 'Modelo', 'Não vê ferramenta para isso e responde só com texto: “' + a.no + '” <small>só texto</small>');
       verdictEl.className = 'verdict no';
-      verdictEl.innerHTML = '<b>Nada aconteceu fora da conversa.</b> Ligue a ferramenta no painel ao lado e peça de novo.';
+      verdictEl.innerHTML = '<b>Nada aconteceu fora da conversa.</b> Ligue a ferramenta no “Harness do app” e peça de novo.';
     }
     traceEl.innerHTML = html;
   }

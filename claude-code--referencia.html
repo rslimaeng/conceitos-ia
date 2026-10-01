@@ -490,7 +490,8 @@ Nomes só pela lista; o que não estiver nela, [a confirmar]. Pare aí e espere 
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -602,17 +603,18 @@ Nomes só pela lista; o que não estiver nela, [a confirmar]. Pare aí e espere 
 
   /* 5 · quem esteve */
   var QE = [
-    ['MT', 'Marisa Teodoro', 1], ['JV', 'Jonas Vilela', 1], ['TE', 'Teresa', 1], ['AP', 'Aldo Pimentel', 1], ['RS', 'Rogério Sales', 1],
+    ['MT', 'Marisa Teodoro', 1], ['JV', 'Jonas Vilela', 1], ['TE', 'Teresa', 1], ['AP', 'Aldo Pimentel', 1], ['RS', 'Rogério Sales', 1, 'Rogério [a confirmar]'],
     ['LN', 'Lívia Nunes', 0], ['PD', 'Paulo Dantas', 1], ['BR', 'Beatriz Rocha', 1], ['HC', 'Hélio Campos', 0], ['SF', 'Sônia Freitas', 1]
   ];
-  document.getElementById('qeAta').innerHTML = QE.filter(function (p) { return p[2]; }).map(function (p) { return '<li>' + p[1] + '</li>'; }).join('');
+  document.getElementById('qeAta').innerHTML = QE.filter(function (p) { return p[2]; }).map(function (p) { return '<li>' + (p[3] || p[1]) + '</li>'; }).join('');
   var qeCall = document.getElementById('qeCall'), qeSeen = {};
   qeCall.innerHTML = QE.map(function (p, i) { return '<button type="button" data-qe="' + i + '" aria-pressed="false"><b>' + p[0] + '</b>' + p[1] + '</button>'; }).join('');
   function qe() {
     var n = Object.keys(qeSeen).length, miss = Object.keys(qeSeen).filter(function (k) { return !QE[k][2]; });
     qeCall.querySelectorAll('[data-qe]').forEach(function (b) { var i = b.dataset.qe; if (qeSeen[i]) { b.className = QE[i][2] ? 'ok' : 'no'; b.setAttribute('aria-pressed', 'true'); b.setAttribute('aria-label', QE[i][1] + (QE[i][2] ? ': está na ata' : ': faltava na ata')); } });
     var v = document.getElementById('qeVer');
-    if (n < QE.length) { v.className = 'verdict ' + (miss.length ? 'no' : 'ok'); v.innerHTML = '<b>' + n + ' de ' + QE.length + ' conferidos.</b> ' + (miss.length ? 'Fora da ata até agora: ' + miss.map(function (k) { return QE[k][1]; }).join(', ') + '.' : 'Até aqui, todos estão na ata.'); }
+    if (!n) { v.className = 'verdict'; v.innerHTML = '<b>0 de ' + QE.length + ' conferidos.</b> Clique num quadro para começar.'; }
+    else if (n < QE.length) { v.className = 'verdict ' + (miss.length ? 'no' : 'ok'); v.innerHTML = '<b>' + n + ' de ' + QE.length + ' conferidos.</b> ' + (miss.length ? 'Fora da ata até agora: ' + miss.map(function (k) { return QE[k][1]; }).join(', ') + '.' : 'Até aqui, todos estão na ata.'); }
     else { v.className = 'verdict no'; v.innerHTML = '<b>Faltavam ' + miss.length + ': ' + miss.map(function (k) { return QE[k][1]; }).join(' e ') + '.</b> Estiveram na chamada e não falaram, então não existem na transcrição. Só a evidência da reunião mostra quem estava.'; }
   }
   qeCall.querySelectorAll('[data-qe]').forEach(function (b) { b.addEventListener('click', function () { qeSeen[b.dataset.qe] = 1; qe(); }); });
@@ -621,7 +623,7 @@ Nomes só pela lista; o que não estiver nela, [a confirmar]. Pare aí e espere 
 
   /* 6 · ponto de parada */
   var RF = [
-    { on: ['bruta', 'lista'], a: [], t: 'Duas entradas', d: 'A transcrição bruta, com “Maria Isa” e “dia quatro” do jeito que o áudio entendeu. E a lista de pessoas, com o fato escrito uma vez.' },
+    { on: ['bruta', 'lista'], a: [], t: 'Duas entradas', d: 'A transcrição bruta, com “Maria Isa” do jeito que o áudio entendeu. E a lista de pessoas, com o fato escrito uma vez.' },
     { on: ['nota'], a: ['rfA1', 'rfA2'], t: 'A leitura sai numa nota, não numa ata', d: 'Dito, implícito e dedução separados; o que a captura estragou; onde o resumo automático diverge. Nomes pela lista, com [a confirmar] onde ela não sabe.' },
     { on: [], stop: 1, a: ['rfA1', 'rfA2', 'rfStop'], t: 'A parada: você confere', d: 'É aqui que você vê “Teresa [a confirmar]” e sabe o sobrenome, ou percebe que “o atraso vem do orçamento” é dedução. Corrigir custa uma frase na nota.' },
     { on: ['ata'], stop: 1, a: ['rfA1', 'rfA2', 'rfStop', 'rfA3'], t: 'Só então, a ata', d: 'Gerada da nota já conferida. O que ela afirma tem dono; o que é hipótese vai como pergunta, não como decisão.' },

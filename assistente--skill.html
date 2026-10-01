@@ -473,7 +473,8 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -563,7 +564,7 @@ Não invente regra que eu não disse. Se faltar alguma decisão, pergunte antes 
     { s: 'O cálculo de sobra de papel, que precisa dar sempre o mesmo número.', a: 'scr', why: 'Conta que não pode variar nunca. Scripts, e é um dos raros casos que precisam da gaveta.' },
     { s: 'Os seis passos, na ordem, de fechar uma cotação.', a: 'md', why: 'É o método: vai no próprio SKILL.md.' },
     { s: 'Uma proposta antiga que ficou ótima e serve de exemplo de tom.', a: 'ref', why: 'Se ela lê para saber o que é bom, é referência. Se copiasse a estrutura, seria modelo: o verbo decide, não o arquivo.' }
-  ], [['md', 'O método'], ['ref', 'Lê para decidir'], ['mod', 'Copia para produzir'], ['scr', 'Roda para calcular']], 'a primeira coluna nunca fala do documento: fala do que ela faz com ele.');
+  ], [['md', 'O método'], ['ref', 'Lê para decidir'], ['mod', 'Copia para produzir'], ['scr', 'Roda para calcular']], 'as opções nunca falam do documento: falam do que ela faz com ele.');
 
   /* 5 · etiqueta */
   var etN = document.getElementById('etName'), etF = document.getElementById('etFaz'), etQ = document.getElementById('etQuando'), etT = document.getElementById('etTeste');

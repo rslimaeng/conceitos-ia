@@ -422,7 +422,8 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
   function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
   document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
   function quiz(el, scoreEl, items, opts, total) {
@@ -542,7 +543,7 @@ Pela metade: a seção de devoluções, falta o número de outubro.</textarea></
   function nrm(t) { return t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
   function gt() {
     var t = nrm(gtIn.value), v = document.getElementById('gtVer');
-    var ph = GT.filter(function (p) { return t.indexOf(p) > -1; }), ws = GW.filter(function (w) { return t.indexOf(w) > -1; });
+    var tt = ' ' + t + ' ', ph = GT.filter(function (p) { return tt.indexOf(' ' + p + ' ') > -1; }), ws = GW.filter(function (w) { return tt.indexOf(' ' + w + ' ') > -1; });
     if (!t) { v.className = 'verdict no'; v.innerHTML = '<b>Escreva uma frase.</b>'; return; }
     if (ph.length) { v.className = 'verdict ok'; v.innerHTML = '<b>Abriria.</b> A frase está na descrição: “' + esc(ph[0]) + '”.'; }
     else if (ws.length) { v.className = 'verdict ok'; v.innerHTML = '<b>Provavelmente abriria.</b> Palavra em comum com a descrição: “' + esc(ws[0]) + '”.'; }

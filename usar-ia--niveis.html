@@ -442,7 +442,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* os sete degraus */
@@ -497,7 +498,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   });
   function renderAd() {
     var lv = 0; while (ans[lv] === true) lv++;
-    var jump = false; for (var k = lv + 1; k < AQ.length; k++) if (ans[k] === true) jump = true;
+    var jump = false; if (ans[lv] === false) for (var k = lv + 1; k < AQ.length; k++) if (ans[k] === true) jump = true;
     qEls.forEach(function (el, i) { el.classList.toggle('off', ans[lv] === false && i > lv); });
     var n = Object.keys(ans).length, l = LV[lv];
     var bar = LV.map(function (x, i) { return '<span class="' + (i <= lv ? 'on' : (i > 4 ? 'hz' : '')) + '"></span>'; }).join('');

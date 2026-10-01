@@ -230,7 +230,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   .mx .rh { grid-column: 1 / -1; }
   .tq-row { grid-template-columns: 1fr; }
 }
-@media (max-width: 520px) { .mx { grid-template-columns: 1fr; } .mx .hd { display: none; } }
+@media (max-width: 520px) { .mx-cell { padding: 10px; } }
 @media (prefers-reduced-motion: reduce) { .md-row, .pc-colbg, .pc-cell rect { transition: none; } }
 /* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
    As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
@@ -275,7 +275,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-faixas" aria-labelledby="h-faixas">
   <span class="eyebrow">As três partes do trabalho</span>
   <h2 id="h-faixas">Todo trabalho tem três partes, e cada modo opera uma</h2>
-  <p class="intro">Num relatório para a diretoria, alguém define o que ele precisa responder, alguém junta os números e monta, e alguém assina embaixo. Dirigir é decidir o que fazer e com que critério. Produzir é procurar, rascunhar, montar e formatar. Conferir é responder se aquilo pode sair com o seu nome. <strong>Delegar opera o meio. Pensar junto opera a ponta de cima. A ponta de baixo continua sua nos dois.</strong></p>
+  <p class="intro">Num relatório para a diretoria, alguém define o que ele precisa responder, alguém junta os números e monta, e alguém assina embaixo. Dirigir é decidir o que fazer e com que critério. Produzir é procurar, rascunhar, montar e formatar. Conferir é responder se aquilo pode sair com o seu nome. <strong>Delegar opera o meio. Pensar junto opera a ponta do começo. A ponta do fim continua sua nos dois.</strong></p>
   <div class="tf-scroll" role="region" tabindex="0" aria-label="Diagrama das três faixas. Role para os lados se a tela for estreita.">
     <svg viewBox="0 0 760 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="tf-t">
       <title id="tf-t">Três faixas do trabalho: dirigir, produzir e conferir. Pensar junto opera o dirigir, delegar opera o produzir, e conferir continua sendo seu.</title>
@@ -377,7 +377,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-rotinas" aria-labelledby="h-rotinas">
   <span class="eyebrow">Três rotinas</span>
   <h2 id="h-rotinas">O mesmo par de pedidos, em três trabalhos diferentes</h2>
-  <p class="intro">Assim como o mesmo formulário de requisição serve ao almoxarifado, à TI e ao RH, o par de pedidos muda de assunto e mantém a forma. Ache a rotina que se parece com a sua semana. Leia os dois lados como pedidos, não como exemplos: <strong>o da esquerda carrega o critério; o da direita termina em pergunta</strong>.</p>
+  <p class="intro">Assim como o mesmo formulário de requisição serve ao almoxarifado, à TI e ao RH, o par de pedidos muda de assunto e mantém a forma. Ache a rotina que se parece com a sua semana. Leia os dois lados como pedidos, não como exemplos: <strong>o de Delegar carrega o critério; o de Pensar junto termina em pergunta</strong>.</p>
   <div class="rt-tabs" role="tablist" aria-label="Rotinas" id="rtTabs"></div>
   <div class="rt-pane" id="rtPane" role="tabpanel" aria-live="polite"></div>
 </section>
@@ -448,7 +448,8 @@ Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor
   function press(btns, pred, attr) { btns.forEach(function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* dois modos: linha em destaque */
@@ -473,7 +474,7 @@ Na dúvida: se faltar contexto para avaliar algum ponto, pergunte antes de supor
     { t: 'Decidir o critério: a primeira entrada da IA', d: 'Você decide. A IA, no modo pensar junto, amplia o que entra na decisão: o que escapa, o que você não está vendo. A decisão continua na raia de cima (a linha do desenho que é sua).' },
     { t: 'Produzir: a segunda entrada, e a única coluna sem você', d: 'A IA, no modo delegar, produz com o critério que recebeu no momento 2. É por isso que o critério precisa estar escrito: é a única coisa sua que atravessa esta coluna.' },
     { t: 'Conferir', d: 'De volta à raia de cima. A IA aparece duas vezes no percurso, e nenhuma das duas está na coluna onde se decide se o resultado presta.' },
-    { t: 'Sai com o seu nome', d: 'Três dos cinco momentos continuam sendo seus. O que o percurso muda não é quem responde: é quanto do meio você deixa de carregar.' }
+    { t: 'Sai com o seu nome', d: 'Quatro dos cinco momentos continuam sendo seus. O que o percurso muda não é quem responde: é quanto do meio você deixa de carregar.' }
   ];
   var pcCur = 1, cells = document.querySelectorAll('.pc-cell'), colbg = pcCols.querySelectorAll('.pc-colbg');
   function pcGo(n) {

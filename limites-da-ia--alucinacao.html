@@ -339,7 +339,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 <section class="sec" id="s-voltou" aria-labelledby="h-voltou">
   <span class="eyebrow">O que voltou a mais</span>
-  <h2 id="h-voltou">Tudo o que aparece do lado direito precisa ter origem no esquerdo</h2>
+  <h2 id="h-voltou">Tudo o que aparece no que voltou precisa ter origem no que você deu</h2>
   <p class="intro">É a conferência do almoxarifado: tudo o que aparece na nota de saída precisa ter entrado antes por uma nota de entrada. Compare a matéria-prima com o produto. <strong>Marque o que não tem origem</strong> e repare onde isso acontece: no ponto em que o texto passa de relatar para explicar.</p>
   <div class="seg" role="group" aria-label="Destaque"><button type="button" data-ev="nada" aria-pressed="true">Ler como chegou</button><button type="button" data-ev="origem" aria-pressed="false">Marcar o que não tem origem</button></div>
   <div class="ev-grid">
@@ -373,7 +373,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   <h2 id="h-camadas">Conferir tem ordem, da camada mais barata para a mais cara</h2>
   <p class="intro">Numa nota fiscal, primeiro se olha se tem data e assinatura; só depois se pergunta se aquela compra devia ter sido feita. A conferência que a maioria faz para na primeira camada, porque é a que se enxerga rápido. <strong>É também a única que a ferramenta já faria sozinha.</strong> Clique em cada uma.</p>
   <div class="cm-wrap">
-    <div><div class="cm-stack" id="cmStack" role="group" aria-label="As quatro camadas"></div><div class="cm-cost" aria-hidden="true"><span>mais barata</span><span>mais cara</span></div></div>
+    <div><div class="cm-stack" id="cmStack" role="group" aria-label="As quatro camadas"></div><div class="cm-cost" aria-hidden="true"><span>↑ a de cima, mais barata</span><span>a de baixo, mais cara ↓</span></div></div>
     <div class="cm-detail" id="cmDetail" aria-live="polite"></div>
   </div>
 </section>
@@ -388,7 +388,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 <section class="sec" id="s-instrucao" aria-labelledby="h-instrucao">
   <span class="eyebrow">Pedir que avise o que faltou</span>
-  <h2 id="h-instrucao">A mesma pergunta, antes e depois de duas linhas no fim do pedido</h2>
+  <h2 id="h-instrucao">A mesma pergunta, antes e depois de um parágrafo no fim do pedido</h2>
   <p class="intro">É a diferença entre o fornecedor que completa o pedido por conta própria quando falta um item e o que liga avisando: “esse não tinha”. Mesma planilha, mesma pergunta: <strong>"Qual loja vendeu mais no trimestre, e quanto isso representa do total?"</strong> A única diferença é o parágrafo que manda declarar o que não foi encontrado.</p>
   <div class="seg" role="group" aria-label="Pedido"><button type="button" data-in="sem" aria-pressed="true">Sem a instrução</button><button type="button" data-in="com" aria-pressed="false">Com a instrução</button></div>
   <div class="in-out" id="inOut" aria-live="polite"></div>
@@ -463,7 +463,8 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
   function press(btns, pred) { btns.forEach(function (b) { b.setAttribute('aria-pressed', String(pred(b))); }); }
   function copyText(txt, btn) {
     var done = function () { btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = 'Copiar'; }, 1500); };
-    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, done); } else { done(); }
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
   }
 
   /* a frase nascendo */
