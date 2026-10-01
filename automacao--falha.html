@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao--falha">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quando um passo falha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 7.4. Peças: stepper com diagrama do fluxo que para sem plano, simulador quebre-um-passo × cinco respostas, quiz da resposta certa, painel verde × planilha, conferência liga-desliga, montador do aviso com copiar, linha do tempo sem aviso × com aviso, pedido do plano de falha para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+/* ---- só desta peça ---- */
+.verdict.meio { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+/* 1 e 2 · o fluxo em quatro passos (svg montado pelo script) */
+.fl-svg { min-width: 640px; }
+.fl-step rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.4; transition: fill .25s ease, stroke .25s ease; }
+.fl-n { font: 500 10.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.fl-t { font: 600 13px var(--font-body); fill: var(--text); }
+.fl-u { font: 400 12px var(--font-body); fill: var(--text-muted); }
+.fl-st { font: 500 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.st-o rect, .st-r rect { fill: var(--ok-soft); stroke: var(--ok); }
+.st-b rect { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 2.2; }
+.st-o .fl-st, .st-r .fl-st, .st-b .fl-st { fill: var(--ok-texto); }
+.st-x rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-width: 2.2; }
+.st-x .fl-st { fill: var(--atencao-texto); }
+.st-s rect { fill: var(--bg); stroke-dasharray: 5 4; }
+.st-s .fl-t, .st-s .fl-u { fill: var(--text-dim); }
+.st-w rect { fill: var(--accent-soft); stroke: var(--accent); stroke-dasharray: 6 3; }
+.st-w .fl-st { fill: var(--accent); }
+.fl-arr { stroke: var(--border-strong); stroke-width: 1.6; fill: none; }
+.fl-mk { fill: var(--border-strong); }
+.fl-path { stroke: var(--atencao); stroke-width: 1.6; stroke-dasharray: 5 4; fill: none; }
+.fl-err rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-width: 1.4; }
+.fl-err text { font: 500 12px var(--font-body); fill: var(--atencao-texto); text-anchor: middle; }
+.fl-err.mudo rect { fill: var(--bg); stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.fl-err.mudo text { fill: var(--text-dim); }
+.fl-hide { opacity: 0; transition: opacity .3s ease; }
+.fl-show { opacity: 1; transition: opacity .3s ease; }
+
+/* 2 · o simulador */
+.sim-ctrl { display: grid; gap: 10px; }
+.sim-ctrl .eyebrow { display: block; margin-bottom: 4px; }
+.sim-cause { font-size: .95rem; color: var(--text-muted); border-left: 3px solid var(--atencao); padding: 4px 0 4px 12px; }
+.sim-out { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.sim-out .card b { font-weight: 600; }
+.five { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.five .card h3 { font-size: 1.02rem; }
+.five .card p { font-size: .9rem; }
+
+/* 4 · painel × planilha */
+.vd-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.vd-box.green { border-color: var(--ok); }
+.vd-box.bad { border-color: var(--atencao); }
+.vd-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; border-top: 1px solid var(--border); padding-top: 8px; font-size: .95rem; }
+.vd-ok { font-family: var(--font-mono); font-size: .8rem; color: var(--ok-texto); background: var(--ok-soft); border: 1px solid var(--ok); border-radius: 4px; padding: 1px 8px; white-space: nowrap; }
+.vd-box .vtable td:first-child { font-weight: 500; }
+.vd-box .vtable td.q { color: var(--atencao-texto); }
+
+/* 5 · conferência liga-desliga */
+.cf-list { display: grid; gap: 8px; }
+.cf-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 12px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; font-size: .93rem; align-items: center; }
+.cf-row.slip { border-color: var(--atencao); background: var(--atencao-soft); }
+.cf-row.slip .cf-st { color: var(--atencao-texto); }
+.cf-row.stop { border-color: var(--accent); background: var(--accent-soft); }
+.cf-row.stop .cf-st { color: var(--accent); }
+.cf-row.ok .cf-st { color: var(--ok-texto); }
+.cf-st { font-size: .9rem; }
+
+/* 6 · montador do aviso */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.mt-form { display: grid; gap: 8px; }
+.mt-form label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: start; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 12px; font-size: .93rem; cursor: pointer; }
+.mt-form input { margin-top: 4px; accent-color: var(--accent); }
+.mt-form small { display: block; color: var(--text-dim); font-size: .82rem; }
+.mt-side { display: grid; gap: 10px; }
+.two-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+
+/* 7 · linha do tempo */
+.tl { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-left: 2px solid var(--border-strong); margin-left: 6px; }
+.tl li { position: relative; padding: 0 0 16px 20px; display: grid; gap: 2px; }
+.tl li::before { content: ''; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-elev); border: 2px solid var(--border-strong); }
+.tl li.bad::before { border-color: var(--atencao); background: var(--atencao-soft); }
+.tl li.good::before { border-color: var(--ok); background: var(--ok-soft); }
+.tl b { font-family: var(--font-mono); font-size: .82rem; font-weight: 500; color: var(--text-dim); letter-spacing: .04em; }
+.tl span { font-size: .95rem; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .five { grid-template-columns: 1fr 1fr; }
+  .sim-out, .mt-grid, .two-cols { grid-template-columns: 1fr; }
+  .cf-row { grid-template-columns: 1fr; gap: 4px; }
+}
+@media (max-width: 520px) { .five { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .fl-hide, .fl-show, .fl-step rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--json.html">← 7.3 JSON</a><a href="./automacao--testar.html">7.5 Testar →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a><a href="./automacao--falha.html" aria-current="page"><b>7.4</b>Quando falha</a><a href="./automacao--testar.html"><b>7.5</b>Testar</a></div>
+  </nav>
+  <span class="eyebrow">7.4 · 4 de 5</span>
+  <h1>Quando um passo falha</h1>
+  <p class="sub">Um dia o passo falha; o que importa é o que o fluxo faz com o erro, e quem fica sabendo</p>
+  <p class="lead">Uma automação roda sem ninguém olhar: é para isso que ela existe. Por isso, quando um passo falha, ninguém está olhando. O serviço do outro lado sai do ar, uma senha de acesso vence, alguém renomeia a planilha. Não dá para impedir. Dá para decidir antes <strong>o que o fluxo faz com o erro, e quem fica sabendo</strong>, para que a falha apareça para a equipe, e não para o cliente.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-sem">O que acontece sem plano</a><a href="#s-respostas">Cinco respostas a uma falha</a><a href="#s-qual">Cada falha, sua resposta</a><a href="#s-verde">Verde não é sucesso</a><a href="#s-parar">Parar de propósito</a><a href="#s-avisar">Registre e avise</a><a href="#s-cliente">Antes de o cliente contar</a><a href="#s-plano">O plano de falha do seu fluxo</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-sem" aria-labelledby="h-sem">
+  <span class="eyebrow">O que acontece sem plano</span>
+  <h2 id="h-sem">Se ninguém disse o que fazer, o fluxo para no passo que falhou</h2>
+  <p class="intro">Na expedição, quando a etiquetadora trava, as caixas param na esteira: nenhuma sai com a etiqueta errada, mas nenhuma sai. Um fluxo (a sequência de passos que roda sozinha, sem você do lado; mais em <a href="./automacao.html#s-fluxo">roteiro fixo ou assistente</a>) costuma fazer o mesmo quando um passo falha e ninguém combinou outra coisa. O exemplo desta página: uma gráfica que recebe pedidos de orçamento pelo site e, toda manhã, deixa a lista pronta para o vendedor. <strong>Avance e veja onde está o problema de verdade.</strong></p>
+  <div class="stepbar"><span class="eyebrow" id="snLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="snPrev">← Anterior</button><button type="button" class="btn primary" id="snNext">Próximo →</button></div></div>
+  <div class="scroll" id="snFlow"></div>
+  <div class="caption" id="snCap" aria-live="polite"></div>
+  <p class="hint">Saber em que passo quebrou só é fácil quando o fluxo tem as partes separadas: o que dispara, o que faz, o que entrega. É o que mostra <a href="./automacao.html#s-partes">três partes separadas</a>, na página da família.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-respostas" aria-labelledby="h-respostas">
+  <span class="eyebrow">Cinco respostas a uma falha</span>
+  <h2 id="h-respostas">Quebre um passo e escolha o que o fluxo faz</h2>
+  <p class="intro">Todo escritório tem um combinado para quando a impressora para: tentar de novo, mandar para a do outro andar, deixar o documento na fila para depois. Num fluxo também existem respostas prontas, e <strong>nenhuma serve para todo passo</strong>. Cada uma é uma configuração do passo, feita antes de ligar o fluxo.</p>
+  <div class="five">
+    <div class="card"><span class="eyebrow">1</span><h3>Tentar de novo</h3><p>Espera um pouco e repete o passo. Resolve a queda de segundos, que acontece com qualquer serviço, inclusive o de IA.</p></div>
+    <div class="card"><span class="eyebrow">2</span><h3>Seguir em frente</h3><p>Deixa o passo para trás e continua. Só serve quando o passo acrescenta e não decide.</p></div>
+    <div class="card"><span class="eyebrow">3</span><h3>Desviar para o caminho de erro</h3><p>Um segundo caminho que o fluxo só toma quando o passo falha: guarda o pedido numa lista de pendências, por exemplo.</p></div>
+    <div class="card"><span class="eyebrow">4</span><h3>Usar a reserva</h3><p>Um segundo serviço que faz o mesmo trabalho. De outro fornecedor: se um caiu, a reserva do mesmo provavelmente caiu junto.</p></div>
+    <div class="card"><span class="eyebrow">5</span><h3>Avisar e refazer depois</h3><p>Registra a falha, avisa quem conserta e guarda a rodada (cada vez que o fluxo roda; nas ferramentas, “execução”) para rodar de novo com os mesmos dados.</p></div>
+  </div>
+  <div class="sim-ctrl">
+    <div><span class="eyebrow">O passo que quebra</span>
+      <div class="seg" role="group" aria-label="Passo que quebra">
+        <button type="button" data-sp="0" aria-pressed="false">1 · Ler os pedidos</button>
+        <button type="button" data-sp="1" aria-pressed="false">2 · Pesquisar a empresa</button>
+        <button type="button" data-sp="2" aria-pressed="true">3 · Resumir com IA</button>
+        <button type="button" data-sp="3" aria-pressed="false">4 · Gravar e avisar</button>
+      </div>
+    </div>
+    <p class="sim-cause" id="simCause" aria-live="polite"></p>
+    <div><span class="eyebrow">A resposta combinada</span>
+      <div class="seg" role="group" aria-label="Resposta à falha">
+        <button type="button" data-sr="0" aria-pressed="true">Tentar de novo</button>
+        <button type="button" data-sr="1" aria-pressed="false">Seguir em frente</button>
+        <button type="button" data-sr="2" aria-pressed="false">Desviar</button>
+        <button type="button" data-sr="3" aria-pressed="false">Usar a reserva</button>
+        <button type="button" data-sr="4" aria-pressed="false">Avisar e refazer</button>
+      </div>
+    </div>
+  </div>
+  <div class="scroll" id="simFlow"></div>
+  <div class="sim-out" aria-live="polite">
+    <div class="card"><span class="eyebrow">O que chega no fim</span><p id="simChega"></p></div>
+    <div class="card"><span class="eyebrow">Quem fica sabendo</span><p id="simSabe"></p></div>
+  </div>
+  <div class="verdict" id="simVer" aria-live="polite"></div>
+  <p class="hint">Antes de escolher, leia o aviso de erro: ele costuma dizer de que lado está o problema, do seu ou do serviço que você chamou (<a href="./automacao--api.html#s-numero">o número que volta</a>). Tentar de novo num passo de IA é mais uma chamada ao modelo, com o custo e o tempo de uma (<a href="./agente.html#s-volta">quanto custa cada volta</a>). E se quem disparou o fluxo está esperando resposta, como um formulário que mostra “recebido”, o caminho de erro também precisa responder (<a href="./automacao--webhook.html#s-responder">responder o aviso</a>).</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-qual" aria-labelledby="h-qual">
+  <span class="eyebrow">Cada falha, sua resposta</span>
+  <h2 id="h-qual">Seis falhas da mesma gráfica. Qual resposta?</h2>
+  <p class="intro">Atraso de entrega e carga extraviada não se tratam do mesmo jeito: um pede paciência, o outro pede telefonema. Três perguntas decidem a resposta: <strong>a falha passa sozinha? o passo é crítico, ou só acrescenta? quem consegue consertar?</strong> Uma das opções abaixo é nova: parar de propósito, que a seção seguinte explica.</p>
+  <div class="qz" id="qlQuiz"></div>
+  <p class="qz-score" id="qlScore" aria-live="polite"></p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-verde" aria-labelledby="h-verde">
+  <span class="eyebrow">Verde não é sucesso</span>
+  <h2 id="h-verde">O painel diz que o passo rodou; só a entrega diz se deu certo</h2>
+  <p class="intro">O e-mail com “enviado” no canto não garante que o anexo foi junto. O painel de uma automação (a tela que lista cada rodada, com cada passo marcado em verde ou vermelho) diz se o passo rodou, não se o resultado presta. O caso mais traiçoeiro é o passo de IA que tem uma ferramenta à mão e perde o acesso a ela: <strong>ela não quebra, ela responde</strong>, com educação, que não conseguiu. Para o painel, responder é sucesso. Compare as duas telas da mesma terça-feira.</p>
+  <div class="seg" role="group" aria-label="Qual tela">
+    <button type="button" data-vd="painel" aria-pressed="true">O que o painel mostra</button>
+    <button type="button" data-vd="planilha" aria-pressed="false">O que chegou na planilha</button>
+  </div>
+  <div id="vdOut" aria-live="polite"></div>
+  <p class="punch">O aviso de erro só dispara quando algo fica vermelho. <em>Uma resposta educada nunca fica vermelha.</em></p>
+  <p class="hint">É o mesmo problema de <a href="./automacao--json.html#s-calado">o erro que não avisa</a>, por outro caminho: lá, um número chega como texto e a conta sai errada sem alarme. O remédio dos dois é o mesmo: conferir o que saiu, não a cor do passo.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-parar" aria-labelledby="h-parar">
+  <span class="eyebrow">Parar de propósito</span>
+  <h2 id="h-parar">No caminho que não devia acontecer, o fluxo para e diz por quê</h2>
+  <p class="intro">No fechamento do caixa, a diferença de dez reais não é empurrada para o dia seguinte: o fechamento para até alguém explicar. Alguns resultados não deviam existir: pedido sem contato num formulário que exige contato, resumo que diz “não consegui”, prioridade fora da lista. Logo depois do passo que pode trazer o absurdo, ponha uma conferência (um passo que só pergunta sim ou não). No lado do “não devia”, o fluxo <strong>para de propósito, com uma mensagem escrita</strong>, e a parada vira um aviso. Ligue e desligue a conferência na semana da gráfica.</p>
+  <div class="seg" role="group" aria-label="Conferência">
+    <button type="button" data-cf="off" aria-pressed="true">Sem conferência</button>
+    <button type="button" data-cf="on" aria-pressed="false">Com conferência</button>
+  </div>
+  <div class="cf-list" id="cfList" aria-live="polite"></div>
+  <div class="verdict" id="cfVer" aria-live="polite"></div>
+  <p class="hint">Parar assim não é defeito: é o fluxo dizendo “aqui eu não sei seguir”. É a mesma ideia de <a href="./ai-first--execucao.html#s-trava">o campo que barra o vazio</a> e de <a href="./ai-first--execucao.html#s-portao">passa ou volta</a>, morando dentro da automação: a conferência faz uma pergunta só, escrita antes, e devolve o que não passa.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-avisar" aria-labelledby="h-avisar">
+  <span class="eyebrow">Registre e avise</span>
+  <h2 id="h-avisar">Duas regras: guarde o que aconteceu, e diga a quem conserta</h2>
+  <p class="intro">O livro de ocorrências da portaria serve a dois leitores: quem precisa saber agora, pelo interfone, e quem vai entender depois, pela página escrita. Na automação é igual. <strong>Registrar</strong> é guardar uma linha por falha, numa planilha de ocorrências. <strong>Avisar</strong> é mandar a mesma informação para a pessoa que consegue resolver, no canal que ela olha. Monte o aviso da terça em que alguém renomeou a aba da planilha.</p>
+  <div class="mt-grid">
+    <div class="mt-form" id="mtForm">
+      <label><input type="checkbox" data-mt="quando"><span>Quando<small>dia e hora da rodada</small></span></label>
+      <label><input type="checkbox" data-mt="fluxo" checked><span>Qual fluxo<small>o nome que a equipe reconhece</small></span></label>
+      <label><input type="checkbox" data-mt="passo"><span>Qual passo<small>onde parou</small></span></label>
+      <label><input type="checkbox" data-mt="erro" checked><span>O que o erro dizia<small>a mensagem, copiada como veio</small></span></label>
+      <label><input type="checkbox" data-mt="dado"><span>O que tinha entrado<small>os pedidos que estavam na rodada</small></span></label>
+      <label><input type="checkbox" data-mt="refazer"><span>Como refazer<small>onde abrir a rodada e rodar de novo</small></span></label>
+    </div>
+    <div class="mt-side">
+      <div><span class="eyebrow">Para quem vai</span>
+        <div class="seg" role="group" aria-label="Para quem vai o aviso">
+          <button type="button" data-mq="grupo" aria-pressed="true">O grupo da equipe</button>
+          <button type="button" data-mq="pessoa" aria-pressed="false">A pessoa que conserta</button>
+        </div>
+      </div>
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O aviso · ao vivo</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+        <pre id="mtOut"></pre>
+      </div>
+      <div class="verdict" id="mtVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">O registro leva as mesmas colunas, uma linha por falha. Depois de um mês, ele responde o que o aviso sozinho não responde: qual passo falha mais, e em que dia da semana.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-cliente" aria-labelledby="h-cliente">
+  <span class="eyebrow">Antes de o cliente contar</span>
+  <h2 id="h-cliente">A mesma falha, descoberta por dois caminhos</h2>
+  <p class="intro">O chefe que descobre o problema pelo cliente faz duas perguntas, e a segunda dói mais: o que aconteceu, e por que eu não sabia. A falha da terça é a mesma nos dois lados abaixo. <strong>O que muda é quem descobre primeiro.</strong></p>
+  <div class="seg" role="group" aria-label="Com ou sem aviso">
+    <button type="button" data-tl="sem" aria-pressed="true">Sem aviso</button>
+    <button type="button" data-tl="com" aria-pressed="false">Com aviso</button>
+  </div>
+  <ol class="tl" id="tlList" aria-live="polite"></ol>
+  <div class="verdict" id="tlVer" aria-live="polite"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-plano" aria-labelledby="h-plano">
+  <span class="eyebrow">O plano de falha do seu fluxo</span>
+  <h2 id="h-plano">Peça à IA para percorrer o seu fluxo perguntando “e se este passo falhar?”</h2>
+  <p class="intro">Antes de o prédio ganhar uma brigada de incêndio, alguém percorre os andares perguntando: e se esta porta travar? Faça o mesmo com a sua automação, de preferência antes de ligá-la. Cole o pedido abaixo no chat, com os passos do seu fluxo no fim, um por linha. <strong>Quem decide a resposta de cada passo continua sendo você</strong>: a IA lista, você escolhe.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido · para colar no chat</span><button type="button" class="btn" data-copy="plPrompt">Copiar</button></div>
+<pre id="plPrompt">Vou descrever um fluxo automático meu, passo a passo. Para cada passo, responda numa tabela:
+1. O que pode fazer este passo falhar, do meu lado e do lado do serviço que ele chama.
+2. Se o passo é crítico (o resultado fica errado sem ele) ou se só acrescenta.
+3. Qual resposta faz sentido, e por quê: tentar de novo, seguir em frente, desviar para um caminho de erro, usar uma reserva de outro fornecedor, ou avisar e refazer depois.
+4. Se depois dele existe um resultado que "não devia acontecer" e merece uma conferência que pare o fluxo de propósito.
+Depois da tabela, responda:
+- Se todos os passos terminarem em verde, como eu confiro que o resultado está certo?
+- Quem deve ser avisado quando algo falhar, e o que a mensagem precisa dizer para essa pessoa agir sem abrir o fluxo?
+Não invente passos que eu não descrevi. Se faltar informação para decidir, pergunte antes.
+
+Meu fluxo:
+[cole aqui os passos, um por linha]</pre>
+  </div>
+  <div class="three">
+    <div class="card"><h3>Teste a falha, não só o acerto</h3><p>Quebre um passo de propósito (a aba com outro nome, por exemplo) e confira se o aviso chega a quem devia. Como testar sem estragar nada está em <a href="./automacao--testar.html">testar em pequeno</a>.</p></div>
+    <div class="card"><h3>Comece pelo passo que entrega</h3><p>Se só der tempo de configurar um, configure o último: é nele que a falha vira prejuízo, e é nele que “seguir em frente” é pior.</p></div>
+    <div class="card"><h3>O aviso também envelhece</h3><p>Quando a responsável muda de função, o aviso continua indo para ela. Ponha o nome de quem recebe no registro, e revise junto com o fluxo.</p></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Todo fluxo falha um dia</h3><p>A pergunta não é se. É o que o fluxo faz com o erro, e quem fica sabendo.</p></div>
+    <div class="take-card"><h3>Verde não é sucesso</h3><p>O painel mede se o passo rodou. Só a entrega diz se deu certo.</p></div>
+    <div class="take-card"><h3>Registre e avise</h3><p>Guarde o que aconteceu, avise quem conserta, refaça sem perder o pedido. Antes de o cliente contar.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Passo</dt><dd>Cada ação do fluxo: ler, pesquisar, resumir, gravar. Falha um de cada vez.</dd>
+    <dt>Rodada</dt><dd>Cada vez que o fluxo roda, do começo ao fim. Fica guardada com o que entrou, e por isso pode ser refeita. Nas ferramentas, aparece como execução.</dd>
+    <dt>Caminho de erro</dt><dd>Um segundo caminho que o fluxo só toma quando um passo falha.</dd>
+    <dt>Reserva</dt><dd>Outro serviço, de outro fornecedor, que faz o mesmo trabalho quando o principal cai.</dd>
+    <dt>Conferência</dt><dd>Um passo que só pergunta sim ou não. No lado do “não devia acontecer”, o fluxo para de propósito.</dd>
+    <dt>Registro</dt><dd>Uma linha por falha, com quando, onde, o que dizia e como refazer. É o que deixa ver o padrão depois de um mês.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O nome de cada recurso e o lugar onde ele se configura mudam de ferramenta para ferramenta; as cinco respostas, a conferência e o aviso são ideias, não botões: cada ferramenta tem o seu jeito de montar. A gráfica, os pedidos, os horários e as mensagens são exemplos inventados. Família <a href="./automacao.html">Automação</a>; irmãs: <a href="./automacao--api.html">API</a>, <a href="./automacao--webhook.html">webhook</a>, <a href="./automacao--json.html">JSON</a>, <a href="./automacao--testar.html">testar em pequeno</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <a class="famfoot-prev" href="./automacao--json.html"><span>← anterior</span><b>7.3 · JSON</b></a>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao--testar.html"><span>próxima →</span><b>7.5 · Testar em pequeno antes de ligar</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* o fluxo em quatro passos, desenhado igual nas seções 1 e 2 */
+  var STEPS = [['Ler os pedidos', 'do formulário do site'], ['Pesquisar a empresa', 'no site do cliente'], ['Resumir com IA', 'e dar a prioridade'], ['Gravar e avisar', 'planilha e vendedor']];
+  var X = [20, 205, 390, 575], W = 165;
+  var LAB = { o: 'concluído', r: 'ok na 2ª tentativa', b: 'ok na reserva', x: 'falhou', s: 'não rodou', w: 'pulado', p: 'esperando' };
+  function flowSVG(box, p, title) {
+    var s = '<svg class="fl-svg" viewBox="0 0 760 250" role="img" aria-labelledby="' + p + 'T" xmlns="http://www.w3.org/2000/svg"><title id="' + p + 'T">' + title + '</title>';
+    s += '<defs><marker id="' + p + 'Mk" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0.5 L10,5 L0,9.5 z" class="fl-mk"/></marker></defs>';
+    for (var i = 0; i < 3; i++) { s += '<line class="fl-arr" x1="' + (X[i] + W + 2) + '" y1="75" x2="' + (X[i + 1] - 3) + '" y2="75" marker-end="url(#' + p + 'Mk)"/>'; }
+    STEPS.forEach(function (st, k) {
+      var cx = X[k] + W / 2;
+      s += '<path class="fl-path fl-hide" id="' + p + 'P' + k + '" d="M' + cx + ',142 C' + cx + ',168 380,156 380,180"/>';
+      s += '<g class="fl-step" id="' + p + 'S' + k + '"><rect x="' + X[k] + '" y="40" width="' + W + '" height="70" rx="8"/>';
+      s += '<text class="fl-n" x="' + (X[k] + 12) + '" y="58">PASSO ' + (k + 1) + '</text>';
+      s += '<text class="fl-t" x="' + (X[k] + 12) + '" y="79">' + st[0] + '</text>';
+      s += '<text class="fl-u" x="' + (X[k] + 12) + '" y="97">' + st[1] + '</text>';
+      s += '<text class="fl-st" id="' + p + 'L' + k + '" x="' + cx + '" y="132"></text></g>';
+    });
+    s += '<g class="fl-err fl-hide" id="' + p + 'E"><rect x="150" y="180" width="460" height="52" rx="8"/><text id="' + p + 'ET" x="380" y="211"></text></g></svg>';
+    box.innerHTML = s;
+  }
+  var ERR = { desvio: 'Caminho de erro: o pedido vai para a lista de pendências', vigia: 'Registro e aviso à responsável, com o link da rodada', mudo: 'Aviso: nenhum. Só o vermelho no histórico, que ninguém abre' };
+  function setFlow(p, st, err) {
+    var bad = st.indexOf('x');
+    for (var k = 0; k < 4; k++) {
+      var c = st.charAt(k);
+      document.getElementById(p + 'S' + k).setAttribute('class', 'fl-step st-' + c);
+      document.getElementById(p + 'L' + k).textContent = LAB[c];
+      document.getElementById(p + 'P' + k).setAttribute('class', 'fl-path ' + (err && k === bad ? 'fl-show' : 'fl-hide'));
+    }
+    document.getElementById(p + 'E').setAttribute('class', 'fl-err' + (err === 'mudo' ? ' mudo' : '') + (err ? ' fl-show' : ' fl-hide'));
+    document.getElementById(p + 'ET').textContent = err ? ERR[err] : '';
+  }
+
+  /* 1 · sem plano */
+  flowSVG(document.getElementById('snFlow'), 'sn', 'Fluxo de quatro passos: ler os pedidos, pesquisar a empresa, resumir com IA, gravar e avisar. O passo 3 falha, o passo 4 não roda e ninguém é avisado.');
+  var SN = [
+    { st: 'oooo', err: '', t: 'Uma manhã normal', d: 'Às 7h o fluxo roda sozinho: lê os pedidos de orçamento da noite, pesquisa o site de cada empresa, pede à IA um resumo com a prioridade, grava na planilha e manda a lista ao vendedor. Ninguém olha. É para isso que ele existe.' },
+    { st: 'ooxp', err: '', t: 'O passo 3 não responde', d: 'O serviço de IA sai do ar por alguns minutos. Acontece com qualquer fornecedor, sem aviso e sem um motivo que você consiga ver daqui.' },
+    { st: 'ooxs', err: '', t: 'O fluxo para ali', d: 'Sem instrução, o comportamento comum é parar no passo que falhou. Nada errado chega na planilha. Mas nada chega: os pedidos da noite ficaram no meio do caminho.' },
+    { st: 'ooxs', err: 'mudo', t: 'E ninguém fica sabendo', d: 'O vendedor abre a planilha, vê a lista vazia e conclui que a noite foi fraca. A falha só aparece na quinta, quando um cliente liga cobrando o orçamento. <b>O problema não foi a queda: foi o silêncio.</b>' }
+  ];
+  stepper(SN.length, document.getElementById('snPrev'), document.getElementById('snNext'), document.getElementById('snLab'), 'Passo', function (k) {
+    var s = SN[k - 1]; setFlow('sn', s.st, s.err);
+    document.getElementById('snCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 2 · quebre um passo */
+  flowSVG(document.getElementById('simFlow'), 'sm', 'O mesmo fluxo de quatro passos, com o passo escolhido falhando e a resposta escolhida aplicada.');
+  var CAUSE = [
+    'O sistema do formulário demora a responder por alguns segundos. Passa sozinho.',
+    'O site de um cliente não abre. A pesquisa só acrescenta uma linha de contexto ao resumo.',
+    'O serviço de IA está fora do ar. Pode voltar em segundos, ou em uma hora.',
+    'A planilha recusa a gravação: alguém renomeou a aba. É do seu lado, e não passa sozinho.'
+  ];
+  var R = [
+    [
+      ['rooo', '', 'Todos os pedidos da noite, resumidos, na planilha e na lista do vendedor.', 'Ninguém, e não precisava: a falha se resolveu sozinha.', 'ok', 'Certo para falha passageira. Uma pausa curta e uma nova tentativa resolvem a queda de segundos.'],
+      ['wooo', '', 'Uma lista vazia, entregue no horário, com todos os passos em verde.', 'Ninguém. O vendedor conclui que não houve pedido.', 'no', 'Seguir sem a entrada é seguir com nada. O fluxo parece ter funcionado, e esse é o pior jeito de falhar.'],
+      ['xsss', 'desvio', 'Nada na planilha. A lista de pendências recebe só a anotação “formulário não respondeu”.', 'Quem abrir a lista de pendências, se abrir.', 'meio', 'Não perde nada, mas também não há pedido para guardar: o desvio serve quando o passo falha com um dado na mão.'],
+      ['xsss', '', 'Nada. Não existe outro lugar de onde ler os pedidos.', 'Ninguém.', 'no', 'Reserva serve quando outro fornecedor faz o mesmo trabalho. Os seus pedidos só existem no seu formulário.'],
+      ['xsss', 'vigia', 'Nada por enquanto. Depois que alguém roda a rodada de novo, tudo.', 'A responsável, com o horário, o passo e o link da rodada.', 'meio', 'Funciona, e nada se perde. Mas chama uma pessoa por algo que uma segunda tentativa resolveria sozinha. Combine as duas: tentar primeiro, avisar se não der.']
+    ],
+    [
+      ['oxss', '', 'Nada. As tentativas acabam com o site ainda fora, e o fluxo para do mesmo jeito.', 'Ninguém.', 'no', 'Tentar de novo não conserta o que não é passageiro. Gasta tempo e termina parado.'],
+      ['owoo', '', 'Todos os pedidos; um deles sem a linha sobre a empresa.', 'O vendedor, pelo próprio resumo, se ele disser que a pesquisa não abriu.', 'ok', 'Certo para passo que enriquece e não decide. Seguir em frente só é seguro quando o que falta não muda o resultado.'],
+      ['oxoo', 'desvio', 'Todos os pedidos; o do site fora vai também para a lista de pendências.', 'Quem abrir a lista de pendências.', 'meio', 'Não erra, mas é maquinário demais para um passo que só enfeita.'],
+      ['oxss', '', 'Nada. Não existe um segundo site do mesmo cliente.', 'Ninguém.', 'no', 'Não há outro fornecedor para o site de um terceiro.'],
+      ['oxss', 'vigia', 'Nada até alguém refazer. E refazer não adianta enquanto o site estiver fora.', 'A responsável, por um site de terceiro que ela não tem como consertar.', 'no', 'Parar a manhã inteira e chamar alguém por uma linha de contexto custa mais do que a linha vale.']
+    ],
+    [
+      ['ooro', '', 'Tudo, se a queda durou segundos. Se durou uma hora, nada: as tentativas acabam e o fluxo para.', 'Ninguém, nos dois casos.', 'meio', 'É a primeira camada, não a única. Tentar de novo resolve a queda curta e não conta a ninguém sobre a longa.'],
+      ['oowo', '', 'Os pedidos, sem resumo e sem prioridade, numa lista que parece normal.', 'Ninguém. O vendedor não sabe que faltou justamente a parte que ordena o dia dele.', 'no', 'O resumo decide o que o vendedor faz primeiro. Passo que decide não se pula.'],
+      ['ooxo', 'desvio', 'Os pedidos crus, marcados “sem resumo”, na planilha e na lista.', 'O vendedor vê a marca; a lista de pendências guarda o resto.', 'meio', 'Nada se perde e o dia não para. Falta alguém refazer os resumos quando o serviço voltar.'],
+      ['oobo', '', 'Tudo, resumido por um segundo serviço de IA, de outro fornecedor.', 'Ninguém precisava. O registro anota que a reserva foi usada.', 'ok', 'Certo. E a reserva é de outro fornecedor: se um caiu, a reserva do mesmo fornecedor provavelmente caiu junto.'],
+      ['ooxs', 'vigia', 'Nada às 7h. Quando o serviço volta e alguém roda a rodada de novo, tudo.', 'A responsável, com o link da rodada que precisa ser refeita.', 'ok', 'Certo quando atrasar é aceitável. Os pedidos ficam guardados na rodada e entram inteiros, só mais tarde.']
+    ],
+    [
+      ['ooox', '', 'Nada. A aba continua com o nome errado na segunda, na terceira e na décima tentativa.', 'Ninguém.', 'no', 'O problema é do seu lado, e tentar de novo repete o erro. O aviso de erro diz de que lado ele está.'],
+      ['ooow', '', 'Nada gravado. O fluxo termina em verde.', 'Ninguém.', 'no', 'Num passo crítico, seguir em frente é o pior dos cinco: a entrega é pulada e o painel diz que deu certo.'],
+      ['ooox', 'desvio', 'Os pedidos na lista de pendências, não na planilha do vendedor.', 'Ninguém, a menos que o desvio também avise.', 'meio', 'Guarda o dado, que é metade do trabalho. Sem aviso, a lista de pendências vira a gaveta que ninguém abre.'],
+      ['ooox', '', 'Nada. Não há reserva para a planilha da sua equipe.', 'Ninguém.', 'no', 'Reserva é para serviço de fora que outro fornecedor faz igual.'],
+      ['ooox', 'vigia', 'Nada às 7h. Às 7h20, depois de corrigir o nome da aba e rodar a rodada de novo, tudo.', 'A responsável: “gravar na planilha falhou: aba não encontrada”, com o link da rodada.', 'ok', 'Certo. O aviso chega a quem consegue consertar, e os pedidos esperam dentro da rodada, sem se perder.']
+    ]
+  ];
+  var VW = { ok: 'Serve aqui. ', meio: 'Serve pela metade. ', no: 'Não serve aqui. ' };
+  var spBtns = document.querySelectorAll('[data-sp]'), srBtns = document.querySelectorAll('[data-sr]'), spCur = 2, srCur = 0;
+  function renderSim() {
+    var o = R[spCur][srCur];
+    pressGroup(spBtns, function (b) { return +b.dataset.sp === spCur; });
+    pressGroup(srBtns, function (b) { return +b.dataset.sr === srCur; });
+    setFlow('sm', o[0], o[1]);
+    document.getElementById('simCause').textContent = CAUSE[spCur];
+    document.getElementById('simChega').textContent = o[2];
+    document.getElementById('simSabe').textContent = o[3];
+    var v = document.getElementById('simVer'); v.className = 'verdict ' + o[4]; v.innerHTML = '<b>' + VW[o[4]] + '</b>' + o[5];
+  }
+  spBtns.forEach(function (b) { b.addEventListener('click', function () { spCur = +b.dataset.sp; renderSim(); }); });
+  srBtns.forEach(function (b) { b.addEventListener('click', function () { srCur = +b.dataset.sr; renderSim(); }); });
+  renderSim();
+
+  /* 3 · qual resposta */
+  quiz(document.getElementById('qlQuiz'), document.getElementById('qlScore'), [
+    { s: 'O serviço de IA não respondeu às 7h02. Às 7h03 já estava de volta.', a: 'tentar', why: 'Queda de segundos é o caso clássico: uma pausa e uma nova tentativa, sem incomodar ninguém.' },
+    { s: 'A pesquisa no site do cliente falhou. Ela só acrescenta uma linha de contexto ao resumo.', a: 'seguir', why: 'Passo que acrescenta e não decide pode falhar sem parar o resto. Melhor ainda se o resumo disser que a pesquisa faltou.' },
+    { s: 'O fornecedor de IA está fora há uma hora, e a gráfica tem conta em outro fornecedor.', a: 'reserva', why: 'Outro fornecedor faz o mesmo trabalho. Se a reserva fosse do mesmo, provavelmente estaria fora também.' },
+    { s: 'A planilha recusou a gravação porque alguém mudou o nome de uma coluna.', a: 'avisar', why: 'O problema é do seu lado e não passa sozinho. Guarde a rodada, avise quem consegue consertar e rode de novo depois.' },
+    { s: 'Chegou um pedido sem e-mail e sem telefone, e o formulário exige os dois.', a: 'parar', why: 'Isso não devia acontecer. Se aconteceu, alguma coisa mudou no formulário: o fluxo para, diz por quê, e alguém olha.' },
+    { s: 'A IA devolveu a prioridade “urgentíssima”, que não existe na lista de três.', a: 'parar', why: 'Valor fora da lista é o caminho que não devia existir. Seguir com ele bagunça a ordem do vendedor sem ninguém perceber.' }
+  ], [['tentar', 'Tentar de novo'], ['seguir', 'Seguir em frente'], ['reserva', 'Usar a reserva'], ['avisar', 'Avisar e refazer'], ['parar', 'Parar de propósito']], 'as três perguntas resolvem quase todas: passa sozinha? é crítico? quem conserta?');
+
+  /* 4 · verde não é sucesso */
+  var VD = {
+    painel: '<div class="vd-box green"><span class="eyebrow">Rodada de terça, 7h00 · concluída sem erros</span>' +
+      '<div class="vd-row"><span>1 · Ler os pedidos · 3 pedidos</span><span class="vd-ok">concluído</span></div>' +
+      '<div class="vd-row"><span>2 · Pesquisar a empresa</span><span class="vd-ok">concluído</span></div>' +
+      '<div class="vd-row"><span>3 · Resumir com IA · 3 respostas</span><span class="vd-ok">concluído</span></div>' +
+      '<div class="vd-row"><span>4 · Gravar e avisar · 3 linhas</span><span class="vd-ok">concluído</span></div>' +
+      '<p class="hint">Nenhum vermelho, nenhum aviso. O mesmo painel apareceu assim de segunda a sexta.</p></div>',
+    planilha: '<div class="vd-box bad"><span class="eyebrow">Planilha do vendedor · terça</span><div class="tablewrap"><table class="vtable"><tr><th>Pedido</th><th>Resumo</th><th>Prioridade</th></tr>' +
+      '<tr><td>Escritório de contabilidade · cartões</td><td class="q">“Não consegui acessar a pesquisa. Segue um resumo geral com base no texto do pedido.”</td><td>média</td></tr>' +
+      '<tr><td>Clínica · placas de sinalização</td><td class="q">“Não consegui acessar a pesquisa. Segue um resumo geral com base no texto do pedido.”</td><td>média</td></tr>' +
+      '<tr><td>Restaurante · cardápios</td><td class="q">“Não consegui acessar a pesquisa. Segue um resumo geral com base no texto do pedido.”</td><td>média</td></tr></table></div>' +
+      '<p class="hint">A senha de acesso da ferramenta de pesquisa venceu na segunda. A IA não quebrou: avisou que não conseguiu, por escrito, e o painel registrou a resposta como sucesso. Tudo virou prioridade média, e o vendedor passou a semana atendendo na ordem de chegada.</p></div>'
+  };
+  var vdBtns = document.querySelectorAll('[data-vd]'), vdOut = document.getElementById('vdOut');
+  function setVd(k) { pressGroup(vdBtns, function (x) { return x.dataset.vd === k; }); vdOut.innerHTML = VD[k]; }
+  vdBtns.forEach(function (b) { b.addEventListener('click', function () { setVd(b.dataset.vd); }); });
+  setVd('painel');
+
+  /* 5 · conferência liga-desliga */
+  var CF = [
+    { p: 'Escritório de contabilidade · cartões de visita', bad: '' },
+    { p: 'Pedido sem e-mail e sem telefone', bad: 'sem contato, e o formulário exige os dois' },
+    { p: 'Clínica · placas de sinalização', bad: 'o resumo diz “não consegui acessar a pesquisa”' },
+    { p: 'Loja de roupas · sacolas', bad: '' },
+    { p: 'Restaurante · cardápios', bad: 'prioridade “urgentíssima”, fora da lista de três' },
+    { p: 'Academia · banners', bad: '' }
+  ];
+  var cfBtns = document.querySelectorAll('[data-cf]');
+  function setCf(k) {
+    pressGroup(cfBtns, function (x) { return x.dataset.cf === k; });
+    var on = k === 'on', nBad = 0;
+    document.getElementById('cfList').innerHTML = CF.map(function (r) {
+      var cls = 'ok', st = 'Chegou ao vendedor';
+      if (r.bad) { nBad++; if (on) { cls = 'stop'; st = 'Parou aqui: ' + r.bad + '. Aviso enviado.'; } else { cls = 'slip'; st = 'Chegou ao vendedor como se estivesse certo'; } }
+      return '<div class="cf-row ' + cls + '"><span>' + r.p + '</span><span class="cf-st">' + st + '</span></div>';
+    }).join('');
+    var v = document.getElementById('cfVer');
+    if (on) { v.className = 'verdict ok'; v.innerHTML = '<b>' + nBad + ' pedidos pararam, cada um com o motivo escrito.</b> Os outros seguiram normalmente. A conferência não consertou nada: só impediu que o absurdo passasse calado.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + nBad + ' pedidos chegaram errados, e ninguém foi avisado.</b> Todos os passos ficaram verdes: nenhum deles falhou. O que falhou foi o resultado.'; }
+  }
+  cfBtns.forEach(function (b) { b.addEventListener('click', function () { setCf(b.dataset.cf); }); });
+  setCf('off');
+
+  /* 6 · montador do aviso */
+  var MT = {
+    quando: 'Quando: terça, 7h02 (rodada das 7h00)',
+    fluxo: 'Fluxo: pedidos de orçamento da manhã',
+    passo: 'Passo: 4 de 4 · gravar na planilha do vendedor',
+    erro: 'O erro dizia: aba "Pedidos" não encontrada',
+    dado: 'O que entrou: 7 pedidos da noite, guardados na rodada',
+    refazer: 'Para refazer: corrigir o nome da aba, abrir a rodada de terça, 7h00, e rodar de novo'
+  };
+  var MISS = { passo: 'em que passo parou', dado: 'se os pedidos se perderam', refazer: 'como refazer sem digitar tudo de novo' };
+  var mtIn = document.querySelectorAll('[data-mt]'), mqBtns = document.querySelectorAll('[data-mq]'), mqCur = 'grupo';
+  function renderMt() {
+    var on = {}, lines = ['FALHA NUM FLUXO AUTOMÁTICO'];
+    mtIn.forEach(function (i) { on[i.dataset.mt] = i.checked; if (i.checked) { lines.push(MT[i.dataset.mt]); } });
+    lines.push(mqCur === 'pessoa' ? 'Para: a responsável pela planilha do vendedor' : 'Para: grupo da equipe comercial (12 pessoas)');
+    document.getElementById('mtOut').innerHTML = esc(lines.join('\n'));
+    var falta = Object.keys(MISS).filter(function (k) { return !on[k]; }).map(function (k) { return MISS[k]; });
+    var v = document.getElementById('mtVer');
+    if (falta.length) { v.className = 'verdict no'; v.innerHTML = '<b>Quem recebe ainda precisa abrir o fluxo para descobrir</b> ' + falta.join(', ') + '.'; }
+    else if (mqCur === 'grupo') { v.className = 'verdict meio'; v.innerHTML = '<b>O aviso está completo, mas vai para todo mundo.</b> No grupo, cada um tende a achar que outro já viu. Mande para quem conserta, e ponha o nome dela no registro.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>Dá para agir sem abrir nada.</b> Ela sabe o que quebrou, que nada se perdeu e o que fazer para refazer.'; }
+  }
+  mtIn.forEach(function (i) { i.addEventListener('change', renderMt); });
+  mqBtns.forEach(function (b) { b.addEventListener('click', function () { mqCur = b.dataset.mq; pressGroup(mqBtns, function (x) { return x === b; }); renderMt(); }); });
+  renderMt();
+
+  /* 7 · antes de o cliente contar */
+  var TL = {
+    sem: [['bad', 'Terça, 7h02', 'O passo de gravar falha. O fluxo para.'], ['', 'Terça, 9h00', 'O vendedor abre a lista vazia e conclui que a noite foi fraca.'], ['', 'Quarta', 'Os sete pedidos continuam presos na rodada de terça. Ninguém sabe.'], ['bad', 'Quinta, 15h00', 'A clínica liga: “e o orçamento das placas?”. É assim que a equipe descobre.'], ['bad', 'Quinta, 16h00', 'Alguém acha o vermelho no histórico, refaz a rodada e liga para sete clientes pedindo desculpas.']],
+    com: [['bad', 'Terça, 7h02', 'O passo de gravar falha. O fluxo para.'], ['good', 'Terça, 7h03', 'A responsável recebe o aviso: o passo, o erro e o link da rodada.'], ['good', 'Terça, 7h20', 'Ela corrige o nome da aba e roda de novo a mesma rodada.'], ['good', 'Terça, 7h21', 'Os sete pedidos chegam ao vendedor, com vinte minutos de atraso.'], ['', 'Quinta', 'Nenhum cliente liga. Ninguém fora da equipe soube que houve falha.']]
+  };
+  var tlBtns = document.querySelectorAll('[data-tl]');
+  function setTl(k) {
+    pressGroup(tlBtns, function (x) { return x.dataset.tl === k; });
+    document.getElementById('tlList').innerHTML = TL[k].map(function (e) { return '<li class="' + e[0] + '"><b>' + e[1] + '</b><span>' + e[2] + '</span></li>'; }).join('');
+    var v = document.getElementById('tlVer');
+    if (k === 'com') { v.className = 'verdict ok'; v.innerHTML = '<b>Quem descobriu primeiro: a equipe.</b> Mesma falha, vinte minutos de atraso.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Quem descobriu primeiro: o cliente.</b> Mesma falha, dois dias e meio de atraso e sete ligações.'; }
+  }
+  tlBtns.forEach(function (b) { b.addEventListener('click', function () { setTl(b.dataset.tl); }); });
+  setTl('sem');
+})();
+</script>
+</body>
+</html>

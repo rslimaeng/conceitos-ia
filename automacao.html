@@ -270,7 +270,7 @@ a { color: var(--accent); }
 <header class="hero">
   <nav class="famhead" aria-label="Família Automação">
     <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--api.html">7.1 API →</a></span></div>
-    <div class="famhead-chips"><a href="./automacao.html" aria-current="page">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a></div>
+    <div class="famhead-chips"><a href="./automacao.html" aria-current="page">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a><a href="./automacao--falha.html"><b>7.4</b>Quando falha</a><a href="./automacao--testar.html"><b>7.5</b>Testar</a></div>
   </nav>
   <span class="eyebrow">Visão geral</span>
   <h1>Pensar como automação</h1>
@@ -284,12 +284,14 @@ a { color: var(--accent); }
 <!-- mapa -->
 <section class="sec" id="mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Três peças de quando dois sistemas conversam</h2>
-  <p class="intro">Esta página é a visão geral: toda automação cabe numa frase, <strong>quando, faz, para</strong>. As três páginas abaixo são as peças que aparecem quando um sistema fala com outro.</p>
+  <h2 id="h-mapa">Três peças de quando dois sistemas conversam, e dois cuidados antes de ligar</h2>
+  <p class="intro">Esta página é a visão geral: toda automação cabe numa frase, <strong>quando, faz, para</strong>. As três primeiras páginas abaixo são as peças que aparecem quando um sistema fala com outro. <strong>As duas últimas são os cuidados de quem vai deixar a automação rodar sozinha</strong>: o que fazer quando um passo falha, e testar em pequeno antes de ligar.</p>
   <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">7.1 · API · 1 de 3</span><h3>API</h3><p>Um sistema pedindo coisas a outro por um balcão com regras: o pedido, o verbo, e o número que volta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro verbos</li><li>faça um pedido</li><li>o crachá</li></ul><a class="fmap-go" href="./automacao--api.html">abrir 7.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">7.2 · Webhook · 2 de 3</span><h3>Webhook</h3><p>Em vez de perguntar toda hora se chegou, você é avisado quando acontece.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a campainha</li><li>o que chega</li><li>relógio ou aviso</li></ul><a class="fmap-go" href="./automacao--webhook.html">abrir 7.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">7.3 · JSON · 3 de 3</span><h3>JSON</h3><p>A ficha que os sistemas trocam, e por que ela precisa dizer se cada coisa é palavra ou quantidade.</p><span class="fmap-lab">Lá você encontra</span><ul><li>cinco tipos de linha</li><li>quando 10 + 5 dá 105</li><li>o erro que não avisa</li></ul><a class="fmap-go" href="./automacao--json.html">abrir 7.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.1 · API · 1 de 5</span><h3>API</h3><p>Um sistema pedindo coisas a outro por um balcão com regras: o pedido, o verbo, e o número que volta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro verbos</li><li>faça um pedido</li><li>o crachá</li></ul><a class="fmap-go" href="./automacao--api.html">abrir 7.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.2 · Webhook · 2 de 5</span><h3>Webhook</h3><p>Em vez de perguntar toda hora se chegou, você é avisado quando acontece.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a campainha</li><li>o que chega</li><li>relógio ou aviso</li></ul><a class="fmap-go" href="./automacao--webhook.html">abrir 7.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.3 · JSON · 3 de 5</span><h3>JSON</h3><p>A ficha que os sistemas trocam, e por que ela precisa dizer se cada coisa é palavra ou quantidade.</p><span class="fmap-lab">Lá você encontra</span><ul><li>cinco tipos de linha</li><li>quando 10 + 5 dá 105</li><li>o erro que não avisa</li></ul><a class="fmap-go" href="./automacao--json.html">abrir 7.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.4 · Quando falha · 4 de 5</span><h3>Quando um passo falha</h3><p>Toda automação falha um dia. O que importa é o que o fluxo faz com o erro, e quem fica sabendo antes do cliente.</p><span class="fmap-lab">Lá você encontra</span><ul><li>cinco respostas a uma falha</li><li>verde não é sucesso</li><li>registre e avise</li></ul><a class="fmap-go" href="./automacao--falha.html">abrir 7.4 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">7.5 · Testar · 5 de 5</span><h3>Testar em pequeno antes de ligar</h3><p>Dois itens antes de todos, dado inventado antes do real, uma pessoa antes de mil, e uma rodada inteira antes de ligar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>dois, não um</li><li>tire o pino antes de ligar</li><li>uma pessoa antes de mil</li></ul><a class="fmap-go" href="./automacao--testar.html">abrir 7.5 →</a></div>
   </div>
 </section>
 <!-- /mapa -->

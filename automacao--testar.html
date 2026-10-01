@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="automacao--testar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testar em pequeno antes de ligar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 7.5. Peças: teste com um × dois pedidos (o passo que sempre olha o primeiro), escada de degraus com diagrama (um, dois, até dez, todos), controle deslizante do custo de um teste, simulador de congelar passos, antes × depois do passo congelado esquecido, quiz "pode ligar?", lista de bolso para copiar, montador de pedido de dado inventado, dois antes de todos no chat. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.sec > * { min-width: 0; } /* filho de grid encolhe; sem isto a caixa de rolagem estica com o desenho em vez de rolar */
+.scroll svg.dg-svg { min-width: 560px; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · um ou dois */
+.tp-cmd { font-family: var(--font-mono); font-size: .9rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.tp-cmd b { color: var(--accent); font-weight: 500; }
+.tp-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; font-size: .95rem; }
+.tp-box.bad { border-color: var(--atencao); }
+.tp-box.good { border-color: var(--ok); }
+.tp-box ul { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; }
+.tp-box li b { color: var(--text); font-weight: 600; }
+.tp-box .wrong { background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 4px; }
+
+/* 2 · a escada (svg) */
+.dg-step rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.dg-step.done rect { fill: var(--ok-soft); stroke: var(--ok); }
+.dg-step.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.dg-step .n { font: 500 22px var(--font-mono); fill: var(--text-muted); text-anchor: middle; }
+.dg-step.on .n { fill: var(--accent); }
+.dg-step.done .n { fill: var(--ok-texto); }
+.dg-step .l { font: 400 12px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.dg-base { stroke: var(--border-strong); stroke-width: 1.2; }
+.dg-gate { fill: none; stroke: var(--atencao); stroke-width: 1.6; stroke-dasharray: 5 4; }
+.dg-gt { font: 500 11px var(--font-mono); fill: var(--atencao-texto); letter-spacing: .08em; }
+
+/* 3 · quanto custa um teste */
+.tp-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.tp-stat { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.tp-stat small { color: var(--text-muted); font-size: .88rem; }
+.tp-stat.hot { border-color: var(--atencao); background: var(--atencao-soft); }
+.tp-stat.hot .big { color: var(--atencao-texto); }
+
+/* 4 · congelar */
+.tp-flow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.tp-flow button { text-align: left; display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; min-width: 0; }
+.tp-flow button b { font-weight: 600; font-size: .95rem; }
+.tp-flow button small { color: var(--text-muted); font-size: .85rem; }
+.tp-flow button .st { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
+.tp-flow button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.tp-flow button[aria-pressed="true"] .st { color: var(--accent); }
+.tp-flow button:disabled { cursor: default; border-style: dashed; }
+.tp-flow button:disabled .st { color: var(--atencao-texto); }
+
+/* 7 · montador de dado inventado */
+.tp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.tp-form { display: grid; gap: 14px; }
+.tp-form fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; min-width: 0; }
+.tp-form legend { font-size: .95rem; padding: 0; margin-bottom: 6px; }
+.tp-checks { display: grid; gap: 6px; }
+.tp-checks label { display: flex; gap: 8px; align-items: baseline; font-size: .92rem; color: var(--text-muted); }
+.tp-checks input { accent-color: var(--accent); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .tp-stats, .tp-flow, .tp-grid { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .dg-step rect { transition: none; } }
+.tp-stack { display: grid; gap: 12px; }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Automação">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./automacao.html">Família 7 · Automação</a></span><span class="famhead-pn"><a href="./automacao--falha.html">← 7.4 Quando falha</a><a href="./automacao.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./automacao.html">Visão geral</a><a href="./automacao--api.html"><b>7.1</b>API</a><a href="./automacao--webhook.html"><b>7.2</b>Webhook</a><a href="./automacao--json.html"><b>7.3</b>JSON</a><a href="./automacao--falha.html"><b>7.4</b>Quando falha</a><a href="./automacao--testar.html" aria-current="page"><b>7.5</b>Testar</a></div>
+  </nav>
+  <span class="eyebrow">7.5 · 5 de 5</span>
+  <h1>Testar em pequeno antes de ligar</h1>
+  <p class="sub">Antes de deixar uma automação rodar sozinha, teste com poucos itens e suba aos poucos</p>
+  <p class="lead">Uma automação faz a mesma coisa cem vezes sem ninguém olhar. Por isso o erro também sai cem vezes: o e-mail com o nome trocado vai para cem pessoas, a IA é paga cem vezes, a planilha ganha cem linhas de lixo. <strong>O hábito que evita isso é o mesmo em qualquer ferramenta:</strong> testar com poucos itens, subir aos poucos, guardar o que é caro de refazer, e só <strong>ligar</strong> (deixar a automação rodar sozinha, sem você apertar o botão) depois de uma rodada inteira de verdade. E vale também para um pedido novo no chat: antes de aplicar a quarenta contratos, aplique a dois.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-dois">Dois, não um</a><a href="#s-degraus">Um, dois, muitos</a><a href="#s-custo">Quando cada item custa</a><a href="#s-congelar">Congelar um passo</a><a href="#s-pino">Tire o pino antes de ligar</a><a href="#s-inteiro">Do começo ao fim, uma vez</a><a href="#s-inventado">Gente que não existe</a><a href="#s-pessoa">Uma pessoa antes de mil</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-dois" aria-labelledby="h-dois">
+  <span class="eyebrow">Dois, não um</span>
+  <h2 id="h-dois">Com um item só, você não vê a lista</h2>
+  <p class="intro">Quem confere uma planilha de rateio nova testa com dois centros de custo, não com um: com um só, a fórmula que sempre olha para a primeira linha parece certa. Na automação, cada coisa que chega (um pedido, uma linha, um e-mail) é um <strong>item</strong>, e os itens chegam em lista. O exemplo desta página: um pedido de reembolso chega pelo formulário, a IA resume o motivo, uma linha entra na planilha e o gestor recebe um e-mail. <strong>Teste com um, depois com dois, e veja o que aparece.</strong></p>
+  <div class="seg" role="group" aria-label="Quantos pedidos no teste">
+    <button type="button" data-dn="um" aria-pressed="true">Testar com 1 pedido</button>
+    <button type="button" data-dn="dois" aria-pressed="false">Testar com 2 pedidos</button>
+    <button type="button" data-dn="ok" aria-pressed="false">Com o passo consertado</button>
+  </div>
+  <div id="dnOut" aria-live="polite"></div>
+  <p class="hint">Por que a lista é o ponto fraco, e como o passo roda uma vez para cada item, está em <a href="./automacao--json.html#s-lista">JSON: tudo chega em lista</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-degraus" aria-labelledby="h-degraus">
+  <span class="eyebrow">Um, dois, muitos</span>
+  <h2 id="h-degraus">Suba em degraus: um, dois, poucos, todos</h2>
+  <p class="intro">Loja nova abre primeiro para os funcionários, depois para convidados, e só então para a rua: cada abertura mostra um defeito que a anterior não tinha como mostrar. O teste da automação sobe do mesmo jeito. <strong>Cada degrau prova uma coisa, e nenhum prova a do degrau seguinte.</strong> A regra que se repete entre quem constrói automação todo dia: se funciona em dois, quase sempre funciona em oito; e se funciona em oito, funciona em milhares. Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="dgLab">Degrau 1 de 4</span><div class="nav"><button type="button" class="btn" id="dgPrev">← Anterior</button><button type="button" class="btn primary" id="dgNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 720 255" role="img" aria-labelledby="dg-t" xmlns="http://www.w3.org/2000/svg" class="dg-svg">
+      <title id="dg-t">Quatro degraus que sobem: um item, dois itens, até dez itens, todos; antes do último, uma linha tracejada marca que tudo precisa estar descongelado e rodar inteiro</title>
+      <line class="dg-base" x1="20" y1="220" x2="700" y2="220"/>
+      <g class="dg-step" data-dg="1"><rect x="40" y="170" width="140" height="50" rx="6"/><text class="n" x="110" y="203">1</text><text class="l" x="110" y="242">o caminho</text></g>
+      <g class="dg-step" data-dg="2"><rect x="200" y="130" width="140" height="90" rx="6"/><text class="n" x="270" y="182">2</text><text class="l" x="270" y="242">a lista</text></g>
+      <g class="dg-step" data-dg="3"><rect x="360" y="90" width="140" height="130" rx="6"/><text class="n" x="430" y="162">até 10</text><text class="l" x="430" y="242">os casos estranhos</text></g>
+      <line class="dg-gate" x1="510" y1="30" x2="510" y2="224"/>
+      <text class="dg-gt" x="500" y="44" text-anchor="end">DESCONGELE · RODE INTEIRO</text>
+      <g class="dg-step" data-dg="4"><rect x="520" y="50" width="160" height="170" rx="6"/><text class="n" x="600" y="142">todos</text><text class="l" x="600" y="242">uso de verdade</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="dgCap" aria-live="polite"></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-custo" aria-labelledby="h-custo">
+  <span class="eyebrow">Quando cada item custa</span>
+  <h2 id="h-custo">Teste com poucos itens quando cada item custa</h2>
+  <p class="intro">Ninguém roda a tiragem inteira do folder para ver se a cor saiu certa: pede uma prova, uma folha só. Na automação, alguns passos custam por item: cada <strong>chamada à IA</strong> (cada vez que um passo manda um texto para a IA e espera a resposta) é paga, leva segundos, e o passo de envio manda um e-mail de verdade. <strong>No teste, o número de itens decide quanto o teste custa, e quanta gente recebe o seu erro.</strong> Arraste.</p>
+  <div class="field">
+    <label for="tcN">Quantos pedidos entram no teste</label>
+    <div class="row"><input type="range" id="tcN" min="0" max="9" step="1" value="1"><output id="tcNo" for="tcN"></output></div>
+  </div>
+  <div class="seg" role="group" aria-label="O passo de envio">
+    <button type="button" data-tc="real" aria-pressed="true">O e-mail sai de verdade</button>
+    <button type="button" data-tc="rasc" aria-pressed="false">O e-mail vira rascunho</button>
+  </div>
+  <div class="tp-stats">
+    <div class="tp-stat" id="tcS1"><span class="eyebrow">chamadas à IA</span><span class="big" id="tcV1"></span><small>uma por pedido, cada uma paga</small></div>
+    <div class="tp-stat" id="tcS2"><span class="eyebrow">tempo esperando</span><span class="big" id="tcV2"></span><small>uns quatro segundos por pedido</small></div>
+    <div class="tp-stat" id="tcS3"><span class="eyebrow" id="tcL3">e-mails que saem</span><span class="big" id="tcV3"></span><small id="tcD3">para gestores de verdade</small></div>
+  </div>
+  <div class="verdict" id="tcVer" aria-live="polite"></div>
+  <p class="hint">No teste, use um passo que corta a lista (muitas ferramentas têm um, com nome como “limite”) logo depois da entrada: chegam quinhentos, seguem dois. Ele sai antes de ligar.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-congelar" aria-labelledby="h-congelar">
+  <span class="eyebrow">Congelar um passo</span>
+  <h2 id="h-congelar">Congele o que é caro de refazer</h2>
+  <p class="intro">Quando você ajusta a fórmula do relatório, não pede ao fornecedor que mande a nota fiscal de novo: trabalha na cópia da nota que já chegou. <strong>Congelar um passo</strong> é isso: guardar o resultado que ele deu numa rodada, para que os testes seguintes usem esse resultado em vez de rodar o passo outra vez. Em algumas ferramentas o botão se chama “fixar”, e o ícone é um alfinete (em inglês, <em>pin</em>). Você vai ajustar o texto do e-mail, o último passo, em dez rodadas de teste. <strong>Congele os passos de antes e veja a conta mudar.</strong></p>
+  <div class="tp-flow" role="group" aria-label="Passos da automação">
+    <button type="button" data-cg="0" aria-pressed="false"><span class="st">roda de novo</span><b>Formulário</b><small>alguém preenche um pedido</small></button>
+    <button type="button" data-cg="1" aria-pressed="false"><span class="st">roda de novo</span><b>IA resume</b><small>uma chamada paga por pedido</small></button>
+    <button type="button" data-cg="2" aria-pressed="false"><span class="st">roda de novo</span><b>Planilha</b><small>grava uma linha por pedido</small></button>
+    <button type="button" disabled><span class="st">ajustando agora</span><b>E-mail</b><small>o passo que você está mudando</small></button>
+  </div>
+  <div class="tp-stats">
+    <div class="tp-stat" id="cgS0"><span class="eyebrow">formulários que você preenche</span><span class="big" id="cgV0"></span><small>de novo, à mão, a cada rodada</small></div>
+    <div class="tp-stat" id="cgS1"><span class="eyebrow">chamadas à IA pagas</span><span class="big" id="cgV1"></span><small>para resumir o mesmo pedido</small></div>
+    <div class="tp-stat" id="cgS2"><span class="eyebrow">linhas de teste na planilha</span><span class="big" id="cgV2"></span><small>que alguém vai ter de apagar</small></div>
+  </div>
+  <div class="verdict" id="cgVer" aria-live="polite"></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-pino" aria-labelledby="h-pino">
+  <span class="eyebrow">Tire o pino antes de ligar</span>
+  <h2 id="h-pino">O que está congelado não vê o dado novo</h2>
+  <p class="intro">É o aviso de “em manutenção” que ficou pendurado na porta depois que o conserto acabou: ninguém entra, e ninguém sabe por quê. O passo congelado tem o mesmo defeito, e ele é o preço de congelar. Ele <strong>continua devolvendo o resultado guardado</strong>, por mais que a entrada mude. Você preenche um pedido novo, roda, e o e-mail sai com o pedido de ontem; tudo aparece como sucesso. <strong>Por isso, a regra curta: tire o pino (o alfinete do congelado) antes de ligar.</strong></p>
+  <div class="seg" role="group" aria-label="O passo da IA">
+    <button type="button" data-pn="esq" aria-pressed="true">Ficou congelado</button>
+    <button type="button" data-pn="desc" aria-pressed="false">Descongelado</button>
+  </div>
+  <div id="pnOut" aria-live="polite"></div>
+  <p class="punch">O sinal é um só: <em>você mudou a entrada, e a saída não mudou.</em> Procure o alfinete antes de procurar o erro.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-inteiro" aria-labelledby="h-inteiro">
+  <span class="eyebrow">Do começo ao fim, uma vez</span>
+  <h2 id="h-inteiro">Não está pronto até rodar inteiro, sem amostra</h2>
+  <p class="intro">Ensaio por cena não é ensaio geral: a peça só está pronta quando passa do primeiro ao último ato sem parar. Testar passo a passo, com o anterior congelado, mostra que cada peça funciona com uma cópia do passado. Só a <strong>rodada inteira</strong> (do gatilho à entrega, com dado que acabou de chegar e nada congelado) mostra as peças conversando. <strong>E vale depois da última mudança, não da penúltima.</strong> Pode ligar?</p>
+  <div class="qz" id="inQuiz"></div>
+  <p class="qz-score" id="inScore" aria-live="polite"></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Lista de bolso · antes de ligar</span><button type="button" class="btn" data-copy="inList">Copiar</button></div>
+<pre id="inList">Antes de deixar a automação rodar sozinha:
+1. Testei com dois itens, não com um.
+2. Subi aos poucos: um, dois, poucos (até uma dezena), e só então todos.
+3. Nos passos que custam ou que enviam, testei com poucos itens.
+4. Descongelei todos os passos.
+5. Rodei do começo ao fim, sem nada congelado, depois da última mudança.
+6. A primeira rodada foi com dado inventado; a primeira com dado real mandou só para mim.
+7. Nas primeiras semanas, o envio sai como rascunho, e eu confiro antes de mandar.</pre>
+  </div>
+  <p class="hint">Quando a rodada inteira acusa erro num passo, o que fazer está em <a href="./automacao--falha.html">quando um passo falha</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-inventado" aria-labelledby="h-inventado">
+  <span class="eyebrow">Gente que não existe</span>
+  <h2 id="h-inventado">A primeira rodada é com dado inventado</h2>
+  <p class="intro">Treinamento de caixa novo começa com nota de brincadeira, não com o dinheiro do cofre. Na primeira rodada, a automação ainda erra, e o erro carrega o que estiver dentro dela. Use <strong>dado fictício</strong> (pessoas, valores e documentos inventados, que não apontam para ninguém): se vazar, sair duplicado ou ir para o lugar errado, não aconteceu nada com ninguém. O dado real entra quando a lógica já funciona. Monte o pedido, e a IA do chat inventa os registros.</p>
+  <div class="tp-grid">
+    <div class="tp-form">
+      <fieldset>
+        <legend>A automação lê…</legend>
+        <div class="seg" role="group" aria-label="Tipo de registro">
+          <button type="button" data-ft="reemb" aria-pressed="true">reembolsos</button>
+          <button type="button" data-ft="curric" aria-pressed="false">currículos</button>
+          <button type="button" data-ft="chamado" aria-pressed="false">chamados</button>
+          <button type="button" data-ft="nota" aria-pressed="false">notas fiscais</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Quantos registros</legend>
+        <div class="seg" role="group" aria-label="Quantidade">
+          <button type="button" data-fq="2" aria-pressed="false">2</button>
+          <button type="button" data-fq="5" aria-pressed="true">5</button>
+          <button type="button" data-fq="10" aria-pressed="false">10</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Casos difíceis de propósito</legend>
+        <div class="tp-checks">
+          <label><input type="checkbox" id="fc0" checked> um campo obrigatório vazio</label>
+          <label><input type="checkbox" id="fc1" checked> um valor escrito com vírgula e outro com ponto</label>
+          <label><input type="checkbox" id="fc2"> um nome com acento e sobrenome composto</label>
+          <label><input type="checkbox" id="fc3" checked> o mesmo registro duas vezes</label>
+          <label><input type="checkbox" id="fc4"> um texto muito mais longo que os outros</label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">O pedido · ao vivo</span><button type="button" class="btn" data-copy="ftOut">Copiar</button></div>
+      <pre id="ftOut"></pre>
+    </div>
+  </div>
+  <div class="verdict" id="ftVer" aria-live="polite"></div>
+  <p class="hint">Dado inventado não substitui o cuidado com o real: quando ele entrar, a decisão do que pode subir continua valendo, em <a href="./limites-da-ia--o-que-pode-subir.html#s-anexar">antes de anexar</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-pessoa" aria-labelledby="h-pessoa">
+  <span class="eyebrow">Uma pessoa antes de mil</span>
+  <h2 id="h-pessoa">O primeiro envio de verdade vai para uma pessoa só</h2>
+  <p class="intro">Antes de mandar o comunicado para a empresa inteira, você manda para si mesmo e abre no celular. Na automação, o cuidado dobra quando um passo <strong>age fora dela</strong>: envia, move, apaga, posta. Com dado de verdade, o primeiro envio vai para uma pessoa, e essa pessoa costuma ser você. <strong>Teste com um registro antes de mil.</strong></p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · para você</span><h3>Um registro real, um destinatário</h3><p>Troque o destinatário pelo seu e-mail e rode com um pedido de verdade. Você vê o que o gestor veria, com a formatação e o anexo reais.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · rascunho</span><h3>As primeiras semanas, sem enviar</h3><p>O passo de envio cria rascunho, e você aperta o enviar. É o jeito de ver a automação no dia a dia, com casos que nenhum teste inventou.</p></div>
+    <div class="card"><span class="eyebrow">03 · todos</span><h3>Só então, sozinha</h3><p>Quando os rascunhos param de precisar de correção, o envio passa a ser dela. E no primeiro dia ligada, você olha o resultado.</p></div>
+  </div>
+  <div class="panel">
+    <h3>No chat, o mesmo gesto</h3>
+    <p>Quem usa IA pelo chat já faz uma automação pequena quando pede a mesma coisa para uma lista: quarenta contratos, cem respostas de pesquisa, a planilha inteira. <strong>Peça em dois antes de pedir em todos.</strong> Os dois mostram se ela entendeu o pedido; os quarenta só mostram o mesmo erro quarenta vezes.</p>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Dois antes de todos · para o chat</span><button type="button" class="btn" data-copy="psAsk">Copiar</button></div>
+<pre id="psAsk">Antes de aplicar isto a todos os itens, faça só nos dois primeiros e pare.
+Mostre o resultado dos dois e diga, em cada um, o que você precisou supor porque não estava no material.
+Eu confiro e ajusto o pedido. Só depois disso você faz o resto, do mesmo jeito.
+[cole aqui o pedido e a lista]</pre>
+  </div>
+  <p class="hint">Dois cuidados que completam este: estrear o pedido num trabalho que você já entregou, em <a href="./limites-da-ia--alucinacao.html#s-fechado">testar num trabalho já entregue</a>; e mudar uma linha da instrução por vez, testando com a mesma entrada, em <a href="./agente--anatomia.html#s-linha">uma linha por vez</a>. Se a tarefa merece ser automatizada, a conta está em <a href="./automacao.html#s-vale">vale automatizar?</a>; e o mapa dela, em <a href="./automacao.html#s-mapa">a sua tarefa</a>.</p>
+</section>
+
+<!-- levar -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Dois, não um</h3><p>Com um item a lista não aparece. Suba em degraus: um, dois, poucos, todos.</p></div>
+    <div class="take-card"><h3>Congele o caro, solte antes de ligar</h3><p>Congelar poupa a IA e o formulário. Esquecido, faz a automação responder ao passado.</p></div>
+    <div class="take-card"><h3>Pronto é inteiro</h3><p>Do começo ao fim, sem nada congelado, depois da última mudança. Inventado primeiro; real, para uma pessoa.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Item</dt><dd>Cada coisa que entra na automação: um pedido, uma linha, um e-mail. Chegam em lista, e cada passo roda uma vez para cada um.</dd>
+    <dt>Congelar</dt><dd>Guardar o resultado de um passo para os testes seguintes usarem sem rodar o passo de novo. Em algumas ferramentas, “fixar” ou “pin”.</dd>
+    <dt>Rodada inteira</dt><dd>Do gatilho à entrega, com dado que acabou de chegar e nenhum passo congelado.</dd>
+    <dt>Dado fictício</dt><dd>Registro inventado, que não aponta para nenhuma pessoa, empresa ou documento real.</dd>
+    <dt>Ligar</dt><dd>Deixar a automação rodar sozinha, disparada pelo gatilho, sem você apertar o botão.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O nome do botão de congelar, do passo que corta a lista e do modo rascunho muda de ferramenta para ferramenta; o gesto é o mesmo. Os pedidos, nomes, valores, tempos e contagens dos exemplos são inventados. Família <a href="./automacao.html">Automação</a>; irmãs: <a href="./automacao--api.html">API</a>, <a href="./automacao--webhook.html">webhook</a>, <a href="./automacao--json.html">JSON</a>, <a href="./automacao--falha.html">quando um passo falha</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Automação: anterior e próxima">
+  <a class="famfoot-prev" href="./automacao--falha.html"><span>← anterior</span><b>7.4 · Quando um passo falha</b></a>
+  <a class="famfoot-fam" href="./automacao.html#mapa">Família 7 · Automação · o mapa</a>
+  <a class="famfoot-next" href="./automacao.html"><span>volta ao começo ↺</span><b>Visão geral · Pensar como automação</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É “' + lab.toLowerCase() + '”. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  function fmt(n) { return n.toLocaleString('pt-BR'); }
+
+  /* 1 · um ou dois */
+  var A = { n: 'Joana Exemplo', v: '87,40', m: 'almoço com cliente' }, B = { n: 'Pedro Fictício', v: '312,00', m: 'táxi para o aeroporto' };
+  var DN = {
+    um: { inp: [A], out: [[A, 0]], ref: 'o primeiro da lista', cls: 'ok', ver: '<b>Parece pronto.</b> Saiu um e-mail, com o nome e o valor certos.', hint: 'Com um item só, “o primeiro da lista” e “este pedido” são o mesmo pedido. O defeito já está no passo, e este teste não tem como mostrar.' },
+    dois: { inp: [A, B], out: [[A, 0], [A, 1]], ref: 'o primeiro da lista', cls: 'no', ver: '<b>Dois e-mails iguais.</b> O pedido do segundo saiu com o nome e o valor do primeiro.', hint: 'O passo nunca olhou para cada pedido: olhou sempre para o primeiro. Nenhum aviso de erro, porque tecnicamente nada falhou.' },
+    ok: { inp: [A, B], out: [[A, 0], [B, 0]], ref: 'este pedido', cls: 'ok', ver: '<b>Agora, sim.</b> Cada e-mail com o seu pedido.', hint: 'O conserto foi trocar “o primeiro da lista” por “este pedido”. É um dos erros mais comuns em automação, e só aparece com dois itens ou mais.' }
+  };
+  var dnBtns = document.querySelectorAll('[data-dn]'), dnOut = document.getElementById('dnOut');
+  function setDn(k) {
+    pressGroup(dnBtns, function (x) { return x.dataset.dn === k; });
+    var s = DN[k];
+    var inp = s.inp.map(function (p) { return '<li><b>' + p.n + '</b> · R$ ' + p.v + ' · ' + p.m + '</li>'; }).join('');
+    var out = s.out.map(function (o) { var t = 'Reembolso de ' + o[0].n + ', R$ ' + o[0].v; return '<li>' + (o[1] ? '<span class="wrong">' + t + '</span>' : t) + '</li>'; }).join('');
+    dnOut.innerHTML = '<div class="tp-stack"><p class="tp-cmd">O passo do e-mail diz: Reembolso de {<b>' + s.ref + '</b> → nome}, R$ {<b>' + s.ref + '</b> → valor}</p><div class="two"><div class="tp-box"><span class="eyebrow">O que entrou · ' + s.inp.length + (s.inp.length === 1 ? ' pedido' : ' pedidos') + '</span><ul>' + inp + '</ul></div><div class="tp-box ' + (s.cls === 'ok' ? 'good' : 'bad') + '"><span class="eyebrow">Os e-mails que saíram</span><ul>' + out + '</ul></div></div><div class="verdict ' + s.cls + '">' + s.ver + '</div><p class="hint">' + s.hint + '</p></div>';
+  }
+  dnBtns.forEach(function (b) { b.addEventListener('click', function () { setDn(b.dataset.dn); }); });
+  setDn('um');
+
+  /* 2 · degraus */
+  var DG = [
+    { t: 'Um item: o caminho existe', d: 'Prova que cada passo conversa com o seguinte: o formulário chega, a IA resume, a linha entra, o e-mail sai. Não prova nada sobre a lista, porque com um item não existe lista.' },
+    { t: 'Dois itens: a lista funciona', d: 'Cada pedido tem de sair com o seu próprio nome e valor. É aqui que aparece o passo que sempre olha para o primeiro. Se funciona em dois, quase sempre funciona em oito.' },
+    { t: 'Até uma dezena: os casos estranhos', d: 'Agora, registros variados: o campo vazio, o valor com vírgula, o pedido repetido. Ainda são poucos o bastante para você conferir um por um, e baratos o bastante para repetir.' },
+    { t: 'Todos: uso de verdade', d: 'Antes de subir, a linha tracejada: todo passo descongelado e uma rodada do começo ao fim. Só então todos. E no primeiro dia ligada, você olha o resultado.' }
+  ];
+  var dgSteps = document.querySelectorAll('.dg-step');
+  stepper(DG.length, document.getElementById('dgPrev'), document.getElementById('dgNext'), document.getElementById('dgLab'), 'Degrau', function (k) {
+    dgSteps.forEach(function (g) { var i = +g.dataset.dg; g.classList.toggle('on', i === k); g.classList.toggle('done', i < k); });
+    var s = DG[k - 1];
+    document.getElementById('dgCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 3 · quanto custa um teste */
+  var TC = [1, 2, 5, 10, 50, 100, 500, 1000, 5000, 10000], tcMode = 'real';
+  var tcN = document.getElementById('tcN'), tcBtns = document.querySelectorAll('[data-tc]');
+  function tempo(s) { if (s < 60) return s + ' s'; if (s < 3600) return Math.round(s / 60) + ' min'; return (s / 3600).toFixed(1).replace('.', ',') + ' h'; }
+  function tc() {
+    var n = TC[+tcN.value], hot = n > 10;
+    document.getElementById('tcNo').textContent = fmt(n);
+    document.getElementById('tcV1').textContent = fmt(n);
+    document.getElementById('tcV2').textContent = tempo(n * 4);
+    document.getElementById('tcV3').textContent = fmt(n);
+    document.getElementById('tcL3').textContent = tcMode === 'real' ? 'e-mails que saem' : 'rascunhos criados';
+    document.getElementById('tcD3').textContent = tcMode === 'real' ? 'para gestores de verdade' : 'para você conferir e apagar';
+    ['tcS1', 'tcS2'].forEach(function (id) { document.getElementById(id).classList.toggle('hot', hot); });
+    document.getElementById('tcS3').classList.toggle('hot', hot && tcMode === 'real');
+    var v = document.getElementById('tcVer');
+    if (n <= 2) { v.className = 'verdict ok'; v.innerHTML = '<b>Teste de lógica.</b> Barato, rápido, e dois já mostram se a lista funciona.'; }
+    else if (n <= 10) { v.className = 'verdict ok'; v.innerHTML = '<b>Teste de amostra.</b> Ainda dá para conferir um por um' + (tcMode === 'real' ? ', mas os e-mails estão saindo de verdade: rascunho seria mais seguro.' : '.'); }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Isto já não é teste: é uso.</b> Ninguém confere ' + fmt(n) + ' resultados, e o erro, se houver, saiu ' + fmt(n) + ' vezes' + (tcMode === 'real' ? ', para gente de verdade.' : '.'); }
+  }
+  tcN.addEventListener('input', tc);
+  tcBtns.forEach(function (b) { b.addEventListener('click', function () { tcMode = b.dataset.tc; pressGroup(tcBtns, function (x) { return x === b; }); tc(); }); });
+  tc();
+
+  /* 4 · congelar */
+  var R = 10, cg = [false, false, false], cgBtns = document.querySelectorAll('[data-cg]');
+  function cgRender() {
+    cgBtns.forEach(function (b) { var i = +b.dataset.cg; b.setAttribute('aria-pressed', String(cg[i])); b.querySelector('.st').textContent = cg[i] ? 'congelado' : 'roda de novo'; });
+    [0, 1, 2].forEach(function (i) { var n = cg[i] ? 1 : R; document.getElementById('cgV' + i).textContent = n; document.getElementById('cgS' + i).classList.toggle('hot', n === R); });
+    var c = cg.filter(Boolean).length, v = document.getElementById('cgVer');
+    if (c === 3) { v.className = 'verdict ok'; v.innerHTML = '<b>Dez ajustes, um pedido.</b> Você preencheu uma vez, pagou a IA uma vez, e a planilha tem uma linha. Os outros nove testes reusaram o que ficou guardado.'; }
+    else if (c === 0) { v.className = 'verdict no'; v.innerHTML = '<b>Cada ajuste no e-mail refaz tudo o que vem antes.</b> Dez formulários à mão, dez chamadas pagas para resumir o mesmo pedido, dez linhas repetidas na planilha.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Melhorou, falta ' + (3 - c) + '.</b> Os passos que ainda rodam de novo continuam cobrando a cada ajuste.'; }
+  }
+  cgBtns.forEach(function (b) { b.addEventListener('click', function () { var i = +b.dataset.cg; cg[i] = !cg[i]; cgRender(); }); });
+  cgRender();
+
+  /* 5 · o pino esquecido */
+  var PN = {
+    esq: { out: A, cls: 'no', ver: '<b>Tudo verde, e o e-mail é de ontem.</b> O passo da IA ainda devolve o resumo guardado do pedido da Joana. O pedido do Pedro passou pela porta e ninguém leu.' },
+    desc: { out: B, cls: 'ok', ver: '<b>Agora a saída acompanha a entrada.</b> O passo voltou a ler o que chega. É neste estado que a automação pode ser ligada.' }
+  };
+  var pnBtns = document.querySelectorAll('[data-pn]'), pnOut = document.getElementById('pnOut');
+  function setPn(k) {
+    pressGroup(pnBtns, function (x) { return x.dataset.pn === k; });
+    var s = PN[k], o = s.out;
+    pnOut.innerHTML = '<div class="tp-stack"><div class="two"><div class="tp-box"><span class="eyebrow">Você preencheu agora</span><ul><li><b>' + B.n + '</b> · R$ ' + B.v + '</li><li>' + B.m + '</li></ul></div><div class="tp-box ' + (s.cls === 'ok' ? 'good' : 'bad') + '"><span class="eyebrow">O e-mail que saiu</span><ul><li>' + (s.cls === 'ok' ? '' : '<span class="wrong">') + 'Reembolso de ' + o.n + ', R$ ' + o.v + (s.cls === 'ok' ? '' : '</span>') + '</li><li>Motivo: ' + o.m + '</li></ul></div></div><div class="verdict ' + s.cls + '">' + s.ver + '</div></div>';
+  }
+  pnBtns.forEach(function (b) { b.addEventListener('click', function () { setPn(b.dataset.pn); }); });
+  setPn('esq');
+
+  /* 6 · pode ligar? */
+  quiz(document.getElementById('inQuiz'), document.getElementById('inScore'), [
+    { s: 'Testei cada passo separado, sempre com o resultado do passo anterior congelado.', a: 'nao', why: 'Cada passo funcionou com uma cópia do passado. Falta ver os passos conversando, com dado que acabou de chegar.' },
+    { s: 'Rodei do começo ao fim com um pedido inventado, e saiu certo.', a: 'nao', why: 'Um item não mostra a lista. Rode inteiro com dois, no mínimo.' },
+    { s: 'Rodei inteiro com dois pedidos inventados, nada congelado. Depois, com um pedido real, e o e-mail foi só para mim.', a: 'sim', why: 'É o caminho todo: a lista, os passos conversando, o dado de verdade, e o envio com uma pessoa só.' },
+    { s: 'Rodei inteiro e deu certo. Depois mudei o texto do e-mail e não rodei de novo.', a: 'nao', why: 'O passo mudou, e a prova de antes não vale para ele. Uma rodada inteira de novo, com dois.' },
+    { s: 'Tudo testado, mas o passo da IA ainda está com o alfinete de congelado.', a: 'nao', why: 'Esse passo não vê o que chega. Descongele e rode uma última vez inteiro.' }
+  ], [['sim', 'Pode ligar'], ['nao', 'Ainda não']], 'pronto é inteiro, sem nada congelado, depois da última mudança.');
+
+  /* 7 · dado inventado */
+  var FT = {
+    reemb: ['pedidos de reembolso de despesa', 'nome, data, valor, motivo, centro de custo'],
+    curric: ['currículos recebidos para uma vaga', 'nome, e-mail, cargo pretendido, anos de experiência, cidade'],
+    chamado: ['chamados de suporte de clientes', 'número, cliente, assunto, prioridade, texto do chamado'],
+    nota: ['notas fiscais de fornecedor', 'fornecedor, número da nota, data, valor, item']
+  };
+  var FC = ['um campo obrigatório vazio', 'um valor escrito com vírgula e outro com ponto', 'um nome com acento e sobrenome composto', 'o mesmo registro duas vezes', 'um texto muito mais longo que os outros'];
+  var ftCur = 'reemb', fqCur = 5, ftBtns = document.querySelectorAll('[data-ft]'), fqBtns = document.querySelectorAll('[data-fq]');
+  function ft() {
+    var t = FT[ftCur], sel = FC.filter(function (x, i) { return document.getElementById('fc' + i).checked; });
+    var txt = 'Preciso de dados de teste para uma automação que lê ' + t[0] + '.\n' +
+      'Gere ' + fqCur + ' registros inventados, em tabela, com as colunas: ' + t[1] + '.\n' +
+      'Regras: nenhuma pessoa, empresa ou documento real; nomes que se vê que são inventados; números de documento no formato XXXX.\n' +
+      (sel.length ? 'Inclua de propósito estes casos difíceis, um em cada registro, e diga qual é qual: ' + sel.join('; ') + '.\n' : 'Todos os registros podem ser comuns.\n') +
+      'No fim, diga em uma linha, para cada caso difícil, o que a automação deveria fazer com ele.';
+    document.getElementById('ftOut').textContent = txt;
+    var v = document.getElementById('ftVer');
+    if (!sel.length) { v.className = 'verdict no'; v.innerHTML = '<b>Só registros comuns.</b> O teste vai provar o caminho feliz, e o primeiro campo vazio de verdade vai aparecer depois de ligada.'; }
+    else if (sel.length > fqCur) { v.className = 'verdict no'; v.innerHTML = '<b>Mais casos difíceis que registros.</b> Suba a quantidade ou tire um caso: cada caso precisa do seu registro.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>' + sel.length + (sel.length === 1 ? ' caso difícil' : ' casos difíceis') + ' em ' + fqCur + ' registros.</b> O teste vai olhar para o que costuma quebrar, não só para o que costuma funcionar.'; }
+  }
+  ftBtns.forEach(function (b) { b.addEventListener('click', function () { ftCur = b.dataset.ft; pressGroup(ftBtns, function (x) { return x === b; }); ft(); }); });
+  fqBtns.forEach(function (b) { b.addEventListener('click', function () { fqCur = +b.dataset.fq; pressGroup(fqBtns, function (x) { return x === b; }); ft(); }); });
+  [0, 1, 2, 3, 4].forEach(function (i) { document.getElementById('fc' + i).addEventListener('change', ft); });
+  ft();
+})();
+</script>
+</body>
+</html>
