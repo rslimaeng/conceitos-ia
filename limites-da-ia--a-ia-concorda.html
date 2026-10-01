@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="limites-da-ia--a-ia-concorda">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A IA concorda com você</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 3.4. Peças: a mesma pergunta em três formas com contagem de objeções, o mesmo material lido a favor × contra × pesando, stepper com diagrama das hipóteses que sobrevivem e da que é derrubada, montador do pedido de discordância com copiar, quiz aplauso × crítica, simulador liga-desliga das três linhas que tiram o teatro da crítica, instrução fixa × pedido da hora. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão de 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; min-width: 0; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* 1 · a mesma pergunta, três formas */
+.cc-ask { font-family: var(--font-mono); font-size: .92rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.cc-resp { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; font-size: .95rem; display: grid; gap: 8px; }
+.cc-resp.bad { border-color: var(--atencao); }
+.cc-resp.good { border-color: var(--ok); }
+.cc-resp ol, .cc-resp ul { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; display: grid; gap: 4px; }
+.cc-count { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: end; }
+.cc-count div { display: grid; gap: 6px; }
+
+/* 2 · o mesmo material */
+.cm-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.cm { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; font-size: .9rem; display: grid; gap: 6px; align-content: start; min-width: 0; transition: opacity .25s ease, border-color .25s ease, background .25s ease; }
+.cm .n { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: var(--text-dim); }
+.cm .tema { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; border-radius: 4px; padding: 1px 7px; border: 1px solid var(--border-strong); color: var(--text-dim); width: fit-content; }
+.cm.hit { border-color: var(--accent); background: var(--accent-soft); }
+.cm.hit .tema { border-color: var(--accent); color: var(--accent); }
+.cm.off { opacity: .4; }
+.cm.trap { border-color: var(--atencao); background: var(--atencao-soft); }
+.cm.trap .tema { border-color: var(--atencao); color: var(--atencao-texto); }
+
+/* 3 · hipóteses (svg) */
+.hy-head { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.hy-box { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.hy-pill { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.hy-t { font: 500 13.5px var(--font-body); fill: var(--text); }
+.hy-n { font: 400 12px var(--font-body); fill: var(--text-muted); }
+.hy-st { font: 500 11.5px var(--font-mono); fill: var(--text-dim); text-anchor: middle; letter-spacing: .06em; }
+.hy-row.ok .hy-box { fill: var(--ok-soft); stroke: var(--ok); }
+.hy-row.ok .hy-pill { fill: var(--ok-soft); stroke: var(--ok); }
+.hy-row.ok .hy-st { fill: var(--ok-texto); }
+.hy-row.no .hy-box { fill: var(--atencao-soft); stroke: var(--atencao); }
+.hy-row.no .hy-pill { fill: var(--atencao-soft); stroke: var(--atencao); }
+.hy-row.no .hy-st { fill: var(--atencao-texto); }
+.hy-row.no .hy-t { text-decoration: line-through; }
+.hy-row.test .hy-box { fill: var(--accent-soft); stroke: var(--accent); }
+.hy-row.test .hy-pill { fill: var(--accent-soft); stroke: var(--accent); }
+.hy-row.test .hy-st { fill: var(--accent); }
+
+/* 4 · montador */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.mt-form { display: grid; gap: 12px; min-width: 0; }
+.mt-form label { display: grid; gap: 4px; font-size: .92rem; }
+.mt-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; resize: vertical; }
+.mt-opts { display: grid; gap: 8px; }
+.mt-opts button { text-align: left; display: grid; gap: 2px; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 9px 12px; }
+.mt-opts button b { font-weight: 600; font-size: .95rem; }
+.mt-opts button small { color: var(--text-muted); font-size: .85rem; }
+.mt-opts button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+
+/* 6 · liga-desliga */
+.tg-list { display: grid; gap: 8px; }
+.tg-list button { text-align: left; display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 10px; align-items: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 12px; font-size: .92rem; }
+.tg-list .box { width: 18px; height: 18px; margin-top: 3px; border: 1.5px solid var(--border-strong); border-radius: 4px; background: var(--bg); }
+.tg-list button[aria-pressed="true"] { border-color: var(--accent); }
+.tg-list button[aria-pressed="true"] .box { background: var(--accent); border-color: var(--accent); }
+.sm-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 18px; align-items: start; }
+.sm-tag { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; border-radius: 4px; padding: 0 6px; margin-right: 6px; border: 1px solid var(--border-strong); color: var(--text-dim); }
+.sm-tag.dado { border-color: var(--ok); color: var(--ok-texto); background: var(--ok-soft); }
+.sm-tag.sup { border-color: var(--atencao); color: var(--atencao-texto); background: var(--atencao-soft); }
+.sm-good { border-top: 1px solid var(--border); padding-top: 8px; color: var(--ok-texto); font-size: .92rem; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .cm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mt-grid, .sm-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) { .cm-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .cm, .hy-box, .hy-pill { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Limites da IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./limites-da-ia.html">Família 3 · Limites da IA</a></span><span class="famhead-pn"><a href="./limites-da-ia--o-que-pode-subir.html">← 3.3 O que pode subir</a><a href="./limites-da-ia.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./limites-da-ia.html">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html"><b>3.3</b>O que pode subir</a><a href="./limites-da-ia--a-ia-concorda.html" aria-current="page"><b>3.4</b>A IA concorda</a></div>
+  </nav>
+  <span class="eyebrow">3.4 · 4 de 4</span>
+  <h1>A IA concorda com você</h1>
+  <p class="sub">Ela tende a achar razão para o que você já pensa; crítica de verdade só vem quando você pede que ela discorde</p>
+  <p class="lead">A IA escreve continuando o texto que você mandou (está em <a href="./prompt.html">Prompt</a>), e a sua pergunta faz parte desse texto. Pergunta que já traz a sua opinião puxa uma resposta que concorda. Pedido de prova a favor encontra prova a favor, no mesmo material em que havia prova contra. Ela não está mentindo para agradar: <strong>segue a direção que o pedido deu, com a mesma segurança dos dois lados</strong>. Talvez você tenha ouvido que a IA é neutra porque não tem ego. Não ter ego não é o mesmo que não ter lado. Para quem usa o chat, a consequência é prática: <strong>“isso está bom?” volta “sim”</strong>, e a crítica que serve para decidir só aparece com um pedido concreto para discordar.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-pergunta">A pergunta que já traz a resposta</a><a href="#s-material">Prova a favor, prova contra</a><a href="#s-hipoteses">Hipótese que ninguém derrubou</a><a href="#s-pedir">Pedir para discordar</a><a href="#s-aplauso">Aplauso ou crítica</a><a href="#s-teatro">Crítica de verdade, não teatro</a><a href="#s-fixa">Discordância por escrito, uma vez só</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-pergunta" aria-labelledby="h-pergunta">
+  <span class="eyebrow">A pergunta que já traz a resposta</span>
+  <h2 id="h-pergunta">O mesmo plano, três perguntas, três respostas</h2>
+  <p class="intro">É como mostrar o relatório ao colega dizendo antes “achei ótimo, o que você acha?”: a resposta educada já veio embutida na pergunta. Com a IA acontece o mesmo, sem a educação: o pedido é o começo do texto que ela vai continuar. Abaixo, um plano de compras, idêntico nas três abas. <strong>Só a pergunta muda, e com ela muda quanto do que volta serve para decidir.</strong></p>
+  <p class="cc-ask">O plano: centralizar as compras das cinco unidades num comprador só, a partir de março, para negociar volume com os fornecedores.</p>
+  <div class="seg" role="group" aria-label="Como perguntar">
+    <button type="button" data-pg="neutra" aria-pressed="true">“Isso está bom?”</button>
+    <button type="button" data-pg="opiniao" aria-pressed="false">“Vai economizar, concorda?”</button>
+    <button type="button" data-pg="contra" aria-pressed="false">“Onde isso quebra?”</button>
+  </div>
+  <div id="pgOut" aria-live="polite"></div>
+  <div class="cc-count">
+    <div><span class="eyebrow">Objeções que mudam o plano</span><span class="big" id="pgN"></span></div>
+    <p class="hint" id="pgWhy"></p>
+  </div>
+  <p class="hint">É parente do chute que aparece em <a href="./limites-da-ia--alucinacao.html#s-prova">Alucinação</a>: ela foi feita para entregar uma resposta útil a quem pergunta, e concordar com quem pergunta parece útil. Nos três casos o texto sai fluente; o tom não avisa qual dos três você recebeu.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-material" aria-labelledby="h-material">
+  <span class="eyebrow">Prova a favor, prova contra</span>
+  <h2 id="h-material">Peça prova a favor e ela acha; peça prova contra e ela também acha</h2>
+  <p class="intro">Quem já mandou alguém “levantar os números que mostram que a campanha funcionou” sabe como o relatório volta: mostrando que funcionou. Esse é o <strong>viés de confirmação</strong>, a tendência de procurar e notar só o que confirma o que a gente já acha. Com a IA ele ganha um pesquisador incansável. Abaixo, oito comentários de clientes e uma suspeita: <strong>“as reclamações são por causa do prazo de entrega”</strong>. O material não muda entre as abas. Repare no comentário 5.</p>
+  <div class="seg" role="group" aria-label="O que pedir">
+    <button type="button" data-cm="favor" aria-pressed="true">Prove que é o prazo</button>
+    <button type="button" data-cm="contra" aria-pressed="false">Prove que não é</button>
+    <button type="button" data-cm="pesar" aria-pressed="false">Classifique todos e pese</button>
+  </div>
+  <div class="cm-grid" id="cmGrid"></div>
+  <div class="verdict" id="cmVer" aria-live="polite"></div>
+  <p class="punch">O material era o mesmo. <em>A pergunta escolheu qual metade seria lida.</em></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-hipoteses" aria-labelledby="h-hipoteses">
+  <span class="eyebrow">Hipótese que ninguém derrubou</span>
+  <h2 id="h-hipoteses">Se todas as hipóteses sobreviveram, ninguém testou</h2>
+  <p class="intro">Na auditoria interna, o relatório que volta “conforme” em todos os itens assusta mais do que tranquiliza: ou a área é perfeita, ou ninguém olhou de perto. Uma <strong>hipótese</strong> é o que você acha que explica o problema e ainda não provou. Numa análise feita com a IA, o sinal de alerta é o mesmo: tudo confirmado, tudo prioridade. Num caso real de análise de entrevistas, a primeira rodada deu nota alta para quase tudo, e quando tudo é prioridade, nada é. <strong>A regra que passou a funcionar: toda análise precisa derrubar pelo menos uma hipótese.</strong> Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="hyLab">Passo 1 de 5</span><div class="nav"><button type="button" class="btn" id="hyPrev">← Anterior</button><button type="button" class="btn primary" id="hyNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg viewBox="0 0 760 250" role="img" aria-labelledby="hy-t" xmlns="http://www.w3.org/2000/svg" style="min-width:560px">
+      <title id="hy-t">Três hipóteses sobre a saída de pessoas da equipe de atendimento; pedindo evidência a favor, as três sobrevivem; pedindo que o material contradiga cada uma, a de treinamento cai, a de salário encolhe e a da escala de domingo resiste</title>
+      <text class="hy-head" x="20" y="22">HIPÓTESE · O QUE O MATERIAL DIZ</text>
+      <text class="hy-head" x="572" y="22">SITUAÇÃO</text>
+      <g class="hy-row" id="hy0"><rect class="hy-box" x="16" y="36" width="524" height="56" rx="8"/><text class="hy-t" x="34" y="60">H1 · O salário está abaixo do mercado</text><text class="hy-n" x="34" y="80" id="hy0n"></text><rect class="hy-pill" x="556" y="49" width="188" height="30" rx="15"/><text class="hy-st" x="650" y="69" id="hy0s"></text></g>
+      <g class="hy-row" id="hy1"><rect class="hy-box" x="16" y="108" width="524" height="56" rx="8"/><text class="hy-t" x="34" y="132">H2 · A escala de domingo pesa</text><text class="hy-n" x="34" y="152" id="hy1n"></text><rect class="hy-pill" x="556" y="121" width="188" height="30" rx="15"/><text class="hy-st" x="650" y="141" id="hy1s"></text></g>
+      <g class="hy-row" id="hy2"><rect class="hy-box" x="16" y="180" width="524" height="56" rx="8"/><text class="hy-t" x="34" y="204">H3 · Falta treinamento na entrada</text><text class="hy-n" x="34" y="224" id="hy2n"></text><rect class="hy-pill" x="556" y="193" width="188" height="30" rx="15"/><text class="hy-st" x="650" y="213" id="hy2s"></text></g>
+    </svg>
+  </div>
+  <div class="caption" id="hyCap" aria-live="polite"></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-pedir" aria-labelledby="h-pedir">
+  <span class="eyebrow">Pedir para discordar</span>
+  <h2 id="h-pedir">Discordar é uma tarefa com forma, não um tom</h2>
+  <p class="intro">Ninguém arranca uma segunda opinião honesta pedindo ao colega “seja sincero”; arranca perguntando “o que o diretor vai perguntar que eu não sei responder?”. Com a IA, “seja crítico” devolve uma crítica morna, com três ressalvas educadas. <strong>O que funciona é dar à discordância uma tarefa concreta</strong>, com número e formato. Escolha o ângulo, ajuste o plano e copie.</p>
+  <div class="mt-grid">
+    <div class="mt-form">
+      <label>O plano ou a decisão, em duas frases<textarea id="mtPlano" rows="3">Centralizar as compras das cinco unidades num comprador só, a partir de março, para negociar volume com os fornecedores.</textarea></label>
+      <div class="mt-opts" role="group" aria-label="Ângulo da discordância" id="mtOpts">
+        <button type="button" data-mt="0" aria-pressed="true"><b>Deu errado: por quê?</b><small>o pré-mortem: imaginar o fracasso já acontecido e listar as causas</small></button>
+        <button type="button" data-mt="1" aria-pressed="false"><b>O melhor argumento contra</b><small>os mais fortes, sem objeção fraca para parecer equilibrado</small></button>
+        <button type="button" data-mt="2" aria-pressed="false"><b>O que o plano supõe sem dado</b><small>as suposições que ninguém conferiu</small></button>
+        <button type="button" data-mt="3" aria-pressed="false"><b>As perguntas incômodas</b><small>o que a diretoria perguntaria depois da apresentação</small></button>
+        <button type="button" data-mt="4" aria-pressed="false"><b>E depois?</b><small>o que acontece seis meses depois, se tudo der certo</small></button>
+      </div>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow" id="mtLab">O pedido · ao vivo</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+      <pre id="mtOut"></pre>
+    </div>
+  </div>
+  <p class="hint" id="mtWhy"></p>
+  <p class="hint">Para aprender um tema, e não para decidir, o gesto é o mesmo: conte o que você já sabe e onde trava, e peça que ela aponte onde você entendeu errado, separando o que é regra geral do que é costume da sua empresa. Como o pedido de “pensar junto” se monta inteiro está em <a href="./usar-ia--delegar-ou-pensar.html#s-pedidos">Delegar ou pensar junto</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-aplauso" aria-labelledby="h-aplauso">
+  <span class="eyebrow">Aplauso ou crítica</span>
+  <h2 id="h-aplauso">Sete pedidos de uma semana comum: qual deles pede aplauso?</h2>
+  <p class="intro">No corredor, “gostou da apresentação?” é pergunta que só tem uma resposta educada. Muitos pedidos à IA têm a mesma forma sem que a gente perceba. Pedir aplauso não é proibido: às vezes você precisa mesmo defender uma proposta. <strong>O problema é pedir aplauso achando que pediu revisão.</strong></p>
+  <div class="qz" id="apQuiz"></div>
+  <p class="qz-score" id="apScore" aria-live="polite"></p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-teatro" aria-labelledby="h-teatro">
+  <span class="eyebrow">Crítica de verdade, não teatro</span>
+  <h2 id="h-teatro">Mandar destruir também engana: ela acha defeito até onde não há</h2>
+  <p class="intro">O advogado do diabo da reunião, quando é só um papel, discorda de tudo, até do que está certo, e na terceira rodada ninguém mais escuta. É o mesmo mecanismo ao contrário: <strong>peça defeitos e ela entrega defeitos</strong>, inclusive genéricos, que serviriam para qualquer plano. Três linhas no fim do pedido separam a crítica útil do teatro. Ligue e desligue.</p>
+  <p class="cc-ask">Pedido: “Destrua este plano.” (o mesmo plano de compras)</p>
+  <div class="sm-grid">
+    <div class="tg-list" role="group" aria-label="Linhas acrescentadas ao pedido">
+      <button type="button" data-tg="ruido" aria-pressed="false"><span class="box" aria-hidden="true"></span><span>“Se não achar problema sério, diga que não achou. Não complete a lista.”</span></button>
+      <button type="button" data-tg="fonte" aria-pressed="false"><span class="box" aria-hidden="true"></span><span>“Em cada ponto, diga se está no plano ou se é suposição sua.”</span></button>
+      <button type="button" data-tg="bom" aria-pressed="false"><span class="box" aria-hidden="true"></span><span>“Diga também o que está bom, e por quê.”</span></button>
+    </div>
+    <div class="cc-resp" id="smOut" aria-live="polite"></div>
+  </div>
+  <div class="cc-count">
+    <div><span class="eyebrow">Pontos que você precisa checar</span><span class="big" id="smN"></span></div>
+    <p class="hint" id="smWhy"></p>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">As três linhas · para colar no fim de qualquer pedido de crítica</span><button type="button" class="btn" data-copy="smCopy">Copiar</button></div>
+<pre id="smCopy">Se não achar problema sério, diga que não achou. Não complete a lista para parecer rigoroso.
+Em cada ponto, diga se ele está no que eu mandei ou se é uma suposição sua.
+Diga também o que está bom, e por quê. Se um dado não sustenta a conclusão, diga que não sustenta, em vez de forçar a ligação.</pre>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-fixa" aria-labelledby="h-fixa">
+  <span class="eyebrow">Discordância por escrito, uma vez só</span>
+  <h2 id="h-fixa">Uma regra fixa para não depender de lembrar, e o pedido da hora para o que importa</h2>
+  <p class="intro">A empresa que quer auditoria de verdade não pede ao auditor, a cada visita, que seja rigoroso: põe no contrato. Na IA, o contrato são as <strong>instruções personalizadas</strong>: o texto fixo que a ferramenta lê antes de toda conversa (no Claude, nas configurações do perfil ou nas instruções de um projeto). Uma regra ali vale em toda conversa. <strong>Mas ela não desfaz uma pergunta carregada</strong>: “meu plano está ótimo, né?” continua puxando o sim. A regra fixa baixa o tom de aplauso; o pedido concreto da hora é o que traz a crítica.</p>
+  <div class="two">
+    <div class="card"><span class="eyebrow">Nas instruções fixas</span><h3>O jeito de conversar</h3><p>Não começar concordando. Separar dado de estimativa. Discordar primeiro e explicar depois. Vale para tudo, e você não precisa lembrar.</p></div>
+    <div class="card focal"><span class="eyebrow">No pedido da hora</span><h3>A tarefa de discordar</h3><p>Pré-mortem, o melhor argumento contra, as suposições sem dado. É o que faz a crítica aparecer quando a decisão vale dinheiro.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Para as instruções personalizadas · adapte</span><button type="button" class="btn" data-copy="fxTxt">Copiar</button></div>
+<pre id="fxTxt">Quando eu pedir a sua opinião, não comece concordando. Se você discordar, diga isso primeiro e explique o motivo.
+Quando eu mostrar um plano ou uma análise, aponte pelo menos um risco que eu não citei.
+Diga quando uma afirmação vem de dado que eu mandei e quando é estimativa sua.
+Prefiro uma discordância que me faça mudar de ideia a uma concordância que me deixe confortável.</pre>
+  </div>
+  <p class="hint">Quando a pergunta atravessa várias áreas, dá para ir além: montar papéis que discordam de propósito, como o que olha o dinheiro contra o que olha o risco. Está em <a href="./assistente--time.html#s-papeis">Time de assistentes</a>. E a decisão continua sendo de quem responde por ela: a IA faz o trabalho de procurar o contra, não o de escolher.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>A pergunta já é metade da resposta</h3><p>“Isso está bom?” volta “sim”. Pergunte onde quebra, e o que volta passa a servir para decidir.</p></div>
+    <div class="take-card"><h3>Se tudo sobreviveu, ninguém testou</h3><p>Toda análise derruba pelo menos uma hipótese. Três de três confirmadas é sinal de alerta, não de acerto.</p></div>
+    <div class="take-card"><h3>Discordância se pede com tarefa</h3><p>Pré-mortem, o melhor contra, as suposições sem dado. E peça também o que está bom, para a crítica não virar teatro.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Viés de confirmação</dt><dd>A tendência de procurar e notar só o que confirma o que você já acha. A IA não cria esse viés: obedece a ele quando o pedido aponta numa direção.</dd>
+    <dt>Hipótese</dt><dd>O que você acha que explica um problema e ainda não provou. Serve para ser testada, e o teste só vale se ela puder cair.</dd>
+    <dt>Pré-mortem</dt><dd>Imaginar que o plano já fracassou e listar as causas mais prováveis. Troca o “o que pode dar errado?” por “deu errado: por quê?”.</dd>
+    <dt>Suposição sem dado</dt><dd>Algo que o plano dá como certo sem mostrar de onde saiu. É onde a crítica útil costuma morar.</dd>
+    <dt>Consequência de segunda ordem</dt><dd>O efeito do efeito: o que acontece depois, se o plano der certo exatamente como está escrito.</dd>
+    <dt>Instruções personalizadas</dt><dd>O texto fixo que a ferramenta lê antes de toda conversa. Bom lugar para o jeito de conversar; não substitui o pedido da hora.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O plano de compras, os comentários de clientes, as hipóteses e as respostas são exemplos inventados para mostrar a direção do efeito, não medições; a regra de derrubar pelo menos uma hipótese vem de uma análise real de entrevistas. O nome e o lugar das instruções fixas mudam entre ferramentas e versões. Família <a href="./limites-da-ia.html">Limites da IA</a>; irmãs: <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>, <a href="./limites-da-ia--alucinacao.html">alucinação</a>, <a href="./limites-da-ia--o-que-pode-subir.html">o que pode subir</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Limites da IA: anterior e próxima">
+  <a class="famfoot-prev" href="./limites-da-ia--o-que-pode-subir.html"><span>← anterior</span><b>3.3 · O que pode subir para a IA</b></a>
+  <a class="famfoot-fam" href="./limites-da-ia.html#mapa">Família 3 · Limites da IA · o mapa</a>
+  <a class="famfoot-next" href="./limites-da-ia.html"><span>volta ao começo ↺</span><b>Visão geral · Limites da IA</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : lab + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* 1 · a mesma pergunta */
+  var PG = {
+    neutra: { n: 0, c: 'bad', h: '<span class="eyebrow">O que voltou</span><p>Sim, o plano está bem estruturado. Centralizar tende a dar mais poder de negociação e padroniza o processo de compra. Duas sugestões: defina um cronograma de implantação e comunique as unidades com antecedência.</p>', w: 'Duas sugestões de forma, nenhuma de conteúdo. “Está bom?” já pressupõe que está, e ela confirma.' },
+    opiniao: { n: 0, c: 'bad', h: '<span class="eyebrow">O que voltou</span><p>Concordo. Centralizar compras costuma trazer ganho de escala, evita compras duplicadas entre unidades e dá visibilidade do gasto. Seu plano aproveita bem esses pontos e é um caminho sólido para reduzir custo.</p>', w: 'Pior que a primeira: você disse o que achava, e ela trouxe três argumentos a favor da sua opinião.' },
+    contra: { n: 4, c: 'good', h: '<span class="eyebrow">O que voltou</span><ol><li>A compra urgente da unidade (a peça que parou a máquina hoje) passa a esperar na fila de uma pessoa só.</li><li>Um comprador só vira ponto único de falha: férias, licença, saída. O plano não diz quem cobre.</li><li>O fornecedor da cidade que entrega em duas horas some da conversa, e com ele o que a unidade sabia sobre ele.</li><li>O ganho de escala só existe se as cinco unidades compram itens parecidos. O plano não mostra se compram.</li></ol>', w: 'O plano é o mesmo das outras abas. Os quatro pontos já existiam; só apareceram quando a pergunta pediu.' }
+  };
+  var pgBtns = document.querySelectorAll('[data-pg]');
+  function setPg(k) { var p = PG[k]; pressGroup(pgBtns, function (x) { return x.dataset.pg === k; }); var o = document.getElementById('pgOut'); o.className = 'cc-resp ' + p.c; o.innerHTML = p.h; document.getElementById('pgN').textContent = p.n; document.getElementById('pgWhy').textContent = p.w; }
+  pgBtns.forEach(function (b) { b.addEventListener('click', function () { setPg(b.dataset.pg); }); });
+  setPg('neutra');
+
+  /* 2 · o mesmo material */
+  var CM = [
+    { t: 'Chegou dois dias depois do prometido.', tema: 'prazo' },
+    { t: 'Ninguém respondeu meu e-mail sobre a troca.', tema: 'atendimento' },
+    { t: 'A caixa veio amassada e um item quebrado.', tema: 'embalagem' },
+    { t: 'Demorou para sair do depósito.', tema: 'prazo' },
+    { t: 'Liguei três vezes para saber do pedido e ninguém sabia dizer.', tema: 'atendimento' },
+    { t: 'O produto é diferente da foto.', tema: 'produto' },
+    { t: 'A entrega atrasou na semana do feriado.', tema: 'prazo' },
+    { t: 'O atendente prometeu retorno e não ligou.', tema: 'atendimento' }
+  ];
+  var CMM = {
+    favor: { hit: [0, 3, 4, 6], trap: [4], v: 'no', txt: '<b>“A hipótese se confirma: metade dos comentários fala de atraso ou demora.”</b> Para chegar a quatro, ela contou o comentário 5 como atraso. Lido de perto, ele reclama de que ninguém sabia informar.' },
+    contra: { hit: [1, 2, 5, 7], trap: [], v: 'no', txt: '<b>“A hipótese não se sustenta: metade dos comentários não fala de prazo.”</b> Também verdade, também metade do material. Mesma segurança da aba anterior, conclusão oposta.' },
+    pesar: { hit: [], trap: [], v: 'ok', txt: '<b>Prazo 3 · atendimento 3 · embalagem 1 · produto 1.</b> O prazo é um dos motivos, empatado com o atendimento. E o comentário 5 junta os dois: atrasou e ninguém respondeu. A pergunta que vale levar para a reunião é outra: por que ninguém informa o cliente quando atrasa.' }
+  };
+  var cmBtns = document.querySelectorAll('[data-cm]'), cmGrid = document.getElementById('cmGrid');
+  CM.forEach(function (c, i) { var d = document.createElement('div'); d.className = 'cm'; d.innerHTML = '<span class="n">COMENTÁRIO ' + (i + 1) + '</span><span>' + c.t + '</span><span class="tema"></span>'; cmGrid.appendChild(d); });
+  var cms = cmGrid.querySelectorAll('.cm');
+  function setCm(k) {
+    var m = CMM[k]; pressGroup(cmBtns, function (x) { return x.dataset.cm === k; });
+    cms.forEach(function (d, i) {
+      var hit = m.hit.indexOf(i) > -1, trap = m.trap.indexOf(i) > -1, all = k === 'pesar';
+      d.className = 'cm' + (trap ? ' trap' : hit || all ? ' hit' : ' off');
+      d.querySelector('.tema').textContent = all ? CM[i].tema : trap ? 'contado como prazo' : hit ? 'citado' : 'ignorado';
+    });
+    var v = document.getElementById('cmVer'); v.className = 'verdict ' + m.v; v.innerHTML = m.txt;
+  }
+  cmBtns.forEach(function (b) { b.addEventListener('click', function () { setCm(b.dataset.cm); }); });
+  setCm('favor');
+
+  /* 3 · hipóteses */
+  var HY = [
+    { r: ['', '', ''], s: ['na mesa', 'na mesa', 'na mesa'], n: ['', '', ''], t: 'Três hipóteses na mesa', d: 'A equipe de atendimento perdeu mais gente que o normal no semestre. Você tem as entrevistas de saída e a planilha de escalas, e três explicações na cabeça. Nenhuma foi testada ainda.' },
+    { r: ['ok', 'ok', 'ok'], s: ['sobreviveu', 'sobreviveu', 'sobreviveu'], n: ['“dois citaram uma proposta melhor”', '“o domingo aparece em várias falas”', '“um disse que se sentiu perdido no começo”'], t: 'Peça evidência para cada uma', d: 'Ela acha argumento para as três, no mesmo material. Três de três sobreviveram, e isso não diz que as três estão certas. Diz que ninguém tentou derrubar nenhuma.' },
+    { r: ['test', 'test', 'no'], s: ['em teste', 'em teste', 'derrubada'], n: ['', '', 'quem saiu tinha mais de um ano de casa'], t: 'Derrube pelo menos uma', d: 'O pedido muda: “para cada hipótese, mostre o que no material a contradiz”. A de treinamento cai: quase todos os que saíram já tinham mais de um ano de casa, e treinamento de entrada não explica isso.' },
+    { r: ['test', 'ok', 'no'], s: ['encolheu', 'resistiu', 'derrubada'], n: ['quem citou salário também citou o domingo', 'aparece em quem saiu e em quem ficou', 'quem saiu tinha mais de um ano de casa'], t: 'O que sobra ganha motivo', d: 'Agora a sobrevivente tem um porquê: resistiu a uma tentativa de derrubada. A do salário não caiu, mas encolheu, porque quase sempre veio junto com a escala. Isso é informação que a primeira rodada não dava.' },
+    { r: ['test', 'ok', 'no'], s: ['acompanhar', 'agir primeiro', 'fora'], n: ['quem citou salário também citou o domingo', 'aparece em quem saiu e em quem ficou', 'quem saiu tinha mais de um ano de casa'], t: 'A decisão continua sua', d: 'Ela fez o trabalho de procurar o contra. Escolher onde agir primeiro, mexer na escala antes de mexer no salário, é de quem responde pela equipe. Saber onde não deixar a IA decidir é o que dá crédito a tudo que ela ajudou a produzir.' }
+  ];
+  stepper(HY.length, document.getElementById('hyPrev'), document.getElementById('hyNext'), document.getElementById('hyLab'), 'Passo', function (k) {
+    var s = HY[k - 1];
+    [0, 1, 2].forEach(function (i) {
+      document.getElementById('hy' + i).setAttribute('class', 'hy-row' + (s.r[i] ? ' ' + s.r[i] : ''));
+      document.getElementById('hy' + i + 's').textContent = s.s[i].toUpperCase();
+      document.getElementById('hy' + i + 'n').textContent = s.n[i];
+    });
+    document.getElementById('hyCap').innerHTML = '<h3>' + s.t + '</h3><p>' + s.d + '</p>';
+  });
+
+  /* 4 · montador */
+  var MT = [
+    { p: 'Imagine que estamos daqui a um ano e este plano fracassou. Liste os cinco motivos mais prováveis, do mais ao menos provável. Seja específico: nada de “falta de planejamento”. Para os dois primeiros, diga o que eu poderia fazer hoje para evitar.', w: 'Afirmar que deu errado tira da conversa a pergunta “será que dá errado?”, que ela tende a responder com “provavelmente não”. Sobra explicar como.' },
+    { p: 'Você é um crítico exigente deste plano. Quais são os cinco argumentos mais fortes contra ele? Não me dê objeções fracas para parecer equilibrado. Ordene do argumento que mais me preocuparia ao que menos.', w: 'O “mais fortes” e o “sem objeção fraca” impedem a lista de enchimento. Bom antes de apresentar para quem decide, e antes de recusar uma proposta alheia.' },
+    { p: 'Liste tudo o que este plano dá como certo sem mostrar o dado que sustenta. Para cada suposição, diga se ela parece vir de dado ou de hábito, e como eu poderia testá-la em uma semana.', w: 'É onde a crítica útil costuma morar: no “sempre foi assim” que ninguém conferiu. O teste de uma semana transforma a dúvida em tarefa.' },
+    { p: 'Se você fosse a diretoria, que três perguntas incômodas faria sobre este plano depois da apresentação? Escolha as que eu teria mais dificuldade de responder, e diga por que cada uma incomoda.', w: 'Ensaio antes da reunião. Se você não sabe responder uma delas, o plano ainda não está pronto, e é melhor descobrir agora.' },
+    { p: 'Suponha que este plano dê certo exatamente como está escrito. Quais consequências não óbvias aparecem seis meses depois? Pense em quem é afetado e não está na sala da decisão.', w: 'A consequência de segunda ordem, o efeito do efeito, é a que nenhum dos dois lados da discussão costuma olhar.' }
+  ];
+  var mtBtns = document.querySelectorAll('[data-mt]'), mtPlano = document.getElementById('mtPlano'), mtCur = 0;
+  function mt() {
+    var plano = mtPlano.value.trim() || '[descreva o plano em duas frases]';
+    document.getElementById('mtOut').innerHTML = '<b>O plano:</b> ' + esc(plano) + '\n\n' + esc(MT[mtCur].p) + '\n\n<b>Regras:</b> sua tarefa não é concordar comigo nem me elogiar pela ideia. Separe o que está no plano do que é suposição sua.';
+    document.getElementById('mtWhy').textContent = MT[mtCur].w;
+  }
+  mtBtns.forEach(function (b) { b.addEventListener('click', function () { mtCur = +b.dataset.mt; pressGroup(mtBtns, function (x) { return x === b; }); mt(); }); });
+  mtPlano.addEventListener('input', mt);
+  mt();
+
+  /* 5 · aplauso ou crítica */
+  quiz(document.getElementById('apQuiz'), document.getElementById('apScore'), [
+    { s: '“Revisa esse e-mail para o cliente e me diz se está bom.”', a: 'apl', why: '“Se está bom” pressupõe que está. Volta “sim” com dois ajustes de vírgula. Troque por “o que o cliente pode entender errado neste e-mail?”.' },
+    { s: '“Meu plano está bem fundamentado, né?”', a: 'apl', why: 'A opinião veio junto com a pergunta, e ela vai achar os fundamentos. É o pedido mais comum, e o mais caro.' },
+    { s: '“Liste as suposições deste plano que não têm dado dentro dele.”', a: 'cri', why: 'Tarefa concreta, com objeto definido. Não há como cumpri-la concordando.' },
+    { s: '“Imagine que daqui a um ano isto fracassou. Quais os cinco motivos mais prováveis?”', a: 'cri', why: 'O pré-mortem: o fracasso já é dado, e ela só pode explicá-lo.' },
+    { s: '“Me ajuda a defender esta proposta na reunião de amanhã.”', a: 'apl', why: 'Legítimo, quando é isso que você precisa. Só saiba que vai voltar um lado. Antes de defender, vale pedir as perguntas incômodas.' },
+    { s: '“Se você fosse a diretoria, que três perguntas incômodas faria?”', a: 'cri', why: 'Põe a IA na cadeira de quem vai discordar, e pede o que você teria dificuldade de responder.' },
+    { s: '“Encontre dados que comprovem que o treinamento funcionou.”', a: 'apl', why: 'Pedido de prova a favor encontra prova a favor. Para saber se funcionou, peça o que contradiz e o que confirma, e pese os dois.' }
+  ], [['apl', 'Pede aplauso'], ['cri', 'Pede crítica']], 'a forma da pergunta decide antes do conteúdo.');
+
+  /* 6 · liga-desliga */
+  var SM = [
+    { t: 'A compra urgente da unidade fica na fila de uma pessoa só.', real: 1, f: 'sup' },
+    { t: 'O plano não diz quem cobre o comprador nas férias.', real: 1, f: 'dado' },
+    { t: 'Ganho de escala depende de as unidades comprarem itens parecidos, e isso não foi mostrado.', real: 1, f: 'sup' },
+    { t: 'Pode haver resistência à mudança.', real: 0 },
+    { t: 'A comunicação da mudança pode não ser clara.', real: 0 },
+    { t: 'Faltam indicadores de sucesso bem definidos.', real: 0 },
+    { t: 'O cronograma pode ser otimista.', real: 0 }
+  ];
+  var tgBtns = document.querySelectorAll('[data-tg]'), TG = { ruido: false, fonte: false, bom: false };
+  function sm() {
+    var vis = SM.filter(function (o) { return o.real || !TG.ruido; });
+    var h = '<span class="eyebrow">O que voltou</span><ol>' + vis.map(function (o) {
+      var tag = TG.fonte ? (o.real ? (o.f === 'dado' ? '<span class="sm-tag dado">no plano</span>' : '<span class="sm-tag sup">suposição</span>') : '<span class="sm-tag sup">suposição</span>') : '';
+      return '<li>' + tag + o.t + '</li>';
+    }).join('') + '</ol>';
+    if (TG.ruido) h += '<p class="hint">Não achei outro problema sério.</p>';
+    if (TG.bom) h += '<p class="sm-good"><b>O que está bom:</b> começar por material de escritório, que é igual nas cinco unidades, dá ganho de volume sem risco de parar a operação. O plano acerta nessa ordem.</p>';
+    var o = document.getElementById('smOut'); o.className = 'cc-resp ' + (TG.ruido ? 'good' : 'bad'); o.innerHTML = h;
+    document.getElementById('smN').textContent = vis.length;
+    var w;
+    if (!TG.ruido && !TG.fonte && !TG.bom) w = 'Ela entregou o que o pedido pediu: defeitos. Quatro dos sete serviriam para qualquer plano do mundo, e conferir cada um custa o mesmo tempo.';
+    else if (!TG.ruido) w = 'Ainda há enchimento na lista. É a primeira linha que tira os genéricos.';
+    else if (!TG.fonte) w = 'Sobraram os pontos que só valem para este plano. Falta saber quais vieram do plano e quais ela deduziu.';
+    else w = TG.bom ? 'Três pontos para checar, cada um com a origem, e o que está bom dito com motivo. Isso é crítica que dá para usar.' : 'Três pontos, cada um com a origem. Ligue a última linha e veja o que estava bom.';
+    document.getElementById('smWhy').textContent = w;
+  }
+  tgBtns.forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.tg; TG[k] = !TG[k]; b.setAttribute('aria-pressed', String(TG[k])); sm(); }); });
+  sm();
+})();
+</script>
+</body>
+</html>

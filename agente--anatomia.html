@@ -369,8 +369,8 @@ code { font-family: var(--font-mono); font-size: .88em; }
   <div class="mem">
     <div class="mem-kind" id="memKind" aria-live="polite"></div>
     <div class="win">
-      <label for="winN">Quantas mensagens anteriores o agente recebe</label>
-      <div class="row"><input type="range" id="winN" min="1" max="9" value="5"><output id="winO">5</output></div>
+      <label for="winN">Quantas trocas anteriores o agente recebe (cada troca é uma pergunta e uma resposta)</label>
+      <div class="row"><input type="range" id="winN" min="1" max="5" value="2"><output id="winO">2</output></div>
       <ul class="win-list" id="winList"></ul>
       <div class="verdict" id="winVer" aria-live="polite"></div>
     </div>
@@ -430,7 +430,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
   </div>
   <dl class="gloss">
     <dt>Instrução</dt><dd>O texto permanente que o agente lê antes de toda mensagem: papel, objetivo, ferramentas, regras, notas e formato. Também chamada de system prompt.</dd>
-    <dt>Memória curta</dt><dd>As últimas mensagens da conversa, entregues de novo ao modelo a cada pergunta.</dd>
+    <dt>Memória curta</dt><dd>As últimas trocas da conversa (pergunta e resposta), entregues de novo ao modelo a cada pergunta.</dd>
     <dt>Memória longa</dt><dd>O que fica guardado fora da conversa e sobrevive a ela: um banco, um arquivo, uma base de busca.</dd>
     <dt>Etiqueta da conversa</dt><dd>O identificador que separa a memória de cada pessoa. Fixa, mistura todo mundo.</dd>
   </dl>
@@ -582,7 +582,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
   /* 6 · memória */
   var MK = {
-    curta: '<span class="eyebrow">Memória curta</span><p>As últimas mensagens <strong>desta conversa</strong>, entregues de novo ao modelo a cada pergunta. É o caderno aberto na mesa.</p><ul><li>guarda um número fixo de mensagens: as mais antigas saem</li><li>costuma sumir quando o sistema reinicia ou a conversa para</li><li>é por onde quase todo agente começa</li></ul>',
+    curta: '<span class="eyebrow">Memória curta</span><p>As últimas mensagens <strong>desta conversa</strong>, entregues de novo ao modelo a cada pergunta. É o caderno aberto na mesa.</p><ul><li>guarda um número fixo de trocas (pergunta e resposta): as mais antigas saem</li><li>costuma sumir quando o sistema reinicia ou a conversa para</li><li>é por onde quase todo agente começa</li></ul>',
     longa: '<span class="eyebrow">Memória longa</span><p>O que fica guardado <strong>fora da conversa</strong> e sobrevive a ela: um banco de dados, um arquivo, uma base onde se busca pelo sentido.</p><ul><li>lembra do cliente na semana seguinte, em outra conversa</li><li>pede um lugar para guardar e uma regra do que guardar</li><li>é o passo seguinte, quando a curta não basta</li></ul>'
   };
   var mkBtns = document.querySelectorAll('[data-mk]');
@@ -593,7 +593,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
   var winN = document.getElementById('winN'), winList = document.getElementById('winList');
   function win() {
     var n = +winN.value; document.getElementById('winO').textContent = n;
-    var start = MSG.length - n;
+    var start = MSG.length - 2 * n; /* a janela conta trocas: duas mensagens por troca */
     winList.innerHTML = MSG.map(function (m, i) { return '<li class="' + (i >= start ? 'in' : 'out') + '">' + m + '</li>'; }).join('') + '<li class="in"><b>você: e qual é o meu nome mesmo?</b></li>';
     var v = document.getElementById('winVer');
     if (start <= 0) { v.className = 'verdict ok'; v.innerHTML = '<b>“Rita.”</b> A primeira mensagem ainda está no caderno.'; }

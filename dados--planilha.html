@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--planilha">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Analisar planilha com IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.1. Peças: raio-x antes da conta × conta direto, um nome com duas definições, planilha com quatro defeitos liga-desliga, barras da média por segmento, ferramenta de calcular liga-desliga, quiz do número que dá para conferir, as três leituras que ficam com você. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono da biblioteca, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+/* respostas e pedidos */
+.dd-ans { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; font-size: .95rem; display: grid; gap: 8px; }
+.dd-ans.bad { border-color: var(--atencao); }
+.dd-ans.good { border-color: var(--ok); }
+.dd-ans ul, .dd-ans ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; }
+.dd-cmd { font-family: var(--font-mono); font-size: .9rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+
+/* 2 · um nome, dois números */
+.nm-out { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 20px; align-items: center; background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; }
+.nm-out p { color: var(--text-muted); }
+
+/* 3 · planilha com defeitos */
+.fx-wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.fx-wrap > * { min-width: 0; }
+.fx-tog { display: grid; gap: 8px; }
+.fx-tog button { display: flex; justify-content: space-between; align-items: center; gap: 10px; text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 9px 12px; font-size: .92rem; }
+.fx-tog button span { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; border-radius: 4px; padding: 1px 7px; border: 1px solid var(--ok); background: var(--ok-soft); color: var(--ok-texto); white-space: nowrap; }
+.fx-tog button[aria-pressed="true"] { border-color: var(--atencao); }
+.fx-tog button[aria-pressed="true"] span { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.vtable td.fx-merged { text-align: center; font-weight: 600; background: var(--accent-soft); color: var(--accent); }
+.vtable td.fx-err, .vtable tr.fx-err td { background: var(--atencao-soft); color: var(--atencao-texto); }
+.fx-out { display: grid; gap: 8px; margin-top: 12px; }
+.fx-score { font-family: var(--font-mono); font-size: .9rem; color: var(--text-muted); }
+
+/* 4 · barras por segmento */
+.sg-bars { display: grid; gap: 10px; }
+.sg-row { display: grid; grid-template-columns: 120px minmax(0, 1fr) 92px; gap: 12px; align-items: center; font-size: .93rem; }
+.sg-row > * { min-width: 0; }
+.sg-track { height: 22px; background: var(--accent-soft); border-radius: 4px; overflow: hidden; }
+.sg-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .35s ease; }
+.sg-fill.low { background: var(--atencao); }
+.sg-val { font-family: var(--font-mono); font-size: .9rem; text-align: right; }
+.sg-val small { display: block; font-size: .75rem; color: var(--text-dim); }
+
+/* 5 · calculou ou estimou */
+.cl-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.cl-screen { font-size: 1.2rem; }
+.cl-grid ol { margin: 0; padding-left: 20px; color: var(--text-muted); font-size: .92rem; }
+
+/* 7 · as três leituras */
+.lt-wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 18px; align-items: start; }
+.lt-list { display: grid; gap: 8px; }
+.lt-list button { text-align: left; display: grid; gap: 2px; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 12px; }
+.lt-list button b { font-weight: 500; }
+.lt-list button small { color: var(--text-muted); font-size: .85rem; }
+.lt-list button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+  .fx-wrap, .cl-grid, .lt-wrap { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .fam { grid-template-columns: 1fr; }
+  .sg-row { grid-template-columns: 88px minmax(0, 1fr) 72px; gap: 8px; }
+  .nm-out { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .sg-fill { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados.html">← Visão geral</a><a href="./dados.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html" aria-current="page"><b>9.1</b>Planilha</a></div>
+  </nav>
+  <span class="eyebrow">9.1 · 1 de 3</span>
+  <h1>Analisar planilha com IA</h1>
+  <p class="sub">Antes de pedir a conta, faça a IA ler a planilha; depois, confira de onde saiu cada número</p>
+  <p class="lead">Anexar a planilha no chat e perguntar a média funciona, às vezes. O que decide se o número presta acontece antes e depois da pergunta. <strong>Antes</strong>, a IA lê a estrutura e você arruma o dado. <strong>Depois</strong>, cada número volta com a coluna e as linhas de onde saiu. No meio, uma coisa que pouca gente sabe: com a ferramenta de calcular ligada, ela faz a conta; sem ela, lê um pedaço e estima, <strong>no mesmo tom</strong>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-raiox">Ler as colunas antes da conta</a><a href="#s-nome">Um nome, dois números</a><a href="#s-arrumar">Arrumar a planilha antes de anexar</a><a href="#s-segmento">A média que esconde o grupo</a><a href="#s-calcula">Fez a conta ou leu por cima</a><a href="#s-endereco">De onde saiu cada número</a><a href="#s-leituras">As três leituras que são suas</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-raiox" aria-labelledby="h-raiox">
+  <span class="eyebrow">Ler as colunas antes da conta</span>
+  <h2 id="h-raiox">Primeiro ela descreve a planilha; a conta vem depois</h2>
+  <p class="intro">Quem herda a planilha de um colega não sai somando: primeiro pergunta o que é cada coluna. Com a IA vale o mesmo, e ela não pergunta sozinha. Peça um <strong>raio-x</strong>: quantas linhas, o que cada coluna quer dizer e de que <strong>tipo</strong> ela é (número, data, texto livre ou categoria, que é uma lista fechada de rótulos como “Premium” e “Standard”). <strong>É no raio-x que aparece o que mudaria a conta</strong>, antes de a conta existir. Compare os dois começos, com a mesma pesquisa de satisfação de mil respostas.</p>
+  <div class="seg" role="group" aria-label="Como começar">
+    <button type="button" data-rx="direto" aria-pressed="true">Pedir a conta direto</button>
+    <button type="button" data-rx="raiox" aria-pressed="false">Pedir o raio-x primeiro</button>
+  </div>
+  <div id="rxOut" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O raio-x · cole junto com a planilha</span><button type="button" class="btn" data-copy="rxPrompt">Copiar</button></div>
+<pre id="rxPrompt">Anexei uma planilha. Antes de qualquer conta, faça um raio-x dela:
+1. Quantas linhas e quantas colunas.
+2. Para cada coluna: o nome, o tipo (número, data, texto livre ou categoria) e o que você acha que ela quer dizer. Marque como suposição o que não estiver escrito na planilha.
+3. Células vazias, valores estranhos (texto onde deveria haver número, o mesmo item escrito de dois jeitos) e linhas que parecem total ou subtotal.
+4. Três perguntas que esta planilha responde bem, e três que ela não responde.
+Se encontrar um problema que muda as contas, pare aqui e me avise. Não calcule nada ainda.</pre>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-nome" aria-labelledby="h-nome">
+  <span class="eyebrow">Um nome, dois números</span>
+  <h2 id="h-nome">“Em risco” pode ser uma nota baixa ou um rótulo da planilha</h2>
+  <p class="intro">Na reunião, “cliente ativo” para o financeiro é quem pagou no mês; para o comercial, é quem comprou no ano. Os dois dizem a mesma palavra e trazem números diferentes. Numa planilha real usada em aula, aconteceu igual: o pedido definia “em risco” como nota geral abaixo de 6, e a planilha já tinha uma coluna com o rótulo “Em Risco”. <strong>Mesmo nome, dois números, e a IA escolhe um sem avisar.</strong> Troque a definição.</p>
+  <div class="seg" role="group" aria-label="Definição de em risco">
+    <button type="button" data-nm="nota" aria-pressed="true">Nota geral abaixo de 6</button>
+    <button type="button" data-nm="rotulo" aria-pressed="false">Rótulo “Em Risco” da coluna de perfil</button>
+  </div>
+  <div class="nm-out" id="nmOut" aria-live="polite"></div>
+  <p class="punch">Os dois números estão certos. <em>O erro é ninguém dizer qual dos dois é.</em></p>
+  <p class="dd-cmd">“Antes de calcular, me diga que coluna e que regra você vai usar para definir ‘em risco’, e se existe outra coluna que poderia ser confundida com ela.”</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-arrumar" aria-labelledby="h-arrumar">
+  <span class="eyebrow">Arrumar a planilha antes de anexar</span>
+  <h2 id="h-arrumar">Quatro defeitos comuns, e o que cada um faz com a conta</h2>
+  <p class="intro">Antes de mandar o relatório para a contabilidade, você tira a anotação do canto e confere se a soma do rodapé não entrou como mais um lançamento. A planilha que vai para a IA pede a mesma faxina: ela é literal e trata cada linha como um <strong>registro</strong> (uma loja, um cliente, uma venda). Abaixo, cinco lojas e quatro defeitos que costumam vir juntos. <strong>Arrume um por vez e veja o que muda no que ela calcularia.</strong></p>
+  <div class="fx-wrap">
+    <div class="tablewrap" id="fxTable"></div>
+    <div>
+      <div class="fx-tog" role="group" aria-label="Defeitos da planilha">
+        <button type="button" data-fx="mescla" aria-pressed="true">Título em célula mesclada<span>defeito</span></button>
+        <button type="button" data-fx="estado" aria-pressed="true">Estado escrito de dois jeitos<span>defeito</span></button>
+        <button type="button" data-fx="texto" aria-pressed="true">Venda digitada como texto<span>defeito</span></button>
+        <button type="button" data-fx="total" aria-pressed="true">Linha de Total no fim<span>defeito</span></button>
+      </div>
+      <div class="fx-out" id="fxOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">Célula mesclada é a que foi unida às vizinhas para centralizar um título: bonita para quem lê, confusa para quem procura uma coluna por célula. E número escrito como texto é o mesmo problema que faz uma automação colar 10 com 5 e entregar 105: veja <a href="./automacao--json.html#s-soma">quando 10 + 5 dá 105</a>.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-segmento" aria-labelledby="h-segmento">
+  <span class="eyebrow">A média que esconde o grupo</span>
+  <h2 id="h-segmento">A média esconde o que o segmento revela</h2>
+  <p class="intro">O prazo médio de entrega do setor de compras pode estar dentro da meta enquanto um fornecedor atrasa todo pedido: a média dilui o atraso dele nos que chegam cedo. Na planilha, um <strong>segmento</strong> é um grupo de linhas com algo em comum: o canal de inscrição, a região, o tipo de cliente. Abaixo, uma pesquisa de satisfação olhada de três jeitos. <strong>A nota geral é a mesma nos três; muda o que você enxerga.</strong></p>
+  <div class="seg" role="group" aria-label="Como olhar a nota">
+    <button type="button" data-sg="geral" aria-pressed="true">Só a média geral</button>
+    <button type="button" data-sg="canal" aria-pressed="false">Por canal de inscrição</button>
+    <button type="button" data-sg="regiao" aria-pressed="false">Por região</button>
+  </div>
+  <div class="chart">
+    <div class="sg-bars" id="sgBars"></div>
+    <p class="hint" id="sgNote" aria-live="polite"></p>
+  </div>
+  <p class="dd-cmd">“Para a nota geral, mostre a média separada por cada coluna de grupo que existe na planilha (canal, região, perfil). Diga em qual delas a diferença entre o melhor e o pior grupo é maior, e quantas respostas tem cada grupo.”</p>
+  <p class="hint">Grupo pequeno engana: uma diferença grande em vinte respostas pode ser acaso. É por isso que o pedido manda dizer quantas respostas tem cada grupo.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-calcula" aria-labelledby="h-calcula">
+  <span class="eyebrow">Fez a conta ou leu por cima</span>
+  <h2 id="h-calcula">Com a ferramenta de calcular, ela faz a conta; sem ela, lê um pedaço e estima</h2>
+  <p class="intro">É a diferença entre o colega que somou a coluna inteira na calculadora e o que olhou as primeiras linhas e disse “dá uns seis”. Muitos chats têm uma <strong>ferramenta de calcular</strong>: um recurso que roda uma conta de verdade sobre o arquivo inteiro (aparece com nomes como análise de dados ou execução de código, e depende do aplicativo e do plano). Ligada, a média vem de conta feita. Desligada, ou não usada, ela lê a parte da planilha que consegue ver e escreve o número que parece provável. <strong>A frase sai igual nos dois casos.</strong> Ligue e desligue.</p>
+  <div class="seg" role="group" aria-label="Ferramenta de calcular">
+    <button type="button" data-cl="on" aria-pressed="true">Ferramenta de calcular ligada</button>
+    <button type="button" data-cl="off" aria-pressed="false">Desligada</button>
+  </div>
+  <div class="cl-grid" id="clOut" aria-live="polite"></div>
+  <p class="intro">Numa aula, com uma planilha de mil respostas, uma das IAs da turma entregou médias que não batiam. Perguntada, ela disse que tinha estimado as médias olhando os primeiros registros. <strong>Ela leu; não calculou.</strong> E só contou porque alguém perguntou.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A pergunta antes de usar o número</span><button type="button" class="btn" data-copy="clPrompt">Copiar</button></div>
+<pre id="clPrompt">Antes de eu usar esse número: você executou um cálculo sobre todas as linhas da planilha, ou estimou olhando uma parte? Diga quantas linhas entraram na conta e quais colunas você usou.
+Se estimou, diga isso com todas as letras e refaça calculando sobre o arquivo inteiro, se conseguir. Se não conseguir, me diga que não conseguiu.</pre>
+  </div>
+  <p class="hint">Por que o mesmo modelo calcula num aplicativo e estima em outro está em <a href="./llm-e-harness.html">LLM e harness</a>: a ferramenta é do aplicativo, não do modelo. E por que ela preenche em vez de dizer que não sabe, em <a href="./limites-da-ia--alucinacao.html#s-sem-base">alucinação</a>.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-endereco" aria-labelledby="h-endereco">
+  <span class="eyebrow">De onde saiu cada número</span>
+  <h2 id="h-endereco">Em planilha, a citação é a coluna e a linha</h2>
+  <p class="intro">O auditor não aceita o total do relatório: pede a planilha e a célula de onde ele veio. Num texto, a prova de que a IA leu é o trecho copiado palavra por palavra. Numa planilha, é o <strong>endereço do número</strong>: a coluna, o corte de linhas que entrou na conta e a contagem. Sem endereço, o número não dá para conferir; só dá para acreditar. Classifique o que voltou.</p>
+  <div class="qz" id="edQuiz"></div>
+  <p class="qz-score" id="edScore" aria-live="polite"></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Para a conversa inteira · cole depois do raio-x</span><button type="button" class="btn" data-copy="edPrompt">Copiar</button></div>
+<pre id="edPrompt">A partir de agora, em cada número que você me der, traga:
+- o número direto, sem arredondar para ficar bonito;
+- a coluna de onde ele saiu;
+- o corte que você aplicou (quais linhas entraram na conta, e quantas);
+- qualquer suposição que você fez para chegar nele.
+Se a pergunta exigir uma suposição forte, como “por que caiu?”, responda como hipótese, não como fato. Nunca use uma coluna que não existe na planilha.</pre>
+  </div>
+  <p class="hint">É o mesmo teste da transcrição literal para documento, trocado em número: <a href="./assistente--resposta-ancorada.html#s-leu">leu ou deduziu</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-leituras" aria-labelledby="h-leituras">
+  <span class="eyebrow">As três leituras que são suas</span>
+  <h2 id="h-leituras">Ela descreve o número; relevância, gravidade e causa ficam com você</h2>
+  <p class="intro">O relatório de auditoria aponta a divergência; quem decide se é erro de digitação ou problema sério é o gestor que conhece a operação. A IA acha desvios depressa e escreve bem sobre eles. Três perguntas, porém, dependem do que só você sabe: a meta, o histórico, o que mudou no mês. <strong>Clique em cada uma.</strong></p>
+  <div class="lt-wrap">
+    <div class="lt-list" role="group" aria-label="As três leituras">
+      <button type="button" data-lt="0" aria-pressed="true"><b>É relevante?</b><small>nem todo desvio é problema</small></button>
+      <button type="button" data-lt="1" aria-pressed="false"><b>É aceitável ou crítico?</b><small>o número não traz a régua</small></button>
+      <button type="button" data-lt="2" aria-pressed="false"><b>Qual é a causa?</b><small>a explicação dela é hipótese</small></button>
+    </div>
+    <div class="panel" id="ltPanel" aria-live="polite"></div>
+  </div>
+  <p class="hint">Para a causa, o jeito de perguntar por quê até chegar em algo que se decide está em <a href="./ai-first--ipo.html#s-causa">IPO</a>. Antes de usar os pedidos desta página numa planilha nova, teste numa cujo resultado você já sabe: <a href="./limites-da-ia--alucinacao.html#s-caca">caça ao erro</a>. E quando a análise virar resumo, confira se nada apareceu que não estava nela: <a href="./limites-da-ia--alucinacao.html#s-voltou">o que voltou a mais</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Raio-x antes da conta</h3><p>Peça que ela descreva colunas, tipos e defeitos antes de calcular. É ali que aparece o que mudaria o número.</p></div>
+    <div class="take-card"><h3>Pergunte se ela calculou</h3><p>Com a ferramenta ligada, é conta; sem ela, é estimativa no mesmo tom. Quantas linhas entraram responde.</p></div>
+    <div class="take-card"><h3>Número sem endereço não se usa</h3><p>Coluna, corte e contagem. Relevância, gravidade e causa continuam sendo suas.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Raio-x</dt><dd>O primeiro pedido sobre uma planilha: linhas, colunas, o que cada uma quer dizer, de que tipo é, e o que está estranho. Nenhuma conta ainda.</dd>
+    <dt>Tipo</dt><dd>O que cabe numa coluna: número, data, texto livre ou categoria (uma lista fechada de rótulos). Número guardado como texto não entra na conta.</dd>
+    <dt>Segmento</dt><dd>Um grupo de linhas com algo em comum, como canal, região ou tipo de cliente. É onde a média para de esconder.</dd>
+    <dt>Ferramenta de calcular</dt><dd>O recurso do chat que roda a conta sobre o arquivo inteiro. Sem ela, a IA lê o que consegue ver e estima.</dd>
+    <dt>Endereço do número</dt><dd>A coluna, o corte de linhas e a contagem de onde um número saiu. É a citação da planilha.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O nome da ferramenta de calcular, se ela vem ligada e quanto de uma planilha cabe na leitura mudam entre aplicativos, planos e versões; por isso a pergunta “quantas linhas entraram?” vale em qualquer um. A pesquisa de mil respostas, os 43,0% e os 32,2%, as 252 respostas sem comentário, a região que falta e a média de 5,90 vêm de uma planilha real usada em aula, sem identificação. As lojas, os canais e as regiões com nota, a estimativa de 6,4 e os exemplos das três leituras são inventados para o exemplo. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: pesquisa com hipótese, comunicar o resultado (a publicar).</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados.html"><span>← anterior</span><b>Visão geral · Trabalhar com dados</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <span></span>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É “' + lab.toLowerCase() + '”. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function fmt(n) { return n.toFixed(1).replace('.', ','); }
+  function toggle(sel, render, first) {
+    var btns = document.querySelectorAll(sel), key = sel.replace(/^\[data-|\]$/g, '');
+    function set(k) { pressGroup(btns, function (x) { return x.getAttribute('data-' + key) === k; }); render(k); }
+    btns.forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-' + key)); }); });
+    set(first);
+  }
+
+  /* 1 · raio-x */
+  var RX = {
+    direto: '<div class="dd-ans bad"><span class="eyebrow">Pedido: qual o percentual de clientes em risco?</span><p><b>32,2% dos clientes estão em risco.</b> Recomenda-se uma ação de retenção focada nesse grupo.</p><p class="hint">Resposta limpa, número com uma casa decimal, e nenhuma pista do que ela chamou de “em risco”. Você não tem como saber se é o número que você queria.</p></div>',
+    raiox: '<div class="dd-ans good"><span class="eyebrow">Pedido: antes de qualquer conta, descreva a planilha</span><ul><li>1.000 linhas e 22 colunas: perfil (gênero, estado, região, idade, formação e tipo de cliente), 15 notas de 1 a 10 e um campo de comentário</li><li>A coluna de tipo de cliente é uma categoria com três rótulos: Premium, Standard e <b>Em Risco</b>. Nada na planilha diz o que define cada um</li><li>252 respostas estão com o comentário vazio</li><li>Só 4 regiões aparecem: <b>a região Norte não existe na base</b></li></ul><p class="hint">Duas dessas linhas mudam a conta que você ia pedir: o que é “em risco”, e a região que falta para falar do Brasil inteiro. Nenhuma das duas aparece se a primeira mensagem já for a pergunta.</p></div>'
+  };
+  var rxOut = document.getElementById('rxOut');
+  toggle('[data-rx]', function (k) { rxOut.innerHTML = RX[k]; }, 'direto');
+
+  /* 2 · um nome, dois números */
+  var NM = {
+    nota: ['43,0%', '<b>430 de 1.000</b> respostas deram nota geral abaixo de 6. A regra veio do pedido; a planilha não sabe dela.'],
+    rotulo: ['32,2%', '<b>322 de 1.000</b> respostas estão marcadas como “Em Risco” na coluna de tipo de cliente. Quem pôs o rótulo, e com que critério, a planilha não diz.']
+  };
+  var nmOut = document.getElementById('nmOut');
+  toggle('[data-nm]', function (k) { nmOut.innerHTML = '<span class="big">' + NM[k][0] + '</span><p>' + NM[k][1] + '</p>'; }, 'nota');
+
+  /* 3 · planilha com defeitos */
+  var FX = { mescla: true, estado: true, texto: true, total: true };
+  var LOJAS = [['Centro', 'SP', 120], ['Norte', 'SP', 80], ['Shopping', 'SP', 100], ['Litoral', 'RJ', 140], ['Matriz', 'RJ', 60]];
+  var fxBtns = document.querySelectorAll('[data-fx]');
+  function line(ok, html) { return '<div class="verdict ' + (ok ? 'ok' : 'no') + '">' + html + '</div>'; }
+  function renderFx() {
+    var h = '<table class="vtable">';
+    if (FX.mescla) h += '<tr><td colspan="3" class="fx-merged">Vendas do 1º trimestre</td></tr>';
+    h += '<tr><th>Loja</th><th>Estado</th><th>Vendas (mil R$)</th></tr>';
+    var nums = [], uf = {};
+    LOJAS.forEach(function (r) {
+      var est = (FX.estado && r[0] === 'Norte') ? 'São Paulo' : r[1];
+      var asText = FX.texto && r[0] === 'Litoral';
+      h += '<tr><td>' + r[0] + '</td><td' + (est === 'São Paulo' ? ' class="fx-err"' : '') + '>' + est + '</td><td' + (asText ? ' class="fx-err"' : '') + '>' + (asText ? '140 mil' : r[2]) + '</td></tr>';
+      if (!asText) nums.push(r[2]);
+      uf[est] = (uf[est] || 0) + 1;
+    });
+    if (FX.total) { h += '<tr class="fx-err"><td>Total</td><td></td><td>500</td></tr>'; nums.push(500); }
+    h += '</table>';
+    document.getElementById('fxTable').innerHTML = h;
+    var sum = nums.reduce(function (a, b) { return a + b; }, 0), avg = sum / nums.length;
+    var why = [];
+    if (FX.total) why.push('a linha de Total entrou como mais uma loja');
+    if (FX.texto) why.push('a venda escrita como texto ficou fora da conta');
+    var o = '<span class="eyebrow">O que ela calcularia</span>';
+    o += line(!FX.mescla, FX.mescla ? '<b>Cabeçalho:</b> ela lê “Vendas do 1º trimestre” como nome da primeira coluna; as outras ficam sem nome, e os nomes de verdade viram um registro.' : '<b>Cabeçalho:</b> Loja, Estado, Vendas, na primeira linha.');
+    o += line(!why.length, '<b>Média por loja: ' + fmt(avg) + ' mil</b>, sobre ' + nums.length + ' valores' + (why.length ? '. Errada porque ' + why.join(' e ') + '.' : '. É a conta certa: 500 dividido por 5.'));
+    o += line(!FX.estado, '<b>Por estado:</b> ' + Object.keys(uf).map(function (k) { return k + ' ' + uf[k] + (uf[k] > 1 ? ' lojas' : ' loja'); }).join(' · ') + (FX.estado ? '. Para ela, são três estados.' : '.'));
+    var fixed = Object.keys(FX).filter(function (k) { return !FX[k]; }).length;
+    o += '<p class="fx-score">' + fixed + ' de 4 arrumados' + (fixed === 4 ? ' · agora a planilha pode subir' : '') + '</p>';
+    document.getElementById('fxOut').innerHTML = o;
+    fxBtns.forEach(function (b) { var on = FX[b.dataset.fx]; b.setAttribute('aria-pressed', String(on)); b.querySelector('span').textContent = on ? 'defeito' : 'arrumado'; });
+  }
+  fxBtns.forEach(function (b) { b.addEventListener('click', function () { FX[b.dataset.fx] = !FX[b.dataset.fx]; renderFx(); }); });
+  renderFx();
+
+  /* 4 · média por segmento */
+  var SG = {
+    geral: { rows: [['Todas', 7.2, 1000]], note: '7,2 de 10. Parece razoável, e não aponta nenhum lugar para agir.' },
+    canal: { rows: [['Site', 7.9, 400], ['Aplicativo', 7.6, 300], ['Balcão', 7.4, 150], ['Convênio', 4.3, 150]], note: 'A média de 7,2 era três grupos bem e um grupo muito mal: quem se inscreveu por convênio deu 4,3. É o problema que a média escondia.' },
+    regiao: { rows: [['Nordeste', 7.3, 250], ['Sudeste', 7.2, 250], ['Sul', 7.1, 250], ['Centro-Oeste', 7.1, 250]], note: 'Por região, quase nada muda. Nem todo corte revela alguma coisa, e é por isso que se pede todos, e não só o que você já suspeita.' }
+  };
+  var sgBars = document.getElementById('sgBars'), sgNote = document.getElementById('sgNote');
+  toggle('[data-sg]', function (k) {
+    sgBars.innerHTML = SG[k].rows.map(function (r) { return '<div class="sg-row"><span>' + r[0] + '</span><div class="sg-track"><div class="sg-fill' + (r[1] < 6 ? ' low' : '') + '" data-w="' + (r[1] * 10) + '"></div></div><span class="sg-val">' + fmt(r[1]) + '<small>' + r[2] + ' resp.</small></span></div>'; }).join('');
+    sgBars.querySelectorAll('.sg-fill').forEach(function (f) { f.style.width = f.dataset.w + '%'; });
+    sgNote.textContent = SG[k].note;
+  }, 'geral');
+
+  /* 5 · calculou ou estimou */
+  var CL = {
+    on: { tras: ['Abre o arquivo inteiro com a ferramenta', 'Roda a média da coluna de satisfação geral sobre as 1.000 linhas', 'Escreve a frase com o resultado da conta'], tela: 'A satisfação média é <b>5,90</b>, numa escala de 1 a 10.', sinal: 'Em muitos chats aparece um aviso de que ela está analisando, ou um bloco com a conta que dá para abrir.', ok: true },
+    off: { tras: ['Recebe a planilha como texto', 'Olha as primeiras dezenas de linhas', 'Escreve o número que parece a média daquele pedaço'], tela: 'A satisfação média é <b>6,4</b>, numa escala de 1 a 10.', sinal: 'Nenhum aviso. O texto não diz que é estimativa, e o número tem a mesma cara do outro.', ok: false }
+  };
+  var clOut = document.getElementById('clOut');
+  toggle('[data-cl]', function (k) {
+    var c = CL[k];
+    clOut.innerHTML = '<div class="card"><span class="eyebrow">Por trás</span><ol>' + c.tras.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ol></div><div class="card ' + (c.ok ? 'focal' : '') + '"><span class="eyebrow">Na tela</span><p class="cl-screen">' + c.tela + '</p><p class="hint">' + c.sinal + '</p></div>';
+  }, 'on');
+
+  /* 6 · endereço do número */
+  quiz(document.getElementById('edQuiz'), document.getElementById('edScore'), [
+    { s: '“Média de 5,90 na coluna de satisfação geral, calculada sobre as 1.000 linhas, sem célula vazia.”', a: 'ok', why: 'Coluna, linhas e contagem: você refaz a conta em um minuto.' },
+    { s: '“A satisfação caiu bastante no Sul.”', a: 'end', why: 'Qual coluna? Caiu em relação a quê? “Bastante” não é número.' },
+    { s: '“430 de 1.000 respostas têm nota geral abaixo de 6.”', a: 'ok', why: 'Tem o corte (abaixo de 6), a coluna e a contagem. Dá para filtrar e contar.' },
+    { s: '“Cerca de 40% dos clientes estão insatisfeitos.”', a: 'end', why: '“Cerca de” e “insatisfeitos” escondem a regra. Pode ser nota abaixo de 6, abaixo de 5, ou o rótulo de outra coluna.' },
+    { s: '“Os clientes Premium valorizam mais o atendimento.”', a: 'int', why: 'É leitura sobre o dado, não o dado. Pode estar certa; peça antes o número que a sustenta, com endereço.' }
+  ], [['ok', 'Dá para conferir'], ['end', 'Falta o endereço'], ['int', 'É interpretação']], 'quem confere é você, e só se confere o que tem endereço.');
+
+  /* 7 · as três leituras */
+  var LT = [
+    { t: 'É relevante?', ia: '“A região Sul tem nota 0,4 abaixo da média.”', voce: 'Isso era esperado? Existe uma explicação da operação que eu conheço e ela não, como uma loja que abriu no mês?', ped: 'Liste os desvios que você encontrou, do maior para o menor, com o tamanho da diferença e quantas respostas sustentam cada um. Não diga quais são importantes: isso eu decido.' },
+    { t: 'É aceitável ou crítico?', ia: '“28% dos clientes de convênio deram nota abaixo de 5.”', voce: 'Qual é a meta? Quanto era no período anterior? Quanto esse grupo pesa no faturamento? O número não traz a régua; a régua é sua.', ped: 'Compare esse número com a meta e com o período anterior, que eu informo aqui: [meta] · [período anterior]. Mostre a diferença, sem adjetivo.' },
+    { t: 'Qual é a causa?', ia: '“A causa provável é uma falha no cadastro dos clientes de convênio.”', voce: 'Isso está nos dados ou é dedução? O que derrubaria essa explicação? Causa proposta pela IA entra como hipótese até alguém confirmar.', ped: 'Marque cada causa que você propôs como “está nos dados” (com coluna e linhas) ou “hipótese”. Para cada hipótese, diga que dado a confirmaria e que dado a derrubaria.' }
+  ];
+  var ltBtns = document.querySelectorAll('[data-lt]'), ltPanel = document.getElementById('ltPanel');
+  function setLt(k) { pressGroup(ltBtns, function (x) { return +x.dataset.lt === k; }); var l = LT[k]; ltPanel.innerHTML = '<span class="eyebrow">leitura ' + (k + 1) + ' de 3</span><h3>' + l.t + '</h3><p><b>O que ela entrega:</b> ' + l.ia + '</p><p><b>A pergunta que é sua:</b> ' + l.voce + '</p><p class="dd-cmd">' + l.ped + '</p>'; }
+  ltBtns.forEach(function (b) { b.addEventListener('click', function () { setLt(+b.dataset.lt); }); });
+  setLt(0);
+
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+})();
+</script>
+</body>
+</html>

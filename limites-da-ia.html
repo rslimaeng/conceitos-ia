@@ -127,7 +127,7 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 .ad-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
 .ad-nav { display: flex; gap: 8px; }
 .ad-map { overflow-x: auto; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px; }
-.ad-map svg { display: block; width: 100%; min-width: 520px; height: auto; }
+.ad-map svg { display: block; width: 100%; min-width: 680px; height: auto; }
 .ad-map .st rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.5; transition: fill .2s ease; }
 .ad-map .st text { fill: var(--text); font-family: var(--font-body); font-size: 14px; }
 .ad-map .st .k { fill: var(--text-dim); font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; }
@@ -203,26 +203,27 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 <header class="hero">
   <nav class="famhead" aria-label="Família Limites da IA">
     <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./limites-da-ia.html">Família 3 · Limites da IA</a></span><span class="famhead-pn"><a href="./limites-da-ia--janela-de-contexto.html">3.1 Janela de contexto →</a></span></div>
-    <div class="famhead-chips"><a href="./limites-da-ia.html" aria-current="page">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html"><b>3.3</b>O que pode subir</a></div>
+    <div class="famhead-chips"><a href="./limites-da-ia.html" aria-current="page">Visão geral</a><a href="./limites-da-ia--janela-de-contexto.html"><b>3.1</b>Janela de contexto</a><a href="./limites-da-ia--alucinacao.html"><b>3.2</b>Alucinação</a><a href="./limites-da-ia--o-que-pode-subir.html"><b>3.3</b>O que pode subir</a><a href="./limites-da-ia--a-ia-concorda.html"><b>3.4</b>A IA concorda</a></div>
   </nav>
   <span class="eyebrow">Visão geral</span>
   <h1>Limites da IA</h1>
-  <p class="sub">Três limites que valem para qualquer ferramenta, e o gesto de bolso que resolve cada um</p>
-  <p class="lead">Nenhum dos três some com a versão nova do modelo (o motor da IA por trás da ferramenta) nem com o plano mais caro. <strong>Um aparece antes de você anexar, outro durante a conversa, e o terceiro na resposta.</strong> Saber em que momento cada um mora é o que faz você olhar para o lugar certo.</p>
+  <p class="sub">Quatro limites que valem para qualquer ferramenta, e o gesto de bolso que resolve cada um</p>
+  <p class="lead">Nenhum dos quatro some com a versão nova do modelo (o motor da IA por trás da ferramenta) nem com o plano mais caro. <strong>Um aparece antes de você anexar, outro no jeito de perguntar, o terceiro durante a conversa, e o quarto na resposta.</strong> Saber em que momento cada um mora é o que faz você olhar para o lugar certo.</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#mapa">O mapa da família</a><a href="#s-momento">Antes, durante, depois</a><a href="#s-qual">Qual limite é esse</a><a href="#s-bolso">Três gestos de bolso</a>
+    <a href="#mapa">O mapa da família</a><a href="#s-momento">Antes, durante, depois</a><a href="#s-qual">Qual limite é esse</a><a href="#s-bolso">Quatro gestos de bolso</a>
   </nav>
 </header>
 
 <!-- mapa -->
 <section class="sec" id="mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Três limites, cada um com página própria</h2>
-  <p class="intro">Esta página é a visão geral. Três limites valem para qualquer ferramenta, e cada um tem a sua página: <strong>o que ela enxerga</strong>, <strong>o que ela inventa quando não enxerga</strong> e <strong>o que pode chegar até ela</strong>.</p>
-  <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">3.1 · Janela de contexto · 1 de 3</span><h3>Janela de contexto</h3><p>Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e a conversa longa enche a mesa sozinha.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a mesa enchendo</li><li>lembrar ou recomeçar</li><li>chat ou projeto</li></ul><a class="fmap-go" href="./limites-da-ia--janela-de-contexto.html">abrir 3.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">3.2 · Alucinação · 2 de 3</span><h3>Alucinação</h3><p>Quando a informação não está no que ela enxerga, ela continua escrevendo com a mesma fluência. Fluência não é evidência.</p><span class="fmap-lab">Lá você encontra</span><ul><li>caça ao erro</li><li>quatro jeitos de errar</li><li>a conferência de trinta segundos</li></ul><a class="fmap-go" href="./limites-da-ia--alucinacao.html">abrir 3.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">3.3 · O que pode subir · 3 de 3</span><h3>O que pode subir para a IA</h3><p>A regra é sobre o dado, não sobre a ferramenta. Quase todo documento só precisa perder a identificação para entrar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três caixas</li><li>o semáforo</li><li>antes de anexar</li></ul><a class="fmap-go" href="./limites-da-ia--o-que-pode-subir.html">abrir 3.3 →</a></div>
+  <h2 id="h-mapa">Quatro limites, cada um com página própria</h2>
+  <p class="intro">Esta página é a visão geral. Quatro limites valem para qualquer ferramenta, e cada um tem a sua página: <strong>o que ela enxerga</strong>, <strong>o que ela inventa quando não enxerga</strong>, <strong>o que pode chegar até ela</strong> e <strong>o lado para o qual ela pende</strong>: o seu.</p>
+  <div class="fmap c2">
+    <div class="fmap-card"><span class="fmap-n">3.1 · Janela de contexto · 1 de 4</span><h3>Janela de contexto</h3><p>Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e a conversa longa enche a mesa sozinha.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a mesa enchendo</li><li>lembrar ou recomeçar</li><li>chat ou projeto</li></ul><a class="fmap-go" href="./limites-da-ia--janela-de-contexto.html">abrir 3.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">3.2 · Alucinação · 2 de 4</span><h3>Alucinação</h3><p>Quando a informação não está no que ela enxerga, ela continua escrevendo com a mesma fluência. Fluência não é evidência.</p><span class="fmap-lab">Lá você encontra</span><ul><li>caça ao erro</li><li>quatro jeitos de errar</li><li>a conferência de trinta segundos</li></ul><a class="fmap-go" href="./limites-da-ia--alucinacao.html">abrir 3.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">3.3 · O que pode subir · 3 de 4</span><h3>O que pode subir para a IA</h3><p>A regra é sobre o dado, não sobre a ferramenta. Quase todo documento só precisa perder a identificação para entrar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>as três caixas</li><li>o semáforo</li><li>antes de anexar</li></ul><a class="fmap-go" href="./limites-da-ia--o-que-pode-subir.html">abrir 3.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">3.4 · A IA concorda · 4 de 4</span><h3>A IA concorda com você</h3><p>Ela acha razão para o que você já pensa, e o jeito de perguntar empurra a resposta. Crítica de verdade sai de um pedido para discordar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a pergunta que já traz a resposta</li><li>hipótese que ninguém derrubou</li><li>pedir para discordar</li></ul><a class="fmap-go" href="./limites-da-ia--a-ia-concorda.html">abrir 3.4 →</a></div>
   </div>
 </section>
 <!-- /mapa -->
@@ -230,11 +231,11 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 <section class="sec" id="s-momento" aria-labelledby="h-momento">
   <span class="eyebrow">Antes, durante, depois</span>
   <h2 id="h-momento">Cada limite mora num momento do trabalho</h2>
-  <p class="intro">Numa compra da empresa, cada risco tem a sua hora: o orçamento se confere antes de assinar, o prazo durante a entrega, a nota quando a mercadoria chega. Siga um pedido do começo ao fim. <strong>Avance pelos três momentos</strong> e veja qual limite aparece em cada um, o sinal de que ele apareceu, e o gesto que resolve.</p>
-  <div class="ad-bar"><span class="eyebrow" id="adLab">Momento 1 de 3</span><div class="ad-nav"><button type="button" class="btn" id="adPrev">← Anterior</button><button type="button" class="btn primary" id="adNext">Próximo →</button></div></div>
+  <p class="intro">Numa compra da empresa, cada risco tem a sua hora: o orçamento se confere antes de assinar, o prazo durante a entrega, a nota quando a mercadoria chega. Siga um pedido do começo ao fim. <strong>Avance pelos quatro momentos</strong> e veja qual limite aparece em cada um, o sinal de que ele apareceu, e o gesto que resolve.</p>
+  <div class="ad-bar"><span class="eyebrow" id="adLab">Momento 1 de 4</span><div class="ad-nav"><button type="button" class="btn" id="adPrev">← Anterior</button><button type="button" class="btn primary" id="adNext">Próximo →</button></div></div>
   <div class="ad-map">
-    <svg viewBox="0 0 640 150" role="img" aria-labelledby="adT">
-      <title id="adT">Três momentos de um pedido, da esquerda para a direita: antes de anexar mora o limite do que pode subir; durante a conversa mora a janela de contexto; na resposta mora a alucinação.</title>
+    <svg viewBox="0 0 860 150" role="img" aria-labelledby="adT">
+      <title id="adT">Quatro momentos de um pedido, em ordem: antes de anexar mora o limite do que pode subir; na pergunta mora a tendência de concordar; durante a conversa mora a janela de contexto; na resposta mora a alucinação.</title>
       <g id="adArr"></g>
       <g id="adSt"></g>
     </svg>
@@ -244,20 +245,23 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 
 <section class="sec" id="s-qual" aria-labelledby="h-qual">
   <span class="eyebrow">Qual limite é esse</span>
-  <h2 id="h-qual">Seis situações de uma semana comum</h2>
-  <p class="intro">Quem recebe o chamado de manutenção do prédio decide primeiro se é elétrica, hidráulica ou ar-condicionado; o conserto vem depois, com quem entende. Para cada uma, <strong>decida qual dos três limites está em jogo</strong>. A resposta leva para a página que resolve.</p>
+  <h2 id="h-qual">Oito situações de uma semana comum</h2>
+  <p class="intro">Quem recebe o chamado de manutenção do prédio decide primeiro se é elétrica, hidráulica ou ar-condicionado; o conserto vem depois, com quem entende. Para cada uma, <strong>decida qual dos quatro limites está em jogo</strong>. A resposta leva para a página que resolve.</p>
   <div class="ql-list" id="qlList"></div>
-  <div class="ql-score"><span class="hint" id="qlHint">Responda as seis.</span><span><span class="n" id="qlN">0</span> <span class="hint">de 6</span></span><button type="button" class="btn" id="qlReset">Refazer</button></div>
+  <div class="ql-score"><span class="hint" id="qlHint">Responda as oito.</span><span><span class="n" id="qlN">0</span> <span class="hint">de 8</span></span><button type="button" class="btn" id="qlReset">Refazer</button></div>
 </section>
 
 <section class="sec" id="s-bolso" aria-labelledby="h-bolso">
-  <span class="eyebrow">Três gestos de bolso</span>
+  <span class="eyebrow">Quatro gestos de bolso</span>
   <h2 id="h-bolso">Um gesto por momento, e nenhum depende da ferramenta</h2>
   <p class="intro">Todo escritório tem um papel colado na borda do monitor com o ramal do suporte e o horário do malote: curto, à vista, lido sem pensar. Cada página da família termina num gesto que se faz em segundos. Juntos, eles cabem num papel ao lado do teclado.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">Para colar ao lado do teclado</span><button type="button" class="btn" id="bolsoCopy">Copiar</button></div>
     <pre id="bolso">Antes de anexar: tem dado que identifica alguém, ou que a empresa não quer circulando?
   Tire a identificação. Sem o nome, cargo, unidade e data ainda podem apontar para uma pessoa só.
+
+Antes de perguntar "está bom?": peça o melhor argumento contra.
+  Se todas as hipóteses sobreviveram, ninguém testou.
 
 Conversa longa piorando: não peça "não esqueça".
   Recomece com duas ou três linhas escolhidas por mim.
@@ -280,7 +284,7 @@ Antes de usar a resposta: número, nome próprio e causa, conferidos contra algu
     <dt>Alucinação</dt><dd>O texto que a IA escreve com a mesma fluência quando a informação não está no que ela enxerga.</dd>
     <dt>Dado identificável</dt><dd>O que aponta para uma pessoa, sozinho ou junto com outros dados: nome, e também cargo, unidade e data.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os três limites são uma forma de organizar o assunto; na prática eles se misturam, e a conversa longa, por exemplo, também aumenta a chance de a resposta inventar. As situações do quiz são fictícias.</p>
+  <p class="foot">Simplificação didática. Os quatro limites são uma forma de organizar o assunto; na prática eles se misturam, e a conversa longa, por exemplo, também aumenta a chance de a resposta inventar. As situações do quiz são fictícias.</p>
 </section>
 
 <!-- rodape -->
@@ -311,6 +315,10 @@ Antes de usar a resposta: número, nome próprio e causa, conferidos contra algu
       l: 'O dado que identifica uma pessoa, ou que a empresa não quer circulando, continua sendo esse dado em qualquer ferramenta.',
       s: 'O gesto de anexar custa um segundo, e não há atrito nenhum entre decidir e fazer.',
       g: 'Tirar a identificação antes. Quase todo documento que parece proibido só precisa disso para entrar.' },
+    { k: 'NA PERGUNTA · VOCÊ PERGUNTA', lim: 'A IA concorda', n: '3.4', href: './limites-da-ia--a-ia-concorda.html',
+      l: 'Ela tende a achar razão para o que você já pensa, e o jeito de perguntar empurra a resposta para um lado.',
+      s: 'A resposta concorda com tudo, elogia o plano, e nenhuma objeção dela mudaria uma linha.',
+      g: 'Pedir que ela discorde de um jeito concreto: o melhor argumento contra, ou “deu errado daqui a um ano: por quê?”.' },
     { k: 'DURANTE · A CONVERSA CRESCE', lim: 'Janela de contexto', n: '3.1', href: './limites-da-ia--janela-de-contexto.html',
       l: 'Tudo o que orienta a resposta cabe numa mesa de tamanho fixo, e cada troca acrescenta mais em cima dela.',
       s: 'A conversa longa piora sem ninguém mexer em nada: o combinado do começo para de valer.',
@@ -331,34 +339,36 @@ Antes de usar a resposta: número, nome próprio e causa, conferidos contra algu
     g.addEventListener('click', function () { go(i); });
     g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(i); } });
     boxes.push(g);
-    if (i < 2) { el('path', { 'class': 'arr', d: 'M' + (x + 192) + ' 75 L' + (x + 213) + ' 75' }, gAr); el('path', { 'class': 'arrh', d: 'M' + (x + 207) + ' 70 L' + (x + 214) + ' 75 L' + (x + 207) + ' 80 Z' }, gAr); }
+    if (i < AD.length - 1) { el('path', { 'class': 'arr', d: 'M' + (x + 192) + ' 75 L' + (x + 213) + ' 75' }, gAr); el('path', { 'class': 'arrh', d: 'M' + (x + 207) + ' 70 L' + (x + 214) + ' 75 L' + (x + 207) + ' 80 Z' }, gAr); }
   });
   function go(i) {
     cur = i; var a = AD[i];
     boxes.forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-pressed', String(k === i)); });
     document.getElementById('adCap').innerHTML = '<span class="eyebrow">' + a.k + '</span><h3>' + a.n + ' · ' + a.lim + '</h3><dl><dt>O limite</dt><dd>' + a.l + '</dd><dt>O sinal</dt><dd>' + a.s + '</dd><dt>O gesto</dt><dd>' + a.g + '</dd></dl><a href="' + a.href + '">Abrir ' + a.n + ' →</a>';
-    document.getElementById('adLab').textContent = 'Momento ' + (i + 1) + ' de 3';
+    document.getElementById('adLab').textContent = 'Momento ' + (i + 1) + ' de ' + AD.length;
     document.getElementById('adPrev').disabled = i === 0;
-    document.getElementById('adNext').textContent = i === 2 ? 'Recomeçar ↺' : 'Próximo →';
+    document.getElementById('adNext').textContent = i === AD.length - 1 ? 'Recomeçar ↺' : 'Próximo →';
   }
   document.getElementById('adPrev').addEventListener('click', function () { go(Math.max(0, cur - 1)); });
-  document.getElementById('adNext').addEventListener('click', function () { go(cur === 2 ? 0 : cur + 1); });
+  document.getElementById('adNext').addEventListener('click', function () { go(cur === AD.length - 1 ? 0 : cur + 1); });
   go(0);
 
   /* qual limite */
-  var LIM = { s: ['o que pode subir', './limites-da-ia--o-que-pode-subir.html', '3.3'], j: ['janela de contexto', './limites-da-ia--janela-de-contexto.html', '3.1'], a: ['alucinação', './limites-da-ia--alucinacao.html', '3.2'] };
+  var LIM = { s: ['o que pode subir', './limites-da-ia--o-que-pode-subir.html', '3.3'], j: ['janela de contexto', './limites-da-ia--janela-de-contexto.html', '3.1'], a: ['alucinação', './limites-da-ia--alucinacao.html', '3.2'], c: ['a IA concorda', './limites-da-ia--a-ia-concorda.html', '3.4'] };
   var QL = [
     ['Na mensagem quarenta, ela parou de seguir o formato combinado no começo.', 'j', 'O combinado continua lá, mas ficou longe demais para pesar. A mesa encheu.'],
     ['O resumo trouxe um número que não está na planilha.', 'a', 'Sem a informação no que ela enxerga, ela escreveu o mais provável, com a mesma segurança.'],
     ['Vou anexar a planilha de salários com nome e documento de cada pessoa para montar a análise.', 's', 'A análise funciona igual sem a identificação. Troque o nome por um código antes de anexar.'],
     ['Colei três relatórios inteiros, e a resposta ignorou o primeiro.', 'j', 'Colar mais ocupa mais mesa. Escolha o trecho que importa, ou divida em conversas.'],
     ['Ela citou uma norma com número e ano, e a norma não existe.', 'a', 'Nome próprio e número são os primeiros a conferir. Peça a fonte, e aceite “não localizado”.'],
-    ['A ata tem o nome do colaborador afastado e o motivo do afastamento.', 's', 'Motivo de afastamento é dado de saúde de uma pessoa. O pedido funciona sem o nome e sem o motivo.']
+    ['A ata tem o nome do colaborador afastado e o motivo do afastamento.', 's', 'Motivo de afastamento é dado de saúde de uma pessoa. O pedido funciona sem o nome e sem o motivo.'],
+    ['Perguntei “esse plano está bom?” e ela achou ótimo, com três elogios e nenhuma ressalva.', 'c', 'A pergunta já trazia a resposta. Peça o melhor argumento contra o plano, e veja o que sobra.'],
+    ['Pedi os dados que mostram que a campanha funcionou, e ela achou todos.', 'c', 'Quem procura prova a favor acha. Peça também a prova contra, e compare as duas pilhas.']
   ];
   var list = document.getElementById('qlList'), ans = [];
   QL.forEach(function (x, i) {
     var it = document.createElement('div'); it.className = 'ql-item';
-    it.innerHTML = '<span class="fr">“' + x[0] + '”</span><span class="ans"><button type="button" data-v="s" aria-pressed="false">Subir</button><button type="button" data-v="j" aria-pressed="false">Janela</button><button type="button" data-v="a" aria-pressed="false">Alucinação</button></span><span class="why" aria-live="polite"></span>';
+    it.innerHTML = '<span class="fr">“' + x[0] + '”</span><span class="ans"><button type="button" data-v="s" aria-pressed="false">Subir</button><button type="button" data-v="j" aria-pressed="false">Janela</button><button type="button" data-v="a" aria-pressed="false">Alucinação</button><button type="button" data-v="c" aria-pressed="false">Concorda</button></span><span class="why" aria-live="polite"></span>';
     var bs = it.querySelectorAll('button');
     bs.forEach(function (b) {
       b.addEventListener('click', function () {
@@ -376,11 +386,11 @@ Antes de usar a resposta: número, nome próprio e causa, conferidos contra algu
     var done = 0, right = 0;
     ans.forEach(function (v) { if (v !== undefined) { done++; if (v) right++; } });
     document.getElementById('qlN').textContent = right;
-    document.getElementById('qlHint').textContent = done < 6 ? 'Faltam ' + (6 - done) + '.' : (right >= 5 ? 'Você já sabe em que momento cada limite aparece.' : 'O teste: foi antes de anexar, durante a conversa, ou na resposta?');
+    document.getElementById('qlHint').textContent = done < QL.length ? 'Faltam ' + (QL.length - done) + '.' : (right >= QL.length - 1 ? 'Você já sabe em que momento cada limite aparece.' : 'O teste: foi antes de anexar, na pergunta, durante a conversa, ou na resposta?');
   }
   document.getElementById('qlReset').addEventListener('click', function () {
     ans = []; list.querySelectorAll('.ql-item').forEach(function (it) { it.classList.remove('ok', 'no'); it.querySelector('.why').textContent = ''; it.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); });
-    document.getElementById('qlN').textContent = '0'; document.getElementById('qlHint').textContent = 'Responda as seis.';
+    document.getElementById('qlN').textContent = '0'; document.getElementById('qlHint').textContent = 'Responda as oito.';
   });
 
   /* bolso */

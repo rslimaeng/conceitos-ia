@@ -568,7 +568,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
     var a = num(hv), b = num(mv);
     if (!mv) r.push({ s: '', v: '', w: 'Sem meta com prazo, a gestão não tem o que acompanhar.' });
     else if (b === null) r.push({ s: 'warn', v: mv, w: 'A meta precisa de um número.' });
-    else if (a !== null && a > 0 && (b / a < 0.34 || b / a > 3)) r.push({ s: 'warn', v: mv, w: 'Agressiva para sessenta dias. Corte o pedaço até caber.' });
+    else if (a !== null && a > 0 && (b / a < 0.5 || b / a > 2)) r.push({ s: 'warn', v: mv, w: 'Agressiva para sessenta dias. Corte o pedaço até caber.' });
     else if (a !== null && a === b) r.push({ s: 'warn', v: mv, w: 'Igual a hoje. O que deveria mudar?' });
     else r.push({ s: 'ok', v: mv });
     return r;
@@ -618,7 +618,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
   var DS = [
     { i: 'Escrever uma vez as respostas das dúvidas de cliente que se repetem, num lugar que a equipe consulta', n: 'Horas por semana respondendo dúvida já respondida antes', a: 6, b: 3, u: 'h / semana' },
     { i: 'Padronizar o material de divulgação de produto novo, com o público escrito uma vez', n: 'Dias entre o produto ser aprovado e o material estar no ar', a: 9, b: 5, u: 'dias' },
-    { i: 'Conferir os documentos do pedido com uma lista fixa antes de cobrar o cliente', n: 'Percentual de pedidos que voltam por documento faltando', a: 22, b: 10, u: '%' }
+    { i: 'Conferir os documentos do pedido com uma lista fixa antes de cobrar o cliente', n: 'Percentual de pedidos que voltam por documento faltando', a: 22, b: 11, u: '%' }
   ];
   var dsB = document.querySelectorAll('[data-ds]');
   function showDs(k) {
@@ -702,7 +702,7 @@ Critério de sucesso: eu leio e sei exatamente o que fazer na segunda-feira, e n
     t1.setAttribute('y', y(a) - 14); t1.textContent = a + ' h'; t2.setAttribute('y', y(b) - 14); t2.textContent = b + ' h';
     var v = document.getElementById('sxVer'), red = (a - b) / a;
     if (b >= a) { v.className = 'verdict no'; v.innerHTML = '<b>A meta não reduz nada.</b> Em sessenta dias, o que deveria estar diferente?'; }
-    else if (red > 0.66) { v.className = 'verdict no'; v.innerHTML = '<b>Agressiva: ' + Math.round(red * 100) + '% a menos em sessenta dias.</b> É o jeito mais rápido de virar demonstração. Corte o pedaço até caber.'; }
+    else if (red > 0.5) { v.className = 'verdict no'; v.innerHTML = '<b>Agressiva: ' + Math.round(red * 100) + '% a menos em sessenta dias.</b> É o jeito mais rápido de virar demonstração. Corte o pedaço até caber.'; }
     else { v.className = 'verdict ok'; v.innerHTML = '<b>Modesta: ' + Math.round(red * 100) + '% a menos.</b> Dá para acompanhar sem entender de tecnologia, e dá para comparar no dia sessenta.'; }
   }
   [sxA, sxB].forEach(function (x) { x.addEventListener('input', renderSx); });
