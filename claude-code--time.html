@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="claude-code--time">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Um time de especialistas na pasta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 8.8. Peças: o caminho da mesma pergunta no chat × na pasta, árvore da pasta do time com o de-para do chat, arquivo de especialista anotado com copiar, envelope magro × completo com o trecho do CLAUDE.md para copiar, barras da mesa com controle deslizante, stepper de quem confere, quiz mesa separada ou aqui. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.qz-fb[hidden] { display: none; }
+.sec > * { min-width: 0; }
+
+
+/* 1 · uma mesa por especialista */
+.ms-steps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ms-steps li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; align-items: start; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; font-size: .95rem; }
+.ms-steps li.away { border-color: var(--ok); background: var(--ok-soft); }
+.ms-where { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); padding-top: 3px; }
+.ms-steps li.away .ms-where { color: var(--ok-texto); }
+.ms-sum { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; }
+
+/* 2 · onde cada parte mora */
+.tr-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.tr-tree { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px; display: grid; gap: 4px; }
+.tr-tree button { text-align: left; border: 1px solid transparent; background: transparent; border-radius: 6px; padding: 6px 10px; font-family: var(--font-mono); font-size: .88rem; color: var(--text); overflow-wrap: anywhere; }
+.tr-tree button.in1 { margin-left: 20px; }
+.tr-tree button:hover { border-color: var(--border-strong); }
+.tr-tree button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.tr-tree .tr-more { margin-left: 30px; font-family: var(--font-mono); font-size: .82rem; color: var(--text-dim); }
+.tr-cap dl { margin: 0; display: grid; gap: 8px; }
+.tr-cap dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.tr-cap dd { margin: 0; font-size: .95rem; color: var(--text-muted); }
+
+/* 3 · a ficha em arquivo */
+.fa-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 18px; align-items: start; }
+.fa-file { margin: 0; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; font-family: var(--font-mono); font-size: .82rem; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.fa-file .fa-p { border-radius: 4px; padding: 1px 2px; box-shadow: inset 0 -2px 0 var(--accent); cursor: pointer; }
+.fa-file .fa-p:hover { background: var(--accent-soft); }
+.fa-file .fa-p[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); }
+.fa-file .fa-dim { color: var(--text-dim); }
+
+/* 4 · quem conversa com você */
+.en-box { display: grid; gap: 10px; }
+.en-lab { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
+.en-env { font-family: var(--font-mono); font-size: .86rem; line-height: 1.6; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; white-space: pre-line; }
+
+/* 5 · só a entrega volta */
+.jr-bars { display: grid; gap: 14px; }
+.jr-row { display: grid; gap: 6px; }
+.jr-row .jr-t { display: flex; justify-content: space-between; gap: 12px; font-size: .92rem; }
+.jr-track { height: 22px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border-strong); overflow: hidden; display: flex; }
+.jr-track span { display: block; height: 100%; transition: width .25s ease; }
+.jr-track .c { background: var(--accent); }
+.jr-track .m { background: var(--atencao); }
+.jr-track .e { background: var(--ok); }
+.jr-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .86rem; color: var(--text-muted); }
+.jr-leg i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 6px; }
+.jr-leg i.c { background: var(--accent); }
+.jr-leg i.m { background: var(--atencao); }
+.jr-leg i.e { background: var(--ok); }
+
+/* 6 · quem confere não conserta */
+.rv-lanes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.rv-lanes div { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; align-content: start; transition: border-color .25s ease, background .25s ease; }
+.rv-lanes div b { font-weight: 500; font-size: .93rem; }
+.rv-lanes div small { font-size: .84rem; color: var(--text-muted); }
+.rv-lanes div.on { border-color: var(--accent); background: var(--accent-soft); }
+.rv-lanes div.done { border-color: var(--ok); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .tr-grid, .fa-grid { grid-template-columns: 1fr; }
+  .ms-steps li { grid-template-columns: 1fr; gap: 4px; }
+  .rv-lanes { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .jr-track span, .rv-lanes div { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Claude Code">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./claude-code.html">Família 8 · Claude Code</a></span><span class="famhead-pn"><a href="./claude-code--obsidian.html">← 8.7 Obsidian</a><a href="./claude-code.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./claude-code.html">Visão geral</a><a href="./claude-code--pasta.html"><b>8.1</b>Pasta com dono</a><a href="./claude-code--claude-md.html"><b>8.2</b>CLAUDE.md</a><a href="./claude-code--onde-paramos.html"><b>8.3</b>Onde paramos</a><a href="./claude-code--handoff.html"><b>8.4</b>Handoff</a><a href="./claude-code--referencia.html"><b>8.5</b>Referência</a><a href="./claude-code--modelo.html"><b>8.6</b>Modelo</a><a href="./claude-code--obsidian.html"><b>8.7</b>Obsidian</a><a href="./claude-code--time.html" aria-current="page"><b>8.8</b>Time na pasta</a><a class="ext" href="./assistente--skill.html"><b>4.3</b>Skill, em Assistente ↗</a></div>
+  </nav>
+  <span class="eyebrow">8.8 · 8 de 8</span>
+  <h1>Um time de especialistas na pasta</h1>
+  <p class="sub">Cada especialista vira um arquivo e trabalha numa mesa separada; para a sua conversa volta só a entrega</p>
+  <p class="lead">O time de <a href="./assistente--montar-time.html">montar um time de especialistas</a> nasceu para o chat. Esta página é o mesmo time numa pasta do computador, no Claude Code: <strong>cada especialista vira um arquivo, quem distribui vira um trecho do manual, e cada especialista trabalha numa mesa separada.</strong> O exemplo é o mesmo: o manual de gestão de pequena empresa, em seis especialistas com nome de função.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-mesa">Uma mesa por especialista</a><a href="#s-onde">Onde cada parte mora</a><a href="#s-ficha">A ficha em arquivo</a><a href="#s-conversa">Quem conversa com você</a><a href="#s-jornada">Só a entrega volta</a><a href="#s-revisor">Quem confere não conserta</a><a href="#s-vale">Mesa separada ou aqui</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-mesa" aria-labelledby="h-mesa">
+  <span class="eyebrow">Uma mesa por especialista</span>
+  <h2 id="h-mesa">No chat o time divide uma conversa; na pasta, cada um trabalha na própria mesa</h2>
+  <p class="intro">O consultor de fora não senta na sua reunião: recebe o dossiê, trabalha no escritório dele e devolve o parecer. No chat, quem distribui lê a pergunta e <strong>vira</strong> o especialista ali mesmo, na mesma conversa. Na pasta, cada especialista pode ser um <strong>subagente</strong>: um ajudante que trabalha numa conversa separada, que começa vazia, e devolve à sua conversa só a entrega. Compare o caminho da mesma pergunta.</p>
+  <div class="seg" role="group" aria-label="Onde o time trabalha">
+    <button type="button" data-ms="chat" aria-pressed="true">No chat</button>
+    <button type="button" data-ms="pasta" aria-pressed="false">Na pasta</button>
+  </div>
+  <ol class="ms-steps" id="msSteps"></ol>
+  <div class="verdict" id="msVer" aria-live="polite"></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-onde" aria-labelledby="h-onde">
+  <span class="eyebrow">Onde cada parte mora</span>
+  <h2 id="h-onde">As peças do time, cada uma num arquivo da pasta</h2>
+  <p class="intro">Na mudança de escritório, nada se perde: o organograma vai para a parede, a pasta de cada cargo vai para o arquivo, o livro de ocorrências fica na recepção. O desenho do time não muda: <strong>muda onde cada parte mora</strong>. Clique num arquivo.</p>
+  <div class="tr-grid">
+    <div class="tr-tree" role="group" aria-label="A pasta do time">
+      <button type="button" data-tr="0" aria-pressed="true">CLAUDE.md</button>
+      <button type="button" data-tr="1" aria-pressed="false">.claude/agents/</button>
+      <button type="button" class="in1" data-tr="2" aria-pressed="false">quem-olha-o-caixa.md</button>
+      <button type="button" class="in1" data-tr="2" aria-pressed="false">quem-corta-o-excesso.md</button>
+      <span class="tr-more">… e mais quatro, um por especialista</span>
+      <button type="button" data-tr="3" aria-pressed="false">fonte/manual-de-gestao.pdf</button>
+      <button type="button" data-tr="4" aria-pressed="false">caderno-do-time.md</button>
+    </div>
+    <div class="caption tr-cap" id="trCap" aria-live="polite"></div>
+  </div>
+  <p class="hint">Passo a passo que só abre quando a tarefa aparece é <a href="./assistente--skill.html">skill</a>, não especialista: a skill ensina um jeito de fazer dentro da sua conversa; o especialista trabalha na mesa dele e devolve uma entrega.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-ficha" aria-labelledby="h-ficha">
+  <span class="eyebrow">A ficha em arquivo</span>
+  <h2 id="h-ficha">O cabeçalho decide quando ele é chamado; o corpo, como ele trabalha</h2>
+  <p class="intro">A pasta de cada cargo no arquivo do RH abre com a etiqueta: o nome do cargo e quando procurar essa pessoa. O arquivo do especialista também. <strong>No cabeçalho vão o nome, a descrição e o que ele pode usar; no corpo, a ficha.</strong> A descrição faz o papel do “chame quando”: é lendo ela que a conversa principal decide quem chamar. Clique nas partes sublinhadas.</p>
+  <div class="fa-grid">
+<pre class="fa-file" aria-label="O arquivo de um especialista"><span class="fa-dim">---</span>
+<span class="fa-p" role="button" tabindex="0" data-fa="0" aria-pressed="false">name: quem-olha-o-caixa</span>
+<span class="fa-p" role="button" tabindex="0" data-fa="1" aria-pressed="true">description: Chame quando a empresa vende mas o dinheiro não aparece, quando o caixa piora com o crescimento, ou antes de dar mais prazo a um cliente grande. Devolve o mapa do caixa.</span>
+<span class="fa-p" role="button" tabindex="0" data-fa="2" aria-pressed="false">tools: Read, Grep, Glob</span>
+<span class="fa-dim">---</span>
+Você é quem olha o caixa, camada 2 do time do manual de gestão.
+
+<span class="fa-p" role="button" tabindex="0" data-fa="3" aria-pressed="false">## Antes de responder, leia
+- fonte/manual-de-gestao.pdf, parte 2
+- os arquivos que o pedido indicar</span>
+
+## O que devolve
+O mapa do caixa, em uma página: o que entra, o que sai, o que trava e o que dá para mudar. Todo valor vem com a data em que entra ou sai.
+
+<span class="fa-p" role="button" tabindex="0" data-fa="4" aria-pressed="false">## O que NÃO faz
+- Não decide o que cortar: isso é de quem corta o excesso.
+- Não altera nenhum arquivo: lê e devolve.</span>
+
+<span class="fa-p" role="button" tabindex="0" data-fa="5" aria-pressed="false">## Se faltar informação
+Não espere resposta. Entregue com a lacuna marcada e, no fim, escreva o que precisaria saber.</span></pre>
+    <div class="caption" id="faCap" aria-live="polite"></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido para criar o especialista · para colar no Claude Code</span><button type="button" class="btn" data-copy="faPrompt">Copiar</button></div>
+<pre id="faPrompt">Crie um especialista do time na pasta .claude/agents/, a partir da ficha abaixo.
+1. Nome do arquivo: o nome de função, em minúsculas, com hífen.
+2. No cabeçalho: name, description e tools. A description começa com "Chame quando", traz as situações da ficha e termina com a entrega, em até três linhas. Em tools, só ferramentas de leitura, a não ser que eu diga outra coisa.
+3. No corpo: o que ler antes de responder, o que devolve (com as partes), o que NÃO faz e qual vizinho faz, e a regra "se faltar informação, entregue com a lacuna marcada e diga o que precisaria saber".
+4. Me mostre o arquivo antes de salvar. Não crie nenhum outro.
+<i>[cole aqui a ficha do especialista]</i></pre>
+  </div>
+  <p class="hint">A ficha vem da fase 2 de <a href="./assistente--montar-time.html#s-ficha">montar um time</a>. Se o campo de ferramentas ficar de fora, o especialista recebe as mesmas ferramentas da conversa principal, inclusive as que escrevem e apagam.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-conversa" aria-labelledby="h-conversa">
+  <span class="eyebrow">Quem conversa com você</span>
+  <h2 id="h-conversa">O especialista não para para perguntar: quem pergunta é quem distribui, antes de chamar</h2>
+  <p class="intro">O perito que recebe o processo pelo correio não liga para tirar dúvida: trabalha com o que veio no envelope. No chat, o especialista abria com uma hipótese e fazia até três perguntas. Na pasta, <strong>ele recebe um pedido, trabalha e devolve</strong>, sem ver a sua conversa e sem poder perguntar nada no meio. Por isso as perguntas mudam de lugar: quem distribui faz as perguntas antes de chamar, e o pedido que desce leva o caso inteiro. Compare os dois envelopes.</p>
+  <div class="seg" role="group" aria-label="O que desce para o especialista">
+    <button type="button" data-en="magro" aria-pressed="true">Envelope magro</button>
+    <button type="button" data-en="cheio" aria-pressed="false">Envelope completo</button>
+  </div>
+  <div class="en-box">
+    <span class="en-lab">O que desce para quem olha o caixa</span>
+    <div class="en-env" id="enDown"></div>
+    <span class="en-lab">O que volta</span>
+    <div class="verdict" id="enUp" aria-live="polite"></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O trecho do time · vai no CLAUDE.md da pasta</span><button type="button" class="btn" data-copy="enPrompt">Copiar</button></div>
+<pre id="enPrompt">## O time
+Você é quem distribui as perguntas deste time. Os especialistas estão em .claude/agents/: só existe quem está lá. Você não faz o trabalho deles.
+1. Antes de chamar, faça até 3 perguntas, só as que mudam a resposta: a decisão em uma frase e até quando; o que já foi tentado; o que muda se a decisão sair errada.
+2. Escolha pela descrição de cada especialista e diga em uma frase quem vai chamar e por quê.
+3. O especialista não vê esta conversa. Passe o caso inteiro por escrito: o que eu disse, os números, os arquivos da pasta que tratam disso, a decisão em jogo e a entrega esperada.
+4. No máximo dois especialistas por pergunta. Se um depende do outro, um depois do outro; se não dependem, ao mesmo tempo.
+5. Traga a entrega como veio, com as lacunas marcadas, e pergunte: fez sentido, quer aprofundar, chamar outro ou está resolvido?
+6. Ao fim de cada camada, atualize o caderno-do-time.md.</pre>
+  </div>
+  <p class="hint">É o mesmo bilhete de <a href="./assistente--montar-time.html#s-chat">montar no chat</a>, com duas mudanças: as perguntas sobem para antes da chamada, e o caso desce por escrito. Onde o manual mora e como ele cresce está em <a href="./claude-code--claude-md.html">CLAUDE.md</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-jornada" aria-labelledby="h-jornada">
+  <span class="eyebrow">Só a entrega volta</span>
+  <h2 id="h-jornada">A leitura pesada fica na mesa dele; na sua conversa chega uma página</h2>
+  <p class="intro">Quem pede ao estagiário que leia quarenta contratos não quer os quarenta na mesa: quer a lista das cláusulas que importam. A conversa também tem uma mesa, a <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>, e ela enche. Com o especialista numa mesa separada, <strong>o que ele leu fica lá, e volta só a resposta</strong>: a sua conversa continua com espaço para o combinado do começo. Arraste para mudar quanto ele precisa ler.</p>
+  <div class="chart">
+    <div class="field"><label for="jrN">Arquivos que o especialista precisa ler</label><div class="row"><input type="range" id="jrN" min="1" max="40" value="12"><output id="jrO">12</output></div></div>
+    <div class="jr-bars">
+      <div class="jr-row"><div class="jr-t"><span>Se ele lesse na sua conversa</span><span class="hint" id="jrA"></span></div><div class="jr-track" aria-hidden="true"><span class="c" id="jrA1"></span><span class="m" id="jrA2"></span><span class="e" id="jrA3"></span></div></div>
+      <div class="jr-row"><div class="jr-t"><span>Com a mesa separada</span><span class="hint" id="jrB"></span></div><div class="jr-track" aria-hidden="true"><span class="c" id="jrB1"></span><span class="m" id="jrB2"></span><span class="e" id="jrB3"></span></div></div>
+    </div>
+    <div class="jr-leg" aria-hidden="true"><span><i class="c"></i>o combinado e a pergunta</span><span><i class="m"></i>o material lido</span><span><i class="e"></i>a entrega</span></div>
+    <p class="hint">A forma, não a medida: nenhuma ferramenta mostra essas barras assim. Elas descrevem quanto da sua mesa cada caminho ocupa.</p>
+  </div>
+  <div class="verdict" id="jrVer" aria-live="polite"></div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-revisor" aria-labelledby="h-revisor">
+  <span class="eyebrow">Quem confere não conserta</span>
+  <h2 id="h-revisor">O revisor que não viu a sessão, e que só devolve</h2>
+  <p class="intro">Na gráfica, quem revisa a prova não é quem diagramou, e o revisor marca o erro com caneta vermelha: quem corrige é o diagramador. Na pasta, isso vira especialistas de conferência que <strong>começam sem nada da conversa</strong>, e por isso não carregam as escolhas que a sessão fez nem a tendência a achá-las certas. Eles só leem e devolvem; quem conserta é a conversa principal. Avance pelo caminho.</p>
+  <div class="stepbar"><span class="eyebrow" id="rvLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="rvPrev">← Anterior</button><button type="button" class="btn primary" id="rvNext">Próximo →</button></div></div>
+  <div class="rv-lanes" id="rvLanes">
+    <div data-rv="1"><b>1 · Faz</b><small>a conversa principal</small></div>
+    <div data-rv="2"><b>2 · Confere</b><small>dois especialistas, ao mesmo tempo</small></div>
+    <div data-rv="3"><b>3 · Devolve</b><small>uma lista cada um</small></div>
+    <div data-rv="4"><b>4 · Conserta</b><small>a conversa principal</small></div>
+  </div>
+  <div class="caption" id="rvCap" aria-live="polite"></div>
+  <p class="hint">No chat, o gesto é o mesmo, à mão: <a href="./assistente--time.html#s-confere">uma conversa nova, só com o entregável</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-vale" aria-labelledby="h-vale">
+  <span class="eyebrow">Mesa separada ou aqui</span>
+  <h2 id="h-vale">Chamar outra mesa tem preço: vale quando há muito para ler e pouco para trazer</h2>
+  <p class="intro">Ninguém chama um perito para somar duas notas. Cada especialista chamado <strong>começa do zero</strong>: precisa do caso escrito, demora mais e gasta mais do seu limite de uso. E cada passagem é mais uma chance de o pedido chegar torto (ver <a href="./assistente--time.html#s-vale">vale montar?</a>). Para cada situação, decida.</p>
+  <p class="qz-score" id="vaScore" aria-live="polite">0 de 6 respondidas</p>
+  <div class="qz" id="vaQuiz"></div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Uma ficha, um arquivo</h3><p>O cabeçalho diz quando chamar; o corpo, como trabalhar. É pela descrição que ele é escolhido.</p></div>
+    <div class="take-card"><h3>O caso desce inteiro</h3><p>O especialista não vê a conversa e não pergunta no meio. Quem pergunta é quem distribui, antes.</p></div>
+    <div class="take-card"><h3>Muito para ler, outra mesa</h3><p>Vale quando a leitura é grande e a entrega é pequena. Uma linha de planilha não precisa de time.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Subagente</dt><dd>Um ajudante que trabalha numa conversa separada, que começa vazia, e devolve à conversa principal só o resultado.</dd>
+    <dt>Pasta do time</dt><dd>A pasta .claude/agents/, onde o Claude Code procura os especialistas. Um arquivo por especialista.</dd>
+    <dt>Descrição</dt><dd>A linha do cabeçalho que diz quando chamar o especialista e o que ele devolve. É por ela que a conversa principal escolhe.</dd>
+    <dt>Ferramentas</dt><dd>O que o especialista pode usar. Só leitura, para quem confere; sem o campo, ele recebe tudo o que a conversa principal tem.</dd>
+    <dt>Caso escrito</dt><dd>O pedido que desce para o especialista com tudo o que ele precisa: o que foi dito, os números, os arquivos, a decisão e a entrega esperada.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O manual de gestão, os especialistas, os arquivos e os números do caso são exemplos inventados. O nome da pasta, os campos do cabeçalho e a forma de criar um especialista foram conferidos na documentação da ferramenta em outubro de 2026 e mudam entre versões; o desenho do time não. Família <a href="./claude-code.html">Claude Code</a>; ver também <a href="./assistente--montar-time.html">montar um time de especialistas</a> e <a href="./assistente--time.html">time de assistentes</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Claude Code: anterior e próxima">
+  <a class="famfoot-prev" href="./claude-code--obsidian.html"><span>← anterior</span><b>8.7 · Obsidian</b></a>
+  <a class="famfoot-fam" href="./claude-code.html#mapa">Família 8 · Claude Code · o mapa</a>
+  <a class="famfoot-next" href="./claude-code.html"><span>volta ao começo ↺</span><b>Visão geral · Claude Code</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function quiz(el, scoreEl, items, opts) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'Melhor: ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas';
+      }); });
+      el.appendChild(d);
+    });
+  }
+
+  /* 1 · uma mesa por especialista */
+  var MS = {
+    chat: { steps: [
+      ['sua conversa', 'Você: “Vendemos bem, mas no fim do mês nunca sobra dinheiro.”'],
+      ['sua conversa', 'Quem distribui escolhe quem olha o caixa e passa a falar como ele.'],
+      ['sua conversa', 'Ele lê o extrato de três meses e a planilha do que falta receber. Tudo o que ele lê entra na sua conversa.'],
+      ['sua conversa', 'Ele pergunta, você responde, e sai o mapa do caixa.']
+    ], v: ['ok', '<b>Bom para conversar.</b> Tudo numa conversa só: as perguntas, o extrato lido, os rascunhos e a entrega. A mesa enche, e o combinado do começo vai ficando no fundo da pilha.'] },
+    pasta: { steps: [
+      ['sua conversa', 'Você: “Vendemos bem, mas no fim do mês nunca sobra dinheiro.”'],
+      ['sua conversa', 'Quem distribui faz as perguntas que faltam e escolhe quem olha o caixa.'],
+      ['mesa dele', 'Ele recebe o caso por escrito, abre o extrato e a planilha na pasta e faz as contas. Começou com a mesa vazia.', 1],
+      ['sua conversa', 'Volta o mapa do caixa, numa página. O extrato lido ficou na mesa dele.']
+    ], v: ['ok', '<b>Bom para ler muito.</b> Na sua conversa ficam a pergunta, o caso e a entrega. A leitura pesada ficou do lado de lá, e a sua mesa continua com espaço.'] }
+  };
+  var msBtns = document.querySelectorAll('[data-ms]');
+  function setMs(k) {
+    pressGroup(msBtns, function (x) { return x.dataset.ms === k; });
+    document.getElementById('msSteps').innerHTML = MS[k].steps.map(function (s) { return '<li' + (s[2] ? ' class="away"' : '') + '><span class="ms-where">' + s[0] + '</span><span>' + s[1] + '</span></li>'; }).join('');
+    var v = document.getElementById('msVer'); v.className = 'verdict ' + MS[k].v[0]; v.innerHTML = MS[k].v[1];
+  }
+  msBtns.forEach(function (b) { b.addEventListener('click', function () { setMs(b.dataset.ms); }); });
+  setMs('chat');
+
+  /* 2 · onde cada parte mora */
+  var TR = [
+    { t: 'O bilhete de quem distribui', c: 'as instruções do projeto', p: 'um trecho do manual da pasta, o <a href="./claude-code--claude-md.html">CLAUDE.md</a>, que ele lê antes da sua primeira mensagem', l: 'a conversa principal, sempre' },
+    { t: 'A pasta do time', c: 'um arquivo só no conhecimento do projeto, com as seis fichas em sequência', p: 'uma pasta que o Claude Code reconhece como o lugar dos especialistas; cada arquivo dentro dela é um especialista', l: 'a conversa principal lê só a descrição de cada um, para escolher' },
+    { t: 'Uma ficha, um arquivo', c: 'uma ficha entre as outras, no arquivo do time', p: 'um arquivo por especialista: o cabeçalho diz quando chamar, o corpo diz como trabalhar', l: 'só o próprio especialista, quando é chamado' },
+    { t: 'A fonte', c: 'resumida dentro das fichas, porque o projeto tem espaço contado', p: 'o material inteiro na pasta; cada especialista abre a parte dele quando precisa (como em <a href="./claude-code--referencia.html">referência</a>)', l: 'o especialista, na mesa dele' },
+    { t: 'O caderno de progresso', c: 'um documento que você atualiza na conversa', p: 'um arquivo que cresce a cada camada concluída, como o <a href="./claude-code--onde-paramos.html">onde paramos</a>', l: 'quem distribui, no começo e no fim de cada camada' }
+  ];
+  var trBtns = document.querySelectorAll('[data-tr]');
+  function setTr(btn) {
+    pressGroup(trBtns, function (x) { return x === btn; });
+    var r = TR[+btn.dataset.tr];
+    document.getElementById('trCap').innerHTML = '<h3>' + r.t + '</h3><dl><div><dt>No chat era</dt><dd>' + r.c + '</dd></div><div><dt>Na pasta é</dt><dd>' + r.p + '</dd></div><div><dt>Quem lê</dt><dd>' + r.l + '</dd></div></dl>';
+  }
+  trBtns.forEach(function (b) { b.addEventListener('click', function () { setTr(b); }); });
+  setTr(trBtns[0]);
+
+  /* 3 · a ficha em arquivo */
+  var FA = [
+    ['O nome', 'Nome de função, em minúsculas e com hífen. É assim que a conversa principal se refere a ele, e é também o nome do arquivo.'],
+    ['A descrição', 'O “chame quando” da ficha, mais a entrega. É a única parte que a conversa principal lê o tempo todo; o resto só abre quando ele é chamado. Descrição vaga, especialista chamado na hora errada, ou nunca.'],
+    ['As ferramentas', 'O que ele pode usar. Aqui, só ler e procurar: quem só lê não estraga nada. Sem esse campo, ele recebe as mesmas ferramentas da conversa principal, inclusive as que escrevem e apagam.'],
+    ['A ordem de leitura', 'Ele começa com a mesa vazia. O que não estiver nesta lista ou no pedido, ele não sabe, nem o que vocês conversaram uma hora antes.'],
+    ['O que NÃO faz', 'Igual à ficha do chat: o vizinho que faz. E uma linha que a pasta pede: não mexe em arquivo. Quem conserta é a conversa principal.'],
+    ['Se faltar informação', 'A linha que o chat não pedia: ele não consegue perguntar a você no meio do trabalho. Sem ela, ele preenche o buraco com um palpite e entrega com a mesma segurança.']
+  ];
+  var faEls = document.querySelectorAll('[data-fa]');
+  function setFa(k) {
+    pressGroup(faEls, function (x) { return +x.dataset.fa === k; });
+    document.getElementById('faCap').innerHTML = '<h3>' + FA[k][0] + '</h3><p>' + FA[k][1] + '</p>';
+  }
+  faEls.forEach(function (el) { el.addEventListener('click', function () { setFa(+el.dataset.fa); }); });
+  setFa(1);
+
+  /* 4 · quem conversa com você */
+  var EN = {
+    magro: { d: 'O usuário diz que não sobra dinheiro no fim do mês. Analise.', v: ['no', '<b>Um texto geral sobre fluxo de caixa:</b> cinco causas comuns, nenhuma da sua empresa. Ele não viu a conversa, não sabia do extrato e não tinha a quem perguntar.'] },
+    cheio: { d: 'Caso: vendas estáveis há seis meses; no fim do mês o caixa fica negativo.\nO cliente paga em 60 dias; o fornecedor cobra em 30.\nArquivos: financeiro/extrato-jul-set.pdf e financeiro/a-receber.xlsx.\nDecisão em jogo: dar ou não mais prazo ao maior cliente, até sexta.\nEntrega: o mapa do caixa.', v: ['ok', '<b>O mapa do caixa da sua empresa:</b> o buraco de trinta dias entre pagar e receber, mês a mês, com as datas, e o que muda se o maior cliente ganhar mais prazo. Lacuna marcada: o prazo dos outros fornecedores, que não estava em nenhum arquivo.'] }
+  };
+  var enBtns = document.querySelectorAll('[data-en]');
+  function setEn(k) {
+    pressGroup(enBtns, function (x) { return x.dataset.en === k; });
+    document.getElementById('enDown').textContent = EN[k].d;
+    var u = document.getElementById('enUp'); u.className = 'verdict ' + EN[k].v[0]; u.innerHTML = EN[k].v[1];
+  }
+  enBtns.forEach(function (b) { b.addEventListener('click', function () { setEn(b.dataset.en); }); });
+  setEn('magro');
+
+  /* 5 · só a entrega volta */
+  var jrN = document.getElementById('jrN');
+  function setJr() {
+    var n = +jrN.value, C = 6, E = 4, M = n * 3, tot = 130;
+    document.getElementById('jrO').textContent = n;
+    function bar(p, c, m, e) { document.getElementById(p + '1').style.width = (c / tot * 100) + '%'; document.getElementById(p + '2').style.width = (m / tot * 100) + '%'; document.getElementById(p + '3').style.width = (e / tot * 100) + '%'; }
+    bar('jrA', C, M, E); bar('jrB', C + 2, 0, E);
+    document.getElementById('jrA').textContent = n + (n === 1 ? ' arquivo' : ' arquivos') + ' na sua mesa';
+    document.getElementById('jrB').textContent = 'o caso escrito e a entrega';
+    var v = document.getElementById('jrVer');
+    if (n <= 3) { v.className = 'verdict no'; v.innerHTML = '<b>Pouca leitura, pouca diferença.</b> Chamar outra mesa custa o caso escrito e a espera. Para ler dois arquivos, leia aqui mesmo.'; }
+    else if (n <= 12) { v.className = 'verdict ok'; v.innerHTML = '<b>Aqui a mesa separada começa a pagar.</b> O material lido já ocuparia mais espaço que o combinado e a pergunta juntos.'; }
+    else { v.className = 'verdict ok'; v.innerHTML = '<b>A sua conversa viraria arquivo morto.</b> A maior parte da mesa estaria ocupada com material que você não vai reler, e o combinado do começo, no fundo da pilha.'; }
+  }
+  jrN.addEventListener('input', setJr);
+  setJr();
+
+  /* 6 · quem confere não conserta */
+  var RV = [
+    ['A conversa principal faz', 'Ela escreve o relatório do mês, com você, ao longo da conversa. Conhece cada escolha que fez, e é exatamente por isso que não é a melhor para conferir.'],
+    ['Dois especialistas conferem, ao mesmo tempo', 'Cada um recebe só o relatório e o que precisa para conferir. Um confere os números contra a planilha; o outro lê como quem vai receber. Rodam juntos, porque um não depende do outro.'],
+    ['Eles devolvem, não consertam', 'Cada um devolve uma lista: o que está errado, onde e por quê. Nenhum dos dois mexe no arquivo; as ferramentas deles são só de leitura.'],
+    ['A conversa principal conserta', 'Ela lê as duas listas e corrige. Se a correção foi grande, a conferência roda de novo, com os mesmos dois especialistas e a mesa vazia outra vez.']
+  ];
+  var rvCur = 1, rvLanes = document.querySelectorAll('[data-rv]'), rvPrev = document.getElementById('rvPrev'), rvNext = document.getElementById('rvNext');
+  function rvTo(k) {
+    rvCur = Math.max(1, Math.min(4, k));
+    rvLanes.forEach(function (d) { var i = +d.dataset.rv; d.classList.toggle('on', i === rvCur); d.classList.toggle('done', i < rvCur); });
+    document.getElementById('rvCap').innerHTML = '<h3>' + RV[rvCur - 1][0] + '</h3><p>' + RV[rvCur - 1][1] + '</p>';
+    document.getElementById('rvLab').textContent = 'Passo ' + rvCur + ' de 4';
+    rvPrev.disabled = rvCur === 1; rvNext.textContent = rvCur === 4 ? 'Recomeçar ↺' : 'Próximo →';
+  }
+  rvPrev.addEventListener('click', function () { rvTo(rvCur - 1); });
+  rvNext.addEventListener('click', function () { rvTo(rvCur === 4 ? 1 : rvCur + 1); });
+  rvTo(1);
+
+  /* 7 · mesa separada ou aqui */
+  quiz(document.getElementById('vaQuiz'), document.getElementById('vaScore'), [
+    { s: 'Comparar doze propostas de fornecedor e trazer as três melhores, com o motivo de cada uma.', a: 'sep', why: 'Muito para ler, pouco para trazer: as doze ficam na mesa dele, e volta uma tabela de três linhas.' },
+    { s: 'Ajustar o tom do e-mail que vocês acabaram de escrever juntos.', a: 'aqui', why: 'O ajuste depende da conversa. Escrever o caso para outra mesa custaria mais que o próprio ajuste.' },
+    { s: 'Conferir o relatório que esta conversa escreveu, antes de enviar.', a: 'sep', why: 'Quem não viu a sessão não carrega as escolhas dela. É o revisor de caneta vermelha.' },
+    { s: 'Saber o prazo de pagamento de um fornecedor, que está numa linha da planilha.', a: 'aqui', why: 'Uma linha, uma resposta. Chamar outra mesa seria pedir a um perito para somar duas notas.' },
+    { s: 'Achar em quarenta atas todas as vezes que um projeto foi adiado, e o motivo de cada vez.', a: 'sep', why: 'Quarenta atas na sua conversa empurrariam o combinado para o fundo. Volta só a lista.' },
+    { s: 'Decidir com você qual das duas versões do texto usar.', a: 'aqui', why: 'A decisão é sua, e ela acontece na conversa. O especialista não poderia perguntar nada a você.' }
+  ], [['sep', 'Mesa separada'], ['aqui', 'Aqui mesmo']]);
+})();
+</script>
+</body>
+</html>

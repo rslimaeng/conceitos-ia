@@ -390,6 +390,12 @@ h1, h2, h3 { text-wrap: pretty; }
   <div class="verdict" id="vpVer" aria-live="polite"></div>
   <h3>E quando os papéis são agentes?</h3>
   <p class="hint">Até aqui o time mora numa conversa. Às vezes cada papel vira um <a href="./agente.html">agente</a>, um assistente que executa sozinho, com ferramentas, e entrega o resultado para o próximo. <strong>Aí cada passagem cobra:</strong> mais demora, mais custo e mais uma chance de o dado chegar torto. A regra é passar o dado o menor número de vezes: se um agente só, com um pedido bem escrito, dá conta, ele ganha do time.</p>
+  <p class="hint">Esse arranjo tem nome, <strong>vários agentes</strong>: um que distribui e outros que executam. O argumento a favor é real: um agente só, com ferramentas demais, erra na hora de escolher qual usar, como um diretor com cem funcionários e nenhum chefe no meio. Dividir por área ajuda. Quem monta pela primeira vez costuma tropeçar em três defeitos, e os três aparecem logo nos primeiros testes.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">defeito 1</span><h3>Quem distribui faz o trabalho</h3><p>Em vez de passar o pedido adiante, ele mesmo escreve o e-mail. A instrução dele precisa dizer: você não executa, você passa.</p></div>
+    <div class="card"><span class="eyebrow">defeito 2</span><h3>O pedido chega no lugar errado</h3><p>Quem executa procura o pedido num lugar, ele chegou em outro, e o trabalho sai sem ele. Teste cada um sozinho, com um pedido inventado, antes de ligar o time.</p></div>
+    <div class="card"><span class="eyebrow">defeito 3</span><h3>Os dois ficam andando em círculo</h3><p>Um pede, o outro não tem a ferramenta para fazer e devolve, e o primeiro pede de novo. Antes de distribuir, confira se quem recebe tem como fazer.</p></div>
+  </div>
 </section>
 
 <!-- 7 -->
@@ -407,7 +413,7 @@ h1, h2, h3 { text-wrap: pretty; }
       <div class="tv-cols"><div><span class="eyebrow">quem executa</span><ol><li>pesquisa o setor</li><li>organiza na ordem</li><li>faz a conta</li></ol></div><div><span class="eyebrow">quem confere</span><ol><li>a linguagem serve a quem lê?</li><li>as peças se contradizem?</li><li>os três campos estão lá?</li></ol></div></div>
     </div>
   </div>
-  <div class="card"><h3>O revisor que não viu a conversa confere melhor</h3><p>Quem acompanhou o trabalho carrega as escolhas do caminho e tende a achá-las certas. <strong>No chat, o gesto equivalente é abrir outra conversa</strong>, colar só o entregável e pedir a conferência dos campos.</p></div>
+  <div class="card"><h3>O revisor que não viu a conversa confere melhor</h3><p>Quem acompanhou o trabalho carrega as escolhas do caminho e tende a achá-las certas. <strong>No chat, o gesto equivalente é abrir outra conversa</strong>, colar só o entregável e pedir a conferência dos campos. Se você usa a IA numa pasta: no Claude Code esse revisor tem nome, <strong>subagente</strong>, e mora num arquivo (ver <a href="./claude-code--time.html#s-revisor">quem confere não conserta</a>).</p></div>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">Numa conversa nova, só com o entregável</span><button type="button" class="btn" data-copy="cfRev">Copiar</button></div>
 <pre id="cfRev">Revise o documento abaixo. Você não participou de como ele foi feito, e é por isso que eu estou pedindo a você.

@@ -226,6 +226,14 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
 .copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); }
 .copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .86rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* trechos · a leitura pesada em outra mesa */
+.om { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.om-box { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; display: grid; gap: 4px; }
+.om-box.on { border-color: var(--ok); background: var(--ok-soft); }
+.om-box b { font-weight: 500; }
+.om-box small { font-size: .86rem; color: var(--text-muted); }
+.om-arr { color: var(--text-dim); font-size: 1.2rem; }
+@media (max-width: 860px) { .om { grid-template-columns: 1fr; } .om-arr { transform: rotate(90deg); justify-self: center; } }
 .reads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .reads button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 14px; font-size: .95rem; }
 .reads button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
@@ -427,6 +435,22 @@ h1, h2, h3 { text-wrap: pretty; }
   <div class="chunks" id="chunks" role="img" aria-label="Páginas na mesa: a certa, as parecidas e as que não têm a ver"></div>
   <div class="legend" aria-hidden="true"><span><i class="sw r"></i>o trecho que responde</span><span><i class="sw a"></i>trecho parecido, de outro caso</span><span><i class="sw x"></i>não tem a ver com a pergunta</span></div>
   <div class="verdict" id="chVer"></div>
+  <h3>A leitura pesada, em outra mesa</h3>
+  <p class="hint">Quando a tarefa pede ler muito para responder pouco (comparar dez propostas, achar uma cláusula em quarenta contratos), toda a leitura vira folha na sua mesa, e o combinado afunda junto. O gesto é <strong>ler em outra conversa e trazer de lá só a resposta</strong>: a leitura fica lá, aqui chega uma folha. Se você usa a IA numa pasta: no Claude Code isso tem nome, <strong>subagente</strong>, um ajudante que trabalha numa conversa separada e devolve só o resultado (ver <a href="./claude-code--time.html#s-jornada">um time de especialistas na pasta</a>).</p>
+  <div class="om" role="group" aria-label="A leitura em outra conversa, e só a resposta de volta">
+    <div class="om-box"><span class="eyebrow">outra conversa</span><b>Quarenta contratos lidos</b><small>a leitura inteira fica aqui</small></div>
+    <span class="om-arr" aria-hidden="true">→</span>
+    <div class="om-box"><span class="eyebrow">volta</span><b>Dez linhas</b><small>a resposta, de onde veio e o que não achou</small></div>
+    <span class="om-arr" aria-hidden="true">→</span>
+    <div class="om-box on"><span class="eyebrow">sua conversa</span><b>O combinado e uma folha</b><small>a mesa continua com espaço</small></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido para a outra conversa</span><button type="button" class="btn" id="copyBtn2">Copiar</button></div>
+<pre id="copyText2">Leia o material abaixo e responda só a esta pergunta: [a pergunta].
+Devolva em no máximo dez linhas: a resposta; de onde tirou cada parte (o documento e o trecho); e o que você procurou e não achou.
+Não resuma o material inteiro. Eu vou levar a sua resposta para outra conversa, e só ela vai.
+[cole aqui o material]</pre>
+  </div>
 </section>
 
 <!-- 7 -->
@@ -695,6 +719,13 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
     var t = document.getElementById('copyText').innerText;
     var done = function () { copyBtn.textContent = 'Copiado'; setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 1500); };
     var falhou = function () { copyBtn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, falhou); } else { falhou(); }
+  });
+  var copyBtn2 = document.getElementById('copyBtn2');
+  copyBtn2.addEventListener('click', function () {
+    var t = document.getElementById('copyText2').innerText;
+    var done = function () { copyBtn2.textContent = 'Copiado'; setTimeout(function () { copyBtn2.textContent = 'Copiar'; }, 1500); };
+    var falhou = function () { copyBtn2.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { copyBtn2.textContent = 'Copiar'; }, 2500); };
     if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(t).then(done, falhou); } else { falhou(); }
   });
 })();

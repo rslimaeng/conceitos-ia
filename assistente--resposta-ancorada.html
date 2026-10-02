@@ -214,6 +214,13 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .ps-q .l.n { color: var(--atencao-texto); border-color: var(--atencao); background: var(--atencao-soft); }
 /* reforço: a versão superada, a tabela que não se busca */
 .ra-sub { font-size: 1.25rem; }
+/* parecidos · palavra × significado */
+.bs-q { font-family: var(--font-mono); font-size: .92rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.bs-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.bs-list li { background: var(--bg-elev); border: 1px solid var(--border-strong); border-left: 4px solid var(--border); border-radius: 6px; padding: 10px 14px; font-size: .95rem; display: grid; gap: 2px; }
+.bs-list li.r { border-left-color: var(--accent); }
+.bs-list li.a { border-left-color: var(--atencao); }
+.bs-list li small { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); }
 .ra-old .card { min-width: 0; }
 .ra-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); }
 .card.focal .ra-tag { color: var(--accent); }
@@ -386,6 +393,12 @@ h1, h2, h3 { text-wrap: pretty; }
   </div>
   <div class="tp-leg" aria-hidden="true"><span><i class="r"></i>o trecho que responde</span><span><i class="a"></i>parecido, de outro caso</span><span><i></i>não tem a ver</span></div>
   <p class="hint">A forma, não a medida: a proporção de parecidos muda de manual para manual; a direção, não. Um projeto é a área da ferramenta que junta os arquivos e as instruções de um trabalho. Quando o que está guardado nele passa do que cabe de uma vez, ela começa a procurar trechos sem avisar. Mais em <a href="./limites-da-ia--janela-de-contexto.html">janela de contexto</a>.</p>
+  <h3 class="ra-sub">Ela procura pelo sentido, não pela palavra</h3>
+  <p class="hint">Esse procurar tem nome: <strong>busca por significado</strong>. O material é cortado em pedaços, mais ou menos um por parágrafo, e ela traz os poucos pedaços cujo sentido mais se aproxima da pergunta, mesmo sem nenhuma palavra em comum. É o que a torna útil, e é também por isso que o parecido de outro caso disputa: ele fala do mesmo assunto. Troque o jeito de procurar.</p>
+  <div class="seg" role="group" aria-label="Jeito de procurar"><button type="button" data-bs="palavra" aria-pressed="true">Por palavra</button><button type="button" data-bs="sentido" aria-pressed="false">Por significado</button></div>
+  <p class="bs-q">Posso devolver o dinheiro a um cliente que desistiu da compra?</p>
+  <ul class="bs-list" id="bsList"></ul>
+  <div class="verdict" id="bsVer" aria-live="polite"></div>
   <h3 class="ra-sub">O parecido mais perigoso é a versão antiga do mesmo documento</h3>
   <div class="two ra-old">
     <div class="card"><span class="ra-tag">o que ficou na base</span><p>A tabela de preços nova subiu, e a do trimestre passado continuou lá, com o mesmo título e os mesmos códigos. <strong>Só os números mudaram.</strong> Ela traz o trecho de uma ou de outra, e a proposta sai com preço vencido.</p></div>
@@ -587,6 +600,21 @@ Não resuma e não reescreva o trecho. Se alguma afirmação não tem trecho que
     { s: 'Voltou: “A política diz que gerentes podem dar descontos moderados, em torno de 8%.” No arquivo não existe a palavra “moderados”.', a: 'deduziu', why: 'Paráfrase com uma palavra que não está lá. É reconstrução, não leitura: confira o número antes de usar.' },
     { s: 'Voltou: “Não encontrei no documento um trecho que sustente o prazo de 48 horas que citei antes.”', a: 'deduziu', why: 'O prazo veio da média, e ela acabou de admitir. É a resposta mais útil das três: agora você sabe o que tirar.' }
   ], [['leu', 'Leu'], ['deduziu', 'Deduziu']], 'se voltou paráfrase, trate a resposta como rascunho.');
+  /* parecidos · palavra × significado */
+  var BS = {
+    palavra: { l: [['x', 'tem a palavra “devolver”', 'Devolução de equipamento emprestado: o técnico recolhe em até cinco dias.']],
+      v: ['no', '<b>Achou a palavra e perdeu o assunto.</b> A regra está na seção “Reembolso”, que não usa “devolver” em nenhuma linha.'] },
+    sentido: { l: [['r', 'o trecho que responde', 'Reembolso: o valor é estornado em até sete dias, se a desistência for pedida no prazo de arrependimento.'], ['a', 'parecido, de outro caso', 'Reembolso de despesas de viagem do funcionário: prestar contas em até trinta dias.'], ['a', 'parecido, de outro caso', 'Troca de produto com defeito: até noventa dias, com a nota fiscal.']],
+      v: ['ok', '<b>Achou o assunto, mesmo sem a palavra.</b> E trouxe junto dois parecidos: se o prazo da viagem pesar mais, a resposta sai com trinta dias. Por isso vale o material limpo, com uma seção por assunto (ver <a href="#s-escolher">que arquivos entregar</a>).'] }
+  };
+  var bsBtns = document.querySelectorAll('[data-bs]');
+  function setBs(k) {
+    pressGroup(bsBtns, function (x) { return x.dataset.bs === k; });
+    document.getElementById('bsList').innerHTML = BS[k].l.map(function (t) { return '<li class="' + t[0] + '"><small>' + t[1] + '</small><span>' + t[2] + '</span></li>'; }).join('');
+    var v = document.getElementById('bsVer'); v.className = 'verdict ' + BS[k].v[0]; v.innerHTML = BS[k].v[1];
+  }
+  bsBtns.forEach(function (b) { b.addEventListener('click', function () { setBs(b.dataset.bs); }); });
+  setBs('palavra');
 })();
 </script>
 </body>
