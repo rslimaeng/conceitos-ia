@@ -289,6 +289,8 @@ button:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline
 .conv .n { font-family: var(--font-mono); font-size: 1.6rem; color: var(--accent); line-height: 1; }
 .msg { border-radius: 10px; padding: 8px 12px; font-size: .92rem; max-width: 92%; animation: pop .3s ease both; }
 .msg.you { justify-self: end; background: var(--bg); border: 1px solid var(--border-strong); }
+/* o pedido inteiro do lado direito, para comparar com o pedido curto do lado esquerdo (Rafael, 02/10: "não vi o pedido melhor") */
+.msg.you.full { white-space: pre-line; font-size: .84rem; line-height: 1.5; max-width: 100%; }
 .msg.fix { justify-self: end; background: var(--atencao-soft); border: 1px solid var(--atencao); color: var(--atencao-texto); }
 .msg.ai { justify-self: start; background: var(--bg-elev); border: 1px solid var(--border); color: var(--text-muted); }
 .msg.ask { justify-self: start; background: var(--bg-elev); border: 1px solid var(--accent); color: var(--accent); }
@@ -886,7 +888,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
     ['fix', 'Corta a introdução e põe o desvio maior no topo.'], ['good', 'Enfim, algo que dá para levar.']
   ];
   var CB = [
-    ['you', 'O pedido completo, numa mensagem só.'], ['ask', 'Achei dois registros duplicados na loja 3. Considero um só, ou são vendas diferentes?'],
+    ['you full', 'Papel: analista comercial que prepara material para a diretoria.\nContexto: anexei o fechamento da semana, com venda por loja e por dia. A reunião de diretoria é amanhã cedo.\nTarefa: resuma o fechamento destacando o que saiu do previsto.\nFormato: no máximo cinco linhas, começando pelo desvio maior.\nLimitações: use só o que está no arquivo. Não estime número que não estiver lá. Se faltar informação, pergunte antes de escrever.\nCritério de sucesso: a diretoria decide o que cobrar de cada loja lendo só essas cinco linhas.'], ['ask', 'Achei dois registros duplicados na loja 3. Considero um só, ou são vendas diferentes?'],
     ['you', 'Um só.'], ['good', 'Cinco linhas, o desvio maior no topo, pronto para a reunião.']
   ];
   var playing = false;
@@ -898,7 +900,7 @@ No fim, me devolva o pedido completo, separado nas etiquetas &lt;tarefa&gt;, &lt
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function tick() {
       if (i < CA.length) { var m = CA[i]; var d = document.createElement('div'); d.className = 'msg ' + m[0]; d.textContent = m[1]; a.appendChild(d); if (m[0] === 'you' || m[0] === 'fix') { nA++; document.getElementById('nA').textContent = nA; } }
-      if (i < CB.length) { var m2 = CB[i]; var d2 = document.createElement('div'); d2.className = 'msg ' + m2[0]; d2.textContent = m2[1]; b.appendChild(d2); if (m2[0] === 'you') { nB++; document.getElementById('nB').textContent = nB; } }
+      if (i < CB.length) { var m2 = CB[i]; var d2 = document.createElement('div'); d2.className = 'msg ' + m2[0]; d2.textContent = m2[1]; b.appendChild(d2); if (m2[0].indexOf('you') === 0) { nB++; document.getElementById('nB').textContent = nB; } }
       i++;
       if (i < Math.max(CA.length, CB.length)) setTimeout(tick, reduce ? 0 : 450);
       else { playing = false; document.getElementById('playHint').textContent = 'No pedido pela tarefa, 5 mensagens suas e 4 só corrigindo. No pedido pelo resultado, 2, e a primeira resposta foi uma pergunta: foi a linha “se faltar, pergunte” que produziu isso.'; }
