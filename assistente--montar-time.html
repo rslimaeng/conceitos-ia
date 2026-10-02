@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="assistente--montar-time">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Montar um time de especialistas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 4.6. Peças: um especialista × uma proposta de time, stepper com diagrama das três fases e das paradas, quiz "isto é um especialista?", montador da ficha com copiar, simulador do desempate entre vizinhos, pergunta em branco × hipótese antes, caderno de progresso com controle deslizante e camadas clicáveis, pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.qz-fb[hidden] { display: none; }
+.sec > * { min-width: 0; }
+.mt-q { font-family: var(--font-mono); font-size: .92rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+
+/* 1 · um especialista × um time */
+.mt-card { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.mt-card ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; display: grid; gap: 4px; }
+.mt-card b { color: var(--text); font-weight: 600; }
+.mt-card .vtable td:first-child { font-family: var(--font-mono); font-weight: 500; color: var(--accent); white-space: nowrap; }
+
+/* 2 · as três fases (svg) */
+.ph-svg { min-width: 660px; }
+.ph-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.ph-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.ph-box.done rect { fill: var(--bg-elev); stroke: var(--ok); }
+.ph-box .t { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; text-anchor: middle; }
+.ph-box .b { font: 500 14px var(--font-body); fill: var(--text); text-anchor: middle; }
+.ph-box .s { font: 400 11.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.ph-box.on .t { fill: var(--accent); }
+.ph-arr { stroke: var(--border-strong); stroke-width: 2; fill: none; }
+.ph-mk { fill: var(--border-strong); }
+.ph-stop rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-dasharray: 4 3; }
+.ph-stop text { font: 600 10.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; text-anchor: middle; }
+.ph-stop.on rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-dasharray: none; }
+.ph-stop.on text { fill: var(--atencao-texto); }
+.ph-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+
+/* 3 · quem entra */
+.cr-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.cr-grid .card h3 { font-size: 1.02rem; }
+.ch-pair .card { min-width: 0; }
+.ch-pair .card.bad { border-color: var(--atencao); }
+.ch-pair .card.good { border-color: var(--ok); }
+
+/* 4 · montador da ficha */
+.fi-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.fi-form { display: grid; gap: 10px; }
+.fi-form label { display: grid; gap: 4px; font-size: .92rem; }
+.fi-form label small { color: var(--text-dim); font-size: .82rem; }
+.fi-form input, .fi-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.fi-out { display: grid; gap: 8px; }
+
+/* 5 · desempate */
+.dz-box { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.dz-pair { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .95rem; color: var(--text-muted); }
+.dz-pair b { font-family: var(--font-mono); font-size: .85rem; font-weight: 500; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 10px; background: var(--accent-soft); }
+.dz-ask { font-size: 1.15rem; }
+.dz-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.dz-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 14px; font-size: .93rem; }
+.dz-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* 6 · a conversa */
+.cv { display: grid; gap: 10px; }
+.cv-msg { border-radius: 8px; padding: 12px 16px; font-size: .95rem; display: grid; gap: 6px; max-width: 62ch; }
+.cv-msg.user { background: var(--accent-soft); border: 1px solid var(--accent); justify-self: end; }
+.cv-msg.ai { background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.cv-msg.ai.bad { border-color: var(--atencao); }
+.cv-msg.ai.good { border-color: var(--ok); }
+.cv-msg ol { margin: 0; padding-left: 20px; color: var(--text-muted); }
+.cv-sig { font-family: var(--font-mono); font-size: .85rem; color: var(--accent); }
+.cv-count { font-family: var(--font-mono); font-size: .9rem; color: var(--text-muted); }
+.rl-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* 7 · caderno de progresso */
+.cd { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 14px; }
+.cd-top { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: baseline; justify-content: space-between; }
+.cd-bar { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.cd-bar span { height: 10px; border-radius: 3px; background: var(--border); }
+.cd-bar span.on { background: var(--ok); }
+.cd-list { display: grid; gap: 6px; }
+.cd-list button { text-align: left; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 10px 12px; }
+.cd-list button .n { font-family: var(--font-mono); font-size: .85rem; color: var(--text-dim); grid-row: span 2; align-self: center; }
+.cd-list button b { font-weight: 500; font-size: .95rem; }
+.cd-list button small { font-size: .86rem; color: var(--text-muted); }
+.cd-list button.done { border-color: var(--ok); background: var(--ok-soft); }
+.cd-list button.done .n { color: var(--ok-texto); }
+.cd-list button.todo b, .cd-list button.todo small { color: var(--text-dim); }
+.cd-list button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .fi-grid, .cr-grid, .rl-grid { grid-template-columns: 1fr; }
+  .cv-msg.user { justify-self: stretch; }
+}
+@media (prefers-reduced-motion: reduce) { .ph-box rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Assistente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente--conector.html">← 4.5 Conector</a><a href="./assistente.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./assistente.html">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a><a href="./assistente--conector.html"><b>4.5</b>Conector</a><a href="./assistente--montar-time.html" aria-current="page"><b>4.6</b>Montar um time</a></div>
+  </nav>
+  <span class="eyebrow">4.6 · 6 de 6</span>
+  <h1>Montar um time de especialistas</h1>
+  <p class="sub">Um time bom nasce de um material em que você já confia, em três etapas que param para você aprovar</p>
+  <p class="lead">O que é um time e quando ele vale a pena está em <a href="./assistente--time.html">time de assistentes</a>. Esta página é a mão na massa: <strong>de onde saem os especialistas, como cada um é escrito, como o time decide quem responde e como você monta tudo no chat.</strong> O exemplo é um manual de gestão de pequena empresa que vira seis especialistas, cada um com nome de função: quem olha o caixa, quem corta o excesso, quem valida antes de construir.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-um-ou-time">Um especialista ou um time</a><a href="#s-fases">Da fonte ao arquivo do time</a><a href="#s-entra">Quem entra no time</a><a href="#s-ficha">A ficha de cada especialista</a><a href="#s-desempate">Dois vizinhos, uma pergunta</a><a href="#s-conversa">Como a conversa anda</a><a href="#s-caderno">O caderno de progresso</a><a href="#s-chat">Montar no chat</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-um-ou-time" aria-labelledby="h-um-ou-time">
+  <span class="eyebrow">Um especialista ou um time</span>
+  <h2 id="h-um-ou-time">Do assistente de uma tarefa ao time: quando um vira vários</h2>
+  <p class="intro">A loja pequena começa com um contador que faz tudo; quando o movimento cresce, entram o fiscal, o da folha e o de custos, cada um com a sua mesa e a sua entrega. Com a IA é parecido. Um especialista aqui é um assistente (a IA com uma instrução guardada, ver <a href="./assistente.html">as três partes</a>) que cuida de <strong>um pedaço do assunto e devolve uma coisa só</strong>. Compare os dois caminhos.</p>
+  <div class="seg" role="group" aria-label="Qual caminho">
+    <button type="button" data-ut="um" aria-pressed="true">Um especialista sozinho</button>
+    <button type="button" data-ut="time" aria-pressed="false">Uma proposta de time</button>
+  </div>
+  <div id="utOut" aria-live="polite"></div>
+  <h3>Três sinais de que um virou vários</h3>
+  <div class="three">
+    <div class="card"><span class="eyebrow">sinal 1</span><h3>As entregas mudam</h3><p>Uma semana você precisa da tabela do caixa, na outra da lista do que parar. Entregas diferentes pedem instruções diferentes.</p></div>
+    <div class="card"><span class="eyebrow">sinal 2</span><h3>A fonte tem partes</h3><p>O material que você usa ensina coisas diferentes em partes diferentes, e cada parte dá para virar uma entrega.</p></div>
+    <div class="card"><span class="eyebrow">sinal 3</span><h3>Volta o meio-termo</h3><p>O assistente começa a responder tudo de um jeito equilibrado e sem opinião: é <a href="./assistente--time.html#s-meio">o meio-termo</a> que a página do time descreve.</p></div>
+  </div>
+  <p class="hint">Se tudo o que chega pede a mesma entrega, fique com um especialista bem escrito. Ele é mais barato de manter e erra menos.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-fases" aria-labelledby="h-fases">
+  <span class="eyebrow">Da fonte ao arquivo do time</span>
+  <h2 id="h-fases">Três paradas para você aprovar, antes de existir um time</h2>
+  <p class="intro">Na reforma, o mestre de obras não levanta parede antes de você aprovar a planta, e não reboca antes de você ver a parede. O time nasce de uma <strong>fonte</strong> (um livro, um curso, o manual da casa), e a IA trabalha em etapas que param para você conferir. <strong>Cada parada é onde um erro ainda custa uma frase para consertar.</strong> Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="phLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="phPrev">← Anterior</button><button type="button" class="btn primary" id="phNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="ph-svg" viewBox="0 0 770 200" role="img" aria-labelledby="ph-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="ph-t">Da fonte ao arquivo do time: inventário, a proposta do time, um especialista por vez e um arquivo só, com uma parada para você aprovar depois de cada uma das três primeiras etapas</title>
+      <defs><marker id="mkph" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="ph-mk"/></marker></defs>
+      <text class="ph-zl" x="10" y="22">A FONTE ENTRA AQUI</text>
+      <g class="ph-box" data-ph="1"><rect x="10" y="36" width="150" height="96" rx="8"/><text class="t" x="85" y="62">ANTES</text><text class="b" x="85" y="88">Inventário</text><text class="s" x="85" y="110">o que é cada arquivo</text></g>
+      <g class="ph-box" data-ph="2"><rect x="210" y="36" width="150" height="96" rx="8"/><text class="t" x="285" y="62">FASE 1</text><text class="b" x="285" y="88">A proposta</text><text class="s" x="285" y="110">a tabela do time</text></g>
+      <g class="ph-box" data-ph="3"><rect x="410" y="36" width="150" height="96" rx="8"/><text class="t" x="485" y="62">FASE 2</text><text class="b" x="485" y="88">Um por vez</text><text class="s" x="485" y="110">uma ficha por mensagem</text></g>
+      <g class="ph-box" data-ph="4"><rect x="610" y="36" width="150" height="96" rx="8"/><text class="t" x="685" y="62">FASE 3</text><text class="b" x="685" y="88">Um arquivo só</text><text class="s" x="685" y="110">vai para o projeto</text></g>
+      <path class="ph-arr" d="M160,84 H204" marker-end="url(#mkph)"/><path class="ph-arr" d="M360,84 H404" marker-end="url(#mkph)"/><path class="ph-arr" d="M560,84 H604" marker-end="url(#mkph)"/>
+      <g class="ph-stop" data-st="1"><rect x="140" y="150" width="90" height="34" rx="6"/><text x="185" y="164">PARA</text><text x="185" y="178">você aprova</text></g>
+      <g class="ph-stop" data-st="2"><rect x="340" y="150" width="90" height="34" rx="6"/><text x="385" y="164">PARA</text><text x="385" y="178">você aprova</text></g>
+      <g class="ph-stop" data-st="3"><rect x="540" y="150" width="90" height="34" rx="6"/><text x="585" y="164">PARA</text><text x="585" y="178">a cada ficha</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="phCap" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido que gera o time · cole com a fonte anexada</span><button type="button" class="btn" data-copy="phPrompt">Copiar</button></div>
+<pre id="phPrompt">Você vai transformar o material que eu anexei num time de especialistas para eu usar aqui no chat. Trabalhe em três fases e PARE no fim de cada uma para eu aprovar.
+
+<b>ANTES · O INVENTÁRIO</b>
+Leia cada arquivo inteiro, do começo ao fim, antes de escrever qualquer coisa. Devolva só uma tabela: arquivo · tamanho · estrutura (partes, capítulos) · tipo. O tipo é um destes:
+- PRIMÁRIA: o material original (o manual, o livro, o curso).
+- DERIVADA: resumo ou pesquisa sobre a primária, feito por outra pessoa ou por IA.
+- CONTEXTO: material sobre onde isso vai ser aplicado (a empresa, o setor).
+Abaixo, o que se perdeu (tabela, imagem, trecho cortado) e o que nenhuma fonte cobre.
+A primária manda. A derivada só preenche o que a primária não cobre, e vai marcada. O que você completar por conta própria vai marcado [completado].
+
+<b>FASE 1 · A PROPOSTA DO TIME</b>
+Tire da primária de 5 a 8 especialistas. Cada um:
+- tem fronteira clara na fonte (uma parte, um capítulo, um processo), e você diz qual;
+- devolve UM entregável concreto (um diagnóstico, uma tabela, uma decisão, um plano). Quem só "orienta" ou "apoia" não entra;
+- não responde a mesma pergunta que outro. Se dois responderiam, junte os dois ou redesenhe a fronteira.
+A ordem é a ordem em que a fonte ensina: ela vira as camadas do time.
+Devolva a tabela: # · camada · especialista · chame quando · o que devolve · de onde vem na fonte.
+"Chame quando" é uma situação na segunda pessoa, com as palavras de quem vai usar, sem nome de método. Certo: "chame quando você cresce e o caixa piora".
+Abaixo da tabela: o que da fonte ficou de fora e por quê, e quais especialistas dependem de outros.
+PARE e pergunte se aprovo, se quero juntar ou separar algum.
+
+<b>FASE 2 · UM POR VEZ</b>
+Depois que eu aprovar, escreva um especialista por mensagem, na ordem das camadas: chame quando · como conversa · o que sabe (com a marca de origem em cada bloco) · o que devolve (com as seções ou colunas) · o que NÃO faz (dizendo qual outro especialista faz) · o defeito previsto e uma regra dura que dá para conferir.
+PARE depois de cada um.
+
+<b>FASE 3 · UM ARQUIVO SÓ</b>
+Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na ordem das camadas, separados por uma linha.</pre>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-entra" aria-labelledby="h-entra">
+  <span class="eyebrow">Quem entra no time</span>
+  <h2 id="h-entra">Um especialista se prova pelo que entrega, não pelo assunto</h2>
+  <p class="intro">Na hora de contratar, a pergunta que resolve não é “ele entende de finanças?”, é “o que ele me entrega na sexta?”. O teste do especialista tem cinco critérios, e o que mais derruba candidato é o segundo: <strong>um entregável concreto</strong>, uma coisa que você leva embora da conversa. Especialista que só “orienta” ou “apoia” vira um parágrafo a mais.</p>
+  <div class="cr-grid">
+    <div class="card"><span class="eyebrow">1</span><h3>Fronteira clara</h3><p>Corresponde a uma parte da fonte: um capítulo, um processo.</p></div>
+    <div class="card focal"><span class="eyebrow">2</span><h3>Uma entrega</h3><p>Um diagnóstico, uma tabela, uma decisão, um plano. Uma só.</p></div>
+    <div class="card"><span class="eyebrow">3</span><h3>De 5 a 8</h3><p>Menos costuma esconder dois num só; mais costuma separar o que a fonte trata junto.</p></div>
+    <div class="card"><span class="eyebrow">4</span><h3>A ordem da fonte</h3><p>O que ela ensina primeiro vem primeiro. Essa ordem vira as camadas, os andares do time.</p></div>
+    <div class="card"><span class="eyebrow">5</span><h3>Sem sobreposição</h3><p>Se dois responderiam à mesma pergunta, junte ou redesenhe.</p></div>
+  </div>
+  <h3>Isto é um especialista?</h3>
+  <div class="qz" id="enQuiz"></div>
+  <p class="qz-score" id="enScore" aria-live="polite"></p>
+  <h3>O “chame quando” descreve o sintoma, não o método</h3>
+  <p>A linha que diz quando chamar cada especialista é o que o time lê para escolher. Ela precisa estar <strong>nas palavras de quem pede</strong>: ninguém chega dizendo o nome de um método, chega dizendo o que está doendo.</p>
+  <div class="two ch-pair">
+    <div class="card bad"><span class="eyebrow">não roteia</span><p>“Chame para aplicar a análise de fluxo de caixa.”</p><p class="hint">Só acerta quem já sabe a resposta.</p></div>
+    <div class="card good"><span class="eyebrow">roteia</span><p>“Chame quando você cresce e o caixa piora.”</p><p class="hint">É a frase que a pessoa diria na reunião de segunda.</p></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-ficha" aria-labelledby="h-ficha">
+  <span class="eyebrow">A ficha de cada especialista</span>
+  <h2 id="h-ficha">Seis campos, e o que mais protege é o que ele não faz</h2>
+  <p class="intro">A boa descrição de cargo diz também o que não é com você: “não aprova pagamento, isso é do financeiro”. Cada especialista é escrito numa ficha, e o campo que evita confusão é <strong>o que ele NÃO faz, apontando o vizinho que faz</strong>. Em “o que sabe”, cada bloco leva a marca de origem: de qual parte da fonte veio, ou <code>[completado]</code> quando foi a IA que preencheu. Escolha um especialista, edite os campos e copie.</p>
+  <div class="seg" role="group" aria-label="Especialista" id="fiSeg">
+    <button type="button" data-fi="0" aria-pressed="false">o cliente</button>
+    <button type="button" data-fi="1" aria-pressed="true">o caixa</button>
+    <button type="button" data-fi="2" aria-pressed="false">validar</button>
+    <button type="button" data-fi="3" aria-pressed="false">a oferta</button>
+    <button type="button" data-fi="4" aria-pressed="false">cortar</button>
+    <button type="button" data-fi="5" aria-pressed="false">o processo</button>
+  </div>
+  <div class="fi-grid">
+    <div class="fi-form">
+      <label>Chame quando <small>uma situação por linha, nas palavras de quem pede</small><textarea id="fiChame" rows="3"></textarea></label>
+      <label>O que sabe <small>com a marca de origem em cada bloco</small><textarea id="fiSabe" rows="3"></textarea></label>
+      <label>O que devolve <small>uma entrega, com as partes dela</small><textarea id="fiDevolve" rows="2"></textarea></label>
+      <label>O que NÃO faz <small>e qual vizinho faz</small><textarea id="fiNao" rows="2"></textarea></label>
+      <label>O defeito previsto <small>como ele costuma errar</small><input id="fiDefeito"></label>
+      <label>A regra dura <small>uma frase que dá para conferir na resposta</small><input id="fiRegra"></label>
+    </div>
+    <div class="fi-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">A ficha · ao vivo</span><button type="button" class="btn" data-copy="fiOut">Copiar</button></div>
+        <pre id="fiOut"></pre>
+      </div>
+      <p class="hint">“Como conversa” é igual para todos e vem pronto: as regras estão em <a href="#s-conversa">como a conversa anda</a>. No fim da ficha, uma linha de confiança: alta se tudo veio da fonte original; baixa se tem <code>[completado]</code> no ponto central.</p>
+    </div>
+  </div>
+  <p class="hint">A regra dura é a que dá para conferir lendo a resposta, sem confiar em ninguém: “sempre que disser ‘público pequeno’, escreve o número”. Adjetivo como “seja criterioso” não dá para conferir. Mais em <a href="./assistente.html#s-nunca">a linha que dá para conferir</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-desempate" aria-labelledby="h-desempate">
+  <span class="eyebrow">Dois vizinhos, uma pergunta</span>
+  <h2 id="h-desempate">Desempate errado custa mais que especialista fraco</h2>
+  <p class="intro">No balcão de atendimento, “é troca ou é defeito?” decide se o cliente vai para o caixa ou para a assistência técnica, antes de qualquer conversa. No time acontece o mesmo: <strong>dois especialistas vizinhos tocam o mesmo sintoma e dariam respostas opostas</strong>. Quem distribui as perguntas (a instrução que escolhe o especialista, ver <a href="./assistente--time.html#s-caminho">o caminho da pergunta</a>) resolve com uma pergunta só, escrita de antemão. Especialista fraco devolve resposta fraca; desempate errado manda você para o lugar errado com confiança.</p>
+  <div class="seg" role="group" aria-label="O sintoma" id="dzSeg">
+    <button type="button" data-dz="0" aria-pressed="true">“Estamos sempre atrasados”</button>
+    <button type="button" data-dz="1" aria-pressed="false">“O produto novo não sai”</button>
+    <button type="button" data-dz="2" aria-pressed="false">“Nunca sobra dinheiro”</button>
+    <button type="button" data-dz="3" aria-pressed="false">“Muita coisa para lançar”</button>
+  </div>
+  <div class="dz-box">
+    <p class="dz-pair" id="dzPair"></p>
+    <p class="dz-ask" id="dzAsk"></p>
+    <div class="dz-opts" role="group" aria-label="Sua resposta" id="dzOpts"></div>
+    <div class="verdict" id="dzVer" aria-live="polite"></div>
+  </div>
+  <p class="hint">Onde mora: uma linha por par de vizinhos, no arquivo do time ou na instrução de quem distribui. “Se o sintoma é atraso, pergunte: coisas demais ou uma coisa demorando?” Sem ela, o time escolhe pelo palpite, e escolhe calado.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-conversa" aria-labelledby="h-conversa">
+  <span class="eyebrow">Como a conversa anda</span>
+  <h2 id="h-conversa">Hipótese primeiro, entrega na terceira mensagem</h2>
+  <p class="intro">O bom consultor não chega com um questionário de vinte itens: diz o que acha que está acontecendo e pergunta se acertou. É a regra que mais muda a conversa com o time. <strong>Quem responde lê o que você já disse, arrisca uma hipótese e só pergunta o que muda a resposta.</strong> Compare com a mesma mensagem.</p>
+  <div class="seg" role="group" aria-label="Como responde">
+    <button type="button" data-cv="branco" aria-pressed="true">Pergunta em branco</button>
+    <button type="button" data-cv="hipo" aria-pressed="false">Hipótese antes</button>
+  </div>
+  <div class="cv" id="cvOut" aria-live="polite"></div>
+  <div class="three rl-grid">
+    <div class="card"><h3>Até três perguntas</h3><p>Só as que mudam a resposta. O resto ele assume e escreve que assumiu: “vou supor que você vende a prazo; se não, me corrige”.</p></div>
+    <div class="card"><h3>Duas rodadas, depois entrega</h3><p>Na terceira mensagem já existe entregável. O que faltou vai marcado como lacuna, nunca estimado em silêncio.</p></div>
+    <div class="card"><h3>Diz por que escolheu</h3><p>A resposta abre com a assinatura, o nome do especialista e a camada, e devolve o seu problema em uma frase.</p></div>
+    <div class="card"><h3>Dois, no máximo, em fila</h3><p>Três especialistas juntos viram ruído. Dois, um depois do outro, e a ordem faz parte do conselho: primeiro corta o excesso, depois enxuga o processo do que sobrou. Ao contrário, você enxuga o que ia cortar.</p></div>
+    <div class="card"><h3>Fecha o loop</h3><p>Depois da entrega volta: fez sentido, quer aprofundar, chamar outro ou está resolvido? Ao fechar, pede a frase que você leva para o seu caderno de decisões.</p></div>
+    <div class="card"><h3>Contradição tem nome</h3><p>Você disse uma coisa e depois outra? Ele mostra as duas frases e pergunta qual vale. E, quando há dois caminhos, mostra os dois e você escolhe.</p></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-caderno" aria-labelledby="h-caderno">
+  <span class="eyebrow">O caderno de progresso</span>
+  <h2 id="h-caderno">Uma seção por camada, todas à vista desde o primeiro dia</h2>
+  <p class="intro">A ficha de integração de quem entra na empresa lista todas as etapas desde o primeiro dia; as feitas ganham visto, as outras esperam em branco. O time entrega o mesmo: <strong>um caderno que cresce, com uma seção por camada</strong>. As feitas trazem a entrega daquela camada; as outras ficam em cinza, com “ainda não passamos por aqui”. Arraste e clique numa camada.</p>
+  <div class="field">
+    <label for="cdRange">Camadas concluídas</label>
+    <div class="row"><input type="range" id="cdRange" min="0" max="6" step="1" value="2"><output id="cdOutN" for="cdRange">2</output></div>
+  </div>
+  <div class="cd">
+    <div class="cd-top"><span class="eyebrow">Caderno do negócio</span><span class="cv-count" id="cdCount"></span></div>
+    <div class="cd-bar" id="cdBar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="cd-list" id="cdList"></div>
+  </div>
+  <div class="caption" id="cdCap" aria-live="polite"></div>
+  <p class="hint">O caderno é o que você leva quando fecha a conversa. E é o que mostra se o caminho está sendo pulado: quem pede a camada 6 sem ter passado pela 5 ouve um aviso, e a oferta de começar pela que falta.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-chat" aria-labelledby="h-chat">
+  <span class="eyebrow">Montar no chat</span>
+  <h2 id="h-chat">O arquivo do time no projeto, e um bilhete nas instruções</h2>
+  <p class="intro">O manual de oitenta páginas fica na estante da sala; na porta, só o bilhete “antes de responder, consulte o manual”. No chat, o projeto (um espaço com instruções e arquivos que valem para toda conversa aberta dentro dele) tem os dois lugares. <strong>O arquivo do time vai no conhecimento, a área de arquivos do projeto. Nas instruções, só o bilhete de quem distribui.</strong> O campo de instruções é feito para caber um bilhete, não um livro.</p>
+  <div class="three">
+    <div class="card focal"><span class="eyebrow">com projeto</span><h3>Arquivo no conhecimento, bilhete nas instruções</h3><p>Abra um projeto só para o time. Suba o arquivo da fase 3 e cole o bilhete abaixo. Toda conversa nova ali já começa com o time montado.</p></div>
+    <div class="card"><span class="eyebrow">sem projeto</span><h3>Cole no começo de toda conversa</h3><p>Sem essa função, cole o bilhete e o arquivo do time na primeira mensagem de cada conversa nova. É repetitivo, e o efeito é o mesmo. Guarde os dois numa pasta para copiar rápido.</p></div>
+    <div class="card"><span class="eyebrow">antes de usar</span><h3>Dez perguntas reais</h3><p>Teste com perguntas que chegaram de verdade no último mês. Se ele escolheu errado, o defeito está no arquivo do time: um “chame quando” vago, ou um desempate que falta.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O bilhete de quem distribui · vai nas instruções</span><button type="button" class="btn" data-copy="chBilhete">Copiar</button></div>
+<pre id="chBilhete">Você é quem distribui as perguntas deste time. Não responde por conta própria. O time está no arquivo do time, no conhecimento deste projeto: só existe quem está lá.
+
+1. Pergunta genérica ("quem está aqui?", "como funciona?"): responda com a tabela do time, sem parágrafo antes, e pergunte por onde eu quero começar.
+2. Escolha pelo "chame quando". Abra com [nome do especialista · camada N] e diga em uma frase por que escolheu.
+3. Dois especialistas tocam o mesmo sintoma? Faça a pergunta de desempate escrita no arquivo antes de escolher.
+4. Hipótese antes da pergunta. No máximo 3 perguntas, só as que mudam a resposta; o resto você assume e diz que assumiu. Na terceira mensagem já existe entregável, com a lacuna marcada.
+5. No máximo dois especialistas por resposta, um depois do outro, na ordem certa.
+6. Camada que depende de outra ainda não feita: avise e ofereça começar pela que falta.
+7. Depois da entrega, pergunte: fez sentido, quer aprofundar, chamar outro ou está resolvido?
+8. Nunca invente especialista, regra ou número que não esteja no arquivo. Você direciona, o especialista analisa, eu decido.</pre>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O teste das dez perguntas · numa conversa nova do projeto</span><button type="button" class="btn" data-copy="chTeste">Copiar</button></div>
+<pre id="chTeste">Vou testar a escolha do time. Para cada pergunta abaixo, não responda a pergunta: diga só qual especialista você chamaria, e por quê, em uma linha. Se duas perguntas caírem no mesmo especialista por motivos diferentes, me avise.
+
+<i>[cole aqui dez perguntas reais que você recebeu no último mês]</i></pre>
+  </div>
+  <p class="hint"><strong>Se você usa a IA numa pasta do computador:</strong> no <a href="./claude-code.html">Claude Code</a>, o mesmo time vira uma pasta com arquivos, em vez de um projeto do chat. O desenho desta página não muda: um texto por especialista, o bilhete de quem distribui e o caderno. O que muda é onde cada parte mora; procedimento que só abre quando a tarefa aparece é assunto de <a href="./assistente--skill.html">skill</a>.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Entrega, ou não entra</h3><p>Cada especialista devolve uma coisa que você leva embora. Quem só orienta é um parágrafo a mais.</p></div>
+    <div class="take-card"><h3>O desempate vale mais</h3><p>Especialista fraco devolve resposta fraca. Desempate errado manda você para o lugar errado, com confiança.</p></div>
+    <div class="take-card"><h3>Erro de escolha mora no arquivo</h3><p>Testou com dez perguntas reais e ele escolheu errado? Conserte o “chame quando”, não o bilhete.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Especialista</dt><dd>Um assistente com um pedaço do assunto e uma entrega só, escrito numa ficha dentro do arquivo do time.</dd>
+    <dt>Quem distribui</dt><dd>A instrução que lê a pergunta e escolhe qual especialista responde. Também chamada de orquestrador.</dd>
+    <dt>Camada</dt><dd>A posição do especialista no caminho, na ordem em que a fonte ensina. Uma camada pode depender da anterior.</dd>
+    <dt>Fonte primária</dt><dd>O material original. A derivada é o resumo ou a pesquisa sobre ele; o contexto é o material sobre onde ele vai ser aplicado.</dd>
+    <dt>Marca de origem</dt><dd>A etiqueta em cada bloco do que o especialista sabe: de qual parte da fonte veio, ou [completado] se a IA preencheu.</dd>
+    <dt>Pergunta de desempate</dt><dd>Uma pergunta escrita de antemão que decide entre dois especialistas que tocam o mesmo sintoma.</dd>
+    <dt>Caderno de progresso</dt><dd>O documento que cresce a cada camada concluída, com todas as seções à vista e as não feitas em cinza.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O manual de gestão, as suas seis partes, os seis especialistas, as fichas, os sintomas e as perguntas de desempate são exemplos inventados; os números das fichas (horas, dias, duas semanas) também. O nome dos recursos do chat (projeto, conhecimento, instruções) muda entre ferramentas e versões; o desenho do time não. Família <a href="./assistente.html">Assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--onde-a-regra-mora.html">onde a regra mora</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>, <a href="./assistente--conector.html">conector</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Assistente: anterior e próxima">
+  <a class="famfoot-prev" href="./assistente--conector.html"><span>← anterior</span><b>4.5 · Conector</b></a>
+  <a class="famfoot-fam" href="./assistente.html#mapa">Família 4 · Assistente · o mapa</a>
+  <a class="famfoot-next" href="./assistente.html"><span>volta ao começo ↺</span><b>Visão geral · Assistente especializado</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* o time do exemplo: seis especialistas, na ordem do manual */
+  var TEAM = [
+    { n: 'Quem entende o cliente', c: 'você não sabe dizer o que o cliente compra de verdade', d: 'o que o cliente compra e por quê, em uma página' },
+    { n: 'Quem olha o caixa', c: 'a empresa vende, mas o dinheiro não aparece', d: 'o mapa do caixa: o que entra, o que sai, o que trava' },
+    { n: 'Quem valida antes de construir', c: 'você tem uma ideia e ainda não vendeu para ninguém', d: 'o teste de duas semanas, com o critério de sim ou não' },
+    { n: 'Quem refaz a oferta', c: 'você já vendeu, mas a venda emperrou', d: 'a oferta em três linhas: para quem, o quê, por quanto' },
+    { n: 'Quem corta o excesso', c: 'tem coisa demais acontecendo e nada termina', d: 'a lista do que parar, com o tempo que cada corte libera' },
+    { n: 'Quem enxuga o processo', c: 'uma coisa só demora demais', d: 'o processo redesenhado, com as etapas que saem' }
+  ];
+
+  /* 1 · um ou time */
+  var UT = {
+    um: '<div class="mt-card"><span class="eyebrow">Um especialista · uma entrega</span><h3>Quem confere a prestação de contas do mês</h3><ul><li><b>Lê nesta ordem:</b> a planilha do mês, depois a norma de despesas.</li><li><b>Nunca:</b> concluir que a soma está certa só porque bateu com a aba de resumo. Duas contas erradas do mesmo jeito batem entre si.</li><li><b>Para e pergunta só quando:</b> um gasto não tem comprovante. No resto, segue com o padrão que a instrução declara, e diz qual usou.</li><li><b>Devolve:</b> o relatório, com o que precisa da sua decisão no topo.</li></ul><p class="hint">O pedido da vez vira uma frase: “Anexei o mês. Monta o relatório.” Um trabalho, uma entrega, uma instrução. Não precisa de time.</p></div>',
+    time: '<div class="mt-card"><span class="eyebrow">Uma proposta de time · seis entregas</span><h3>O manual de gestão, em seis especialistas</h3><div class="tablewrap"><table class="vtable"><tr><th>Camada</th><th>Especialista</th><th>Chame quando…</th><th>O que devolve</th></tr>' +
+      TEAM.map(function (t, i) { return '<tr><td>' + (i + 1) + '</td><td>' + t.n + '</td><td>' + t.c + '</td><td>' + t.d + '</td></tr>'; }).join('') +
+      '</table></div><p class="hint">O manual tem seis partes, e cada uma ensina uma coisa e pede uma entrega diferente. Isso é um time, não um especialista com seis assuntos.</p></div>'
+  };
+  var utBtns = document.querySelectorAll('[data-ut]'), utOut = document.getElementById('utOut');
+  function setUt(k) { pressGroup(utBtns, function (x) { return x.dataset.ut === k; }); utOut.innerHTML = UT[k]; }
+  utBtns.forEach(function (b) { b.addEventListener('click', function () { setUt(b.dataset.ut); }); });
+  setUt('um');
+
+  /* 2 · as fases */
+  var PH = [
+    { t: 'Antes de tudo: o inventário', d: 'Ela lê cada arquivo inteiro e devolve só uma tabela: o que é cada um. <b>Primária</b> é o material original; <b>derivada</b>, o resumo ou a pesquisa sobre ele; <b>contexto</b>, o material sobre onde vai ser aplicado. A primária manda; o que a IA completar vai marcado <code>[completado]</code>. Pare aqui e confira: se o inventário diz que um capítulo se perdeu na conversão, você descobre agora, e não depois de um especialista inventado em cima do buraco.' },
+    { t: 'Fase 1: a proposta do time', d: 'Uma tabela com de 5 a 8 especialistas: camada, nome de função, chame quando, o que devolve e de onde vem na fonte. Embaixo, o que ficou de fora e quem depende de quem. <b>É a parada mais barata do caminho:</b> juntar, separar ou cortar um especialista aqui custa uma frase.' },
+    { t: 'Fase 2: um especialista por vez', d: 'Uma ficha por mensagem, na ordem das camadas, e ela para depois de cada uma. Duas fichas na mesma mensagem dividem a atenção e saem mais rasas. É aqui que você corrige o “o que NÃO faz” antes que dois vizinhos se sobreponham.' },
+    { t: 'Fase 3: um arquivo só', d: 'O nome do time, a tabela da fase 1 e as fichas na ordem, separadas por uma linha. Esse arquivo é o time inteiro: é ele que vai para o projeto, e é nele que se mexe quando o time escolhe errado. Como montar está em <a href="#s-chat">montar no chat</a>.' }
+  ];
+  var phBoxes = document.querySelectorAll('.ph-box'), phStops = document.querySelectorAll('.ph-stop');
+  stepper(PH.length, document.getElementById('phPrev'), document.getElementById('phNext'), document.getElementById('phLab'), 'Passo', function (k) {
+    phBoxes.forEach(function (g) { var i = +g.dataset.ph; g.classList.toggle('on', i === k); g.classList.toggle('done', i < k); });
+    phStops.forEach(function (g) { g.classList.toggle('on', +g.dataset.st === k); });
+    var p = PH[k - 1];
+    document.getElementById('phCap').innerHTML = '<h3>' + p.t + '</h3><p>' + p.d + '</p>';
+  });
+
+  /* 3 · isto é um especialista? */
+  quiz(document.getElementById('enQuiz'), document.getElementById('enScore'), [
+    { s: 'Quem monta a escala do mês: devolve a tabela de turnos com quem cobre cada folga.', a: 'entra', why: 'Fronteira clara e uma entrega que você leva embora: a tabela.' },
+    { s: 'Quem apoia a liderança nos desafios do dia a dia.', a: 'orienta', why: 'Qual é a entrega? Não dá para dizer. Vira conversa simpática, sem nada para levar.' },
+    { s: 'Num time que já tem quem olha o caixa: quem cuida do dinheiro da empresa.', a: 'sobre', why: 'As duas linhas respondem à mesma pergunta. Junte os dois, ou redesenhe a fronteira.' },
+    { s: 'Quem revisa o contrato com fornecedor: devolve a lista das cláusulas que mudam o risco, com o número de cada uma.', a: 'entra', why: 'Entrega concreta, e até conferível: o número da cláusula só existe no contrato.' },
+    { s: 'Quem traz reflexões sobre cultura e propósito.', a: 'orienta', why: 'Reflexão não é entregável. Se a fonte tem uma parte sobre cultura, pergunte o que ela manda produzir.' },
+    { s: 'Num time que já tem quem corta o excesso: quem ajuda a priorizar as iniciativas.', a: 'sobre', why: 'Priorizar e cortar o excesso são a mesma pergunta vista de dois lados. Dois especialistas aqui brigam pela vez.' }
+  ], [['entra', 'Entra no time'], ['orienta', 'Só orienta'], ['sobre', 'Sobreposto a outro']], 'o critério que decide quase sempre é a entrega.');
+
+  /* 4 · a ficha */
+  var FI = [
+    { ch: 'você não sabe dizer o que o cliente compra de verdade\nas vendas caíram e ninguém sabe por quê\nvocê vai lançar algo e quer saber para quem', sa: '[fonte, parte 1] O cliente compra o problema resolvido, não o produto.\n[completado] Exemplo de uma distribuidora que vendia prazo de entrega, e não preço.', de: 'uma página: o que o cliente compra, por que compra e o que o faria trocar de fornecedor', na: 'Não mexe em preço nem na oferta: isso é de quem refaz a oferta.\nNão olha o caixa: isso é de quem olha o caixa.', df: 'descreve o produto em vez da compra', rg: 'cada motivo de compra vem com a frase de um cliente, ou marcado [completado]' },
+    { ch: 'a empresa vende, mas o dinheiro não aparece\nvocê cresce e o caixa piora\nvocê vai dar mais prazo a um cliente grande', sa: '[fonte, parte 2] O lucro aparece no dia da venda; o dinheiro, no dia em que o cliente paga.\n[derivada: resumo] Prazo médio de recebimento, explicado com outras palavras.', de: 'o mapa do caixa: o que entra, o que sai, o que trava, e o que você pode mudar', na: 'Não decide o que cortar: isso é de quem corta o excesso.\nNão faz projeção mês a mês: a fonte não cobre.', df: 'confunde lucro com dinheiro no banco', rg: 'todo valor citado vem com a data em que entra ou sai' },
+    { ch: 'você tem uma ideia e ainda não vendeu para ninguém\nalguém quer construir antes de testar\nvocê ouve "todo mundo vai querer"', sa: '[fonte, parte 3] Vender antes de construir: a pré-venda é o teste.\n[completado] Exemplo de uma lista de espera com sinal pago.', de: 'o teste de duas semanas, com o critério de sim ou não escrito antes de começar', na: 'Não reescreve oferta que já vende: isso é de quem refaz a oferta.\nNão decide o que parar: isso é de quem corta o excesso.', df: 'aprova a ideia porque ela é boa', rg: 'sempre que disser "público pequeno", escreve o número' },
+    { ch: 'você já vendeu, mas a venda emperrou\no cliente elogia e não fecha\nvocê está pensando em baixar o preço', sa: '[fonte, parte 4] Quem compra precisa se reconhecer na primeira linha da oferta.\n[fonte, parte 4] Baixar o preço é o último ajuste, não o primeiro.', de: 'a oferta reescrita em três linhas: para quem, o quê, por quanto', na: 'Não testa ideia nova: isso é de quem valida antes de construir.\nNão mexe na entrega: isso é de quem enxuga o processo.', df: 'mexe só no preço', rg: 'toda oferta reescrita tem as três linhas, e o preço vem por último' },
+    { ch: 'tem coisa demais acontecendo e nada termina\ntodo projeto é prioridade\na equipe está atrasada em tudo ao mesmo tempo', sa: '[fonte, parte 5] Parar uma coisa é o que libera tempo para as outras andarem.\n[completado] Exemplo de uma equipe com doze frentes abertas.', de: 'a lista do que parar, com as horas por semana que cada corte libera', na: 'Eu corto projeto, não corto gente.\nNão melhora o processo do que sobrou: isso é de quem enxuga o processo.', df: 'corta o que é fácil, não o que pesa', rg: 'cada corte vem com as horas por semana que ele libera' },
+    { ch: 'uma coisa só demora demais\no pedido fica parado esperando alguém\nvocê confere a mesma coisa duas vezes', sa: '[fonte, parte 6] O tempo se perde na espera entre as etapas, não dentro delas.\n[derivada: pesquisa] Os tipos de desperdício, com outros nomes.', de: 'o processo redesenhado, com as etapas que saem e o tempo que cada uma custava', na: 'Eu enxugo etapa, não enxugo gente.\nNão decide se o projeto deve existir: isso é de quem corta o excesso.', df: 'redesenha o processo inteiro quando só uma etapa trava', rg: 'aponta a etapa que mais espera, com o tempo de espera, antes de propor qualquer mudança' }
+  ];
+  var fiBtns = document.querySelectorAll('[data-fi]'), fiCur = 1;
+  var fiCh = document.getElementById('fiChame'), fiSa = document.getElementById('fiSabe'), fiDe = document.getElementById('fiDevolve'), fiNa = document.getElementById('fiNao'), fiDf = document.getElementById('fiDefeito'), fiRg = document.getElementById('fiRegra');
+  function lines(t) { return t.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l; }); }
+  function fiRender() {
+    var t = TEAM[fiCur];
+    var out = '<b># ' + esc(t.n) + '</b>\nCamada ' + (fiCur + 1) + ' de 6 · devolve ' + esc(fiDe.value.trim() || '[a entrega]') + '\n\n' +
+      '<b>## Chame quando</b>\n' + (lines(fiCh.value).map(function (l) { return '- ' + esc(l); }).join('\n') || '<i>[uma situação por linha]</i>') + '\n\n' +
+      '<b>## Como conversa</b>\n- Abre com uma hipótese sobre a sua situação e pergunta se acertou.\n- No máximo 3 perguntas, só as que mudam a resposta. O resto assume e diz que assumiu.\n- Na terceira mensagem já entrega, com a lacuna marcada.\n\n' +
+      '<b>## O que sabe</b>\n' + (lines(fiSa.value).map(esc).join('\n') || '<i>[cada bloco com a marca de origem]</i>') + '\n\n' +
+      '<b>## O que devolve</b>\n' + esc(fiDe.value.trim() || '[a entrega]') + '\n\n' +
+      '<b>## O que NÃO faz</b>\n' + (lines(fiNa.value).map(function (l) { return '- ' + esc(l); }).join('\n') || '<i>[e qual vizinho faz]</i>') + '\n\n' +
+      '<b>## Defeito previsto</b>\n' + esc(fiDf.value.trim() || '[como ele costuma errar]') + '\nRegra dura: ' + esc(fiRg.value.trim() || '[uma frase que dá para conferir]');
+    document.getElementById('fiOut').innerHTML = out;
+  }
+  function fiLoad(k) {
+    fiCur = k; var f = FI[k];
+    pressGroup(fiBtns, function (x) { return +x.dataset.fi === k; });
+    fiCh.value = f.ch; fiSa.value = f.sa; fiDe.value = f.de; fiNa.value = f.na; fiDf.value = f.df; fiRg.value = f.rg;
+    fiRender();
+  }
+  fiBtns.forEach(function (b) { b.addEventListener('click', function () { fiLoad(+b.dataset.fi); }); });
+  [fiCh, fiSa, fiDe, fiNa, fiDf, fiRg].forEach(function (i) { i.addEventListener('input', fiRender); });
+  fiLoad(1);
+
+  /* 5 · desempate */
+  var DZ = [
+    { a: 4, b: 5, q: 'O problema é que vocês fazem coisas demais, ou uma coisa só demora demais?', ra: 'Coisas demais', rb: 'Uma coisa demora',
+      wa: 'Ele devolve a lista do que parar, com as horas que cada corte libera.', xa: 'Se fosse para quem enxuga o processo, você sairia com doze frentes, cada uma com um processo mais enxuto. Continuaria atrasado.',
+      wb: 'Ele aponta a etapa que mais espera e redesenha o processo sem ela.', xb: 'Se fosse para quem corta o excesso, ele mandaria parar coisas que não eram o problema. A etapa lenta continuaria lá.' },
+    { a: 2, b: 3, q: 'Você já vendeu isso para alguém?', ra: 'Nunca vendi', rb: 'Já vendi, e emperrou',
+      wa: 'Ele devolve o teste de duas semanas, com o critério de sim ou não escrito antes.', xa: 'Se fosse para quem refaz a oferta, você poliria a oferta de uma coisa que ninguém provou que quer.',
+      wb: 'Ele reescreve a oferta em três linhas: para quem, o quê, por quanto.', xb: 'Se fosse para quem valida antes de construir, você testaria do zero algo que já tem cliente, e perderia semanas.' },
+    { a: 0, b: 1, q: 'As vendas caíram, ou estão iguais e o dinheiro não aparece?', ra: 'As vendas caíram', rb: 'Iguais, e o dinheiro some',
+      wa: 'Ele volta ao que o cliente compra de verdade, e por que deixou de comprar.', xa: 'Se fosse para quem olha o caixa, você arrumaria os prazos de uma venda que está encolhendo.',
+      wb: 'Ele monta o mapa do caixa: o que entra, quando entra, e o que trava no caminho.', xb: 'Se fosse para quem entende o cliente, você reescreveria o motivo de compra, quando o problema é o prazo de recebimento.' },
+    { a: 2, b: 4, q: 'Isso já está rodando, ou ainda é ideia?', ra: 'Ainda é ideia', rb: 'Já está rodando',
+      wa: 'Ele separa o que merece teste do que nem precisa começar, e escreve o critério antes.', xa: 'Se fosse para quem corta o excesso, ele cortaria ideias sem nenhum dado, pelo palpite.',
+      wb: 'Ele lista o que parar entre o que já roda, com o tempo que cada corte libera.', xb: 'Se fosse para quem valida antes de construir, você montaria testes para coisas que já consomem a semana da equipe.' }
+  ];
+  var dzBtns = document.querySelectorAll('[data-dz]'), dzOpts = document.getElementById('dzOpts'), dzVer = document.getElementById('dzVer'), dzCur = 0;
+  function dzAnswer(side) {
+    var z = DZ[dzCur], who = TEAM[side === 'a' ? z.a : z.b].n;
+    pressGroup(dzOpts.querySelectorAll('button'), function (x) { return x.dataset.side === side; });
+    dzVer.className = 'verdict ok';
+    dzVer.innerHTML = '<b>Vai para ' + who.charAt(0).toLowerCase() + who.slice(1) + '.</b> ' + z['w' + side] + '<br><span class="hint">' + z['x' + side] + '</span>';
+  }
+  function dzLoad(k) {
+    dzCur = k; var z = DZ[k];
+    pressGroup(dzBtns, function (x) { return +x.dataset.dz === k; });
+    document.getElementById('dzPair').innerHTML = 'Os dois vizinhos que tocam este sintoma: <b>' + TEAM[z.a].n + '</b> <b>' + TEAM[z.b].n + '</b>';
+    document.getElementById('dzAsk').textContent = '“' + z.q + '”';
+    dzOpts.innerHTML = '<button type="button" data-side="a" aria-pressed="false">' + z.ra + '</button><button type="button" data-side="b" aria-pressed="false">' + z.rb + '</button>';
+    dzOpts.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { dzAnswer(b.dataset.side); }); });
+    dzVer.className = 'verdict no';
+    dzVer.innerHTML = '<b>Ainda sem escolha.</b> Sem a pergunta, o time escolheria pelo palpite, e você não ficaria sabendo. Responda como se fosse você.';
+  }
+  dzBtns.forEach(function (b) { b.addEventListener('click', function () { dzLoad(+b.dataset.dz); }); });
+  dzLoad(0);
+
+  /* 6 · a conversa */
+  var USER = '<div class="cv-msg user"><span class="eyebrow">Você</span><p>Vendemos bem o ano todo, mas no fim do mês nunca sobra dinheiro.</p></div>';
+  var CV = {
+    branco: USER + '<div class="cv-msg ai bad"><span class="eyebrow">O time responde</span><p>Para eu te ajudar melhor, preciso entender o seu negócio:</p><ol><li>Qual é o seu setor?</li><li>Quantas pessoas trabalham aí?</li><li>Qual é o faturamento mensal?</li><li>Quais são os seus principais custos?</li><li>Como você vende?</li><li>Já tentou alguma coisa?</li></ol><p class="hint">Seis perguntas, e metade não muda nada na resposta. Você digita por dez minutos e ainda não sabe com quem está falando.</p></div><p class="cv-count">Rodada 1 · nenhuma hipótese · nenhum especialista escolhido</p>',
+    hipo: USER + '<div class="cv-msg ai good"><span class="cv-sig">[Quem olha o caixa · camada 2]</span><p>Você vende bem e o dinheiro não aparece: o problema provavelmente não está na venda, e sim no tempo entre vender e receber. Parece que o prazo que você dá ao cliente é maior que o prazo que o fornecedor dá a você. É isso?</p><p>Duas perguntas que mudam a resposta:</p><ol><li>Em quantos dias, em média, o cliente paga?</li><li>Em quantos dias você paga o fornecedor?</li></ol><p>Vou supor que você vende a prazo; se for à vista, me corrige.</p><p class="hint">Uma hipótese, duas perguntas, uma suposição declarada e a assinatura de quem fala. Na próxima rodada, já sai o mapa do caixa.</p></div><p class="cv-count">Rodada 1 de 2 · a entrega sai até a terceira mensagem</p>'
+  };
+  var cvBtns = document.querySelectorAll('[data-cv]'), cvOut = document.getElementById('cvOut');
+  function setCv(k) { pressGroup(cvBtns, function (x) { return x.dataset.cv === k; }); cvOut.innerHTML = CV[k]; }
+  cvBtns.forEach(function (b) { b.addEventListener('click', function () { setCv(b.dataset.cv); }); });
+  setCv('branco');
+
+  /* 7 · o caderno */
+  var DEP = [[], [], [1], [1], [], [5]];
+  var cdRange = document.getElementById('cdRange'), cdList = document.getElementById('cdList'), cdCap = document.getElementById('cdCap'), cdSel = -1;
+  function cdDone() { return +cdRange.value; }
+  function cdCaption() {
+    var n = cdDone();
+    if (cdSel < 0) { cdCap.innerHTML = '<h3>' + (n === 6 ? 'O caminho inteiro' : 'Próxima: camada ' + (n + 1)) + '</h3><p>' + (n === 6 ? 'As seis camadas feitas. É aqui que o caderno fecha com o plano dos próximos meses, e é ele que você leva.' : 'Clique numa camada para ver o que ela guarda, ou o que acontece se você pedir por ela agora.') + '</p>'; return; }
+    var i = cdSel, t = TEAM[i];
+    if (i < n) { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · feita</h3><p>Aqui está, na íntegra, a entrega de ' + t.n.charAt(0).toLowerCase() + t.n.slice(1) + ': ' + t.d + '.</p>'; return; }
+    var miss = DEP[i].filter(function (d) { return d > n; });
+    if (miss.length) { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · depende da ' + miss.join(' e da ') + '</h3><p>Quem distribui avisa em uma linha que ela depende de uma camada ainda não feita, e oferece duas opções: começar pela que falta, ou seguir com o que você tem e marcar as lacunas.</p>'; }
+    else { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · pode começar</h3><p>Nada antes dela está faltando. ' + t.n + ' abre com uma hipótese, e a seção sai do cinza quando a entrega estiver pronta.</p>'; }
+  }
+  function cdRender() {
+    var n = cdDone();
+    document.getElementById('cdOutN').textContent = n;
+    document.getElementById('cdCount').textContent = 'camada ' + n + ' de 6';
+    document.querySelectorAll('#cdBar span').forEach(function (s, i) { s.classList.toggle('on', i < n); });
+    cdList.innerHTML = TEAM.map(function (t, i) {
+      var done = i < n;
+      return '<button type="button" data-cd="' + i + '" class="' + (done ? 'done' : 'todo') + '" aria-pressed="' + (i === cdSel) + '"><span class="n">' + (done ? '✓ ' : '') + (i + 1) + '</span><b>' + t.n + '</b><small>' + (done ? t.d : 'ainda não passamos por aqui') + '</small></button>';
+    }).join('');
+    cdList.querySelectorAll('[data-cd]').forEach(function (b) { b.addEventListener('click', function () { cdSel = +b.dataset.cd; cdRender(); }); });
+    cdCaption();
+  }
+  cdRange.addEventListener('input', function () { cdSel = -1; cdRender(); });
+  cdRender();
+})();
+</script>
+</body>
+</html>

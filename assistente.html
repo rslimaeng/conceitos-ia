@@ -256,6 +256,8 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .as-sub-intro { max-width: 64ch; color: var(--text-muted); }
 .as-more .card { min-width: 0; }
 .as-more .copy pre { font-size: .82rem; }
+/* reforço: um assistente ou um time */
+.as-pick .card { min-width: 0; }
 
 @media (max-width: 860px) {
   .as-parts, .as-build, .as-calc { grid-template-columns: 1fr; }
@@ -308,7 +310,7 @@ h1, h2, h3 { text-wrap: pretty; }
 <header class="hero">
   <nav class="famhead" aria-label="Família Assistente">
     <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./assistente.html">Família 4 · Assistente</a></span><span class="famhead-pn"><a href="./assistente--resposta-ancorada.html">4.1 Resposta ancorada →</a></span></div>
-    <div class="famhead-chips"><a href="./assistente.html" aria-current="page">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a><a href="./assistente--conector.html"><b>4.5</b>Conector</a></div>
+    <div class="famhead-chips"><a href="./assistente.html" aria-current="page">Visão geral</a><a href="./assistente--resposta-ancorada.html"><b>4.1</b>Resposta ancorada</a><a href="./assistente--onde-a-regra-mora.html"><b>4.2</b>Onde a regra mora</a><a href="./assistente--skill.html"><b>4.3</b>Skill</a><a href="./assistente--time.html"><b>4.4</b>Time de assistentes</a><a href="./assistente--conector.html"><b>4.5</b>Conector</a><a href="./assistente--montar-time.html"><b>4.6</b>Montar um time</a></div>
   </nav>
   <span class="eyebrow">Visão geral</span>
   <h1>Assistente especializado</h1>
@@ -322,14 +324,15 @@ h1, h2, h3 { text-wrap: pretty; }
 <!-- mapa -->
 <section class="sec" id="mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">Cinco partes do assistente, cada uma com página própria</h2>
-  <p class="intro">Esta página é a visão geral: o que um assistente é, e quando vale montar um. <strong>As cinco páginas abaixo abrem cada parte dele</strong>: de onde vem a resposta, onde cada regra fica guardada, o procedimento que só abre quando precisa, o que fazer quando um assistente só não basta, e a ligação com os outros sistemas.</p>
+  <h2 id="h-mapa">Cinco partes do assistente, e como se monta um time</h2>
+  <p class="intro">Esta página é a visão geral: o que um assistente é, e quando vale montar um. <strong>As cinco primeiras páginas abaixo abrem cada parte dele</strong>: de onde vem a resposta, onde cada regra fica guardada, o procedimento que só abre quando precisa, o que fazer quando um assistente só não basta, e a ligação com os outros sistemas. <strong>A sexta mostra como se monta um time de especialistas</strong>, quando um assistente vira vários.</p>
   <div class="fmap c3">
-    <div class="fmap-card"><span class="fmap-n">4.1 · Resposta ancorada · 1 de 5</span><h3>Resposta ancorada nos seus documentos</h3><p>Ancorar é trocar “parece certo” por “está aqui, neste trecho”, e fazer ela escrever “não consta” quando o trecho não existe.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a citação</li><li>quando não tem</li><li>leu ou deduziu</li></ul><a class="fmap-go" href="./assistente--resposta-ancorada.html">abrir 4.1 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">4.2 · Onde a regra mora · 2 de 5</span><h3>Onde a regra mora</h3><p>Cada coisa que a IA precisa saber tem um lugar, e o lugar decide quando ela lê: sempre, às vezes, ou só quando busca.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro acessos</li><li>o mapa</li><li>regra, fato e lembrança</li></ul><a class="fmap-go" href="./assistente--onde-a-regra-mora.html">abrir 4.2 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">4.3 · Skill · 3 de 5</span><h3>Skill</h3><p>Um procedimento guardado e fechado, que ela só abre quando a tarefa bate com a etiqueta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>quando ela abre</li><li>a etiqueta</li><li>como nasce</li></ul><a class="fmap-go" href="./assistente--skill.html">abrir 4.3 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">4.4 · Time de assistentes · 4 de 5</span><h3>Time de assistentes</h3><p>Quando a pergunta cruza várias áreas, um assistente só devolve o meio-termo. Um time dá a cada olhar o seu escopo.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os papéis</li><li>o caminho da pergunta</li><li>vale montar?</li></ul><a class="fmap-go" href="./assistente--time.html">abrir 4.4 →</a></div>
-    <div class="fmap-card"><span class="fmap-n">4.5 · Conector · 5 de 5</span><h3>Conector</h3><p>A ligação da IA com outro sistema: em vez de você colar, ela busca lá. Vê só o que você vê, e ler não é o mesmo que enviar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>ela vê o que a sua conta vê</li><li>ler não é o mesmo que enviar</li><li>o cano e a receita</li></ul><a class="fmap-go" href="./assistente--conector.html">abrir 4.5 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.1 · Resposta ancorada · 1 de 6</span><h3>Resposta ancorada nos seus documentos</h3><p>Ancorar é trocar “parece certo” por “está aqui, neste trecho”, e fazer ela escrever “não consta” quando o trecho não existe.</p><span class="fmap-lab">Lá você encontra</span><ul><li>a citação</li><li>quando não tem</li><li>leu ou deduziu</li></ul><a class="fmap-go" href="./assistente--resposta-ancorada.html">abrir 4.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.2 · Onde a regra mora · 2 de 6</span><h3>Onde a regra mora</h3><p>Cada coisa que a IA precisa saber tem um lugar, e o lugar decide quando ela lê: sempre, às vezes, ou só quando busca.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os quatro acessos</li><li>o mapa</li><li>regra, fato e lembrança</li></ul><a class="fmap-go" href="./assistente--onde-a-regra-mora.html">abrir 4.2 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.3 · Skill · 3 de 6</span><h3>Skill</h3><p>Um procedimento guardado e fechado, que ela só abre quando a tarefa bate com a etiqueta.</p><span class="fmap-lab">Lá você encontra</span><ul><li>quando ela abre</li><li>a etiqueta</li><li>como nasce</li></ul><a class="fmap-go" href="./assistente--skill.html">abrir 4.3 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.4 · Time de assistentes · 4 de 6</span><h3>Time de assistentes</h3><p>Quando a pergunta cruza várias áreas, um assistente só devolve o meio-termo. Um time dá a cada olhar o seu escopo.</p><span class="fmap-lab">Lá você encontra</span><ul><li>os papéis</li><li>o caminho da pergunta</li><li>vale montar?</li></ul><a class="fmap-go" href="./assistente--time.html">abrir 4.4 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.5 · Conector · 5 de 6</span><h3>Conector</h3><p>A ligação da IA com outro sistema: em vez de você colar, ela busca lá. Vê só o que você vê, e ler não é o mesmo que enviar.</p><span class="fmap-lab">Lá você encontra</span><ul><li>ela vê o que a sua conta vê</li><li>ler não é o mesmo que enviar</li><li>o cano e a receita</li></ul><a class="fmap-go" href="./assistente--conector.html">abrir 4.5 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">4.6 · Montar um time · 6 de 6</span><h3>Montar um time de especialistas</h3><p>Um time nasce de uma fonte, em três paradas para aprovar. Cada especialista entrega uma coisa só, e o desempate entre vizinhos vale mais que qualquer um deles.</p><span class="fmap-lab">Lá você encontra</span><ul><li>quem entra no time</li><li>a ficha de cada especialista</li><li>dois vizinhos, uma pergunta</li></ul><a class="fmap-go" href="./assistente--montar-time.html">abrir 4.6 →</a></div>
   </div>
 </section>
 <!-- /mapa -->
@@ -346,6 +349,12 @@ h1, h2, h3 { text-wrap: pretty; }
   </div>
   <ol class="as-lines off" id="asLines" aria-live="polite"></ol>
   <p class="punch">Nenhuma linha do assistente montado é a IA ficando mais esperta. <em>As cinco são coisas que alguém escreveu.</em></p>
+  <h3 class="as-sub">Um assistente ou um time?</h3>
+  <div class="two as-pick">
+    <div class="card"><h3>Um especialista, uma entrega</h3><p>Uma tarefa que se repete, com um papel e um resultado. <strong>Como o analista que confere o fechamento do mês:</strong> lê as planilhas, confere a soma e devolve sempre o mesmo relatório. É o que esta página ensina a montar.</p></div>
+    <div class="card"><h3>Vários especialistas, alguém que distribui</h3><p>Cada especialista responde por um pedaço do assunto, e alguém lê a pergunta e passa para o certo. <a href="./assistente--time.html">O que é e quando vale</a> · <a href="./assistente--montar-time.html">como se monta</a>.</p></div>
+  </div>
+  <p class="hint">Se o pedido volta toda vez pedindo o mesmo tipo de entrega, é um assistente. Se cada pergunta pede um olhar diferente, e esses olhares discordam entre si, é um time.</p>
 </section>
 
 <!-- 2 -->
@@ -435,6 +444,7 @@ h1, h2, h3 { text-wrap: pretty; }
     <button type="button" data-adj="3" aria-pressed="false">“Cite as fontes”</button>
     <button type="button" data-adj="4" aria-pressed="false">“Priorize o que for mais importante”</button>
     <button type="button" data-adj="5" aria-pressed="false">“Não decida por mim”</button>
+    <button type="button" data-adj="6" aria-pressed="false">“Qualquer dúvida, me pergunte”</button>
   </div>
   <div class="panel" id="adjPanel" aria-live="polite"></div>
 </section>
@@ -457,6 +467,12 @@ h1, h2, h3 { text-wrap: pretty; }
     </div>
     <div class="card"><h3>Um colega usa por 10 minutos</h3><p>Alguém que não montou o assistente usa por dez minutos, com perguntas dele. <strong>Você só observa e anota:</strong> as dúvidas que ele teve e cada resposta que ele não usaria. Cada anotação vira um ajuste na instrução, pelo mesmo ciclo da seção abaixo.</p></div>
   </div>
+  <h3 class="as-sub">E em toda entrega: três linhas de conferência antes do número</h3>
+  <p class="as-sub-intro">Os seis testes desta seção você faz uma vez. Este fica na instrução e roda em toda resposta: antes de qualquer total, ele mostra como chegou lá. <strong>A terceira linha é a que pega o erro escondido: duas contas erradas do mesmo jeito batem entre si.</strong></p>
+  <div class="copy"><div class="copy-head"><span class="eyebrow">Para colar na instrução</span><button type="button" class="btn" data-copy="asConf">Copiar</button></div><pre id="asConf">Antes de gerar qualquer número, abra a resposta com três linhas:
+1. Quantos itens você leu, e quantos ficaram de fora (e por quê).
+2. O que você agrupou ou ajustou, e onde.
+3. Se o total bateu com a conferência, e o que isso prova. Bater não prova que está certo: duas contas erradas do mesmo jeito batem entre si.</pre></div>
 </section>
 
 <!-- 7 -->
@@ -521,6 +537,7 @@ h1, h2, h3 { text-wrap: pretty; }
     <a href="./assistente--skill.html"><span>4.3 · o procedimento</span><b>Skill</b><small>o passo a passo que a IA só abre quando a tarefa aparece</small></a>
     <a href="./assistente--time.html"><span>4.4 · o próximo degrau</span><b>Time de assistentes</b><small>quando a pergunta cruza áreas e um assistente só devolve o meio-termo</small></a>
     <a href="./assistente--conector.html"><span>4.5 · a ligação</span><b>Conector</b><small>a ligação com o e-mail, a agenda, a pasta: ela vê só o que você vê</small></a>
+    <a href="./assistente--montar-time.html"><span>4.6 · o passo seguinte</span><b>Montar um time de especialistas</b><small>quando um vira vários: a ficha de cada especialista, o desempate e quem distribui</small></a>
   </div>
   <p class="hint">Antes de montar: o pedido bem escrito continua sendo a base (<a href="./prompt.html">prompt</a>), e o assistente é o primeiro degrau da escada de <a href="./ai-first.html">AI First</a> (pôr a IA no desenho do trabalho desde o começo, não só no fim).</p>
 </section>
@@ -685,7 +702,8 @@ h1, h2, h3 { text-wrap: pretty; }
     ['Nunca estimar valor em branco: escrever que está em branco e seguir.', 'O cuidado vira uma ação que aparece ou não aparece na tela.'],
     ['Ao citar uma regra, escrever o nome do arquivo e da seção. Nunca “conforme a política”.', 'A fonte genérica some, e a conferência passa a ser um clique.'],
     ['Quando prazo e preço puxarem para lados opostos, seguir esta ordem: primeiro o prazo que o cliente pediu, depois a margem mínima.', '“Mais importante” muda com quem lê. Uma ordem escrita desempata do mesmo jeito toda vez, e você confere a resposta contra ela. A sua ordem é a do seu trabalho.'],
-    ['Não assinar decisão por quem responde por ela: sugerir, e marcar cada decisão como “a validar”.', 'Você abre a resposta e procura a marca. Decisão sem “a validar” é a linha que falhou. Quem assina continua sendo quem tem a responsabilidade.']
+    ['Não assinar decisão por quem responde por ela: sugerir, e marcar cada decisão como “a validar”.', 'Você abre a resposta e procura a marca. Decisão sem “a validar” é a linha que falhou. Quem assina continua sendo quem tem a responsabilidade.'],
+    ['Pare e me pergunte antes de seguir só quando: faltar o arquivo do mês; dois totais divergirem e você não achar a causa; um ajuste mudar o resultado final. No resto, siga os padrões escritos e diga qual usou.', '“Qualquer dúvida” faz ele parar a cada passo. Uma lista curta diz exatamente quando parar, e o resto vira padrão declarado “para você não parar”, como “registro repetido conta uma vez, e você diz qual foi”. A conferência existe para você ver a conta antes do resultado, não para virar pedágio.']
   ];
   var adjBtns = document.querySelectorAll('[data-adj]'), adjPanel = document.getElementById('adjPanel');
   function showAdj(i) { pressGroup(adjBtns, function (x) { return +x.dataset.adj === i; }); adjPanel.innerHTML = '<span class="eyebrow">A mesma intenção, escrita como comportamento</span><h3>' + ADJ[i][0] + '</h3><p class="hint">' + ADJ[i][1] + '</p>'; }
