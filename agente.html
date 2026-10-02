@@ -272,6 +272,19 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -286,7 +299,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <header class="hero">
   <nav class="famhead" aria-label="Família Agente">
     <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente--anatomia.html">6.1 Anatomia →</a></span></div>
-    <div class="famhead-chips"><a href="./agente.html" aria-current="page">Visão geral</a><a href="./agente--anatomia.html"><b>6.1</b>Anatomia</a></div>
+    <div class="famhead-chips"><a href="./agente.html" aria-current="page">Visão geral</a><a href="./agente--anatomia.html"><b>6.1</b>Anatomia</a><a href="./agente--autonomia.html"><b>6.2</b>Quanto faz sozinha</a></div>
   </nav>
   <span class="eyebrow">Visão geral</span>
   <h1>Agente</h1>
@@ -300,10 +313,11 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <!-- mapa -->
 <section class="sec" id="mapa" aria-labelledby="h-mapa">
   <span class="eyebrow">O mapa da família</span>
-  <h2 id="h-mapa">O agente por dentro, numa página própria</h2>
-  <p class="intro">Esta página é a visão geral: o que muda quando o modelo ganha ferramentas, memória e um objetivo, e quando isso vale a pena. <strong>A página abaixo abre o agente em quatro peças</strong>, para achar em qual delas ele falha.</p>
-  <div class="fmap c1">
-    <div class="fmap-card"><span class="fmap-n">6.1 · Anatomia · 1 de 1</span><h3>Anatomia do agente</h3><p>Quatro peças: o modelo, a instrução, a memória e as ferramentas. Todo agente que falha, falha em uma delas.</p><span class="fmap-lab">Lá você encontra</span><ul><li>onde está o defeito</li><li>a memória</li><li>as ferramentas</li></ul><a class="fmap-go" href="./agente--anatomia.html">abrir 6.1 →</a></div>
+  <h2 id="h-mapa">O agente por dentro, e quanto soltar</h2>
+  <p class="intro">Esta página é a visão geral: o que muda quando o modelo ganha ferramentas, memória e um objetivo, e quando isso vale a pena. <strong>A primeira página abaixo abre o agente em quatro peças</strong>, para achar em qual delas ele falha. <strong>A segunda decide, tarefa por tarefa, quanto ele faz sozinho.</strong></p>
+  <div class="fmap c2">
+    <div class="fmap-card"><span class="fmap-n">6.1 · Anatomia · 1 de 2</span><h3>Anatomia do agente</h3><p>Quatro peças: o modelo, a instrução, a memória e as ferramentas. Todo agente que falha, falha em uma delas.</p><span class="fmap-lab">Lá você encontra</span><ul><li>onde está o defeito</li><li>a memória</li><li>as ferramentas</li></ul><a class="fmap-go" href="./agente--anatomia.html">abrir 6.1 →</a></div>
+    <div class="fmap-card"><span class="fmap-n">6.2 · Quanto faz sozinha · 2 de 2</span><h3>Quanto a IA faz sozinha</h3><p>Quanto soltar depende do custo do erro e de quantas vezes ela já acertou com você olhando. O último passo que não volta fica com você.</p><span class="fmap-lab">Lá você encontra</span><ul><li>custo do erro × confiança</li><li>cinco brechas num pedido agendado</li><li>as perguntas antes de soltar</li></ul><a class="fmap-go" href="./agente--autonomia.html">abrir 6.2 →</a></div>
   </div>
 </section>
 <!-- /mapa -->

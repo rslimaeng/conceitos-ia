@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="agente--autonomia">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quanto a IA faz sozinha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 6.2. Peças: régua custo do erro × confiança com grade e tarefas de exemplo, ache as cinco brechas numa tarefa agendada com a versão corrigida para copiar, a menor pasta que resolve em cinco níveis, o mesmo pedido em envia × prepara, sete semanas de rascunho até soltar (passo a passo com barras), as perguntas que levam ao regime com a frase para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+.sec > * { min-width: 0; }
+
+/* ---- só desta peça ---- */
+/* 1 · régua custo do erro × confiança */
+.rg-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.rg-ctl { display: grid; gap: 14px; }
+.rg-cell { stroke: var(--border-strong); stroke-width: 1; }
+.rg-a { fill: var(--ok-soft); }
+.rg-b { fill: var(--bg-elev); }
+.rg-c { fill: var(--accent-soft); }
+.rg-d { fill: var(--atencao-soft); }
+.rg-dot { fill: var(--accent); stroke: var(--bg-elev); stroke-width: 3; transition: cx .25s ease, cy .25s ease; }
+.rg-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 3 3; transition: cx .25s ease, cy .25s ease; }
+.rg-ax { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.rg-tk { font: 400 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.rg-legend { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: .88rem; color: var(--text-muted); }
+.rg-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.rg-sw { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border-strong); display: inline-block; flex: none; }
+.rg-sw.a { background: var(--ok-soft); border-color: var(--ok); }
+.rg-sw.b { background: var(--bg-elev); }
+.rg-sw.c { background: var(--accent-soft); border-color: var(--accent); }
+.rg-sw.d { background: var(--atencao-soft); border-color: var(--atencao); }
+.rg-tasks { display: flex; flex-wrap: wrap; gap: 8px; }
+.rg-tasks button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 5px 12px; font-size: .88rem; color: var(--text-muted); text-align: left; }
+.rg-tasks button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.rg-line { font-family: var(--font-mono); font-size: .86rem; background: var(--bg); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 10px 12px; }
+
+/* 2 · ache os cinco defeitos */
+.df-task { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; font-size: 1.02rem; line-height: 2; }
+.df-task .df-when { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); display: block; line-height: 1.4; margin-bottom: 6px; }
+.df-task [data-df] { cursor: pointer; line-height: 1.5; border: 0; border-bottom: 1px dashed var(--text-dim); background: transparent; padding: 0 2px; border-radius: 2px; text-align: left; }
+.df-task [data-df]:hover { background: var(--bg); }
+.df-task [data-df].hit { background: var(--atencao-soft); color: var(--atencao-texto); border-bottom: 2px solid var(--atencao); }
+.df-task [data-df].fine { background: var(--ok-soft); color: var(--ok-texto); border-bottom: 2px solid var(--ok); }
+.df-log { display: grid; gap: 8px; }
+.df-log .qz-fb b { font-weight: 600; }
+.df-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.df-fixed[hidden] { display: none; }
+
+/* 3 · a menor pasta */
+.pz-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.pz-tree { display: grid; gap: 6px; }
+.pz-tree button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 8px 12px; display: grid; gap: 2px; }
+.pz-tree button b { font-family: var(--font-mono); font-size: .88rem; font-weight: 500; overflow-wrap: anywhere; }
+.pz-tree button small { color: var(--text-muted); font-size: .82rem; }
+.pz-tree button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.pz-l1 { margin-left: 14px; }
+.pz-l2 { margin-left: 28px; }
+.pz-l3 { margin-left: 42px; }
+.pz-l4 { margin-left: 56px; }
+.pz-meter { height: 10px; border-radius: 999px; background: var(--bg); border: 1px solid var(--border); overflow: hidden; }
+.pz-meter span { display: block; height: 100%; background: var(--atencao); transition: width .3s ease; }
+.pz-meter.ok span { background: var(--ok); }
+
+/* 4 · prepara × envia */
+.pe-out { display: grid; gap: 12px; }
+.pe-mon { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 18px; display: grid; gap: 6px; }
+.pe-mon.bad { border-color: var(--atencao); }
+.pe-mon.good { border-color: var(--ok); }
+.pe-verbs { display: flex; flex-wrap: wrap; gap: 6px; }
+.pe-verbs span { font-family: var(--font-mono); font-size: .82rem; border-radius: 999px; padding: 2px 10px; border: 1px solid var(--border-strong); background: var(--bg); }
+.pe-verbs.stop span { border-color: var(--atencao); background: var(--atencao-soft); color: var(--atencao-texto); }
+.pe-verbs.free span { border-color: var(--ok); background: var(--ok-soft); color: var(--ok-texto); }
+
+/* 5 · soltar aos poucos (svg) */
+.ra-svg { min-width: 560px; }
+.ra-base { stroke: var(--border-strong); stroke-width: 1; }
+.ra-lab { font: 400 11px var(--font-mono); fill: var(--text-dim); text-anchor: middle; }
+.ra-cnt { font: 500 12px var(--font-mono); fill: var(--text); text-anchor: middle; }
+.ra-r { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+.ra-c { fill: var(--atencao-soft); stroke: var(--atencao); stroke-width: 1; }
+.ra-e { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1; }
+.ra-n { fill: var(--bg-elev); stroke: var(--text); stroke-width: 1.2; stroke-dasharray: 4 3; }
+.ra-zone { fill: none; stroke: var(--border-strong); stroke-dasharray: 5 4; }
+.ra-zl { font: 500 10.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.ra-wk { transition: opacity .3s ease; }
+.ra-wk.off { opacity: .08; }
+.ra-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .88rem; color: var(--text-muted); }
+.ra-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.ra-sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; flex: none; border: 1px solid; }
+.ra-sw.r { background: var(--accent-soft); border-color: var(--accent); }
+.ra-sw.c { background: var(--atencao-soft); border-color: var(--atencao); }
+.ra-sw.e { background: var(--ok-soft); border-color: var(--ok); }
+.ra-sw.n { background: var(--bg-elev); border-color: var(--text); border-style: dashed; }
+
+/* 6 · as perguntas */
+.fl-path { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.fl-path li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: baseline; font-size: .92rem; color: var(--text-muted); border-left: 2px solid var(--border-strong); padding: 2px 0 2px 12px; }
+.fl-path li b { font-family: var(--font-mono); font-size: .82rem; font-weight: 500; color: var(--accent); }
+.fl-q { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.fl-q h3 { font-size: 1.2rem; }
+.fl-q .opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.fl-q[hidden], .fl-res[hidden] { display: none; }
+.fl-res { display: grid; gap: 12px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .rg-grid, .pz-wrap { grid-template-columns: 1fr; }
+  .pz-l3 { margin-left: 30px; }
+  .pz-l4 { margin-left: 40px; }
+}
+@media (prefers-reduced-motion: reduce) { .rg-dot, .rg-ring, .ra-wk, .pz-meter span { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Agente">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente--anatomia.html">← 6.1 Anatomia</a><a href="./agente.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./agente.html">Visão geral</a><a href="./agente--anatomia.html"><b>6.1</b>Anatomia</a><a href="./agente--autonomia.html" aria-current="page"><b>6.2</b>Quanto faz sozinha</a></div>
+  </nav>
+  <span class="eyebrow">6.2 · 2 de 2</span>
+  <h1>Quanto a IA faz sozinha</h1>
+  <p class="sub">Para cada tarefa, decida o que a IA faz sem você, pelo custo do erro e pelo que ela já acertou na sua frente</p>
+  <p class="lead">Até pouco tempo, o chat só respondia. Hoje ele lê a sua caixa de e-mail por um conector (a ligação da IA com outro sistema que você usa), roda sozinho um pedido toda segunda às oito e mexe numa pasta do seu computador. A pergunta deixa de ser “ela sabe fazer?” e passa a ser <strong>“quanto eu deixo ela fazer sem mim?”</strong>. Não existe uma resposta para todas as tarefas. Existe uma decisão por tarefa, e ela depende de duas coisas: quanto custa se ela errar, e quantas vezes ela já acertou com você olhando.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-regua">Quanto soltar, tarefa por tarefa</a><a href="#s-defeitos">Cinco brechas num pedido agendado</a><a href="#s-pasta">A menor pasta que resolve</a><a href="#s-prepara">Preparar ou enviar</a><a href="#s-aos-poucos">Soltar aos poucos</a><a href="#s-perguntas">As perguntas antes de soltar</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-regua" aria-labelledby="h-regua">
+  <span class="eyebrow">Quanto soltar, tarefa por tarefa</span>
+  <h2 id="h-regua">Quatro jeitos de dividir o trabalho com ela</h2>
+  <p class="intro">O mesmo gerente dá liberdades diferentes ao mesmo assistente: o malote ele despacha sozinho, o convite do evento ele traz em três versões, a nota fiscal ele confere antes de pagar, e a conversa difícil com um funcionário o gerente conduz pessoalmente. Com a IA é igual. Dois eixos decidem: o <strong>custo do erro</strong> (o que acontece se sair errado) e a <strong>confiança</strong>, que aqui não é sensação: é quantas vezes seguidas ela já acertou essa tarefa com você olhando. Escolha uma tarefa, ou mexa nas duas réguas.</p>
+  <div class="rg-tasks" role="group" aria-label="Tarefas de exemplo" id="rgTasks"></div>
+  <div class="rg-grid">
+    <div class="chart">
+      <svg viewBox="0 0 420 392" role="img" aria-labelledby="rg-t" xmlns="http://www.w3.org/2000/svg">
+        <title id="rg-t">Grade de cinco por cinco: custo do erro cresce para a direita, confiança cresce para cima. Cada casa tem a cor do jeito de dividir o trabalho; um ponto marca a tarefa escolhida.</title>
+        <g id="rgCells"></g>
+        <circle class="rg-ring" id="rgRing" cx="0" cy="0" r="20"/>
+        <circle class="rg-dot" id="rgDot" cx="0" cy="0" r="10"/>
+        <text class="rg-ax" x="74" y="378">CUSTO DO ERRO →</text>
+        <text class="rg-ax" x="18" y="300" transform="rotate(-90 18 300)">CONFIANÇA →</text>
+        <g id="rgTicks"></g>
+      </svg>
+      <div class="rg-legend"><span><i class="rg-sw a"></i>ela faz sozinha</span><span><i class="rg-sw b"></i>ela gera, você escolhe</span><span><i class="rg-sw c"></i>ela prepara, você envia</span><span><i class="rg-sw d"></i>você conduz, ela pesquisa</span></div>
+    </div>
+    <div class="rg-ctl">
+      <div class="field">
+        <label for="rgCusto">Custo do erro: <span id="rgCustoT"></span></label>
+        <div class="row"><input type="range" id="rgCusto" min="1" max="5" step="1" value="2"><output for="rgCusto" id="rgCustoO">2</output></div>
+      </div>
+      <div class="field">
+        <label for="rgConf">Confiança: <span id="rgConfT"></span></label>
+        <div class="row"><input type="range" id="rgConf" min="1" max="5" step="1" value="5"><output for="rgConf" id="rgConfO">5</output></div>
+      </div>
+      <div class="panel" id="rgOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">Repare que a confiança só libera a tarefa barata. Na tarefa cara, ela muda <em>como</em> você confere (tudo, linha a linha, ou só a lista do que ela mudou), mas o último passo continua seu. Dentro de um agente, o mesmo eixo aparece como “aprova cada passo × recebe pronto”, em <a href="./agente.html#s-degraus">Chat, assistente, agente</a>.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-defeitos" aria-labelledby="h-defeitos">
+  <span class="eyebrow">Cinco brechas num pedido agendado</span>
+  <h2 id="h-defeitos">Uma tarefa agendada com cinco problemas: ache todos</h2>
+  <p class="intro">Antes de assinar uma procuração, o que se revisa não é o que ela diz: é o que ela deixa em aberto. Uma tarefa agendada (um pedido que roda sozinho, no dia e na hora marcados, sem você abrir a conversa) é uma procuração assim. Abaixo, uma que parece razoável. <strong>Clique nos trechos que você não assinaria.</strong> Dois trechos estão certos.</p>
+  <div class="df-task" id="dfTask">
+    <span class="df-when">Tarefa agendada · resumo de propostas</span>
+    <span role="button" tabindex="0" data-df="ok1">Toda segunda, às 8h,</span> <span role="button" tabindex="0" data-df="pasta">entre na pasta Documentos</span> e leia as propostas <span role="button" tabindex="0" data-df="limite">dos clientes ativos do último período</span>. Faça um resumo <span role="button" tabindex="0" data-df="ok2">em tópicos curtos, um bloco por cliente</span>. Depois, <span role="button" tabindex="0" data-df="verbo">limpe e arquive as propostas antigas</span> e <span role="button" tabindex="0" data-df="age">publique o resumo no grupo de cada cliente</span>. <span role="button" tabindex="0" data-df="maos">Pode usar o navegador e qualquer aba que estiver aberta.</span>
+  </div>
+  <div class="df-bar"><span class="qz-score" id="dfScore" aria-live="polite"></span><button type="button" class="btn" id="dfShow">Ver a versão corrigida</button></div>
+  <div class="df-log" id="dfLog"></div>
+  <div class="copy df-fixed" id="dfFixed" hidden>
+    <div class="copy-head"><span class="eyebrow">A mesma tarefa, sem as brechas</span><button type="button" class="btn" data-copy="dfFixedT">Copiar</button></div>
+<pre id="dfFixedT">Toda segunda, às 8h:
+1. Leia só a pasta <b>Comercial/Propostas 2026</b>. Não abra nenhuma outra.
+2. Considere só os clientes da lista em <b>clientes-ativos.txt</b>, e só as propostas enviadas <b>nos últimos 7 dias</b>.
+3. Faça um resumo em tópicos curtos, um bloco por cliente.
+4. <b>Não apague e não mova nada.</b> No fim, liste as propostas com mais de 90 dias, para eu decidir o que fazer com elas.
+5. <b>Deixe o resumo de cada cliente como rascunho</b>, para eu revisar e enviar. Não publique em grupo nenhum.
+6. Use só a pasta do item 1 e a minha caixa de e-mail. Nada de navegador.
+Se algum cliente da lista não tiver proposta na pasta, diga isso em vez de supor.</pre>
+  </div>
+  <p class="hint">Quatro das cinco brechas não são erro de conteúdo: o resumo podia sair perfeito. O que está errado é <strong>até onde ela vai</strong> (o escopo) e <strong>o que ela faz no fim</strong> (o verbo). É o tipo de erro que nenhuma revisão do texto pega.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-pasta" aria-labelledby="h-pasta">
+  <span class="eyebrow">A menor pasta que resolve</span>
+  <h2 id="h-pasta">Dê a gaveta da tarefa, não a chave do arquivo</h2>
+  <p class="intro">Quando chega o auditor externo, ninguém entrega a chave do arquivo morto: separa numa sala as pastas do ano auditado, e o resto fica trancado. A regra para a IA é a mesma: <strong>escolha a menor pasta que ainda contém tudo de que a tarefa precisa</strong>. Se faltar alguma coisa, você acrescenta outra pasta depois; o contrário, tirar o acesso depois do estrago, não adianta. A tarefa aqui é a da seção anterior. Clique em cada nível.</p>
+  <div class="pz-wrap">
+    <div class="pz-tree" role="group" aria-label="Até onde ela enxerga" id="pzTree"></div>
+    <div class="panel" id="pzOut" aria-live="polite"></div>
+  </div>
+  <p class="hint">Duas camadas se somam aqui. A pasta diz o que ela enxerga no seu computador; o conector diz o que ela enxerga no outro sistema, e com que permissão, em <a href="./assistente--conector.html#s-agir">ler não é o mesmo que enviar</a>. E o que ela abre na pasta faz o mesmo caminho de um anexo, descrito em <a href="./limites-da-ia--o-que-pode-subir.html#s-caminho">o caminho do arquivo</a>.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-prepara" aria-labelledby="h-prepara">
+  <span class="eyebrow">Preparar ou enviar</span>
+  <h2 id="h-prepara">O mesmo pedido, com o último passo seu ou dela</h2>
+  <p class="intro">A secretária que redige a carta e deixa na sua mesa fez quase todo o trabalho; a assinatura é o único passo que não volta, e é por isso que ele fica com você. Na IA, a diferença entre os dois regimes cabe em uma frase do pedido. Abaixo, a segunda-feira em que ela erra, nos dois jeitos. <strong>O erro é o mesmo; muda quem vê primeiro.</strong></p>
+  <div class="seg" role="group" aria-label="Último passo">
+    <button type="button" data-pe="envia" aria-pressed="true">Ela envia</button>
+    <button type="button" data-pe="prepara" aria-pressed="false">Ela prepara, você envia</button>
+  </div>
+  <div class="pe-out" id="peOut" aria-live="polite"></div>
+  <div class="two">
+    <div class="card"><span class="eyebrow">verbos que não voltam · ficam com você</span><div class="pe-verbs stop"><span>enviar</span><span>publicar</span><span>responder</span><span>apagar</span><span>mover para fora</span><span>pagar</span><span>aceitar convite</span><span>mudar permissão</span></div><p>Se o pedido tem um destes, escreva no pedido que ela para antes e deixa pronto.</p></div>
+    <div class="card"><span class="eyebrow">verbos que voltam · podem ficar com ela</span><div class="pe-verbs free"><span>ler</span><span>buscar</span><span>resumir</span><span>comparar</span><span>listar</span><span>rascunhar</span><span>propor</span></div><p>O pior que acontece é um rascunho ruim na sua caixa. Você apaga e pede de novo.</p></div>
+  </div>
+  <p class="hint">Cuidado com os verbos de duas leituras: “limpar”, “arquivar”, “organizar”, “atualizar”. Arquivar é mover ou apagar? Atualizar a planilha é acrescentar linha ou escrever por cima? Troque pelo verbo exato. Quando a IA trabalha dentro de um fluxo automático, a mesma escolha aparece como passo do fluxo, em <a href="./automacao.html#s-fluxo">roteiro fixo ou agente</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-aos-poucos" aria-labelledby="h-aos-poucos">
+  <span class="eyebrow">Soltar aos poucos</span>
+  <h2 id="h-aos-poucos">A confiança se mede em rascunhos que você não precisou mudar</h2>
+  <p class="intro">Ninguém recebe a assinatura de pagamentos no primeiro mês: o analista propõe, o gerente confere, e a alçada sobe conforme o histórico. Soltar a IA segue o mesmo caminho: um período de rascunho primeiro, e o envio passa para ela só quando os rascunhos param de precisar de correção. <strong>E a alçada volta quando o caso é novo.</strong> Avance as semanas.</p>
+  <div class="stepbar"><span class="eyebrow" id="raLab">Passo 1 de 6</span><div class="nav"><button type="button" class="btn" id="raPrev">← Anterior</button><button type="button" class="btn primary" id="raNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="ra-svg" viewBox="0 0 640 270" role="img" aria-labelledby="ra-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="ra-t">Sete semanas de um resumo semanal: nas cinco primeiras ela deixa rascunho, e o número de rascunhos corrigidos cai até zero; na sexta ela passa a enviar sozinha; na sétima um cliente de tipo novo volta para o rascunho.</title>
+      <rect class="ra-zone" x="20" y="22" width="420" height="214" rx="8"/><text class="ra-zl" x="32" y="16">ELA PREPARA · VOCÊ ENVIA</text>
+      <rect class="ra-zone" x="452" y="22" width="172" height="214" rx="8"/><text class="ra-zl" x="464" y="16">ELA ENVIA</text>
+      <line class="ra-base" x1="20" y1="206" x2="624" y2="206"/>
+      <g id="raBars"></g>
+    </svg>
+  </div>
+  <div class="ra-legend"><span><i class="ra-sw r"></i>rascunho aprovado como veio</span><span><i class="ra-sw c"></i>rascunho que você corrigiu</span><span><i class="ra-sw e"></i>enviado por ela</span><span><i class="ra-sw n"></i>caso novo, de volta ao rascunho</span></div>
+  <div class="caption" id="raCap" aria-live="polite"></div>
+  <div class="two">
+    <div class="card focal"><h3>Aprovar sem ler é soltar sem decidir</h3><p>Depois de semanas de rascunho certo, o clique em “enviar” vira reflexo. O risco tem nome: <strong>complacência com a automação</strong>, quando quem devia conferir para de intervir porque quase sempre deu certo. Rascunho aprovado sem leitura é o regime “ela faz sozinha”, com um clique a mais e sem a decisão de ter soltado.</p></div>
+    <div class="card"><h3>Duas regras que evitam isso</h3><p>Mude de regime de propósito, com data, e não por cansaço. E depois de soltar, abra um por amostra toda semana: é o que mostra o dia em que o caso mudou. Para a IA trabalhar sozinha, quatro coisas precisam existir escritas, em <a href="./ai-first.html#s-sozinha">o que a IA precisa para entregar sozinha</a>; o rascunho das primeiras semanas, dentro de uma automação, está em <a href="./automacao--testar.html#s-pessoa">uma pessoa antes de mil</a>.</p></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-perguntas" aria-labelledby="h-perguntas">
+  <span class="eyebrow">As perguntas antes de soltar</span>
+  <h2 id="h-perguntas">Até três perguntas sobre a sua tarefa, e o regime sai no fim</h2>
+  <p class="intro">Na portaria de um prédio comercial, ninguém faz um interrogatório: duas ou três perguntas e o visitante já sabe para qual andar vai. Faça o mesmo com uma tarefa que você pensa em passar para a IA, ou que já passou: um relatório agendado, uma resposta que ela rascunha, uma planilha que ela atualiza. <strong>Responda pensando nessa tarefa, não na IA em geral.</strong></p>
+  <ol class="fl-path" id="flPath"></ol>
+  <div class="fl-q" id="flQ"></div>
+  <div class="fl-res" id="flRes" hidden></div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Ela prepara, você envia</h3><p>O último passo que não volta (enviar, publicar, apagar, pagar) fica com você até ela provar, em rascunho, que acerta.</p></div>
+    <div class="take-card"><h3>Decida por tarefa</h3><p>A mesma IA pode fazer sozinha o resumo e só rascunhar a cobrança. Quem decide é o custo do erro, não a ferramenta.</p></div>
+    <div class="take-card"><h3>Soltar é decisão</h3><p>Solte de propósito, olhe por amostra, e recolha quando o caso for novo. Aprovar sem ler não é conferir.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Tarefa agendada</dt><dd>Um pedido que roda sozinho, no dia e na hora marcados, sem você abrir a conversa.</dd>
+    <dt>Escopo</dt><dd>Até onde ela vai: que pasta, que clientes, que período. O erro de escopo deixa o conteúdo certo e o estrago grande.</dd>
+    <dt>Permissão</dt><dd>O que ela pode fazer em cada lugar: ler, rascunhar, enviar, apagar. Cada uma se libera separada.</dd>
+    <dt>Rascunho</dt><dd>O trabalho pronto, parado antes do último passo, esperando você aprovar.</dd>
+    <dt>Regime</dt><dd>O jeito de dividir uma tarefa com a IA: ela faz sozinha, gera e você escolhe, prepara e você envia, ou você conduz.</dd>
+    <dt>Confiança</dt><dd>Aqui, quantas vezes seguidas ela acertou essa tarefa com você olhando. Vale para a tarefa, não para a IA.</dd>
+    <dt>Complacência com a automação</dt><dd>Quando quem devia conferir para de intervir porque quase sempre deu certo.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Os quatro regimes e as notas de 1 a 5 são uma forma de organizar a decisão, não uma medida; as tarefas, as pastas, as quantidades de arquivos, os clientes, o desconto e as semanas são exemplos inventados. O nome das opções de permissão, de pasta e de agendamento muda entre ferramentas e versões, e nem toda conta mostra todas. Família <a href="./agente.html">Agente</a>; irmãs: <a href="./agente--anatomia.html">anatomia do agente</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Agente: anterior e próxima">
+  <a class="famfoot-prev" href="./agente--anatomia.html"><span>← anterior</span><b>6.1 · Anatomia do agente</b></a>
+  <a class="famfoot-fam" href="./agente.html#mapa">Família 6 · Agente · o mapa</a>
+  <a class="famfoot-next" href="./agente.html"><span>volta ao começo ↺</span><b>Visão geral · Agente</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+
+  /* os quatro regimes (usados na régua e nas perguntas) */
+  var R = {
+    a: { t: 'Ela faz sozinha', ela: 'faz do começo ao fim, sem perguntar', voce: 'olha um resultado por amostra, de vez em quando', line: 'Faça sem me perguntar. No fim, me mande a lista do que você fez.', copy: 'Faça esta tarefa do começo ao fim sem me perguntar.\nNo fim, me mande a lista do que você fez e de tudo o que precisou supor.\n[descreva a tarefa]' },
+    b: { t: 'Ela gera, você escolhe', ela: 'traz três versões diferentes', voce: 'escolhe uma e ajusta; o erro é barato, e cada escolha ensina o seu jeito', line: 'Me dê três versões diferentes, com uma linha dizendo no que cada uma aposta.', copy: 'Me dê três versões diferentes disto, com uma linha dizendo no que cada uma aposta.\nNão escolha por mim. Eu escolho uma e digo o que ajustar.\n[descreva a tarefa]' },
+    c: { t: 'Ela prepara, você envia', ela: 'faz o trabalho inteiro e para antes do último passo', voce: 'confere e aperta o enviar; com confiança alta, confere só a lista do que ela mudou', line: 'Prepare e deixe como rascunho. Não envie, não publique, não apague.', copy: 'Faça o trabalho inteiro e pare antes do último passo: deixe como rascunho.\nNão envie, não publique, não apague e não mova nada.\nJunto com o rascunho, me diga o que você mudou e o que precisou supor.\n[descreva a tarefa]' },
+    d: { t: 'Você conduz, ela pesquisa', ela: 'levanta fatos, documentos e perguntas', voce: 'decide, escreve o que importa e responde por isso', line: 'Não escreva a decisão. Levante o que eu preciso saber e as perguntas que eu deveria fazer.', copy: 'Não escreva a decisão nem o texto final.\nLevante o que eu preciso saber para conduzir isto: os fatos, os documentos que se aplicam e as perguntas que eu deveria fazer antes.\nSe algo não estiver no material, diga que não está.\n[descreva a situação]' }
+  };
+
+  /* 1 · régua */
+  var CUSTO = ['', 'você nota e refaz em um minuto', 'atrasa você, não chega a ninguém', 'chega a um colega ou a uma planilha que outros usam', 'chega ao cliente, ou mexe em dado de outros', 'não tem volta: pessoa, dinheiro, contrato'];
+  var CONF = ['', 'ela nunca fez isso com você', 'fez uma ou duas vezes, com correções', 'acerta quase sempre, ainda com ajustes', 'acertou várias vezes seguidas', 'semanas acertando sem você mudar nada'];
+  var TASKS = [
+    ['Renomear os arquivos da sua pasta de downloads', 1, 4],
+    ['Resumo semanal das propostas, só para você', 2, 5],
+    ['Ideias de título para o texto da semana', 2, 2],
+    ['Resposta a um cliente que reclamou', 4, 3],
+    ['Lembrete de cobrança para quarenta clientes', 4, 5],
+    ['Comunicar um desligamento à equipe', 5, 3]
+  ];
+  function zone(c, k) { if (c === 5 || (c >= 3 && k === 1)) return 'd'; if (c >= 3) return 'c'; if (k >= 4) return 'a'; if (k === 3) return 'c'; return 'b'; }
+  var X0 = 70, Y0 = 20, CL = 60, cells = '', ticks = '';
+  for (var c = 1; c <= 5; c++) { for (var k = 1; k <= 5; k++) { cells += '<rect class="rg-cell rg-' + zone(c, k) + '" x="' + (X0 + (c - 1) * CL) + '" y="' + (Y0 + (5 - k) * CL) + '" width="' + CL + '" height="' + CL + '"/>'; } }
+  for (var i = 1; i <= 5; i++) { ticks += '<text class="rg-tk" x="' + (X0 + (i - 1) * CL + CL / 2) + '" y="340">' + i + '</text><text class="rg-tk" x="54" y="' + (Y0 + (5 - i) * CL + CL / 2 + 4) + '">' + i + '</text>'; }
+  document.getElementById('rgCells').innerHTML = cells;
+  document.getElementById('rgTicks').innerHTML = ticks;
+  var rgC = document.getElementById('rgCusto'), rgK = document.getElementById('rgConf'), rgTasks = document.getElementById('rgTasks');
+  TASKS.forEach(function (t, i) { var b = document.createElement('button'); b.type = 'button'; b.dataset.t = i; b.setAttribute('aria-pressed', 'false'); b.textContent = t[0]; rgTasks.appendChild(b); });
+  var tBtns = rgTasks.querySelectorAll('button');
+  function rg() {
+    var c = +rgC.value, k = +rgK.value, z = zone(c, k), r = R[z];
+    document.getElementById('rgCustoO').textContent = c; document.getElementById('rgConfO').textContent = k;
+    document.getElementById('rgCustoT').textContent = CUSTO[c]; document.getElementById('rgConfT').textContent = CONF[k];
+    var cx = X0 + (c - 1) * CL + CL / 2, cy = Y0 + (5 - k) * CL + CL / 2;
+    ['rgDot', 'rgRing'].forEach(function (id) { var el = document.getElementById(id); el.setAttribute('cx', cx); el.setAttribute('cy', cy); });
+    pressGroup(tBtns, function (b) { var t = TASKS[+b.dataset.t]; return t[1] === c && t[2] === k; });
+    document.getElementById('rgOut').innerHTML = '<span class="eyebrow">o regime desta tarefa</span><h3>' + r.t + '</h3><p><b>Ela</b> ' + r.ela + '.</p><p><b>Você</b> ' + r.voce + '.</p><p class="rg-line">' + r.line + '</p>';
+  }
+  tBtns.forEach(function (b) { b.addEventListener('click', function () { var t = TASKS[+b.dataset.t]; rgC.value = t[1]; rgK.value = t[2]; rg(); }); });
+  [rgC, rgK].forEach(function (el) { el.addEventListener('input', rg); });
+  rg();
+
+  /* 2 · ache os cinco */
+  var DF = {
+    pasta: { hit: true, t: 'Pasta larga demais', d: '“Documentos” tem contratos, RH, propostas de todos os anos e arquivos pessoais. A tarefa precisa de uma pasta só: a próxima seção mostra qual.' },
+    limite: { hit: true, t: 'Limite sem nome', d: 'Quais clientes contam como ativos? “Último período” é a semana, o mês ou o trimestre? Ela vai escolher, e não vai avisar que escolheu. Nomeie a lista e o prazo.' },
+    verbo: { hit: true, t: 'Verbo de duas leituras, e destrutivo', d: 'Arquivar é mover ou apagar? E o que é “antiga”? Um verbo que some com arquivo não entra num pedido que roda sem você. Peça a lista e decida.' },
+    age: { hit: true, t: 'Age em vez de preparar', d: 'Publicar no grupo do cliente não volta. Um erro no resumo chega ao cliente antes de chegar a você. Peça rascunho.' },
+    maos: { hit: true, t: 'Mãos largas demais', d: '“Qualquer aba aberta” inclui o banco, o sistema da empresa e o e-mail pessoal. A tarefa não precisa de navegador: precisa da pasta e da caixa de e-mail.' },
+    ok1: { hit: false, t: 'Este trecho está certo', d: 'Dia e hora marcados são o que faz dela uma tarefa agendada. O risco nunca está em quando ela roda.' },
+    ok2: { hit: false, t: 'Este trecho está certo', d: 'Formato definido é pedido bem feito: diz como a saída tem que vir, e não abre porta nenhuma.' }
+  };
+  var ORDER = ['ok1', 'pasta', 'limite', 'ok2', 'verbo', 'age', 'maos'], found = {};
+  var dfBtns = document.querySelectorAll('[data-df]'), dfFixed = document.getElementById('dfFixed'), dfShow = document.getElementById('dfShow');
+  function dfShowFixed(on) { dfFixed.hidden = !on; dfShow.textContent = on ? 'Esconder a versão corrigida' : 'Ver a versão corrigida'; }
+  function dfRender() {
+    var n = Object.keys(found).filter(function (k) { return DF[k].hit; }).length;
+    document.getElementById('dfScore').textContent = n + ' de 5 brechas achadas' + (n === 5 ? ' · todas. Compare com a versão corrigida, abaixo.' : '');
+    document.getElementById('dfLog').innerHTML = ORDER.filter(function (k) { return found[k]; }).map(function (k) { var d = DF[k]; return '<div class="qz-fb ' + (d.hit ? 'ok' : 'no') + '"><b>' + (d.hit ? 'Achou: ' + d.t + '.' : d.t + '.') + '</b> ' + d.d + '</div>'; }).join('');
+    if (n === 5) dfShowFixed(true);
+  }
+  dfBtns.forEach(function (b) { b.addEventListener('click', function () { var k = b.dataset.df; found[k] = true; b.classList.add(DF[k].hit ? 'hit' : 'fine'); dfRender(); }); });
+  dfShow.addEventListener('click', function () { dfShowFixed(dfFixed.hidden); });
+  dfRender();
+
+  /* 3 · a menor pasta */
+  var PZ = [
+    { n: 'Seu computador inteiro', s: 'tudo o que a sua conta abre', f: '≈ 40 mil arquivos', w: 100, ok: false, v: 'Larga demais', it: 'fotos, documentos pessoais, holerites, as pastas de todos os clientes, o que está sincronizado com a nuvem', r: '“Arquive as antigas” pode alcançar qualquer coisa com data velha, inclusive o que não é proposta.' },
+    { n: 'Documentos', s: 'a pasta do pedido original', f: '≈ 6 mil arquivos', w: 60, ok: false, v: 'Larga demais', it: 'contratos, RH, planilhas pessoais, propostas de todos os anos', r: 'Ela lê contrato e ficha de funcionário para resumir proposta. E cada arquivo que ela abre sai do seu computador, como um anexo.' },
+    { n: 'Documentos/Comercial', s: 'a área inteira', f: '≈ 900 arquivos', w: 25, ok: false, v: 'Ainda larga', it: 'propostas de todos os anos, tabelas de preço, contratos assinados', r: 'Contrato assinado com data antiga é exatamente o arquivo que um “arquive as antigas” pega.' },
+    { n: 'Comercial/Propostas 2026', s: 'só o que a tarefa lê', f: '≈ 40 arquivos', w: 6, ok: true, v: 'A menor que resolve', it: 'as propostas do ano, de todos os clientes', r: 'Tudo de que o resumo precisa está aqui, e nada além. Se faltar alguma coisa, você acrescenta outra pasta depois.' },
+    { n: 'Propostas 2026/Cliente A', s: 'um cliente só', f: '≈ 5 arquivos', w: 1, ok: false, v: 'Pequena demais', it: 'as propostas de um cliente', r: 'O resumo sai com um cliente só, e sem aviso: ela não sabe que os outros existem. A regra não é “a menor”: é a menor que ainda contém a tarefa.' }
+  ];
+  var pzTree = document.getElementById('pzTree');
+  PZ.forEach(function (p, i) { var b = document.createElement('button'); b.type = 'button'; b.className = 'pz-l' + i; b.dataset.pz = i; b.innerHTML = '<b>' + p.n + '</b><small>' + p.s + '</small>'; pzTree.appendChild(b); });
+  var pzBtns = pzTree.querySelectorAll('button');
+  function setPz(i) {
+    var p = PZ[i];
+    pressGroup(pzBtns, function (b) { return +b.dataset.pz === i; });
+    document.getElementById('pzOut').innerHTML = '<span class="eyebrow">' + p.f + ' ao alcance</span><div class="pz-meter' + (p.ok ? ' ok' : '') + '"><span></span></div><div class="verdict ' + (p.ok ? 'ok' : 'no') + '"><b>' + p.v + '.</b></div><p><b>O que ela enxerga:</b> ' + p.it + '.</p><p class="hint">' + p.r + '</p>';
+    document.querySelector('#pzOut .pz-meter span').style.width = p.w + '%';
+  }
+  pzBtns.forEach(function (b) { b.addEventListener('click', function () { setPz(+b.dataset.pz); }); });
+  setPz(1);
+
+  /* 4 · prepara × envia */
+  var PE = {
+    envia: { p: 'Toda segunda, às 8h, leia as propostas da semana e <i>publique o resumo no grupo de cada cliente</i>.', cls: 'bad', h: 'Segunda, 10h', d: 'Os seis resumos saíram às 8h10. No do cliente B foi o desconto que só o cliente A recebeu: as duas propostas usavam o mesmo modelo. Você fica sabendo quando o cliente B responde pedindo o mesmo desconto.', k: 'O erro foi de conteúdo, e conteúdo ela erra às vezes. O estrago veio do verbo.' },
+    prepara: { p: 'Toda segunda, às 8h, leia as propostas da semana e <i>deixe o resumo de cada cliente como rascunho</i>, para eu revisar e enviar.', cls: 'good', h: 'Segunda, 8h30', d: 'Seis rascunhos na sua caixa. No terceiro, o desconto do cliente A aparece no resumo do cliente B. Você corrige uma linha e envia os seis em dez minutos. Ninguém de fora viu o erro.', k: 'Custou dez minutos seus. É esse o preço do regime, e ele cai à medida que os rascunhos param de precisar de correção.' }
+  };
+  var peBtns = document.querySelectorAll('[data-pe]'), peOut = document.getElementById('peOut');
+  function setPe(k) { var e = PE[k]; pressGroup(peBtns, function (b) { return b.dataset.pe === k; }); peOut.innerHTML = '<div class="copy"><div class="copy-head"><span class="eyebrow">O pedido</span></div><pre>' + e.p + '</pre></div><div class="pe-mon ' + e.cls + '"><span class="eyebrow">' + e.h + '</span><p>' + e.d + '</p><p class="hint">' + e.k + '</p></div>'; }
+  peBtns.forEach(function (b) { b.addEventListener('click', function () { setPe(b.dataset.pe); }); });
+  setPe('envia');
+
+  /* 5 · soltar aos poucos */
+  var W = [{ r: 6, c: 4 }, { r: 6, c: 2 }, { r: 6, c: 1 }, { r: 6, c: 0 }, { r: 6, c: 0 }, { e: 6 }, { e: 5, n: 1 }];
+  var WX = [62, 146, 230, 314, 398, 495, 581], U = 24, BASE = 206, bars = '';
+  W.forEach(function (w, i) {
+    var x = WX[i] - 20, y = BASE, g = '<g class="ra-wk" data-wk="' + i + '">';
+    function seg(n, cls) { if (!n) return ''; y -= n * U; return '<rect class="' + cls + '" x="' + x + '" y="' + y + '" width="40" height="' + (n * U) + '" rx="2"/>'; }
+    if (w.r) { g += seg(w.c, 'ra-c') + seg(w.r - w.c, 'ra-r'); g += '<text class="ra-cnt" x="' + WX[i] + '" y="' + (y - 8) + '">' + (w.c ? w.c + (w.c > 1 ? ' corrigidos' : ' corrigido') : 'zero') + '</text>'; }
+    else { g += seg(w.e, 'ra-e') + seg(w.n || 0, 'ra-n'); g += '<text class="ra-cnt" x="' + WX[i] + '" y="' + (y - 8) + '">' + (w.n ? '1 volta' : 'sozinha') + '</text>'; }
+    g += '<text class="ra-lab" x="' + WX[i] + '" y="226">sem ' + (i + 1) + '</text></g>';
+    bars += g;
+  });
+  document.getElementById('raBars').innerHTML = bars;
+  var RA = [
+    { upto: 0, t: 'Semana 1: tudo é rascunho', d: 'Seis resumos, seis rascunhos. Você lê cada um inteiro e corrige quatro. Cada correção vira uma linha no pedido: “o desconto vem da proposta do próprio cliente”, “valor sempre com centavos”.' },
+    { upto: 1, t: 'Semana 2: o pedido aprende', d: 'As correções da semana passada já estão escritas no pedido. Dois rascunhos ainda precisam de ajuste, e cada ajuste vira mais uma linha.' },
+    { upto: 2, t: 'Semana 3: uma correção em seis', d: 'É a fase em que dá vontade de soltar. Ainda não: uma semana boa é sorte; várias seguidas são histórico.' },
+    { upto: 4, t: 'Semanas 4 e 5: nada para mudar', d: 'Duas semanas aprovando como veio, e lendo cada um. Agora a confiança é uma coisa que você contou, não uma impressão.' },
+    { upto: 5, t: 'Semana 6: o envio passa para ela', d: 'Você troca “deixe como rascunho” por “envie”, de propósito, e anota a data. Depois do envio, abre um resumo por amostra.' },
+    { upto: 6, t: 'Semana 7: o caso novo volta', d: 'Entra um cliente de outro tipo, com outra regra de desconto. Só ele volta para rascunho; os outros cinco seguem sozinhos. A confiança vale para o tipo de caso que ela já acertou, não para a IA inteira.' }
+  ];
+  var wks = document.querySelectorAll('.ra-wk');
+  stepper(RA.length, document.getElementById('raPrev'), document.getElementById('raNext'), document.getElementById('raLab'), 'Passo', function (s) {
+    var st = RA[s - 1];
+    wks.forEach(function (g) { g.classList.toggle('off', +g.dataset.wk > st.upto); });
+    document.getElementById('raCap').innerHTML = '<h3>' + st.t + '</h3><p>' + st.d + '</p>';
+  });
+
+  /* 6 · as perguntas */
+  var FL = {
+    q1: { q: 'Se sair errado, o erro chega a alguém além de você?', h: 'Cliente, colega, fornecedor, um sistema que outros usam, uma conta bancária. Se fica na sua tela e você refaz, a resposta é não.', o: [['Sim, chega', 'q2'], ['Não, fica comigo', 'q3']] },
+    q2: { q: 'O erro mexe com pessoa, dinheiro, contrato ou reputação, de um jeito que não se desfaz?', h: 'Desligamento, pagamento, resposta jurídica, cliente insatisfeito. Corrigir depois não apaga o que já foi lido.', o: [['Sim', 'd', 'Mesmo que ela acerte sempre: aqui, quem responde pelo resultado é você, e o texto precisa ser seu.'], ['Não, dá para consertar', 'c', 'O erro chega a alguém, mas dá para pegar antes de sair. O último passo fica com você.']] },
+    q3: { q: 'Ela já fez essa tarefa certo várias vezes seguidas, com você olhando?', h: 'Contadas, não lembradas. Se você nunca deixou ela fazer, a resposta é não.', o: [['Sim, várias', 'a', 'Erro barato e histórico contado. Olhe um por amostra, e volte para rascunho quando o caso mudar.'], ['Ainda não', 'q4']] },
+    q4: { q: 'O certo aqui é questão de gosto, ou tem resposta que dá para conferir?', h: 'Gosto: título, ideia, tom. Conferível: número, nome, data, a regra da casa.', o: [['É gosto', 'b', 'Erro barato e sem resposta certa: várias versões e a sua escolha ensinam o seu jeito mais rápido do que uma versão corrigida.'], ['Dá para conferir', 'c', 'É o período de rascunho. Quando os rascunhos pararem de precisar de correção, a pergunta anterior vira sim.']] }
+  };
+  var flPath = document.getElementById('flPath'), flQ = document.getElementById('flQ'), flRes = document.getElementById('flRes'), trail = [];
+  function flRender() {
+    flPath.innerHTML = trail.map(function (t) { return '<li><span>' + FL[t[0]].q + '</span><b>' + FL[t[0]].o[t[1]][0] + '</b></li>'; }).join('');
+    var last = trail.length ? FL[trail[trail.length - 1][0]].o[trail[trail.length - 1][1]] : null;
+    var cur = last ? last[1] : 'q1';
+    if (FL[cur]) {
+      flRes.hidden = true; flQ.hidden = false;
+      var n = FL[cur];
+      flQ.innerHTML = '<span class="eyebrow">pergunta ' + (trail.length + 1) + '</span><h3>' + n.q + '</h3><p class="hint">' + n.h + '</p><div class="opts">' + n.o.map(function (o, i) { return '<button type="button" class="btn" data-fo="' + i + '">' + o[0] + '</button>'; }).join('') + '</div>';
+      flQ.querySelectorAll('[data-fo]').forEach(function (b) { b.addEventListener('click', function () { trail.push([cur, +b.dataset.fo]); flRender(); }); });
+    } else {
+      var r = R[cur];
+      flQ.hidden = true; flRes.hidden = false;
+      flRes.innerHTML = '<div class="panel"><span class="eyebrow">o regime desta tarefa</span><h3>' + r.t + '</h3><p><b>Ela</b> ' + r.ela + '. <b>Você</b> ' + r.voce + '.</p><p class="hint">' + last[2] + '</p></div><div class="copy"><div class="copy-head"><span class="eyebrow">A frase para pôr no pedido</span><button type="button" class="btn" id="flCopy">Copiar</button></div><pre id="flCopyT">' + esc(r.copy) + '</pre></div><div class="nav"><button type="button" class="btn" id="flBack">← Mudar a última resposta</button><button type="button" class="btn primary" id="flAgain">Outra tarefa ↺</button></div>';
+      document.getElementById('flCopy').addEventListener('click', function () { copyText(document.getElementById('flCopyT').innerText, this); });
+      document.getElementById('flBack').addEventListener('click', function () { trail.pop(); flRender(); });
+      document.getElementById('flAgain').addEventListener('click', function () { trail = []; flRender(); });
+    }
+  }
+  flRender();
+})();
+</script>
+</body>
+</html>

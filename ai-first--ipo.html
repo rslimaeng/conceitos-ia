@@ -263,6 +263,19 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -366,7 +379,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
 <section class="sec" id="s-nomes" aria-labelledby="h-nomes">
   <span class="eyebrow">Os sete tipos de desperdício</span>
   <h2 id="h-nomes">Sete nomes para o que vaza, e dois bastam quase sempre</h2>
-  <p class="intro">No inventário do almoxarifado, a perda é separada por tipo (vencido, quebrado, extraviado), e o tipo já diz onde procurar. Desperdício aqui não é julgamento: <strong>é tudo o que consome tempo e não muda o que o cliente recebe.</strong> Dar nome antes de procurar a causa já restringe onde ela pode estar. Numa mesa de escritório, espera e retrabalho costumam responder pela maior parte.</p>
+  <p class="intro">No inventário do almoxarifado, a perda é separada por tipo (vencido, quebrado, extraviado), e o tipo já diz onde procurar. Desperdício aqui não é julgamento: <strong>é tudo o que consome tempo e não muda o que o cliente recebe.</strong> Os sete nomes vêm do Lean, método criado para cortar o que não agrega valor ao cliente. Dar nome antes de procurar a causa já restringe onde ela pode estar. Numa mesa de escritório, espera e retrabalho costumam responder pela maior parte.</p>
   <div class="wn" id="wn" role="group" aria-label="Os sete desperdícios"></div>
   <div class="panel focal" id="wnDet" aria-live="polite"></div>
 </section>
@@ -382,7 +395,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focu
   </div>
   <div class="why" id="why" aria-live="polite"></div>
   <div class="why-bar"><span class="eyebrow" id="whyLab"></span><button type="button" class="btn primary" id="whyNext">Por quê? →</button></div>
-  <p class="hint">Quando não se sabe nem por onde começar, percorre-se em largura em vez de fundo: material, mão de obra, máquina, método, medição e meio. Num escritório, método e medição costumam render mais.</p>
+  <p class="hint">Quando não se sabe nem por onde começar, percorre-se em largura em vez de fundo, com os 6M do diagrama de causa e efeito, a espinha de peixe: material, mão de obra, máquina, método, medição e meio. A lista existe para nenhuma família de causa ficar de fora. Num escritório, método e medição costumam render mais.</p>
 </section>
 
 <!-- 7 -->

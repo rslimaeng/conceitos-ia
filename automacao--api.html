@@ -258,6 +258,19 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -322,7 +335,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pedido" aria-labelledby="h-pedido">
   <span class="eyebrow">Do que um pedido é feito</span>
   <h2 id="h-pedido">Cinco palavras leem quase toda documentação</h2>
-  <p class="intro">É como a requisição do almoxarifado: se faltar o setor ou o código do item, ela volta sem ser atendida. O garçom só entende pedido no formato fixo que a documentação (o manual que o serviço publica dizendo como pedir) descreve: pedido confuso, cozinha não entende, e volta erro. Este é um pedido real no formato, para uma loja de exemplo que quer os dados do cliente 42. <strong>Clique em cada parte.</strong></p>
+  <p class="intro">Pense na comanda: se faltar a mesa ou o prato, ela volta da cozinha sem ser atendida. O garçom só entende pedido no formato fixo que a documentação (o manual que o serviço publica dizendo como pedir) descreve: pedido confuso, cozinha não entende, e volta erro. Este é um pedido real no formato, para uma loja de exemplo que quer os dados do cliente 42. <strong>Clique em cada parte.</strong></p>
   <div class="ap-anat">
     <div class="ap-req" role="group" aria-label="Partes do pedido e da resposta">
       <span class="lab">O pedido</span>
@@ -355,7 +368,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-verbos" aria-labelledby="h-verbos">
   <span class="eyebrow">Os quatro verbos</span>
   <h2 id="h-verbos">Buscar, criar, mudar, apagar</h2>
-  <p class="intro">Todo pedido ao setor de cadastro é um de quatro: consultar uma ficha, abrir uma nova, corrigir uma que existe ou dar baixa. O verbo diz o que você quer que a cozinha faça. São quatro, e <strong>buscar e criar resolvem a maior parte do dia a dia</strong>. Troque o verbo e veja o que acontece com a tabela de clientes do outro lado.</p>
+  <p class="intro">No restaurante, todo pedido ao garçom é um de quatro: ver o que tem, pedir um prato, trocar o que veio ou cancelar. O verbo diz o que você quer que a cozinha faça. São quatro, e <strong>buscar e criar resolvem a maior parte do dia a dia</strong>. Troque o verbo e veja o que acontece com a tabela de clientes do outro lado.</p>
   <div class="seg" role="group" aria-label="Verbo">
     <button type="button" data-v="get" aria-pressed="true">GET · buscar</button>
     <button type="button" data-v="post" aria-pressed="false">POST · criar</button>
@@ -380,7 +393,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-simular" aria-labelledby="h-simular">
   <span class="eyebrow">Faça um pedido</span>
   <h2 id="h-simular">Monte o pedido e veja o que a cozinha responde</h2>
-  <p class="intro">É como testar um formulário novo com a equipe antes de liberar: você erra de propósito para ver que aviso volta. A loja de exemplo tem um cardápio pequeno: clientes, e um cliente pelo número. Monte o pedido, envie e <strong>leia o número antes de ler o resto</strong>. Tente tirar a credencial, pedir o cliente 999 ou mandar cinquenta pedidos de uma vez.</p>
+  <p class="intro">Antes de levar convidados a um restaurante novo, vale testar a casa: pedir errado de propósito e ver o que o garçom responde. A loja de exemplo tem um cardápio pequeno: clientes, e um cliente pelo número. Monte o pedido, envie e <strong>leia o número antes de ler o resto</strong>. Tente tirar a credencial, pedir o cliente 999 ou mandar cinquenta pedidos de uma vez.</p>
   <div class="ap-sim">
     <div class="ap-ctrl">
       <div class="row"><span class="eyebrow">Verbo</span>
@@ -423,7 +436,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-numero" aria-labelledby="h-numero">
   <span class="eyebrow">O número que volta</span>
   <h2 id="h-numero">Leia o número antes de mexer em qualquer coisa</h2>
-  <p class="intro">Funciona como o aviso da transportadora: “endereço não encontrado” é problema de quem mandou; “atraso no centro de distribuição” é dela. O erro mais caro não é o erro: é ver o aviso vermelho e refazer tudo sem ler o número. <strong>Cada número aponta para um lugar diferente.</strong> Diga o que você confere primeiro em cada caso.</p>
+  <p class="intro">Quando o prato não vem, o garçom diz por quê: “esse prato não está no cardápio” é problema de quem pediu; “a cozinha parou” é da casa. O erro mais caro não é o erro: é ver o aviso vermelho e refazer tudo sem ler o número. <strong>Cada número aponta para um lugar diferente.</strong> Diga o que você confere primeiro em cada caso.</p>
   <div class="ap-quiz" id="apQuiz"></div>
   <p class="ap-score" id="apScore" aria-live="polite"></p>
 </section>
@@ -432,7 +445,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-cracha" aria-labelledby="h-cracha">
   <span class="eyebrow">O crachá</span>
   <h2 id="h-cracha">Credencial: como a cozinha sabe que é você</h2>
-  <p class="intro">Credencial é um crachá com o seu nome e a assinatura da empresa. A cada pedido, o seu sistema mostra o crachá; o servidor confere e libera. <strong>Sem o crachá certo, volta 401, que não é defeito: é a porta fechada.</strong> Quatro tipos cobrem quase todos os serviços.</p>
+  <p class="intro">Pense no restaurante da empresa: o garçom só anota o pedido de quem mostra o crachá. Credencial é esse crachá, com o seu nome e a assinatura da empresa. A cada pedido, o seu sistema mostra o crachá; a cozinha confere e libera. <strong>Sem o crachá certo, volta 401, que não é defeito: é a porta fechada.</strong> Quatro tipos cobrem quase todos os serviços.</p>
   <div class="ap-creds" role="group" aria-label="Tipos de credencial">
     <button type="button" class="ap-cred" data-c="chave" aria-pressed="true"><span class="et">Chave de API</span><b>Um código que você cola</b><p>O serviço gera, você copia e guarda.</p></button>
     <button type="button" class="ap-cred" data-c="oauth" aria-pressed="false"><span class="et">Entrar com a conta</span><b>Você autoriza numa janela</b><p>O famoso "entrar com Google".</p></button>
@@ -461,7 +474,7 @@ Content-Type: application/json</button></div>
 <section class="sec" id="s-direcao" aria-labelledby="h-direcao">
   <span class="eyebrow">Puxar ou ser avisado</span>
   <h2 id="h-direcao">Pedir é uma direção; ser avisado é a outra</h2>
-  <p class="intro">É a diferença entre ligar para o fornecedor perguntando se a mercadoria saiu e receber a mensagem dele quando ela sai. Tudo nesta página é você indo buscar: o seu sistema liga para o garçom. Existe a direção contrária, em que <strong>o outro sistema toca a sua campainha</strong> quando algo acontece. A maior parte das automações usa as duas.</p>
+  <p class="intro">É a diferença entre ir ao balcão perguntar se o prato já saiu e ouvir a campainha tocar quando ele fica pronto. Tudo nesta página é você indo buscar: o seu sistema chama o garçom. Existe a direção contrária, em que <strong>o outro sistema toca a sua campainha</strong> quando algo acontece. A maior parte das automações usa as duas.</p>
   <div class="ap-dir">
     <div class="ap-dcard"><span class="eyebrow">API · você puxa</span><span class="arrow">seu sistema → outro sistema</span><p>Você decide quando pedir: agora, toda manhã, quando alguém clicar. Serve para buscar, criar, mudar e apagar.</p></div>
     <div class="ap-dcard focal"><span class="eyebrow">Webhook · você é avisado</span><span class="arrow">outro sistema → seu sistema</span><p>O outro lado decide quando avisar: chegou um pagamento, alguém preencheu o formulário. Está na página <a href="./automacao--webhook.html">Webhook</a>.</p></div>

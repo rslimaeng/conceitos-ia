@@ -248,6 +248,19 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -343,7 +356,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pacote" aria-labelledby="h-pacote">
   <span class="eyebrow">O que chega</span>
   <h2 id="h-pacote">O aviso chega num pacote, e os seus dados estão num compartimento</h2>
-  <p class="intro">Pense na encomenda que chega na recepção: tem a etiqueta de fora, o remetente, e o que interessa vem dentro da caixa. Quando alguém preenche o formulário de contato, o seu endereço recebe um pacote com várias partes, escrito em JSON (o formato de ficha, com nome e valor, que os sistemas trocam). <strong>O que a pessoa preencheu não fica solto: fica dentro de uma parte chamada corpo.</strong> Clique nas partes para ver o que cada uma traz e como se chega nela.</p>
+  <p class="intro">Quem toca a campainha costuma trazer uma encomenda: tem a etiqueta de fora, o remetente, e o que interessa vem dentro da caixa. Quando alguém preenche o formulário de contato, o seu endereço recebe um pacote com várias partes, escrito em JSON (o formato de ficha, com nome e valor, que os sistemas trocam). <strong>O que a pessoa preencheu não fica solto: fica dentro de uma parte chamada corpo.</strong> Clique nas partes para ver o que cada uma traz e como se chega nela.</p>
   <div class="wh-pkg">
     <div class="wh-json" role="group" aria-label="O pacote que chegou">
       <div>{</div>
@@ -365,7 +378,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-enderecos" aria-labelledby="h-enderecos">
   <span class="eyebrow">Teste e uso de verdade</span>
   <h2 id="h-enderecos">O endereço de teste não é o de verdade</h2>
-  <p class="intro">É como o ramal provisório que a telefonia instala antes de liberar a linha: serve para conferir, mas se ele for impresso no cartão de visita, depois ninguém atende. Muitas ferramentas de automação dão dois endereços para a mesma campainha. <strong>Um serve para testar enquanto você monta; o outro, o de produção, para o uso de verdade.</strong> O erro mais comum é cadastrar o de teste no outro sistema e esquecer de trocar. Ligue e desligue as duas chaves e toque a campainha.</p>
+  <p class="intro">Pense numa campainha com dois botões: um provisório, que só toca enquanto você está montando a casa, e o definitivo. Se o botão que você mostrou às visitas foi o provisório, depois da montagem ninguém ouve. Muitas ferramentas de automação dão dois endereços para a mesma campainha. <strong>Um serve para testar enquanto você monta; o outro, o de produção, para o uso de verdade.</strong> O erro mais comum é cadastrar o de teste no outro sistema e esquecer de trocar. Ligue e desligue as duas chaves e toque a campainha.</p>
   <div class="wh-urls">
     <div class="wh-panel">
       <div class="wh-url"><span class="eyebrow">Endereço de teste</span><br>https://sua-ferramenta.exemplo/<b>webhook-test</b>/contato</div>
@@ -390,7 +403,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-responder" aria-labelledby="h-responder">
   <span class="eyebrow">Responder o aviso</span>
   <h2 id="h-responder">Quem tocou a campainha pode estar esperando uma resposta</h2>
-  <p class="intro">É a ligação para a central de atendimento: quem liga espera ouvir “anotado”, ou fica na linha esperando a resposta, e desliga se demorar demais. Na maior parte das vezes basta dizer "recebi". Às vezes, quem chamou precisa de conteúdo de volta: o chat espera o texto para mostrar, o site espera a confirmação. <strong>E quem espera desiste depois de um tempo</strong>, em geral perto de trinta segundos. Escolha o jeito de responder e o tempo que o seu fluxo leva.</p>
+  <p class="intro">Às vezes quem toca a campainha só deixa a encomenda; às vezes fica na porta esperando você atender, e vai embora se você demorar demais. Na maior parte das vezes basta dizer "recebi". Às vezes, quem chamou precisa de conteúdo de volta: o chat espera o texto para mostrar, o site espera a confirmação. <strong>E quem espera desiste depois de um tempo</strong>, em geral perto de trinta segundos. Escolha o jeito de responder e o tempo que o seu fluxo leva.</p>
   <div class="seg" role="group" aria-label="Jeito de responder">
     <button type="button" data-r="ja" aria-pressed="true">"Recebi", na hora</button>
     <button type="button" data-r="fim" aria-pressed="false">Espera o fluxo inteiro</button>
@@ -436,7 +449,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-ligar" aria-labelledby="h-ligar">
   <span class="eyebrow">Antes de ligar</span>
   <h2 id="h-ligar">Sete conferências antes de deixar a campainha ligada</h2>
-  <p class="intro">É a conferência antes de enviar uma proposta: anexo, destinatário e valor. O erro não aparece no rascunho; aparece depois que saiu. Quase todo problema com webhook aparece depois que tudo funcionou no teste. <strong>Marque o que já conferiu</strong>, e copie a lista para usar no seu próximo fluxo.</p>
+  <p class="intro">Campainha nova se confere antes de a visita chegar: o fio trocado não aparece quando você mesmo aperta; aparece no dia em que alguém toca e ninguém ouve. Quase todo problema com webhook aparece depois que tudo funcionou no teste. <strong>Marque o que já conferiu</strong>, e copie a lista para usar no seu próximo fluxo.</p>
   <div class="wh-check" id="whCheck"></div>
   <p class="wh-prog" id="whProg" aria-live="polite"></p>
   <div class="copy">

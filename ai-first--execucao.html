@@ -226,6 +226,9 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
 .ap-txt { font-size: .97rem; line-height: 1.75; }
 .ap-txt mark { background: var(--accent-soft); color: var(--text); border-radius: 3px; padding: 1px 3px; }
 .ap-txt mark small { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-right: 5px; }
+/* cada parte rotulada do pedido numa linha própria: rótulo em cima, texto embaixo (Rafael, 02/10) */
+.ap-txt mark { display: block; width: fit-content; max-width: 100%; margin-bottom: 12px; }
+.ap-txt mark small { display: block; margin: 2px 0 2px; }
 .ap-txt mark.ap-dec { background: var(--ok-soft); }
 .ap-txt mark.ap-dec small { color: var(--ok-texto); }
 
@@ -261,6 +264,19 @@ svg.pp-whole .pp-one, svg.pp-whole .pp-onet { opacity: 1; }
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 </head>
 <body>

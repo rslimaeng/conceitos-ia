@@ -290,6 +290,19 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -319,7 +332,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-tampo" aria-labelledby="h-tampo">
   <span class="eyebrow">O que ela enxerga agora</span>
   <h2 id="h-tampo">Ela só enxerga o que cabe na mesa agora</h2>
-  <p class="intro">Numa reunião, só conta o papel que está aberto na frente de todos; o que ficou no armário, por melhor que seja, não entra na conversa.</p>
+  <p class="intro">Na mesa, só conta o papel que está aberto em cima dela; o que ficou no armário, por melhor que seja, não entra na resposta.</p>
   <div class="facts">
     <div class="fact is"><span class="tag">É</span><h3>Espaço de tamanho fixo</h3><p>Igual todo dia; enche mais rápido com anexo grande e resposta longa.</p></div>
     <div class="fact is"><span class="tag">É</span><h3>Silencioso quando aperta</h3><p>Não há aviso. O primeiro sinal é uma resposta que ignora o combinado, as regras que você deu no começo.</p></div>
@@ -341,7 +354,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-pacote" aria-labelledby="h-pacote">
   <span class="eyebrow">Tudo vai de novo a cada envio</span>
   <h2 id="h-pacote">A conversa inteira volta para a mesa a cada mensagem</h2>
-  <p class="intro">Imagine um fornecedor que não guarda nada do seu pedido: a cada e-mail, você reenvia a conversa inteira, com todos os anexos, para ele ler de novo do começo. Ela não guardou o que você disse para consultar depois. <strong>Toda vez que você aperta enviar, o pacote inteiro sobe de novo.</strong> Mande mensagens e veja o que vai junto.</p>
+  <p class="intro">Imagine que a mesa é recolhida depois de cada resposta: a cada mensagem, a conversa inteira volta para cima dela, com todos os anexos, e é lida de novo do começo. Ela não guardou o que você disse para consultar depois. <strong>Toda vez que você aperta enviar, o pacote inteiro sobe de novo.</strong> Mande mensagens e veja o que vai junto.</p>
   <div class="bar-row"><button type="button" class="btn primary" id="sendBtn">Enviar mais uma mensagem</button><button type="button" class="btn" id="sendReset">Conversa nova</button></div>
   <div class="pack">
     <div class="chatbox" id="chatbox" aria-live="polite"></div>
@@ -358,7 +371,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-mesa" aria-labelledby="h-mesa">
   <span class="eyebrow">A mesa enchendo</span>
   <h2 id="h-mesa">A mesma mesa, mensagem após mensagem</h2>
-  <p class="intro">É como a pauta de uma reunião que dura a tarde toda: o primeiro item continua escrito no papel, mas às cinco horas ninguém mais pensa nele. Arraste para avançar a conversa. A faixa do combinado não muda de tamanho. O que muda é quanto ela ainda pesa no meio da pilha.</p>
+  <p class="intro">Cada mensagem é uma folha nova por cima da pilha: o bilhete do começo continua na mesa, mas quarenta folhas depois ninguém mais olha para ele. Arraste para avançar a conversa. A faixa do combinado não muda de tamanho. O que muda é quanto ela ainda pesa no meio da pilha.</p>
   <div class="desk">
     <div class="ctrl"><label for="msgs">Mensagens na conversa</label><input type="range" id="msgs" min="1" max="50" value="3"><output id="msgsOut" for="msgs">3</output></div>
     <div class="stackbar" role="img" aria-label="Barra da mesa, dividida entre combinado, material, conversa e espaço livre">
@@ -380,7 +393,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-circulos" aria-labelledby="h-circulos">
   <span class="eyebrow">O que ela sabe e o que ela vê</span>
   <h2 id="h-circulos">Se a mesa é tão pequena, como ela sabe tanta coisa?</h2>
-  <p class="intro">Um consultor experiente traz anos de formação, recebe a pasta do seu caso e, na reunião, só tem diante dos olhos as folhas abertas: são três coisas diferentes. Porque o que está na mesa não é tudo o que ela tem. São três círculos, um dentro do outro. <strong>Clique em cada um</strong>, e depois troque o momento da conversa.</p>
+  <p class="intro">Um consultor experiente traz anos de formação, recebe a pasta do seu caso e, na mesa, só tem diante dos olhos as folhas abertas: são três coisas diferentes. Porque o que está na mesa não é tudo o que ela tem. São três círculos, um dentro do outro. <strong>Clique em cada um</strong>, e depois troque o momento da conversa.</p>
   <div class="seg" role="group" aria-label="Momento da conversa"><button type="button" data-rm="3" aria-pressed="true">Mensagem 3</button><button type="button" data-rm="40" aria-pressed="false">Mensagem 40</button></div>
   <div class="rings">
     <svg viewBox="0 0 400 400" role="group" aria-label="Três círculos, um dentro do outro" xmlns="http://www.w3.org/2000/svg">
@@ -396,7 +409,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-combinado" aria-labelledby="h-combinado">
   <span class="eyebrow">As regras do começo</span>
   <h2 id="h-combinado">O mesmo pedido, na mensagem 3 e na mensagem 40</h2>
-  <p class="intro">É o recado que você deixa para o estagiário na segunda de manhã: na sexta à tarde, quarenta pedidos depois, ele ainda trabalha, mas o recado já não pesa. A conversa começou com três regras. O pedido é o mesmo nas duas pontas, palavra por palavra: <strong>“Resume o que a gente decidiu sobre o atraso.”</strong></p>
+  <p class="intro">É o bilhete do começo, agora no fundo da pilha: quarenta folhas depois, o trabalho continua, mas o bilhete já não pesa. A conversa começou com três regras. O pedido é o mesmo nas duas pontas, palavra por palavra: <strong>“Resume o que a gente decidiu sobre o atraso.”</strong></p>
   <div class="seg" role="group" aria-label="Momento"><button type="button" data-cm="3" aria-pressed="true">Mensagem 3 · mesa com folga</button><button type="button" data-cm="40" aria-pressed="false">Mensagem 40 · o começo virou pilha</button></div>
   <div class="twocol">
     <div class="rules-box"><span class="eyebrow">O que foi combinado na primeira mensagem</span><ul class="rcheck" id="rcheck"></ul></div>
@@ -409,7 +422,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-trechos" aria-labelledby="h-trechos">
   <span class="eyebrow">Colar o manual inteiro</span>
   <h2 id="h-trechos">Mais informação não é melhor: o trecho certo disputa com os parecidos</h2>
-  <p class="intro">Quem já procurou uma cláusula num contrato de oitenta páginas sabe: o difícil não é pular os anexos, é não confundir a cláusula certa com as três parecidas. O instinto é colar o manual inteiro “para ela ter contexto”. <strong>Contexto irrelevante demais piora a resposta.</strong> O problema não são as páginas que não têm nada a ver: são as parecidas.</p>
+  <p class="intro">Com a mesa coberta de folhas, o difícil não é pular as que não têm nada a ver: é não confundir a folha certa com as três parecidas. O instinto é colar o manual inteiro “para ela ter contexto”. <strong>Contexto irrelevante demais piora a resposta.</strong> O problema não são as páginas que não têm nada a ver: são as parecidas.</p>
   <div class="seg" role="group" aria-label="O que foi colado"><button type="button" data-ch="3" aria-pressed="true">Só as 3 páginas do assunto</button><button type="button" data-ch="40" aria-pressed="false">O manual de 40 páginas</button></div>
   <div class="chunks" id="chunks" role="img" aria-label="Páginas na mesa: a certa, as parecidas e as que não têm a ver"></div>
   <div class="legend" aria-hidden="true"><span><i class="sw r"></i>o trecho que responde</span><span><i class="sw a"></i>trecho parecido, de outro caso</span><span><i class="sw x"></i>não tem a ver com a pergunta</span></div>
@@ -420,7 +433,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-lembrar" aria-labelledby="h-lembrar">
   <span class="eyebrow">Lembrar ou recomeçar</span>
   <h2 id="h-lembrar">Lembrar a regra parece grátis, e cobra toda vez</h2>
-  <p class="intro">É o e-mail de lembrete sobre a mesma regra: cada um custa pouco, e cada um some na caixa de entrada mais rápido que o anterior. Reconhecido o sinal, existem dois caminhos. O gráfico mostra quanto o combinado ainda pesa ao longo da conversa em cada um. <strong>Repare no intervalo entre as quedas.</strong></p>
+  <p class="intro">Cada lembrete é mais um bilhete por cima da pilha: custa pouco, e afunda mais rápido que o anterior. Reconhecido o sinal, existem dois caminhos. O gráfico mostra quanto o combinado ainda pesa ao longo da conversa em cada um. <strong>Repare no intervalo entre as quedas.</strong></p>
   <div class="seg" role="group" aria-label="Estratégia"><button type="button" data-st="ambos" aria-pressed="true">Os dois</button><button type="button" data-st="lembrar" aria-pressed="false">Lembrar a regra</button><button type="button" data-st="recomecar" aria-pressed="false">Recomeçar</button></div>
   <div class="chart">
     <svg viewBox="0 0 640 280" role="img" aria-labelledby="gt" xmlns="http://www.w3.org/2000/svg">
@@ -446,7 +459,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 <section class="sec" id="s-teste" aria-labelledby="h-teste">
   <span class="eyebrow">Como saber se a mesa encheu</span>
   <h2 id="h-teste">Trinta segundos para saber o estado da mesa</h2>
-  <p class="intro">Antes de seguir numa reunião longa, um bom coordenador pede: “alguém recapitula o que decidimos até aqui?”. A recapitulação mostra o que ficou. Não dá para olhar e ver quanto ainda cabe. O teste é pedir que ela mostre o que ainda enxerga do começo. <strong>Cole no fim de uma conversa que já passou de vinte mensagens</strong>, e depois marque abaixo o que voltou.</p>
+  <p class="intro">Você não vê a mesa dela, e nada na tela mostra quanto ainda cabe. O teste é pedir que ela liste o que ainda enxerga do começo da pilha. <strong>Cole no fim de uma conversa que já passou de vinte mensagens</strong>, e depois marque abaixo o que voltou.</p>
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O teste da mesa</span><button type="button" class="btn" id="copyBtn">Copiar</button></div>
 <pre id="copyText">Antes de continuar, quero conferir o que você ainda tem desta conversa.
@@ -463,7 +476,7 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
 <section class="sec" id="s-projeto" aria-labelledby="h-projeto">
   <span class="eyebrow">Chat ou projeto</span>
   <h2 id="h-projeto">A regra que não afunda, porque não está na pilha</h2>
-  <p class="intro">É a diferença entre repetir a política da empresa em toda reunião e ter um regulamento interno que vale sem ninguém precisar repetir. Recomeçar resolve, mas amanhã você escolhe as linhas de novo, na mão. No chat, um projeto é um espaço que guarda instruções e arquivos para todas as conversas abertas nele. <strong>Dentro dele, as instruções são lidas no começo de toda conversa</strong>, inclusive na que você abrir amanhã.</p>
+  <p class="intro">É a diferença entre reescrever o bilhete do combinado em cada mesa nova e ter um bilhete que já chega na mesa, toda vez, sem ninguém escrever. Recomeçar resolve, mas amanhã você escolhe as linhas de novo, na mão. No chat, um projeto é um espaço que guarda instruções e arquivos para todas as conversas abertas nele. <strong>Dentro dele, as instruções são lidas no começo de toda conversa</strong>, inclusive na que você abrir amanhã.</p>
   <div class="where">
     <div class="wcard">
       <h3>Conversa solta no chat</h3>

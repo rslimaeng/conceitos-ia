@@ -239,6 +239,19 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
 .site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
 /* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
 </style>
 
 <div class="page">
@@ -252,10 +265,10 @@ code { font-family: var(--font-mono); font-size: .88em; }
 
 <header class="hero">
   <nav class="famhead" aria-label="Família Agente">
-    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente.html">← Visão geral</a><a href="./agente.html">Visão geral ↺ →</a></span></div>
-    <div class="famhead-chips"><a href="./agente.html">Visão geral</a><a href="./agente--anatomia.html" aria-current="page"><b>6.1</b>Anatomia</a></div>
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./agente.html">Família 6 · Agente</a></span><span class="famhead-pn"><a href="./agente.html">← Visão geral</a><a href="./agente--autonomia.html">6.2 Quanto faz sozinha →</a></span></div>
+    <div class="famhead-chips"><a href="./agente.html">Visão geral</a><a href="./agente--anatomia.html" aria-current="page"><b>6.1</b>Anatomia</a><a href="./agente--autonomia.html"><b>6.2</b>Quanto faz sozinha</a></div>
   </nav>
-  <span class="eyebrow">6.1 · 1 de 1</span>
+  <span class="eyebrow">6.1 · 1 de 2</span>
   <h1>Anatomia do agente</h1>
   <p class="sub">Quatro peças: o modelo, a instrução, a memória e as ferramentas</p>
   <p class="lead">Por fora, um agente (a IA que, além de responder, usa outros sistemas para fazer o trabalho) parece uma coisa só. <strong>Por dentro são quatro peças, e todo agente que falha falha em uma delas.</strong> Saber qual é a peça transforma tentativa e erro em conserto: você lê o sintoma e mexe no lugar certo.</p>
@@ -456,7 +469,7 @@ code { font-family: var(--font-mono); font-size: .88em; }
 <nav class="famfoot" aria-label="Família Agente: anterior e próxima">
   <a class="famfoot-prev" href="./agente.html"><span>← anterior</span><b>Visão geral · Agente</b></a>
   <a class="famfoot-fam" href="./agente.html#mapa">Família 6 · Agente · o mapa</a>
-  <span></span>
+  <a class="famfoot-next" href="./agente--autonomia.html"><span>próxima →</span><b>6.2 · Quanto a IA faz sozinha</b></a>
 </nav>
 <!-- /rodape -->
 

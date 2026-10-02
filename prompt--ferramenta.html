@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="prompt--ferramenta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedir uma ferramenta, não um texto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 2.1. Peças: o mesmo pedido como texto × como ferramenta (com a calculadora funcionando), quiz texto ou ferramenta, montador PDEF ao vivo com copiar e o que se perde sem cada parte, da entrega de hoje aos elementos da tela, como fazer × o que quer ver, pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+
+/* ---- só desta peça ---- */
+.sec > * { min-width: 0; }
+.qz-fb[hidden] { display: none; }
+.ask { font-size: .95rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.ask b { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); display: block; margin-bottom: 4px; }
+
+/* 1 · texto × tela */
+.tl-view { display: grid; gap: 12px; }
+.tl-view[hidden] { display: none; }
+.tl-text { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; max-width: 64ch; }
+.tl-app { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 20px; display: grid; gap: 14px; max-width: 560px; }
+.tl-app-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+.tl-app-bar span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.tl-res { display: grid; gap: 6px; }
+.tl-app .field .row { grid-template-columns: minmax(0, 1fr) 112px; }
+.tl-kinds { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.tl-kinds li { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 4px 12px; font-size: .9rem; color: var(--text-muted); }
+
+/* 3 · montador */
+.pd-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.pd-form { display: grid; gap: 12px; }
+.pd-form label { display: grid; gap: 4px; font-size: .92rem; }
+.pd-form label b { font-weight: 600; }
+.pd-form label small { color: var(--text-dim); font-size: .84rem; }
+.pd-form input, .pd-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.pd-out { display: grid; gap: 12px; }
+.pd-miss { margin: 6px 0 0; padding-left: 18px; }
+
+/* 4 · da entrega aos elementos */
+.el-map { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; align-items: stretch; }
+.el-arrow { align-self: center; font-family: var(--font-mono); font-size: 1.4rem; color: var(--accent); }
+.el-map ul { margin: 0; padding-left: 18px; color: var(--text-muted); font-size: .95rem; display: grid; gap: 4px; }
+
+/* 5 · como fazer × o que ver */
+.av-list { display: grid; gap: 10px; }
+.av-row { background: var(--bg-elev); border: 1px solid var(--border-strong); border-left-width: 4px; border-radius: 6px; padding: 12px 16px; display: grid; gap: 4px; }
+.av-row.como { border-left-color: var(--atencao); }
+.av-row.ver { border-left-color: var(--ok); }
+.av-row .q { font-family: var(--font-mono); font-size: .9rem; }
+.av-row .n { font-size: .9rem; color: var(--text-muted); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .pd-grid, .el-map { grid-template-columns: 1fr; }
+  .el-arrow { transform: rotate(90deg); justify-self: start; }
+}
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Prompt">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./prompt.html">Família 2 · Prompt</a></span><span class="famhead-pn"><a href="./prompt.html">← Visão geral</a><a href="./prompt.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./prompt.html">Visão geral</a><a href="./prompt--ferramenta.html" aria-current="page"><b>2.1</b>Pedir uma ferramenta</a><a class="ext" href="./ai-first--contexto.html"><b>5.2</b>Contexto, em AI First ↗</a></div>
+  </nav>
+  <span class="eyebrow">2.1 · 1 de 1</span>
+  <h1>Pedir uma ferramenta, não um texto</h1>
+  <p class="sub">O chat pode devolver uma tela que funciona, como uma calculadora ou um painel, e não só um texto: basta dizer o que você quer ver nela</p>
+  <p class="lead">Quase todo pedido volta como texto: você lê, copia, cola. Mas o chat também consegue montar uma pequena ferramenta (uma calculadora, um painel de números, um formulário, um checklist que se marca) e mostrar funcionando na própria conversa; em algumas ferramentas, num painel próprio. Por trás, ele escreve o código, as instruções que o navegador lê para desenhar a tela, e você não precisa ler nenhuma linha dele. <strong>O que muda no pedido é uma coisa só: em vez de dizer o que escrever, você diz o que quer ver na tela.</strong></p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-tela">Texto ou tela que funciona</a><a href="#s-quando">Recado ou ferramenta</a><a href="#s-partes">As quatro partes do pedido</a><a href="#s-elementos">O que precisa estar na tela</a><a href="#s-ver">Diga o que quer ver</a><a href="#s-numeros">Números de verdade na tela</a><a href="#s-segunda">A segunda versão</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-tela" aria-labelledby="h-tela">
+  <span class="eyebrow">Texto ou tela que funciona</span>
+  <h2 id="h-tela">A mesma pergunta pode voltar como resposta ou como ferramenta</h2>
+  <p class="intro">É a diferença entre o vendedor que calcula de cabeça a parcela do financiamento e o simulador no balcão, em que você mesmo muda o prazo e vê a parcela mudar. A conta é a mesma. <strong>No primeiro caso, cada valor novo é uma pergunta nova; no segundo, você testa dez valores em um minuto.</strong> Troque o pedido e mexa na ferramenta.</p>
+  <div class="seg" role="group" aria-label="Tipo de pedido">
+    <button type="button" data-tl="texto" aria-pressed="true">Pedido de texto</button>
+    <button type="button" data-tl="tela" aria-pressed="false">Pedido de ferramenta</button>
+  </div>
+  <div class="tl-view" id="tlTexto">
+    <p class="ask"><b>O pedido</b>“Uma máquina de R$ 80 mil economiza R$ 6 mil por mês. Em quanto tempo ela se paga?”</p>
+    <div class="tl-text">
+      <span class="eyebrow">O que voltou · um parágrafo</span>
+      <p>O tempo de retorno é o valor do investimento dividido pela economia de cada mês. Com R$ 80.000 de investimento e R$ 6.000 de economia mensal, a máquina se paga em cerca de 13 meses, pouco mais de um ano. Se a economia fosse maior, o prazo cairia.</p>
+      <p class="hint">Está certo. E para saber o que acontece com R$ 7.500 de economia, ou com uma máquina de R$ 120 mil, você pergunta de novo e espera outro parágrafo.</p>
+    </div>
+  </div>
+  <div class="tl-view" id="tlTela" hidden>
+    <p class="ask"><b>O pedido</b>“Monte uma calculadora em que eu mexo no valor da máquina e na economia por mês e vejo, na hora, em quantos meses ela se paga. Se for menos de um ano, quero um aviso de que vale a pena.”</p>
+    <div class="tl-app" aria-label="Exemplo de ferramenta: calculadora de retorno">
+      <div class="tl-app-bar"><span>Calculadora de retorno</span><span>funcionando</span></div>
+      <div class="field">
+        <label for="tlInv">Valor da máquina</label>
+        <div class="row"><input type="range" id="tlInv" min="10000" max="200000" step="5000" value="80000"><output id="tlInvO" for="tlInv"></output></div>
+      </div>
+      <div class="field">
+        <label for="tlEco">Economia por mês</label>
+        <div class="row"><input type="range" id="tlEco" min="1000" max="20000" step="500" value="6000"><output id="tlEcoO" for="tlEco"></output></div>
+      </div>
+      <div class="tl-res"><span class="eyebrow">Se paga em</span><span class="big" id="tlMes"></span></div>
+      <div class="verdict" id="tlVer" aria-live="polite"></div>
+    </div>
+    <p class="hint">Mexa nos dois controles deslizantes. É isso que volta quando o pedido é de ferramenta: uma tela que você usa, e não uma resposta que você lê.</p>
+  </div>
+  <p class="intro">O que dá para pedir assim, sem saber programar:</p>
+  <ul class="tl-kinds">
+    <li>painel de números com cartões e gráficos</li><li>calculadora ou simulador</li><li>fluxograma de um processo</li><li>painel de status com sinal verde, amarelo e vermelho</li><li>guia de etapas para o cliente</li><li>checklist que se marca item a item</li><li>formulário</li>
+  </ul>
+  <p class="hint">Na maioria dos chats a ferramenta aparece sozinha quando o pedido é de ferramenta. Em alguns, o recurso precisa estar ligado nas configurações, e o nome dele muda de um chat para outro. Se voltar só um bloco de texto cheio de símbolos, peça: “mostre funcionando aqui na conversa”.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-quando" aria-labelledby="h-quando">
+  <span class="eyebrow">Recado ou ferramenta</span>
+  <h2 id="h-quando">Ferramenta é para o que alguém vai mexer, clicar ou abrir de novo</h2>
+  <p class="intro">No escritório ninguém manda planilha para dar um recado, nem manda recado para quem vai refazer a mesma conta toda semana. A régua aqui é parecida: <strong>se a resposta vai ser lida uma vez, peça texto; se alguém vai trocar um número, marcar um item ou voltar a ela, peça a ferramenta.</strong> Classifique os sete pedidos.</p>
+  <div class="qz" id="qQuiz"></div>
+  <p class="qz-score" id="qScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-partes" aria-labelledby="h-partes">
+  <span class="eyebrow">As quatro partes do pedido</span>
+  <h2 id="h-partes">Quem é, para quê, o que vai na tela, com que cara</h2>
+  <p class="intro">Na encomenda de um móvel planejado, você diz qual marceneiro chamar, para que cômodo e quem usa, o que precisa caber dentro e qual o acabamento. Esquecer o “o que precisa caber” é receber um armário bonito sem lugar para as pastas. O pedido de ferramenta tem as mesmas quatro partes, e um jeito que funciona as chama de <strong>PDEF</strong>: <strong>Persona</strong> (o especialista que a IA deve ser), <strong>Descrição</strong>, <strong>Elementos</strong> e <strong>Formato</strong>. Carregue um exemplo, troque pelo seu e apague uma parte para ver o que se perde.</p>
+  <div class="seg" role="group" aria-label="Carregar exemplo" id="pdSeg">
+    <button type="button" data-pd="painel" aria-pressed="true">Painel de vendas</button>
+    <button type="button" data-pd="calc" aria-pressed="false">Calculadora de retorno</button>
+    <button type="button" data-pd="fluxo" aria-pressed="false">Fluxo de aprovação</button>
+    <button type="button" data-pd="status" aria-pressed="false">Status do projeto</button>
+    <button type="button" data-pd="vazio" aria-pressed="false">Em branco</button>
+  </div>
+  <div class="pd-grid">
+    <div class="pd-form">
+      <label for="pdP"><b>Persona</b><small>Que especialista você contrataria para fazer isso?</small><input id="pdP"></label>
+      <label for="pdD"><b>Descrição</b><small>Para que serve, quem vai usar, que problema resolve?</small><textarea id="pdD" rows="3"></textarea></label>
+      <label for="pdE"><b>Elementos</b><small>O que precisa estar na tela? Um por linha.</small><textarea id="pdE" rows="5"></textarea></label>
+      <label for="pdF"><b>Formato</b><small>Como deve parecer, e onde você vai abrir?</small><textarea id="pdF" rows="2"></textarea></label>
+    </div>
+    <div class="pd-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O seu pedido, ao vivo</span><button type="button" class="btn" data-copy="pdOut">Copiar</button></div>
+        <pre id="pdOut"></pre>
+      </div>
+      <div class="verdict" id="pdVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">É o mesmo raciocínio dos <a href="./prompt.html#s-campos">seis campos de um pedido de texto</a>, com uma parte que só a ferramenta tem: os Elementos, a lista do que aparece na tela. Persona é o mesmo papel de lá.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-elementos" aria-labelledby="h-elementos">
+  <span class="eyebrow">O que precisa estar na tela</span>
+  <h2 id="h-elementos">Os elementos você não inventa: eles já estão no que você entrega</h2>
+  <p class="intro">Pense no relatório que você já manda toda segunda: o diretor sempre procura as mesmas três linhas antes de ler o resto. Essas linhas são os elementos da tela. <strong>Quem começa pelo “que bonito seria ter um gráfico” ganha uma tela bonita; quem começa pelo que já entrega ganha uma tela útil.</strong> Escolha uma entrega.</p>
+  <div class="seg" role="group" aria-label="Entrega de exemplo" id="elSeg">
+    <button type="button" data-el="0" aria-pressed="true">Resumo de vendas da semana</button>
+    <button type="button" data-el="1" aria-pressed="false">Status do projeto</button>
+    <button type="button" data-el="2" aria-pressed="false">Pesquisa de satisfação do evento</button>
+  </div>
+  <div class="el-map" aria-live="polite">
+    <div class="card"><span class="eyebrow">O que você já entrega hoje</span><ul id="elHoje"></ul></div>
+    <span class="el-arrow" aria-hidden="true">→</span>
+    <div class="card focal"><span class="eyebrow">Os elementos da tela</span><ul id="elTela"></ul></div>
+  </div>
+  <p class="hint" id="elNota"></p>
+  <p class="hint">Se você já mapeou o seu processo em entrada, processo e saída, a coluna da saída é a lista pronta: <a href="./ai-first--ipo.html#s-colunas">as sete colunas do IPO</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-ver" aria-labelledby="h-ver">
+  <span class="eyebrow">Diga o que quer ver</span>
+  <h2 id="h-ver">Diga o que quer ver, e deixe com ela o como fazer</h2>
+  <p class="intro">Na reforma da sala, você diz ao eletricista “quero uma tomada na altura da mesa”, e não a grossura do fio. No pedido de ferramenta, a tentação é a mesma: quem já viu uma tela por dentro pede a tecnologia. <strong>A regra do jeito PDEF é literal: não diga como fazer, diga o que você quer ver, e deixe a IA escolher a tecnologia.</strong> As mesmas cinco linhas, nos dois jeitos.</p>
+  <div class="seg" role="group" aria-label="Jeito de pedir">
+    <button type="button" data-av="como" aria-pressed="true">Pedido que diz como fazer</button>
+    <button type="button" data-av="ver" aria-pressed="false">Pedido que diz o que quer ver</button>
+  </div>
+  <div class="av-list" id="avList" aria-live="polite"></div>
+  <p class="punch" id="avPunch"></p>
+  <p class="hint">É a mesma regra do <a href="./prompt.html#s-destino">destino e do trajeto</a> num pedido de texto, aplicada à tela. E a exceção também vale aqui: quando a forma de rodar é o próprio requisito (abrir sem internet, caber num anexo de e-mail), diga isso, mas como o que você precisa ver acontecer.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-numeros" aria-labelledby="h-numeros">
+  <span class="eyebrow">Números de verdade na tela</span>
+  <h2 id="h-numeros">Tela pronta não quer dizer número certo</h2>
+  <p class="intro">A maquete do condomínio no estande de vendas tem piscina, árvore e gente na varanda, e nada daquilo existe ainda. A ferramenta montada no chat é um protótipo, um rascunho que funciona: <strong>ela parece acabada antes de os números serem de verdade.</strong> Três cuidados antes de mostrar para alguém.</p>
+  <div class="three">
+    <div class="card"><h3>Sem anexo, o número é de exemplo</h3><p>Se você não mandou os dados, ela preenche a tela com valores que parecem plausíveis. Servem para ver o desenho, nunca para decidir.</p></div>
+    <div class="card focal"><h3>Com anexo, peça a conta e confira dois</h3><p>Diga que todo número tem que vir do arquivo, sem dado inventado. Depois confira dois valores na mão, contra a planilha. Se não baterem, peça para reler o arquivo e recalcular.</p></div>
+    <div class="card"><h3>Rascunho, não o sistema</h3><p>Serve para ver se a ideia funciona e mostrar a um colega antes de alguém investir em desenvolver de verdade. Não substitui o sistema da empresa.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Antes de usar a tela</span><button type="button" class="btn" data-copy="nuAsk">Copiar</button></div>
+<pre id="nuAsk">Antes de eu usar esta tela: para cada número que aparece nela, diga se ele veio do arquivo que anexei ou se é um valor de exemplo.
+Os que vieram do arquivo, recalcule direto dos dados e me mostre a conta de dois deles.
+Os que são de exemplo, marque na própria tela com a palavra "exemplo".</pre>
+  </div>
+  <p class="hint">Por que um chat faz a conta e outro só lê um pedaço da planilha e estima: <a href="./dados--planilha.html#s-calcula">fez a conta ou leu por cima</a>. E antes de anexar dado de cliente ou de funcionário: <a href="./limites-da-ia--o-que-pode-subir.html">o que pode subir</a>.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-segunda" aria-labelledby="h-segunda">
+  <span class="eyebrow">A segunda versão</span>
+  <h2 id="h-segunda">A primeira versão nunca é a boa, e o ajuste é um elemento por vez</h2>
+  <p class="intro">A gráfica manda a prova do folder; você circula o que muda e pede a segunda prova, sem refazer a encomenda inteira. Com a ferramenta é igual: <strong>gerar, ver o que falta, pedir o ajuste daquele ponto, gerar de novo.</strong> Uma rodada de ajuste costuma ensinar mais sobre o que você precisa do que uma hora de especificação.</p>
+  <div class="three">
+    <div class="card"><span class="eyebrow">01 · olhe</span><h3>Abra e use</h3><p>Mexa em tudo. Anote o que falta, o que está no lugar errado e o que ninguém vai usar.</p></div>
+    <div class="card focal"><span class="eyebrow">02 · aponte</span><h3>Um elemento por pedido</h3><p>Nomeie o elemento e diga como quer ver. “Melhore o painel” devolve outro painel; “o ranking do maior para o menor” devolve o seu.</p></div>
+    <div class="card"><span class="eyebrow">03 · mostre</span><h3>A um colega, antes de polir</h3><p>Quem vai usar acha em dois minutos o que você não viu em vinte. Polir antes disso é polir o que pode sair.</p></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Três pedidos de ajuste</span><button type="button" class="btn" data-copy="sgAsk">Copiar</button></div>
+<pre id="sgAsk"><b>Ajustar um ponto</b>
+Ajuste <i>[o elemento]</i> para <i>[como você quer ver]</i>. Não mude o resto da tela.
+
+<b>Quando parou no meio</b>
+Continue de onde parou, no mesmo formato e com o mesmo visual.
+
+<b>Quando o número não bate</b>
+Os valores estão diferentes do arquivo. Releia o arquivo que anexei e recalcule cada número a partir dos dados.</pre>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Peça a tela, não a explicação</h3><p>Quando alguém vai mexer no número, marcar um item ou voltar a ela, o pedido é de ferramenta.</p></div>
+    <div class="take-card"><h3>Os elementos você já tem</h3><p>O que precisa estar na tela é o que você já entrega. Você não inventa: traduz.</p></div>
+    <div class="take-card"><h3>Diga o que quer ver</h3><p>A tecnologia é com ela. O que aparece, onde abre e como conferir é com você.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Ferramenta</dt><dd>Aqui, uma tela que o chat monta e mostra funcionando: calculadora, painel, formulário, checklist.</dd>
+    <dt>Código</dt><dd>As instruções que o navegador lê para desenhar a tela. O chat escreve; você não precisa ler.</dd>
+    <dt>PDEF</dt><dd>As quatro partes do pedido de ferramenta: Persona, Descrição, Elementos, Formato.</dd>
+    <dt>Elementos</dt><dd>A lista do que aparece na tela: cada número, gráfico, botão ou aviso.</dd>
+    <dt>Protótipo</dt><dd>Um rascunho que funciona, feito para testar a ideia antes de investir nela.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. O lugar onde a ferramenta aparece, o nome do recurso e se ele precisa ser ligado mudam entre chats e versões. A calculadora, os valores, os pedidos e os painéis são exemplos inventados. Família <a href="./prompt.html">Prompt</a>; irmãs: esta é a primeira.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Prompt: anterior e próxima">
+  <a class="famfoot-prev" href="./prompt.html"><span>← anterior</span><b>Visão geral · Prompt</b></a>
+  <a class="famfoot-fam" href="./prompt.html#mapa">Família 2 · Prompt · o mapa</a>
+  <span></span>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function brl(v) { return 'R$ ' + v.toLocaleString('pt-BR'); }
+
+  /* 1 · texto × tela */
+  var tlBtns = document.querySelectorAll('[data-tl]'), tlTexto = document.getElementById('tlTexto'), tlTela = document.getElementById('tlTela');
+  function setTl(k) { pressGroup(tlBtns, function (x) { return x.dataset.tl === k; }); tlTexto.hidden = k !== 'texto'; tlTela.hidden = k !== 'tela'; }
+  tlBtns.forEach(function (b) { b.addEventListener('click', function () { setTl(b.dataset.tl); }); });
+  var tlInv = document.getElementById('tlInv'), tlEco = document.getElementById('tlEco');
+  function calc() {
+    var inv = +tlInv.value, eco = +tlEco.value, m = inv / eco;
+    document.getElementById('tlInvO').textContent = brl(inv);
+    document.getElementById('tlEcoO').textContent = brl(eco);
+    document.getElementById('tlMes').textContent = m.toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' meses';
+    var v = document.getElementById('tlVer');
+    if (m <= 12) { v.className = 'verdict ok'; v.innerHTML = '<b>Vale a pena.</b> Se paga em menos de um ano.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>Passa de um ano.</b> Mexa na economia por mês para ver quanto falta.'; }
+  }
+  [tlInv, tlEco].forEach(function (i) { i.addEventListener('input', calc); });
+  calc();
+  setTl('texto');
+
+  /* 2 · recado ou ferramenta */
+  quiz(document.getElementById('qQuiz'), document.getElementById('qScore'), [
+    { s: 'Avisar a equipe que a reunião de sexta passou para quinta.', a: 'tx', why: 'É lido uma vez e acabou. Uma tela aqui seria só trabalho a mais.' },
+    { s: 'Ver quanto sobra do orçamento se o frete subir 5%, 10% ou 15%.', a: 'fe', why: 'Você vai trocar o número três vezes, e talvez mais. Um controle que você mexe responde na hora.' },
+    { s: 'Resumir a reunião de ontem para quem faltou.', a: 'tx', why: 'Leitura de uma vez. O resumo é o produto.' },
+    { s: 'Um painel para a reunião de segunda, que a diretoria olha toda semana com números novos.', a: 'fe', why: 'Volta toda semana, com o mesmo desenho e dados novos. É a cara de uma ferramenta.' },
+    { s: 'Um checklist de abertura da loja, que o gerente marca item a item no celular.', a: 'fe', why: 'Alguém vai marcar, item por item. Lista de texto não se marca.' },
+    { s: 'Explicar a um cliente por que a entrega atrasou.', a: 'tx', why: 'É uma mensagem, com tom. Quem lê não vai mexer em nada.' },
+    { s: 'Mostrar a quem acabou de entrar quem aprova cada etapa de um pedido de viagem.', a: 'fe', why: 'Vai ser consultado várias vezes, e um fluxo se entende melhor desenhado do que em parágrafo. Aqui o texto também serviria; o desenho economiza a releitura.' }
+  ], [['tx', 'Texto'], ['fe', 'Ferramenta']], 'a pergunta é sempre a mesma: alguém vai mexer, marcar ou voltar?');
+
+  /* 3 · montador */
+  var PD = {
+    painel: ['Atue como consultor de indicadores comerciais, especialista em painéis para diretoria.', 'Um painel de vendas para a reunião de segunda com a diretoria. Quero entender a tendência e decidir rápido, não só ver número.', '4 cartões no topo: faturamento, meta, valor médio por venda e % da meta (verde se bateu, vermelho se não)\nas vendas mês a mês, de janeiro a dezembro\nquanto cada categoria de produto pesa no total\nos 5 vendedores que mais venderam, com uma barra de progresso em cada nome', 'Limpo e executivo, fundo claro. Quero usar aqui na conversa.'],
+    calc: ['Atue como especialista em telas fáceis de usar para quem não é da área financeira.', 'Uma calculadora de retorno para decidir a compra de uma máquina. Quem usa é o gerente da fábrica, no celular.', 'dois controles deslizantes: valor da máquina e economia por mês\no resultado muda na hora em que eu mexo\no tempo de retorno em destaque, em meses\nse for menos de 12 meses, o aviso "investimento recomendado"', 'Botões grandes, cantos arredondados, azul e verde. Precisa funcionar aqui na conversa.'],
+    fluxo: ['Atue como especialista em processos.', 'O fluxo de aprovação de viagens, para pôr no site interno da empresa. Envolve quatro áreas e precisa mostrar quem faz o quê.', 'uma faixa por área: funcionário, gestor, RH, financeiro\no funcionário pede; o gestor aprova ou reprova (reprovado termina ali)\no RH confere a cota e emite a passagem\no financeiro agenda o reembolso', 'Uma cor por área, leitura de cima para baixo. Quero ver o desenho aqui na conversa.'],
+    status: ['Atue como gerente de projetos experiente.', 'Um painel de status do projeto para a reunião com a diretoria. Qualquer diretor precisa entender o risco em dez segundos.', 'três sinais (verde, amarelo, vermelho) para prazo, orçamento e qualidade\numa caixa de destaque com os impedimentos da semana\numa lista curta com os próximos passos', 'Direto e sem enfeite, fundo escuro para os sinais aparecerem. Vou mostrar na reunião.'],
+    vazio: ['', '', '', '']
+  };
+  var SEM = [
+    ['Persona', 'sai uma tela genérica, sem o jeito da sua área.'],
+    ['Descrição', 'ela não sabe para quem está montando nem para quê, e erra o tom.'],
+    ['Elementos', 'ela decide sozinha o que entra na tela, e a ferramenta sai incompleta ou com a coisa errada.'],
+    ['Formato', 'funciona, mas sai com a cara errada ou num formato que você não consegue abrir.']
+  ];
+  var pdIn = ['pdP', 'pdD', 'pdE', 'pdF'].map(function (id) { return document.getElementById(id); });
+  var pdBtns = document.querySelectorAll('[data-pd]');
+  function pd() {
+    var v = pdIn.map(function (i) { return i.value.trim(); });
+    var els = v[2].split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    var out = '';
+    if (v[0]) out += '<b>Persona:</b> ' + esc(v[0]) + '\n\n';
+    if (v[1]) out += '<b>Descrição:</b> ' + esc(v[1]) + '\n\n';
+    if (els.length) out += '<b>Elementos:</b>\n' + els.map(function (l) { return '- ' + esc(l); }).join('\n') + '\n\n';
+    if (v[3]) out += '<b>Formato:</b> ' + esc(v[3]) + '\n\n';
+    out += 'Monte a ferramenta funcionando, para eu usar aqui. Se faltar informação para algum elemento, pergunte antes de inventar.';
+    document.getElementById('pdOut').innerHTML = out;
+    var miss = SEM.filter(function (s, i) { return i === 2 ? !els.length : !v[i]; });
+    var ver = document.getElementById('pdVer');
+    if (!miss.length) { ver.className = 'verdict ok'; ver.innerHTML = '<b>As quatro partes estão aí.</b> A que mais pesa é Elementos: confira se cada linha é algo que dá para ver na tela.'; }
+    else { ver.className = 'verdict no'; ver.innerHTML = '<b>' + (4 - miss.length) + ' de 4 partes.</b> O que acontece sem as que faltam:<ul class="pd-miss">' + miss.map(function (s) { return '<li><b>Sem ' + s[0] + ':</b> ' + s[1] + '</li>'; }).join('') + '</ul>'; }
+  }
+  function loadPd(k) { pressGroup(pdBtns, function (x) { return x.dataset.pd === k; }); PD[k].forEach(function (t, i) { pdIn[i].value = t; }); pd(); }
+  pdBtns.forEach(function (b) { b.addEventListener('click', function () { loadPd(b.dataset.pd); }); });
+  pdIn.forEach(function (i) { i.addEventListener('input', pd); });
+  loadPd('painel');
+
+  /* 4 · da entrega aos elementos */
+  var EL = [
+    { h: ['um e-mail com o faturamento da semana', 'a lista dos vendedores, do maior para o menor', 'quanto cada um cresceu sobre a semana anterior'], t: ['faturamento da semana em destaque, no topo', 'ranking dos vendedores com uma barra de progresso', 'uma coluna com o % de crescimento, verde ou vermelho'], n: 'Nada novo entrou na tela. O que mudou é que o diretor deixa de procurar as três linhas no meio do e-mail.' },
+    { h: ['um parágrafo dizendo se o prazo está em dia', 'outro sobre o orçamento e a qualidade', 'a lista do que está travado e do que vem na semana'], t: ['três sinais (verde, amarelo, vermelho): prazo, orçamento, qualidade', 'uma caixa de destaque com os impedimentos', 'os próximos passos em lista curta'], n: 'Os três parágrafos viraram três sinais. Quem lê entende o risco antes de ler qualquer palavra.' },
+    { h: ['a nota média geral do evento', 'quantos recomendariam', 'as notas de cada quesito', 'as reclamações que mais apareceram'], t: ['dois cartões no topo: nota média e % que recomendaria', 'barras com a nota de cada quesito, da pior para a melhor', 'as cinco reclamações mais citadas, com a contagem'], n: 'A ordem “da pior para a melhor” é decisão sua, e é ela que faz o quesito problemático aparecer primeiro.' }
+  ];
+  var elBtns = document.querySelectorAll('[data-el]');
+  function setEl(k) {
+    pressGroup(elBtns, function (x) { return +x.dataset.el === k; });
+    var e = EL[k], li = function (a) { return a.map(function (x) { return '<li>' + x + '</li>'; }).join(''); };
+    document.getElementById('elHoje').innerHTML = li(e.h);
+    document.getElementById('elTela').innerHTML = li(e.t);
+    document.getElementById('elNota').textContent = e.n;
+  }
+  elBtns.forEach(function (b) { b.addEventListener('click', function () { setEl(+b.dataset.el); }); });
+  setEl(0);
+
+  /* 5 · como fazer × o que ver */
+  var AV = [
+    ['Use HTML, CSS e JavaScript.', 'Diz a tecnologia, que ela escolheria sozinha. Não diz onde você vai usar.', 'Quero abrir e usar aqui na conversa, sem instalar nada.', 'Confere abrindo: funcionou aqui, sem baixar nada?'],
+    ['Não use nenhuma biblioteca de gráficos de fora.', 'É regra de construção. O motivo verdadeiro ficou na sua cabeça.', 'Precisa ser um arquivo só, que eu mando por e-mail e abre sem internet.', 'Aqui a forma de rodar é requisito: entra, dita como o que precisa acontecer.'],
+    ['Crie uma função que recalcule quando o campo mudar.', 'Descreve o mecanismo. Você não tem como conferir se a função está lá.', 'O resultado muda na hora em que eu mexo no valor.', 'Confere mexendo no valor.'],
+    ['Use um gráfico de rosca com cinco cores.', 'Escolhe o desenho antes de dizer a pergunta que ele responde.', 'Quero ver quanto cada categoria pesa no total, e qual é a maior.', 'Confere num olhar: dá para dizer qual é a maior?'],
+    ['Percorra as linhas da planilha e some por vendedor.', 'É o trajeto da conta. Ela faria isso de qualquer jeito.', 'O total de cada vendedor, do maior para o menor, com o nome de cada um.', 'Confere lendo o primeiro da lista contra a planilha.']
+  ];
+  var avBtns = document.querySelectorAll('[data-av]'), avList = document.getElementById('avList');
+  function setAv(k) {
+    pressGroup(avBtns, function (x) { return x.dataset.av === k; });
+    var c = k === 'como';
+    avList.innerHTML = AV.map(function (a) { return '<div class="av-row ' + k + '"><span class="q">“' + (c ? a[0] : a[2]) + '”</span><span class="n">' + (c ? a[1] : a[3]) + '</span></div>'; }).join('');
+    document.getElementById('avPunch').innerHTML = c ? 'Cinco linhas que você <em>não tem como conferir</em> olhando a tela.' : 'Cinco linhas que você <em>confere olhando a tela</em>.';
+  }
+  avBtns.forEach(function (b) { b.addEventListener('click', function () { setAv(b.dataset.av); }); });
+  setAv('como');
+})();
+</script>
+</body>
+</html>
