@@ -361,6 +361,19 @@ Se encontrar um problema que muda as contas, pare aqui e me avise. Não calcule 
 <pre id="clPrompt">Antes de eu usar esse número: você executou um cálculo sobre todas as linhas da planilha, ou estimou olhando uma parte? Diga quantas linhas entraram na conta e quais colunas você usou.
 Se estimou, diga isso com todas as letras e refaça calculando sobre o arquivo inteiro, se conseguir. Se não conseguir, me diga que não conseguiu.</pre>
   </div>
+  <p class="intro">Fazer a conta não basta quando a regra da conta está errada. Num questionário pontuado, como um teste de perfil comportamental DISC (cada resposta vale de 1 a 4, e a soma sai por perfil), quem diz qual item conta para qual perfil é a <strong>chave de correção</strong> que vai no pedido. <strong>Ela aplica a chave que recebeu, sem estranhar.</strong> Se a chave põe “mantenho minha mesa sempre organizada” na soma de Dominância (o perfil de quem decide rápido e assume o comando), ela soma, devolve o percentual e o gráfico com a mesma segurança.</p>
+  <div class="two">
+    <div class="dd-ans bad">
+      <span class="eyebrow">Só pedir o resultado</span>
+      <p>“Calcule o percentual de cada perfil com esta chave e faça um gráfico.”</p>
+      <p>Volta: “Perfil predominante: Dominância, 38%”, com gráfico. Três dos itens somados ali falam de organização, de evitar risco e de decidir por dados. Nada na resposta avisa.</p>
+    </div>
+    <div class="dd-ans good">
+      <span class="eyebrow">Conferir a chave antes</span>
+      <p>“Antes de calcular, leia cada item e diga se o enunciado combina com o perfil em que a chave o colocou. Liste os que parecem trocados e espere eu confirmar.”</p>
+      <p>Você decide sobre os itens apontados, corrige a chave, e só então pede o percentual. Melhor ainda: rode a chave antes num questionário cujo resultado você já sabe (<a href="./limites-da-ia--alucinacao.html#s-fechado">não estreie o pedido num caso novo</a>).</p>
+    </div>
+  </div>
   <p class="hint">Por que o mesmo modelo calcula num aplicativo e estima em outro está em <a href="./llm-e-harness.html">LLM e harness</a>: a ferramenta é do aplicativo, não do modelo. E por que ela preenche em vez de dizer que não sabe, em <a href="./limites-da-ia--alucinacao.html#s-sem-base">alucinação</a>.</p>
 </section>
 
@@ -415,7 +428,7 @@ Se a pergunta exigir uma suposição forte, como “por que caiu?”, responda c
     <dt>Ferramenta de calcular</dt><dd>O recurso do chat que roda a conta sobre o arquivo inteiro. Sem ela, a IA lê o que consegue ver e estima.</dd>
     <dt>Endereço do número</dt><dd>A coluna, o corte de linhas e a contagem de onde um número saiu. É a citação da planilha.</dd>
   </dl>
-  <p class="foot">Simplificação didática. O nome da ferramenta de calcular, se ela vem ligada e quanto de uma planilha cabe na leitura mudam entre aplicativos, planos e versões; por isso a pergunta “quantas linhas entraram?” vale em qualquer um. A pesquisa de mil respostas, os 43,0% e os 32,2%, as 252 respostas sem comentário, a região que falta e a média de 5,90 vêm de uma planilha real usada em aula, sem identificação. As lojas, os canais e as regiões com nota, a estimativa de 6,4 e os exemplos das três leituras são inventados para o exemplo. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--pesquisa.html">pesquisa com hipótese</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>.</p>
+  <p class="foot">Simplificação didática. O nome da ferramenta de calcular, se ela vem ligada e quanto de uma planilha cabe na leitura mudam entre aplicativos, planos e versões; por isso a pergunta “quantas linhas entraram?” vale em qualquer um. A pesquisa de mil respostas, os 43,0% e os 32,2%, as 252 respostas sem comentário, a região que falta e a média de 5,90 vêm de uma planilha real usada em aula, sem identificação. As lojas, os canais e as regiões com nota, a estimativa de 6,4 e os exemplos das três leituras são inventados para o exemplo. O questionário de perfil é genérico, e os 38% são ilustrativos. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--pesquisa.html">pesquisa com hipótese</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>.</p>
 </section>
 
 <!-- rodape -->

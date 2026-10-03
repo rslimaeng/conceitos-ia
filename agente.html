@@ -234,6 +234,13 @@ code { font-family: var(--font-mono); font-size: .88em; }
 .fx-pros { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 18px; margin: 0; }
 .fx-pros dt { font-weight: 600; }
 .fx-pros dd { margin: 0; color: var(--text-muted); }
+/* reforço: o erro que se multiplica a cada passo */
+.chance { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 20px; display: grid; gap: 12px; min-width: 0; }
+.chance > * { min-width: 0; }
+.ch-track { height: 22px; background: var(--accent-soft); border-radius: 4px; overflow: hidden; }
+.ch-fill { height: 100%; width: 59%; background: var(--accent); border-radius: 4px; transition: width .35s ease; }
+.ch-fill.low { background: var(--atencao); }
+@media (prefers-reduced-motion: reduce) { .ch-fill { transition: none; } }
 /* 11 · para levar */
 .take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
 .take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
@@ -498,6 +505,13 @@ h1, h2, h3 { text-wrap: pretty; }
       <p class="hint">A conta mostra a forma, não a medida: cada chamada tem preço e tempo diferentes conforme o modelo e o tamanho do texto.</p>
     </div>
   </div>
+  <p class="intro">Cada volta também é mais uma chance de errar, e <strong>os erros se multiplicam</strong>. Se o modelo acerta 9 em cada 10 decisões, dois passos seguidos saem certos 81 vezes em 100; cinco passos, cerca de 59 (0,9 multiplicado por ele mesmo cinco vezes). O remédio é tirar da decisão do modelo o que precisa sair sempre igual: a busca e a regra viram passo fixo, como no <a href="#s-precisa">atendimento montado dos dois jeitos</a>; a conta vira um script, um pequeno programa que calcula sempre igual (<a href="./assistente--skill.html#s-pasta">onde ele pode morar</a>).</p>
+  <div class="chance">
+    <span class="eyebrow">Decisões em fila</span>
+    <div class="cost-f"><label for="chN">Passos seguidos que o modelo decide, cada um com 90% de acerto</label><div class="row"><input type="range" id="chN" min="1" max="10" value="5"><output id="oChN">5</output></div></div>
+    <div class="ch-track" aria-hidden="true"><div class="ch-fill" id="chFill"></div></div>
+    <div class="verdict" id="chVer" aria-live="polite"></div>
+  </div>
 </section>
 
 <!-- 7 -->
@@ -535,7 +549,7 @@ Algum "sim": agente. Comece com uma ferramenta, teste, e só depois some a próx
     <dt>Laço</dt><dd>O ciclo pensar, agir, observar, que se repete até o agente decidir que já dá para responder.</dd>
     <dt>Passo simples</dt><dd>Uma única chamada ao modelo que transforma um texto: extrai, classifica, resume ou lê o tom.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Cada ferramenta de automação e cada aplicativo chama estas peças por um nome diferente; os nomes de ferramenta nos exemplos são ilustrativos. As barras de chamadas mostram a forma, não a medida. O teto de três tentativas e as contagens do atendimento montado dos dois jeitos são de exemplo: quem monta o agente escolhe o próprio teto.</p>
+  <p class="foot">Simplificação didática. Cada ferramenta de automação e cada aplicativo chama estas peças por um nome diferente; os nomes de ferramenta nos exemplos são ilustrativos. As barras de chamadas mostram a forma, não a medida. O teto de três tentativas e as contagens do atendimento montado dos dois jeitos são de exemplo: quem monta o agente escolhe o próprio teto. Os 90% de acerto por passo são um número ilustrativo; o resto é conta (0,9 multiplicado cinco vezes dá cerca de 0,59).</p>
 </section>
 
 <!-- rodape -->
@@ -719,6 +733,20 @@ Algum "sim": agente. Comece com uma ferramenta, teste, e só depois some a próx
   }
   [cT, cV].forEach(function (i) { i.addEventListener('input', cost); });
   cost();
+
+  /* 6b · o erro que se multiplica */
+  var chN = document.getElementById('chN');
+  function chance() {
+    var n = +chN.value, p = Math.round(Math.pow(0.9, n) * 100), fill = document.getElementById('chFill'), ver = document.getElementById('chVer');
+    document.getElementById('oChN').textContent = n;
+    fill.style.width = p + '%'; fill.classList.toggle('low', p < 80);
+    ver.className = 'verdict ' + (p < 80 ? 'no' : 'ok');
+    ver.innerHTML = n === 1
+      ? '<b>Um passo só: ' + p + ' em 100 pedidos saem certos.</b> É a taxa de acerto da própria decisão.'
+      : '<b>' + p + ' em 100 pedidos saem certos do começo ao fim.</b> Os outros ' + (100 - p) + ' erram em algum dos ' + n + ' passos, e cada passo, sozinho, parecia confiável.';
+  }
+  chN.addEventListener('input', chance);
+  chance();
 
   document.getElementById('bolsoCopy').addEventListener('click', function () { copyText(document.getElementById('bolsoTxt').innerText, this); });
 })();

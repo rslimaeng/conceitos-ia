@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 2.1. Peças: o mesmo pedido como texto × como ferramenta (com a calculadora funcionando), quiz texto ou ferramenta, montador PDEF ao vivo com copiar e o que se perde sem cada parte, da entrega de hoje aos elementos da tela, como fazer × o que quer ver, pedidos para copiar. */
+/* Layout: página de conceito, família 2.1. Peças: o mesmo pedido como texto × como ferramenta (com a calculadora funcionando), quiz texto ou ferramenta, montador PDEF ao vivo com copiar e o que se perde sem cada parte, da entrega de hoje aos elementos da tela, como fazer × o que quer ver, pedidos para copiar, o print como referência, antes de compartilhar a ferramenta pronta. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -261,7 +261,7 @@ h1, h2, h3 { text-wrap: pretty; }
   <p class="sub">O chat pode devolver uma tela que funciona, como uma calculadora ou um painel, e não só um texto: basta dizer o que você quer ver nela</p>
   <p class="lead">Quase todo pedido volta como texto: você lê, copia, cola. Mas o chat também consegue montar uma pequena ferramenta (uma calculadora, um painel de números, um formulário, um checklist que se marca) e mostrar funcionando na própria conversa; em algumas ferramentas, num painel próprio. Por trás, ele escreve o código, as instruções que o navegador lê para desenhar a tela, e você não precisa ler nenhuma linha dele. <strong>O que muda no pedido é uma coisa só: em vez de dizer o que escrever, você diz o que quer ver na tela.</strong></p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-tela">Texto ou tela que funciona</a><a href="#s-quando">Recado ou ferramenta</a><a href="#s-partes">As quatro partes do pedido</a><a href="#s-elementos">O que precisa estar na tela</a><a href="#s-ver">Diga o que quer ver</a><a href="#s-numeros">Números de verdade na tela</a><a href="#s-segunda">A segunda versão</a>
+    <a href="#s-tela">Texto ou tela que funciona</a><a href="#s-quando">Recado ou ferramenta</a><a href="#s-partes">As quatro partes do pedido</a><a href="#s-elementos">O que precisa estar na tela</a><a href="#s-ver">Diga o que quer ver</a><a href="#s-numeros">Números de verdade na tela</a><a href="#s-segunda">A segunda versão</a><a href="#s-depois">Quando a tela sai da conversa</a>
   </nav>
 </header>
 
@@ -362,6 +362,15 @@ h1, h2, h3 { text-wrap: pretty; }
   </div>
   <p class="hint" id="elNota"></p>
   <p class="hint">Se você já mapeou o seu processo em entrada, processo e saída, a coluna da saída é a lista pronta: <a href="./ai-first--ipo.html#s-colunas">as sete colunas do IPO</a>.</p>
+  <p class="intro">Quando a tela que você quer já existe (o painel do sistema antigo, o relatório que a diretoria já sabe ler), <strong>um print dela, a captura da tela, especifica melhor do que qualquer descrição.</strong> Mande a imagem, com os dados sensíveis cobertos, e peça a lista de elementos antes de montar. Depois de cada versão, tire o print do que voltou e peça que ela compare com a referência e liste as diferenças. No mínimo duas rodadas, com uma ordem clara: não melhore, reproduza.</p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Reproduzir uma tela que já existe</span><button type="button" class="btn" data-copy="elRef">Copiar</button></div>
+<pre id="elRef"><b>Antes de montar</b>
+Esta imagem é uma tela que já usamos. Liste os elementos que aparecem nela, na ordem, e só depois monte a ferramenta igual. Não melhore, reproduza: nenhuma seção, cor ou gráfico que não esteja na imagem.
+
+<b>Depois de cada versão</b>
+A primeira imagem é a referência; a segunda, o print do que você montou. Liste as diferenças, uma por linha: onde está e como aparece na referência. Corrija todas e me mostre a nova versão. Vamos repetir isso pelo menos mais uma vez.</pre>
+  </div>
 </section>
 
 <!-- 5 -->
@@ -421,6 +430,24 @@ Os valores estão diferentes do arquivo. Releia o arquivo que anexei e recalcule
 </section>
 
 <!-- 8 -->
+<section class="sec" id="s-depois" aria-labelledby="h-depois">
+  <span class="eyebrow">Quando a tela sai da conversa</span>
+  <h2 id="h-depois">Compartilhada, a ferramenta leva junto mais do que a tela</h2>
+  <p class="intro">A planilha mandada por e-mail leva junto as abas escondidas, e quem recebe abre todas. A ferramenta pronta tem o mesmo risco. Em alguns chats ela mora num <strong>artefato</strong>: a janela separada onde a IA entrega uma tela que funciona. De lá, ela pode ser compartilhada, guardar o que as pessoas digitam e ter IA dentro. <strong>Antes de mandar para alguém, cada uma dessas portas pede uma pergunta.</strong> Decida cada situação.</p>
+  <div class="qz" id="dpQuiz"></div>
+  <p class="qz-score" id="dpScore" aria-live="polite"></p>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Antes de compartilhar</span><button type="button" class="btn" data-copy="dpAsk">Copiar</button></div>
+<pre id="dpAsk">Antes de eu compartilhar esta ferramenta, me responda:
+1. Que arquivos eu anexei nesta conversa? Quem receber a ferramenta pode ter acesso a eles também.
+2. Ela guarda o que as pessoas digitam? Se guarda, cada pessoa vê só o seu, ou todos veem tudo?
+3. Ela tem IA dentro, respondendo a quem usa?
+4. Eu mudei à mão: <i>[o que você mudou]</i>. Trabalhe a partir da versão de agora, não da anterior.</pre>
+  </div>
+  <p class="hint">O que nem deveria ter entrado na conversa, para começo de conversa: <a href="./limites-da-ia--o-que-pode-subir.html">o que pode subir</a>.</p>
+</section>
+
+<!-- 9 -->
 <section class="sec" id="s-levar" aria-labelledby="h-levar">
   <span class="eyebrow">Para levar</span>
   <h2 id="h-levar">Três ideias</h2>
@@ -435,8 +462,10 @@ Os valores estão diferentes do arquivo. Releia o arquivo que anexei e recalcule
     <dt>PDEF</dt><dd>As quatro partes do pedido de ferramenta: Persona, Descrição, Elementos, Formato.</dd>
     <dt>Elementos</dt><dd>A lista do que aparece na tela: cada número, gráfico, botão ou aviso.</dd>
     <dt>Protótipo</dt><dd>Um rascunho que funciona, feito para testar a ideia antes de investir nela.</dd>
+    <dt>Artefato</dt><dd>A janela separada onde a IA entrega uma tela que funciona; de lá ela pode ser compartilhada, guardar dados e ter IA dentro.</dd>
+    <dt>Print</dt><dd>A captura de tela: a imagem do que está aparecendo, que serve de referência para a IA reproduzir.</dd>
   </dl>
-  <p class="foot">Simplificação didática. O lugar onde a ferramenta aparece, o nome do recurso e se ele precisa ser ligado mudam entre chats e versões. A calculadora, os valores, os pedidos e os painéis são exemplos inventados. Família <a href="./prompt.html">Prompt</a>; irmãs: esta é a primeira.</p>
+  <p class="foot">Simplificação didática. O lugar onde a ferramenta aparece, o nome do recurso e se ele precisa ser ligado mudam entre chats e versões. A calculadora, os valores, os pedidos, os painéis e as situações são exemplos inventados, e os números são ilustrativos. O que acontece ao compartilhar, guardar dados e tirar do ar segue a central de ajuda de um fabricante, consultada em setembro de 2026, e muda entre chats e versões. Família <a href="./prompt.html">Prompt</a>; irmãs: esta é a primeira.</p>
 </section>
 
 <!-- rodape -->
@@ -515,6 +544,17 @@ Os valores estão diferentes do arquivo. Releia o arquivo que anexei e recalcule
     { s: 'Explicar a um cliente por que a entrega atrasou.', a: 'tx', why: 'É uma mensagem, com tom. Quem lê não vai mexer em nada.' },
     { s: 'Mostrar a quem acabou de entrar quem aprova cada etapa de um pedido de viagem.', a: 'fe', why: 'Vai ser consultado várias vezes, e um fluxo se entende melhor desenhado do que em parágrafo. Aqui o texto também serviria; o desenho economiza a releitura.' }
   ], [['tx', 'Texto'], ['fe', 'Ferramenta']], 'a pergunta é sempre a mesma: alguém vai mexer, marcar ou voltar?');
+
+  /* 8 · antes de compartilhar */
+  quiz(document.getElementById('dpQuiz'), document.getElementById('dpScore'), [
+    { s: 'Você montou o painel numa conversa em que anexou a planilha de salários, e vai mandar a ferramenta para o time de vendas.', a: 'ar', why: 'Quem recebe a ferramenta pode ter acesso também ao que foi anexado na conversa que a criou. Monte de novo numa conversa nova, só com o que todos podem ver.' },
+    { s: 'Um diário em que cada pessoa da equipe anota como foi a semana.', a: 'ar', why: 'Uma ferramenta que guarda dados pode guardar por pessoa ou para todos, e quem decide é quem cria. Num diário, peça que cada um veja só o seu, e confira antes de mandar.' },
+    { s: 'Um placar de metas da loja, que todo mundo precisa ver igual.', a: 'se', why: 'Aqui guardar para todos é o certo. Só avise quem usa: o que cada um digita aparece para os outros.' },
+    { s: 'Você vai tirar do ar o formulário de inscrições, e as respostas ainda não foram copiadas para lugar nenhum.', a: 'ar', why: 'Tirar do ar apaga os dados que a ferramenta guardou, e não tem volta. Copie as respostas antes.' },
+    { s: 'Você fez um assistente de perguntas com IA dentro e quer mandar para a empresa toda, com medo de estourar o seu limite.', a: 'se', why: 'Quem usa uma ferramenta com IA dentro gasta o próprio limite de uso, não o de quem criou. O cuidado é outro: quem não tem conta pode não conseguir usar a parte com IA.' },
+    { s: 'Um contato de fora mandou o código de uma calculadora pronta, para você colar na sua conversa e adaptar.', a: 'ar', why: 'É como abrir anexo de remetente desconhecido: o código e o texto dele entram na sua conversa. Só com quem você confia.' },
+    { s: 'Você corrigiu um título à mão dentro da ferramenta e agora vai pedir outra mudança.', a: 'ar', why: 'Editar à mão não muda o que a conversa lembra da versão anterior. Diga o que você mudou, senão a próxima versão pode desfazer a sua correção.' }
+  ], [['se', 'Seguro'], ['ar', 'Arriscado']], 'a pergunta é sempre: o que mais vai junto com a tela?');
 
   /* 3 · montador */
   var PD = {

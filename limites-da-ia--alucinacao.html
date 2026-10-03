@@ -140,6 +140,12 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .wh div { border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; background: var(--bg-elev); display: grid; gap: 4px; }
 .wh .k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--atencao-texto); }
 .wh p { font-size: .92rem; color: var(--text-muted); }
+.av-pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.av-card { min-width: 0; border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; background: var(--bg-elev); display: grid; gap: 8px; align-content: start; }
+.av-card p { font-size: .95rem; }
+.av-k { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.av-inv { color: var(--atencao-texto); font-weight: 600; background: var(--atencao-soft); border-radius: 3px; padding: 0 4px; }
+.av-note { color: var(--text-muted); font-style: italic; }
 
 /* 4 · caça ao erro */
 .ce-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 20px; align-items: start; }
@@ -239,7 +245,7 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 @media (max-width: 860px) {
   .al-facts { grid-template-columns: 1fr 1fr; }
-  .pv-wrap, .ce-grid, .cm-wrap, .vl-wrap, .take, .wh { grid-template-columns: 1fr; }
+  .pv-wrap, .ce-grid, .cm-wrap, .vl-wrap, .take, .wh, .av-pair { grid-template-columns: 1fr; }
   .jm-grid { grid-template-columns: 1fr 1fr; }
   .jm-detail dl { grid-template-columns: 1fr; }
   .lp { grid-template-columns: 1fr; gap: 26px; }
@@ -355,6 +361,18 @@ h1, h2, h3 { text-wrap: pretty; }
     <div><span class="k">causa</span><p>"Puxado por", "devido a" pedem um complemento. Para uma queda em julho, o mais provável é sazonalidade.</p></div>
   </div>
   <p class="fn-note"><b>A norma que tinha o formato certo.</b> Num recurso contra uma cobrança recusada, a resposta citou uma resolução de agência reguladora, com número e ano. Parecia exata, e não existia. A IA tinha visto muitas resoluções escritas como "número/ano" e muitos recursos desse tipo citando uma; juntou as duas coisas e escreveu uma que fazia sentido no contexto. <b>O formato certo é justamente o que torna o nome inventado convincente.</b> Norma citada se confere na publicação oficial, nunca na própria resposta.</p>
+  <p>Um pedido fabrica os três de uma vez: <strong>“adapte ao alvo”</strong>. Ajustar o currículo a uma vaga, ou a proposta a um cliente, é pedir que ela feche a distância entre o que você tem e o que o alvo pede. Onde o seu material não alcança, ela preenche. Às vezes avisa numa nota, mas a nota é comentário, não texto: quando o texto é reaproveitado na etapa seguinte, ela fica para trás. <a href="./ai-first--execucao.html#s-corrente">O que sai de uma etapa é o que entra na próxima</a>, inclusive o que não devia.</p>
+  <div class="av-pair">
+    <div class="av-card"><span class="av-k">1ª etapa · ajustar à vaga</span><p>Coordenei a troca de transportadora, que reduziu o frete em <span class="av-inv">18% no ano</span>. <span class="av-note">(Nota: percentual estimado por mim para atender à vaga. Ajuste ao seu dado real.)</span></p><p>Idiomas: inglês avançado.</p></div>
+    <div class="av-card"><span class="av-k">2ª etapa · deixar pronto para enviar</span><p>Liderei a renegociação logística que reduziu o frete em <span class="av-inv">18% no ano</span>.</p><p>Idiomas: inglês avançado, <span class="av-inv">espanhol intermediário</span>.</p></div>
+  </div>
+  <p class="hint">A nota da primeira etapa era o único sinal de que os 18% foram inventados. Na segunda, o número ficou e o aviso sumiu; “coordenei” virou “liderei”; e o espanhol entrou porque a vaga pedia. Ninguém mentiu: cada etapa só deixou o texto mais parecido com o alvo.</p>
+  <div class="copy"><div class="copy-head"><span class="eyebrow">Para adaptar sem inventar</span><button type="button" class="btn" data-copy="cpAlvo">Copiar</button></div>
+<pre id="cpAlvo">Ajuste este texto ao alvo abaixo usando só o que está no material que eu dei.
+Onde o alvo pede algo que o material não traz, não complete: escreva [falta: o que o alvo pede] no lugar.
+Se você reformular uma frase a ponto de mudar o que ela afirma (cargo, número, resultado, idioma), marque [reescrito: confira].
+Mantenha todas as marcas em todas as versões seguintes, inclusive na final. Quem apaga uma marca sou eu, depois de conferir.
+No fim, liste as marcas que ficaram no texto.</pre></div>
 </section>
 
 <section class="sec" id="s-caca" aria-labelledby="h-caca">
@@ -456,7 +474,7 @@ Se a origem não está no material que eu dei, foi preenchimento, mesmo que seja
     <dt>Caso fechado</dt><dd>Um trabalho que você já entregou e cujo resultado você conhece. É o gabarito para testar um pedido.</dd>
     <dt>Pendência declarada</dt><dd>O item que a resposta diz não ter encontrado, em vez de completar por estimativa.</dd>
   </dl>
-  <p class="foot">Simplificação didática. As porcentagens do sorteio, os números da planilha e as respostas dos exemplos são ilustrativos; a planilha e as lojas são fictícias. A prova de múltipla escolha é uma analogia para a direção do incentivo, não a descrição de como os modelos são treinados. A faixa de cupons da loja Leste e a escala de plantão são inventadas para o exemplo; o caso da norma aconteceu, e aparece aqui sem número, órgão nem ano. Veja também <a href="./limites-da-ia--o-que-pode-subir.html">O que pode subir para a IA</a>, a outra ponta da mesma conferência.</p>
+  <p class="foot">Simplificação didática. As porcentagens do sorteio, os números da planilha e as respostas dos exemplos são ilustrativos; a planilha e as lojas são fictícias. A prova de múltipla escolha é uma analogia para a direção do incentivo, não a descrição de como os modelos são treinados. A faixa de cupons da loja Leste e a escala de plantão são inventadas para o exemplo; o caso da norma aconteceu, e aparece aqui sem número, órgão nem ano. O currículo ajustado à vaga, com o percentual de frete, é inventado para o exemplo. Veja também <a href="./limites-da-ia--o-que-pode-subir.html">O que pode subir para a IA</a>, a outra ponta da mesma conferência.</p>
 </section>
 
 <!-- rodape -->

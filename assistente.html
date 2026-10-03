@@ -396,6 +396,7 @@ h1, h2, h3 { text-wrap: pretty; }
       <label><span>Quando foge do padrão</span>Condição → o que fazer, um por linha<textarea data-k="quando" rows="3"></textarea></label>
       <label><span>Nunca</span>Comportamentos que você já viu dar errado<textarea data-k="nunca" rows="3"></textarea></label>
       <label><span>Onde não decide</span>O que ele organiza mas não escolhe<textarea data-k="fronteira" rows="2"></textarea></label>
+      <label><span>Exemplos</span>Pergunta → resposta, um por linha: três casos comuns e um fora do padrão<textarea data-k="exemplos" rows="4"></textarea></label>
       <label><span>Base de consulta</span>Os arquivos que ele abre, um por linha<textarea data-k="base" rows="2"></textarea></label>
       <label><span>Pedido da vez</span>A frase que você vai digitar toda vez<textarea data-k="cmd" rows="1"></textarea></label>
     </div>
@@ -408,6 +409,7 @@ h1, h2, h3 { text-wrap: pretty; }
       <div id="asCheck" aria-live="polite"></div>
     </div>
   </div>
+  <p><strong>Os exemplos pesam mais que as regras, porque ela imita.</strong> Um par de pergunta e resposta mostra o formato melhor que qualquer descrição, e pede dois cuidados. O valor do exemplo sai da base, igual: ela o copia nas respostas parecidas. E o exemplo não pode desdizer a regra. Se o caso fora do padrão responder “não tem o de 7 m; ofereça o de 6 m, R$ 246”, ela aprende a trocar pelo parecido, contra o “nunca escrever preço que não esteja na tabela”. E segue o exemplo.</p>
   <h3 class="as-sub">Já tem a tabela do processo? Cada coluna vira um campo</h3>
   <p class="as-sub-intro">Se esse trabalho já está na tabela do <a href="./ai-first--ipo.html">IPO</a>, com entrada, processo e saída e as colunas de exceção e recursos, preencha os campos com as colunas. <strong>Duas costumam faltar em instrução escrita de cabeça: a entrada e a saída.</strong></p>
   <div class="tablewrap"><table class="vtable">
@@ -557,7 +559,7 @@ h1, h2, h3 { text-wrap: pretty; }
     <dt>Base de consulta</dt><dd>Os arquivos que ele abre quando a pergunta pede, e de onde ele deve citar.</dd>
     <dt>Desvio</dt><dd>Um comportamento torto observado na saída, com nome, que se corrige com uma linha no fim da instrução.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os nomes dos campos mudam de ferramenta para ferramenta e de versão para versão; as três partes continuam as mesmas. As barras e a calculadora mostram a forma da conta, não uma medida.</p>
+  <p class="foot">Simplificação didática. Os nomes dos campos mudam de ferramenta para ferramenta e de versão para versão; as três partes continuam as mesmas. As barras e a calculadora mostram a forma da conta, não uma medida. Os códigos, preços e prazos da proposta, inclusive nos exemplos de pergunta e resposta, são ilustrativos.</p>
 </section>
 
 <!-- rodape -->
@@ -650,6 +652,7 @@ h1, h2, h3 { text-wrap: pretty; }
     quando: 'Item fora da tabela → não estimar; listar em “aguardando preço” com a pergunta pronta para o técnico\nDesconto acima de 10% → montar com preço de tabela e avisar que depende do gerente\nQuantidade ausente → perguntar, nunca assumir',
     nunca: 'Nunca escrever preço, prazo ou condição que não esteja na tabela ou no pedido\nNunca completar quantidade ilegível por dedução\nNunca prometer prazo para item aguardando preço',
     fronteira: 'Você não decide desconto, crédito nem prazo que depende de terceiro. Nesses casos, diga o que falta, para quem perguntar, e pare.',
+    exemplos: '10 barras do perfil de 6 m → B-215 · 10 barras · R$ 246,00 a barra · 5 dias úteis\nPedido sem quantidade do perfil de 6 m → “Quantas barras do B-215?” Nada é montado até a resposta\nPedido com 15% de desconto → proposta com preço de tabela e o aviso: desconto acima de 10% depende do gerente\nFora do padrão: perfil de 7 m, que não está na tabela → item em “aguardando preço”, com a pergunta para o técnico. Nunca o preço do de 6 m',
     base: 'tabela-de-precos-vigente.md\nmodelo-de-proposta.md',
     cmd: 'Segue o pedido do cliente. Monte a proposta.'
   };
@@ -667,6 +670,7 @@ h1, h2, h3 { text-wrap: pretty; }
     if (val('quando')) p.push('<b>## QUANDO FOGE DO PADRÃO</b>\n' + lines(esc(val('quando'))).map(function (l) { return '- ' + l; }).join('\n'));
     if (val('nunca')) p.push('<b>## O QUE VOCÊ NUNCA FAZ</b>\n' + lines(esc(val('nunca'))).map(function (l) { return '- ' + l; }).join('\n'));
     if (val('fronteira')) p.push('<b>## ONDE VOCÊ NÃO DECIDE</b>\n' + esc(val('fronteira')));
+    if (val('exemplos')) p.push('<b>## EXEMPLOS</b>\n' + lines(esc(val('exemplos'))).map(function (l) { var pr = l.split('→'); return pr.length > 1 ? 'Pergunta: ' + pr[0].trim() + '\nResposta: ' + pr.slice(1).join('→').trim() : l; }).join('\n\n'));
     out = p.length ? p.join('\n\n') : '<i>Comece pelo papel: quem ele é, e o que ele decide.</i>';
     built.innerHTML = out;
     document.querySelector('[data-copy="asBuilt"]').disabled = !p.length;
@@ -675,6 +679,7 @@ h1, h2, h3 { text-wrap: pretty; }
     var chk = document.getElementById('asCheck'), msg = [];
     var vag = lines(val('nunca')).filter(function (l) { return VAGUE.test(l); });
     if (vag.length) msg.push('<p class="as-warn"><b>Adjetivo no NUNCA:</b> “' + esc(vag[0]) + '”. Dá para olhar a resposta e dizer se foi cumprido? Se não, reescreva como comportamento.</p>');
+    if (/\d/.test(val('exemplos')) && !val('base')) msg.push('<p class="as-warn"><b>Número no exemplo, sem base de consulta.</b> Ela copia o valor do exemplo nas respostas parecidas: ele precisa estar no arquivo da base, igual.</p>');
     if (val('papel') && !val('fronteira')) msg.push('<p class="as-warn"><b>Falta a fronteira.</b> O que ele organiza mas não escolhe? Valor, aprovação, diagnóstico.</p>');
     if (val('cmd').split(/\s+/).length > 25) msg.push('<p class="as-warn"><b>Pedido longo.</b> O que você repete toda vez ali provavelmente é instrução.</p>');
     if (!msg.length && val('papel') && val('fronteira') && val('cmd')) msg.push('<p class="as-okline">Tem papel, fronteira e um pedido curto. Agora é testar com um trabalho que você já entregou.</p>');
