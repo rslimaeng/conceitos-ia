@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--armadilhas">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A conta certa que decide errado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.5. Peças: margem do total × média das margens, o ranking que inverte com o denominador, controle deslizante que abre o desvio em quantidade e preço, médias ordenadas × grupos comparados, contagem que derruba a comparação e turno × etapa cruzados, a pergunta respondida × recusada, quiz "qual das duas leituras está certa", montador do pedido com copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 96px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.qz-fb[hidden] { display: none; }
+.sec > * { min-width: 0; }
+
+/* a frase que desarma, em cada seção */
+.ar-q { background: var(--bg-elev); border: 1px dashed var(--accent); border-radius: 6px; padding: 12px 16px; display: grid; gap: 4px; }
+.ar-q p { font-family: var(--font-mono); font-size: .9rem; }
+.ar-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+
+/* tabelas com números */
+.vtable td.num, .vtable th.num { text-align: right; font-family: var(--font-mono); font-size: .9rem; }
+.vtable tr.sum td { border-top: 2px solid var(--border-strong); font-weight: 600; }
+.vtable tr.up td { background: var(--ok-soft); }
+.vtable tr.down td { background: var(--atencao-soft); }
+.ar-mv { font-family: var(--font-mono); font-size: .82rem; }
+.ar-mv.up { color: var(--ok-texto); }
+.ar-mv.down { color: var(--atencao-texto); }
+
+/* o resultado com a narrativa */
+.ar-out { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 16px; align-items: stretch; }
+.ar-num { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.ar-num .f { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); }
+.ar-say { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.ar-say blockquote { margin: 0; font-size: 1.05rem; }
+
+/* barras em svg */
+.br-svg { min-width: 480px; }
+.br-bg { fill: var(--bg); stroke: var(--border); }
+.br-bar { fill: var(--border-strong); }
+.br-bar.hot { fill: var(--atencao); }
+.br-bar.key { fill: var(--accent); }
+.br-bar.ok { fill: var(--ok); }
+.br-lab { font: 500 13px var(--font-body); fill: var(--text); }
+.br-val { font: 500 12px var(--font-mono); fill: var(--text-muted); }
+.br-val.hot { fill: var(--atencao-texto); }
+.br-axis { stroke: var(--text-dim); stroke-width: 1.5; }
+.br-head { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+
+/* quantidade × preço */
+.vp-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.vp-ctrl { display: grid; gap: 14px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; }
+.vp-base { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); }
+
+/* turno × etapa */
+.hm td.num { min-width: 64px; }
+.hm td.hot { background: var(--atencao-soft); color: var(--atencao-texto); font-weight: 600; }
+.hm td.dim { color: var(--text-dim); }
+.hm td.avg { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+/* poucos casos */
+.am-strip { display: grid; grid-template-columns: 41fr 36fr 3fr; gap: 3px; height: 14px; }
+.am-strip span { border-radius: 3px; background: var(--border-strong); }
+.am-strip span.rep { background: var(--text-dim); }
+.am-strip span.apr { background: var(--atencao); }
+.am-leg { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); }
+.cv { display: grid; gap: 10px; }
+.cv-msg { border-radius: 8px; padding: 12px 16px; font-size: .95rem; display: grid; gap: 6px; max-width: 66ch; }
+.cv-msg.user { background: var(--accent-soft); border: 1px solid var(--accent); justify-self: end; }
+.cv-msg.ai { background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.cv-msg.ai.bad { border-color: var(--atencao); }
+.cv-msg.ai.good { border-color: var(--ok); }
+.cv-msg ul { margin: 0; padding-left: 20px; color: var(--text-muted); }
+
+/* qual das duas leituras */
+.qz-item .area { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.qz-item .opts.read { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.qz-item .opts.read button { text-align: left; padding: 10px 14px; line-height: 1.45; }
+
+/* montador */
+.mt-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 18px; align-items: start; }
+.mt-list { display: grid; gap: 8px; }
+.mt-list label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 10px; align-items: start; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; font-size: .93rem; cursor: pointer; }
+.mt-list label input[type=checkbox] { margin-top: 4px; accent-color: var(--accent); grid-row: span 2; }
+.mt-list label small { color: var(--text-muted); font-size: .84rem; }
+.mt-list label.mt-q { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; background: transparent; border: 0; padding: 0; cursor: default; }
+.mt-q input { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 860px) {
+  .ar-out, .vp-grid, .mt-grid, .qz-item .opts.read { grid-template-columns: 1fr; }
+  .cv-msg.user { justify-self: stretch; }
+}
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--pergunta.html">← 9.4 A pergunta</a><a href="./dados--decidir.html">9.6 Decidir →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html"><b>9.3</b>Comunicar</a><a href="./dados--pergunta.html"><b>9.4</b>A pergunta</a><a href="./dados--armadilhas.html" aria-current="page"><b>9.5</b>Armadilhas da conta</a><a href="./dados--decidir.html"><b>9.6</b>Decidir</a></div>
+  </nav>
+  <span class="eyebrow">9.5 · 5 de 6</span>
+  <h1>A conta certa que decide errado</h1>
+  <p class="sub">Toda conta traz uma escolha dentro, e a IA faz essa escolha sem avisar: o número sai certo e a decisão sai errada</p>
+  <p class="lead">Quando a IA erra a soma, conferir resolve (está em <a href="./dados--planilha.html#s-calcula">fez a conta ou leu por cima</a>). Esta página é sobre o caso mais difícil: <strong>a conta está certa, só responde a outra pergunta.</strong> Quem entra na divisão, o que pesa mais, qual grupo se compara com qual: são escolhas de negócio, e a IA faz cada uma pelo jeito mais comum, com o mesmo tom seguro. Abaixo, sete armadilhas, cada uma com um caso de uma área e a frase que a desarma no pedido.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-margem">Duas médias para a mesma margem</a><a href="#s-divisao">Quem entra na divisão</a><a href="#s-preco">Quantidade vezes preço</a><a href="#s-volta">Quem volta e quem não volta</a><a href="#s-juntas">Colunas que andam juntas</a><a href="#s-poucos">Poucos casos, nenhuma conclusão</a><a href="#s-qual">Qual leitura está certa</a><a href="#s-pedido">O pedido que declara as escolhas</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-margem" aria-labelledby="h-margem">
+  <span class="eyebrow">Duas médias para a mesma margem</span>
+  <h2 id="h-margem">Somar tudo e dividir, ou tirar a média de cada pedido</h2>
+  <p class="intro">Peça a dois colegas a margem do mês: um soma toda a receita e todo o custo e divide; o outro calcula a margem de cada pedido e tira a média. Os dois trazem a planilha aberta, e os números não batem. <strong>Nenhum dos dois errou a conta: eles escolheram de modo diferente o quanto cada pedido pesa.</strong> Margem é quanto sobra da receita depois do custo, em percentual. Abaixo, quatro pedidos de um canal de vendas, com meta de margem de 25%. Troque a conta.</p>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Pedido</th><th class="num">Receita</th><th class="num">Custo</th><th class="num">Margem do pedido</th></tr>
+      <tr><td>1 · cliente grande</td><td class="num">R$ 48.000</td><td class="num">R$ 39.360</td><td class="num">18,0%</td></tr>
+      <tr><td>2</td><td class="num">R$ 6.000</td><td class="num">R$ 4.200</td><td class="num">30,0%</td></tr>
+      <tr><td>3</td><td class="num">R$ 4.000</td><td class="num">R$ 2.880</td><td class="num">28,0%</td></tr>
+      <tr><td>4</td><td class="num">R$ 2.000</td><td class="num">R$ 1.360</td><td class="num">32,0%</td></tr>
+      <tr class="sum"><td>O mês</td><td class="num">R$ 60.000</td><td class="num">R$ 47.800</td><td class="num">?</td></tr>
+    </table>
+  </div>
+  <div class="seg" role="group" aria-label="Como calcular a margem do mês">
+    <button type="button" data-mg="total" aria-pressed="false">Margem do total</button>
+    <button type="button" data-mg="media" aria-pressed="true">Média das margens</button>
+  </div>
+  <div class="ar-out" id="mgOut" aria-live="polite"></div>
+  <p class="hint">Acontece com toda média de coisas de tamanhos diferentes: preço médio, prazo médio de entrega, ticket médio (o valor médio de cada venda). Sempre existem dois números defensáveis e uma pergunta que ninguém fez. E nada no texto denuncia qual conta está por baixo: as duas frases são bem escritas.</p>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>Se houver mais de um jeito defensável de calcular uma média, mostre os dois, com a fórmula ao lado, e diga qual responde a “quanto a empresa ganhou”.</p></div>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-divisao" aria-labelledby="h-divisao">
+  <span class="eyebrow">Quem entra na divisão</span>
+  <h2 id="h-divisao">Toda taxa tem um número de baixo, e escolher ele é decisão de negócio</h2>
+  <p class="intro">O índice de faltas do mês muda conforme você divide pelos dias corridos ou pelos dias úteis, e a planilha aceita os dois sem reclamar. Numa taxa, o número de baixo da divisão se chama <strong>denominador</strong>, e ele decide quem conta. O caso é do comercial: a taxa de conversão (das oportunidades abertas, quantas viraram venda) de quatro vendedores. Parte das oportunidades ainda está <strong>em andamento</strong>: não ganhou nem perdeu. Ponha ou tire essas do denominador.</p>
+  <div class="seg" role="group" aria-label="O que entra no denominador">
+    <button type="button" data-dn="total" aria-pressed="true">Sobre todas as oportunidades</button>
+    <button type="button" data-dn="dec" aria-pressed="false">Só sobre as que terminaram</button>
+  </div>
+  <div class="tablewrap" id="dnTab"></div>
+  <div class="verdict" id="dnVer" aria-live="polite"></div>
+  <p>As duas contas estão certas. A primeira trata quem ainda não respondeu como se tivesse dito não, e pune o vendedor com mais negociação aberta. A segunda ignora que parte do que está aberto vai virar perda. <strong>O erro não é escolher uma: é a escolha não estar escrita no relatório.</strong> Quando a IA recebe o funil sem aviso, ela divide pelo total de linhas, que é o caminho mais curto.</p>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>Antes de qualquer taxa, diga quantos casos há em cada status. Se houver casos que ainda não terminaram, calcule a taxa com e sem eles e mostre as duas lado a lado.</p></div>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-preco" aria-labelledby="h-preco">
+  <span class="eyebrow">Quantidade vezes preço</span>
+  <h2 id="h-preco">O faturamento ficou abaixo do orçado: faltou pedido ou faltou preço?</h2>
+  <p class="intro">A conta de luz subiu: foi o consumo ou a tarifa? A fatura traz as duas coisas, e só uma delas se resolve apagando a luz. Receita é <strong>quantidade vezes preço</strong>, e por isso um desvio de receita (a diferença entre o orçado e o realizado) se abre em duas parcelas que somadas dão o total. O caso é do financeiro: o orçado era de 1.000 pedidos a R$ 500 cada. Mexa no que aconteceu de verdade.</p>
+  <div class="vp-grid">
+    <div class="vp-ctrl">
+      <p class="vp-base">Orçado: 1.000 pedidos × R$ 500 = R$ 500.000</p>
+      <div class="field">
+        <label for="vpQ">Pedidos fechados</label>
+        <div class="row"><input type="range" id="vpQ" min="800" max="1100" step="10" value="960"><output id="vpQo" for="vpQ">960</output></div>
+      </div>
+      <div class="field">
+        <label for="vpP">Valor médio de cada pedido</label>
+        <div class="row"><input type="range" id="vpP" min="400" max="560" step="5" value="450"><output id="vpPo" for="vpP">R$ 450</output></div>
+      </div>
+      <p class="hint">Parcela de quantidade: a diferença de pedidos vezes o preço orçado. Parcela de preço: a diferença de preço vezes os pedidos fechados. As duas somam o desvio inteiro, e é assim que se confere a conta.</p>
+    </div>
+    <div class="scroll"><div id="vpChart"></div></div>
+  </div>
+  <div class="verdict" id="vpVer" aria-live="polite"></div>
+  <p>Na reunião de fechamento, a frase de sempre é “vendemos menos”. Se o rombo é de preço, a resposta muda de dono: vender menos é assunto do comercial; vender mais barato é assunto da política de desconto. E uma meta maior de quantidade, para tapar um buraco de preço, aumenta a pressão que gera o desconto.</p>
+  <div class="two">
+    <div class="card"><span class="eyebrow">em percentual</span><h3>A linha pequena parece a pior</h3><p>Uma linha de produto orçada em R$ 200 mil fechou R$ 18 mil abaixo: caiu 9%. A outra, orçada em R$ 1 milhão, fechou R$ 40 mil abaixo: caiu 4%.</p></div>
+    <div class="card focal"><span class="eyebrow">em reais</span><h3>A linha grande perde mais dinheiro</h3><p>Ordenar só pelo percentual manda atacar a linha que custou R$ 18 mil e esquecer a que custou R$ 40 mil. Percentual e valor, lado a lado, sempre.</p></div>
+  </div>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>Abra o desvio em quantidade e preço, com a fórmula de cada parcela, e confira que as duas somam o total. Ao lado de todo percentual, escreva o valor em reais.</p></div>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-volta" aria-labelledby="h-volta">
+  <span class="eyebrow">Quem volta e quem não volta</span>
+  <h2 id="h-volta">A nota mais baixa não é, necessariamente, a que faz o cliente ir embora</h2>
+  <p class="intro">Na loja, o provador apertado pode ser a pior nota da pesquisa e ainda assim não ser o motivo de ninguém deixar de voltar. Uma pesquisa com várias notas devolve, por padrão, uma média por item e um ranking: responde “o que agradou menos”. Quando a pesquisa tem uma <strong>coluna de resultado</strong> (volta, compra de novo, renova, cancela), a pergunta muda: <strong>qual item separa quem volta de quem não volta.</strong> O caso é de marketing: a pesquisa de uma feira, 300 respostas, 270 voltam e 30 não. Troque a leitura.</p>
+  <div class="seg" role="group" aria-label="Como ler a pesquisa">
+    <button type="button" data-gr="media" aria-pressed="true">Ordenar pelas médias</button>
+    <button type="button" data-gr="grupo" aria-pressed="false">Comparar quem volta com quem não volta</button>
+  </div>
+  <div class="scroll"><div id="grChart"></div></div>
+  <div class="verdict" id="grVer" aria-live="polite"></div>
+  <p class="hint">É o passo seguinte ao de <a href="./dados--planilha.html#s-segmento">a média que esconde o grupo</a>: lá, você abre a média por grupo para enxergar diferenças. Aqui, um dos grupos é o resultado que você quer mudar, e é ele que escolhe o corte. O grupo de quem não volta tem 30 pessoas: dá direção, e o tamanho vai escrito junto.</p>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>A coluna [pretende voltar] é o resultado. Não ordene as notas: compare a média de cada nota entre quem respondeu sim e quem respondeu não, mostre a diferença e quantas pessoas há em cada grupo.</p></div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-juntas" aria-labelledby="h-juntas">
+  <span class="eyebrow">Colunas que andam juntas</span>
+  <h2 id="h-juntas">Duas colunas separadas não são duas informações independentes</h2>
+  <p class="intro">Se o gerente mais experiente atende só as contas grandes, comparar gerentes é comparar carteiras: o resultado de um não se separa do da outra. Na planilha isso tem nome, <strong>confundimento</strong>: duas colunas andam tão juntas que não dá para saber qual das duas produziu a diferença. O número sai certo e a conclusão sai errada. O caso é de operações: a satisfação dos clientes por canal de venda.</p>
+  <div class="seg" role="group" aria-label="O que olhar primeiro">
+    <button type="button" data-cj="media" aria-pressed="true">A nota por canal</button>
+    <button type="button" data-cj="conta" aria-pressed="false">A contagem, antes da nota</button>
+  </div>
+  <div id="cjOut" aria-live="polite"></div>
+  <p>A checagem que derruba a comparação não é estatística: é uma <strong>tabela de contagem</strong>, a tabela dinâmica que cruza duas colunas e só conta as linhas. Dois minutos. Quando ela mostra que um canal vende um produto só, o parecer honesto diz que a base não separa canal de produto, e propõe o teste que separa: vender a mesma linha nos dois canais e medir de novo.</p>
+  <h3>O mesmo defeito, lendo uma coluna de cada vez</h3>
+  <p>No caso de produção, o apontamento da fábrica (o registro de peças e defeitos por dia) tem duas dimensões que se cruzam: três turnos e quatro etapas (no exemplo, cada combinação processa o mesmo número de peças). Ler por turno dá três números; por etapa, quatro; cruzar as duas dá doze, e é <strong>uma leitura diferente das outras duas, não a soma delas</strong>. Troque o corte.</p>
+  <div class="seg" role="group" aria-label="Como cortar a taxa de defeito">
+    <button type="button" data-cz="turno" aria-pressed="true">Por turno</button>
+    <button type="button" data-cz="etapa" aria-pressed="false">Por etapa</button>
+    <button type="button" data-cz="cruz" aria-pressed="false">Turno × etapa</button>
+  </div>
+  <div class="tablewrap" id="czTab"></div>
+  <div class="verdict" id="czVer" aria-live="polite"></div>
+  <p class="hint">E quando a análise disser que uma coisa aconteceu “por causa” da outra, ela viu duas colunas andando juntas. Pode ser causa, pode ser uma terceira coluna que ninguém olhou. Tratar a explicação como hipótese está em <a href="./dados--planilha.html#s-leituras">as três leituras que são suas</a>.</p>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>Antes de comparar grupos, cruze a coluna do grupo com as outras colunas de categoria numa tabela de contagem. Se duas andam juntas, diga que a base não separa as duas. Com duas dimensões, mostre cada uma sozinha e depois o cruzamento, e diga qual explica a outra.</p></div>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-poucos" aria-labelledby="h-poucos">
+  <span class="eyebrow">Poucos casos, nenhuma conclusão</span>
+  <h2 id="h-poucos">Às vezes a resposta certa é recusar a pergunta</h2>
+  <p class="intro">Duas reclamações no mês não fazem uma tendência: o supervisor experiente espera mais casos antes de mudar o processo. A IA não espera. <strong>Ela acha um padrão em qualquer número de linhas, e escreve com o mesmo tom de quem leu dez mil.</strong> Nunca vai dizer sozinha que a amostra (o conjunto de casos que entrou na conta) é pequena demais. O caso é de RH: um processo seletivo com 80 candidatos, e a diretoria pergunta qual é o perfil de quem é aprovado.</p>
+  <div class="am-strip" aria-hidden="true"><span></span><span class="rep"></span><span class="apr"></span></div>
+  <p class="am-leg"><span>41 em andamento</span><span>36 reprovados</span><span>3 aprovados</span></p>
+  <div class="seg" role="group" aria-label="O que o pedido diz">
+    <button type="button" data-am="resp" aria-pressed="true">Pedido sem limite</button>
+    <button type="button" data-am="recusa" aria-pressed="false">Pedido que manda contar antes</button>
+  </div>
+  <div class="cv" id="amOut" aria-live="polite"></div>
+  <p>Repare em outra armadilha da mesma base: na coluna de nota do teste, <strong>zero quer dizer que a pessoa não chegou ao teste</strong>, não que foi mal. Uma média que inclui esses zeros mede outra coisa. A IA não tem como saber disso se o pedido não disser. Por que ela preenche em vez de avisar está em <a href="./limites-da-ia--alucinacao.html#s-sem-base">alucinação</a>.</p>
+  <div class="ar-q"><span class="ar-tag">A frase que desarma</span><p>Comece contando quantos casos há em cada resultado e diga quais perguntas essa contagem permite responder e quais não. Ao lado de toda média, escreva quantos casos entraram. Se a pergunta não tiver resposta com esta base, recuse e diga por quê.</p></div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-qual" aria-labelledby="h-qual">
+  <span class="eyebrow">Qual leitura está certa</span>
+  <h2 id="h-qual">Sete casos novos, duas leituras cada: escolha a que decide certo</h2>
+  <p class="intro">O auditor não pergunta só se a soma fecha; pergunta qual critério entrou na soma. Em cada caso abaixo, as duas leituras partem de números verdadeiros. <strong>Só uma responde à pergunta que a área precisava fazer.</strong></p>
+  <div class="qz" id="quQuiz"></div>
+  <p class="qz-score" id="quScore" aria-live="polite"></p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-pedido" aria-labelledby="h-pedido">
+  <span class="eyebrow">O pedido que declara as escolhas</span>
+  <h2 id="h-pedido">Uma linha por armadilha, no campo do que ela não pode fazer</h2>
+  <p class="intro">A conferência do fechamento tem uma lista fixa, banco, caixa, fornecedores, porque no dia 30 ninguém confia na memória. O pedido de análise pode carregar a mesma lista. <strong>Cada linha obriga a IA a mostrar uma escolha que ela faria calada.</strong> Marque as armadilhas que a sua planilha pode ter (na dúvida, deixe todas), escreva a sua pergunta e copie.</p>
+  <div class="mt-grid">
+    <div class="mt-list">
+      <label class="mt-q" for="mtAsk">A sua pergunta <input id="mtAsk" placeholder="ex.: por que a margem do canal caiu no semestre?"></label>
+      <div class="mt-list" id="mtList"></div>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">O pedido · ao vivo</span><button type="button" class="btn" data-copy="mtOut">Copiar</button></div>
+      <pre id="mtOut"></pre>
+    </div>
+  </div>
+  <p class="hint">Este bloco vai depois do raio-x da planilha (<a href="./dados--planilha.html#s-raiox">ler as colunas antes da conta</a>) e antes do texto para quem decide (<a href="./dados--comunicar.html">comunicar o resultado</a>). Se a pergunta ainda é “faça uma análise”, o passo que falta vem antes: <a href="./dados--pergunta.html">a pergunta que decide</a>.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Toda conta tem uma escolha</h3><p>Quem entra na divisão, quanto cada linha pesa, qual grupo se compara com qual. Se você não escolhe, a IA escolhe o mais comum, e não avisa.</p></div>
+    <div class="take-card"><h3>Peça as duas contas</h3><p>Com e sem os casos em aberto, do total e média das médias, percentual e reais. Lado a lado, a escolha aparece.</p></div>
+    <div class="take-card"><h3>Contar vem antes de comparar</h3><p>Quantos casos em cada grupo, e como as colunas se cruzam. Às vezes a contagem já responde: a pergunta não cabe nesta base.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Denominador</dt><dd>O número de baixo de uma divisão. Numa taxa, decide quem conta: todas as oportunidades, ou só as que terminaram.</dd>
+    <dt>Média das médias</dt><dd>Tirar a média de cada pedido (ou grupo) e depois a média delas. Cada um pesa igual, grande ou pequeno; a margem do total pesa pelo tamanho.</dd>
+    <dt>Quantidade e preço</dt><dd>As duas parcelas em que um desvio de receita se abre. Somadas, dão o desvio inteiro.</dd>
+    <dt>Coluna de resultado</dt><dd>A coluna que você quer explicar (volta, renova, cancela). Com ela, a análise compara grupos em vez de ordenar médias.</dd>
+    <dt>Confundimento</dt><dd>Duas colunas andam tão juntas que não dá para separar o efeito de uma do da outra. Não se conserta com mais conta: se declara.</dd>
+    <dt>Tabela de contagem</dt><dd>A tabela que cruza duas colunas e só conta as linhas. Mostra se as colunas são mesmo independentes.</dd>
+    <dt>Cruzamento</dt><dd>Ler duas dimensões ao mesmo tempo (turno e etapa). Dá uma leitura diferente de cada uma sozinha.</dd>
+    <dt>Amostra</dt><dd>O conjunto de casos que entrou na conta. Pequena demais, qualquer padrão pode ser coincidência.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. Todos os casos e números desta página são inventados para o exemplo: os quatro pedidos e a meta de 25%, os vendedores e o funil, o orçado de 1.000 pedidos, as linhas de R$ 200 mil e R$ 1 milhão, a pesquisa da feira, as notas por canal e a contagem, as taxas de defeito por turno e etapa, o processo seletivo de 80 candidatos e os sete casos do quiz. Eles reproduzem o formato de armadilhas reais de planilha, não dados de nenhuma empresa. Não há regra fixa de quantos casos bastam: depende do tamanho da diferença e do que se vai decidir, e por isso o pedido manda escrever o tamanho ao lado do número. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--planilha.html">analisar planilha com IA</a>, <a href="./dados--pesquisa.html">pesquisa com hipótese</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>, <a href="./dados--pergunta.html">a pergunta que decide</a>, <a href="./dados--decidir.html">comparar caminhos antes de decidir</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados--pergunta.html"><span>← anterior</span><b>9.4 · A pergunta que decide</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <a class="famfoot-next" href="./dados--decidir.html"><span>próxima →</span><b>9.6 · Comparar caminhos antes de decidir</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function seg(attr, fn, first) {
+    var bs = document.querySelectorAll('[data-' + attr + ']');
+    function set(k) { pressGroup(bs, function (x) { return x.getAttribute('data-' + attr) === k; }); fn(k); }
+    bs.forEach(function (b) { b.addEventListener('click', function () { set(b.getAttribute('data-' + attr)); }); });
+    set(first);
+  }
+  function pct(x, d) { return x.toFixed(d === undefined ? 1 : d).replace('.', ','); }
+  function brl(v) { var s = Math.abs(Math.round(v)).toLocaleString('pt-BR'); return (v < 0 ? '−R$ ' : (v > 0 ? '+R$ ' : 'R$ ')) + s; }
+
+  /* barras horizontais em svg: rows = [{l, v, t, c}] */
+  function bars(rows, max, head) {
+    var rh = 34, top = head ? 26 : 8, x0 = 190, w = 230, h = top + rows.length * rh + 6;
+    var s = '<svg class="br-svg" viewBox="0 0 560 ' + h + '" role="img" aria-label="' + esc(head || 'gráfico de barras') + '" xmlns="http://www.w3.org/2000/svg">';
+    if (head) s += '<text class="br-head" x="10" y="16">' + esc(head) + '</text>';
+    rows.forEach(function (r, i) {
+      var y = top + i * rh, bw = Math.max(2, Math.round(w * r.v / max));
+      s += '<text class="br-lab" x="10" y="' + (y + 19) + '">' + esc(r.l) + '</text>' +
+        '<rect class="br-bg" x="' + x0 + '" y="' + (y + 5) + '" width="' + w + '" height="20" rx="3"/>' +
+        '<rect class="br-bar ' + (r.c || '') + '" x="' + x0 + '" y="' + (y + 5) + '" width="' + bw + '" height="20" rx="3"/>' +
+        '<text class="br-val ' + (r.c === 'hot' ? 'hot' : '') + '" x="' + (x0 + w + 10) + '" y="' + (y + 19) + '">' + esc(r.t) + '</text>';
+    });
+    return s + '</svg>';
+  }
+
+  /* 1 · margem do total × média das margens */
+  var MG = {
+    total: { n: '20,3%', f: '(60.000 − 47.800) ÷ 60.000', r: 'Abaixo da meta de 25%.', q: 'quanto a empresa ganhou com o que vendeu', say: '“A margem do mês ficou em 20,3%, abaixo da meta de 25%, puxada pelo pedido do cliente grande, que fechou a 18%. Vale rever o preço desse cliente antes da próxima renovação.”', v: 'ok', vt: '<b>Esta responde à pergunta do negócio.</b> O pedido de R$ 48 mil pesa oito vezes o de R$ 6 mil, porque o dinheiro dele é oito vezes maior.' },
+    media: { n: '27,0%', f: '(18 + 30 + 28 + 32) ÷ 4', r: 'Acima da meta de 25%.', q: 'como está a margem do pedido típico', say: '“Margem média de 27,0%, acima da meta de 25%. O mês foi saudável, sem sinal de pressão sobre preço.”', v: 'no', vt: '<b>Conta certa, outra pergunta.</b> O pedido de R$ 2 mil pesou tanto quanto o de R$ 48 mil. Quem lê sai achando que está tudo bem, e o cliente que mais vende fica com a pior margem sem ninguém notar.' }
+  };
+  var mgOut = document.getElementById('mgOut');
+  seg('mg', function (k) {
+    var m = MG[k];
+    mgOut.innerHTML = '<div class="ar-num"><span class="eyebrow">A margem do mês</span><span class="big">' + m.n + '</span><span class="f">' + m.f + '</span><p>' + m.r + ' Responde: <strong>' + m.q + '</strong>.</p></div>' +
+      '<div class="ar-say"><span class="eyebrow">O texto que a IA escreve em cima</span><blockquote>' + m.say + '</blockquote><div class="verdict ' + m.v + '">' + m.vt + '</div></div>';
+  }, 'media');
+
+  /* 2 · o denominador */
+  var VD = [ { n: 'Vendedor A', g: 30, p: 10, a: 20 }, { n: 'Vendedor B', g: 18, p: 2, a: 40 }, { n: 'Vendedor C', g: 24, p: 16, a: 10 }, { n: 'Vendedor D', g: 20, p: 10, a: 20 } ];
+  function rate(v, k) { return 100 * v.g / (k === 'total' ? v.g + v.p + v.a : v.g + v.p); }
+  function order(k) { return VD.slice().sort(function (x, y) { return rate(y, k) - rate(x, k); }); }
+  seg('dn', function (k) {
+    var o = order(k), other = order(k === 'total' ? 'dec' : 'total');
+    var rows = o.map(function (v, i) {
+      var j = other.indexOf(v), mv = '';
+      if (j < i) mv = '<span class="ar-mv up">sobe ' + (i - j) + '</span>';
+      if (j > i) mv = '<span class="ar-mv down">desce ' + (j - i) + '</span>';
+      var cls = v.n === 'Vendedor B' ? (k === 'dec' ? 'up' : 'down') : '';
+      return '<tr class="' + cls + '"><td>' + (i + 1) + 'º · ' + v.n + '</td><td class="num">' + v.g + '</td><td class="num">' + v.p + '</td><td class="num">' + v.a + '</td><td class="num">' + pct(rate(v, k)) + '%</td><td>' + mv + '</td></tr>';
+    }).join('');
+    document.getElementById('dnTab').innerHTML = '<table class="vtable"><tr><th>Posição</th><th class="num">Ganhas</th><th class="num">Perdidas</th><th class="num">Em andamento</th><th class="num">Conversão</th><th>Na outra conta</th></tr>' + rows + '</table>';
+    var ver = document.getElementById('dnVer');
+    if (k === 'total') { ver.className = 'verdict no'; ver.innerHTML = '<b>O vendedor B é o último, com 30,0%.</b> A conta trata as 40 negociações que ele tem em aberto como se tivessem sido perdidas. Ganhas ÷ (ganhas + perdidas + em andamento).'; }
+    else { ver.className = 'verdict ok'; ver.innerHTML = '<b>O vendedor B vira o primeiro, com 90,0%.</b> E o C, segundo na outra conta, cai para último. Mas são só 20 negociações terminadas: a taxa dele é a mais frágil das quatro, e isso vai escrito junto. Ganhas ÷ (ganhas + perdidas).'; }
+  }, 'total');
+
+  /* 3 · quantidade × preço */
+  var Q0 = 1000, P0 = 500, vpQ = document.getElementById('vpQ'), vpP = document.getElementById('vpP');
+  function vpRender() {
+    var q = +vpQ.value, p = +vpP.value;
+    var vol = (q - Q0) * P0, pre = (p - P0) * q, tot = q * p - Q0 * P0;
+    document.getElementById('vpQo').textContent = q.toLocaleString('pt-BR');
+    document.getElementById('vpPo').textContent = 'R$ ' + p;
+    var cx = 300, sc = 200 / 180000;
+    function bar(y, v, lab, cls) {
+      var w = Math.max(2, Math.round(Math.abs(v) * sc)), x = v < 0 ? cx - w : cx;
+      var tx = v < 0 ? x - 8 : x + w + 8, an = v < 0 ? 'end' : 'start';
+      return '<text class="br-lab" x="10" y="' + (y + 19) + '">' + lab + '</text><rect class="br-bar ' + cls + '" x="' + x + '" y="' + (y + 5) + '" width="' + w + '" height="20" rx="3"/>' +
+        '<text class="br-val" text-anchor="' + an + '" x="' + tx + '" y="' + (y + 19) + '">' + brl(v) + '</text>';
+    }
+    var big = Math.abs(pre) > Math.abs(vol) ? 'pre' : 'vol';
+    var s = '<svg class="br-svg" viewBox="0 0 560 168" role="img" aria-label="O desvio aberto em quantidade e preço" xmlns="http://www.w3.org/2000/svg">' +
+      '<text class="br-head" x="10" y="16">DESVIO CONTRA O ORÇADO</text>' +
+      bar(28, vol, 'Quantidade', big === 'vol' ? 'hot' : '') + bar(66, pre, 'Preço', big === 'pre' ? 'hot' : '') + bar(116, tot, 'Total', 'key') +
+      '<line class="br-axis" x1="' + cx + '" y1="28" x2="' + cx + '" y2="148"/></svg>';
+    document.getElementById('vpChart').innerHTML = s;
+    var ver = document.getElementById('vpVer');
+    if (tot === 0 && vol === 0) { ver.className = 'verdict ok'; ver.innerHTML = '<b>Bateu o orçado.</b> Nada a explicar.'; return; }
+    var share = Math.round(100 * Math.abs(big === 'pre' ? pre : vol) / (Math.abs(pre) + Math.abs(vol)));
+    var sinal = (vol < 0) !== (pre < 0) && vol !== 0 && pre !== 0;
+    ver.className = 'verdict ' + (big === 'pre' && tot < 0 ? 'no' : 'ok');
+    ver.innerHTML = '<b>Total: ' + brl(tot) + '. Quantidade ' + brl(vol) + ' + preço ' + brl(pre) + '.</b> ' +
+      (sinal ? 'As duas parcelas puxam para lados opostos: o total esconde as duas, e cada uma pede uma conversa diferente.' :
+        tot > 0 ? 'Acima do orçado, e ' + share + '% da sobra veio de ' + (big === 'pre' ? 'preço' : 'quantidade') + '. Saber de qual é o que permite repetir.' :
+        (big === 'pre' ? share + '% do desvio é preço. “Vendemos menos” é a metade errada da história.' : share + '% do desvio é quantidade. Aqui, “vendemos menos” está certo.'));
+  }
+  vpQ.addEventListener('input', vpRender); vpP.addEventListener('input', vpRender);
+  vpRender();
+
+  /* 4 · médias × grupos */
+  var GR = [
+    { l: 'Estacionamento', m: 6.5, s: 6.5, n: 6.3 },
+    { l: 'Café', m: 7.4, s: 7.4, n: 7.0 },
+    { l: 'Credenciamento', m: 7.6, s: 8.0, n: 4.0 },
+    { l: 'Aplicativo', m: 7.8, s: 8.1, n: 4.6 },
+    { l: 'Palestras', m: 8.7, s: 8.8, n: 7.6 }
+  ];
+  var grOut = document.getElementById('grChart'), grVer = document.getElementById('grVer');
+  seg('gr', function (k) {
+    var rows;
+    if (k === 'media') {
+      rows = GR.slice().sort(function (a, b) { return a.m - b.m; }).map(function (r, i) { return { l: r.l, v: r.m, t: pct(r.m) + ' de média', c: i === 0 ? 'hot' : '' }; });
+      grOut.innerHTML = bars(rows, 10, 'MÉDIA DE CADA NOTA, DA PIOR PARA A MELHOR (0 A 10)');
+      grVer.className = 'verdict no'; grVer.innerHTML = '<b>A leitura de sempre: “arrumar o estacionamento”.</b> É a pior média, e responde “o que agradou menos”. Mas quem volta e quem não volta deram quase a mesma nota a ele: não é o que decide o retorno.';
+    } else {
+      rows = GR.slice().sort(function (a, b) { return (b.s - b.n) - (a.s - a.n); }).map(function (r, i) { return { l: r.l, v: r.s - r.n, t: pct(r.s - r.n) + ' (' + pct(r.s) + ' × ' + pct(r.n) + ')', c: i < 2 ? 'key' : '' }; });
+      grOut.innerHTML = bars(rows, 5, 'DIFERENÇA ENTRE QUEM VOLTA E QUEM NÃO VOLTA (270 × 30)');
+      grVer.className = 'verdict ok'; grVer.innerHTML = '<b>O que separa os dois grupos é a entrada: credenciamento e aplicativo.</b> Quem não volta deu 4,0 e 4,6 a eles; quem volta, 8,0 e 8,1. O estacionamento, pior média, separa só 0,2. A verba que muda comportamento vai para a fila da entrada, não para o estacionamento.';
+    }
+  }, 'media');
+
+  /* 5a · canal × produto */
+  var cjOut = document.getElementById('cjOut');
+  seg('cj', function (k) {
+    if (k === 'media') {
+      cjOut.innerHTML = '<div class="scroll">' + bars([{ l: 'Varejo', v: 8.4, t: '8,4 · 60 respostas', c: 'key' }, { l: 'Distribuidor', v: 7.6, t: '7,6 · 210 respostas' }], 10, 'NOTA MÉDIA DE SATISFAÇÃO POR CANAL (0 A 10)') + '</div>' +
+        '<div class="verdict no"><b>A conclusão se monta sozinha na reunião: “o varejo atende melhor, vamos crescer por ali”.</b> A diferença é real. Mexer em canal mexe em contrato, equipe e margem. Antes, uma contagem.</div>';
+    } else {
+      cjOut.innerHTML = '<div class="tablewrap"><table class="vtable"><tr><th>Respostas</th><th class="num">Distribuidor</th><th class="num">Varejo</th><th class="num">Nota da linha</th></tr>' +
+        '<tr><td>Linha 1</td><td class="num">120</td><td class="num">0</td><td class="num">7,5</td></tr>' +
+        '<tr><td>Linha 2</td><td class="num">90</td><td class="num">0</td><td class="num">7,7</td></tr>' +
+        '<tr class="down"><td>Linha 3</td><td class="num">0</td><td class="num">60</td><td class="num">8,4</td></tr></table></div>' +
+        '<div class="verdict ok"><b>O varejo vende uma linha só, e nenhuma outra passa por ele.</b> “O varejo tem nota 8,4” e “a linha 3 tem nota 8,4” são a mesma frase escrita de dois jeitos. A base não diz se a diferença vem do canal ou do produto.</div>';
+    }
+  }, 'media');
+
+  /* 5b · turno × etapa */
+  var ET = ['Corte', 'Solda', 'Montagem', 'Embalagem'], TU = ['A', 'B', 'C'];
+  var DF = [[1.4, 1.5, 1.6, 1.5], [1.5, 1.4, 1.5, 1.6], [1.5, 4.5, 1.4, 1.6]];
+  function avg(a) { return a.reduce(function (s, x) { return s + x; }, 0) / a.length; }
+  var czVer = document.getElementById('czVer'), czTab = document.getElementById('czTab');
+  seg('cz', function (k) {
+    if (k === 'turno') {
+      czTab.innerHTML = '<div class="scroll">' + bars(TU.map(function (t, i) { var v = avg(DF[i]); return { l: 'Turno ' + t + (t === 'C' ? ' (noite)' : ''), v: v, t: pct(v, 2) + '% de defeito', c: t === 'C' ? 'hot' : '' }; }), 5, 'TAXA DE DEFEITO POR TURNO') + '</div>';
+      czVer.className = 'verdict no'; czVer.innerHTML = '<b>“O turno da noite é pior.”</b> A conclusão salta sozinha, e a reunião já sabe quem cobrar.';
+    } else if (k === 'etapa') {
+      czTab.innerHTML = '<div class="scroll">' + bars(ET.map(function (e, j) { var v = avg(DF.map(function (r) { return r[j]; })); return { l: e, v: v, t: pct(v, 2) + '% de defeito', c: e === 'Solda' ? 'hot' : '' }; }), 5, 'TAXA DE DEFEITO POR ETAPA') + '</div>';
+      czVer.className = 'verdict no'; czVer.innerHTML = '<b>“A solda é o problema.”</b> Outra conclusão confiante, e outra equipe cobrada. As duas leituras não podem estar inteiras certas ao mesmo tempo.';
+    } else {
+      czTab.innerHTML = '<table class="vtable hm"><tr><th>Turno</th>' + ET.map(function (e) { return '<th class="num">' + e + '</th>'; }).join('') + '</tr>' +
+        DF.map(function (r, i) { return '<tr><td>' + TU[i] + '</td>' + r.map(function (v) { return '<td class="num ' + (v > 3 ? 'hot' : 'dim') + '">' + pct(v) + '%</td>'; }).join('') + '</tr>'; }).join('') + '</table>';
+      czVer.className = 'verdict ok'; czVer.innerHTML = '<b>Onze combinações entre 1,4% e 1,6%, e uma em 4,5%: a solda no turno C.</b> Tire essa célula e o turno C volta a 1,5%, igual aos outros. A noite não é pior, e a solda também não: uma combinação é. O time vai para um lugar só, e a pergunta seguinte (equipamento, ajuste, treino) fica bem mais estreita.';
+    }
+  }, 'turno');
+
+  /* 6 · poucos casos */
+  var amOut = document.getElementById('amOut');
+  var ASK = '<div class="cv-msg user"><span class="eyebrow">O pedido</span><p>Anexei o processo seletivo. Qual é o perfil de quem a gente aprova?</p></div>';
+  seg('am', function (k) {
+    if (k === 'resp') {
+      amOut.innerHTML = ASK + '<div class="cv-msg ai bad"><span class="eyebrow">Volta</span><p>O perfil dos aprovados tem três traços claros:</p><ul><li>Dois de três vieram por indicação interna: a indicação é o canal mais eficaz.</li><li>Os aprovados tiraram 5,2 no teste técnico, contra 6,1 dos reprovados: o teste não prevê o desempenho e pode ser revisto.</li><li>Todos passaram menos de 30 dias no processo: processos curtos aprovam mais.</li></ul><p class="hint">Três achados, tom seguro, e todos apoiados em três pessoas. O segundo, lido sem cuidado, diz que ir mal no teste ajuda a ser aprovado.</p></div>';
+    } else {
+      amOut.innerHTML = '<div class="cv-msg user"><span class="eyebrow">O pedido</span><p>Anexei o processo seletivo. Antes de qualquer conclusão, conte quantos candidatos há em cada resultado e diga quais perguntas essa contagem permite responder. Nas notas, zero é etapa não feita: tire das médias.</p></div><div class="cv-msg ai good"><span class="eyebrow">Volta</span><p>São 80 candidatos: 41 em andamento, 36 reprovados e 3 aprovados.</p><ul><li><strong>O perfil do aprovado fica sem resposta.</strong> Três pessoas não sustentam padrão: qualquer traço comum entre elas pode ser coincidência.</li><li><strong>O que a base responde bem é o caminho:</strong> em que etapa os 80 param, quantos cada etapa reprova e quantos dias cada uma consome.</li><li>Para responder ao perfil, seria preciso esperar mais processos terminarem.</li></ul><p class="hint">A pergunta da diretoria não foi respondida, e isso é a entrega: impede um processo redesenhado em cima de três pessoas.</p></div>';
+    }
+  }, 'resp');
+
+  /* 7 · qual leitura está certa */
+  var QU = [
+    { a: 'Financeiro', s: 'No mês, 1.000 boletos foram emitidos; 300 ainda não venceram e 35 estão atrasados. Quanto é a inadimplência?', o: ['35 de 1.000: inadimplência de 3,5%.', '35 dos 700 que já venceram: 5,0%, com os 300 a vencer fora da conta e isso escrito.'], r: 1, why: 'Boleto que ainda não venceu não teve a chance de atrasar. Pôr no denominador faz a inadimplência parecer menor do que é.' },
+    { a: 'Vendas de loja', s: 'O faturamento caiu 10% contra o ano passado, e o número de vendas ficou igual. O que aconteceu?', o: ['O valor médio de cada venda caiu cerca de 10%: o problema é preço ou desconto, não movimento.', 'A loja vendeu menos: é preciso reforçar a divulgação.'], r: 0, why: 'Receita é quantidade vezes preço. Com a quantidade parada, a queda inteira está no preço, e mais divulgação não resolve.' },
+    { a: 'Assinaturas', s: 'Na pesquisa com assinantes, a embalagem tem a pior média. Entre quem cancelou e quem ficou, o prazo de entrega é o item com a maior diferença. Onde investir para reduzir cancelamento?', o: ['Na embalagem: é o item com a pior nota.', 'No prazo de entrega: é o que separa quem cancela de quem fica.'], r: 1, why: 'Com uma coluna de resultado (cancelou ou não), a pergunta é qual item separa os grupos, não qual agradou menos.' },
+    { a: 'Atendimento', s: 'A filial Norte tem satisfação maior que a Sul. A Norte atende só clientes pequenos; a Sul, quase todos os grandes.', o: ['A Norte atende melhor: vale levar o jeito dela para a Sul.', 'A base não separa filial de porte de cliente. Para comparar, olhe só os clientes do mesmo porte.'], r: 1, why: 'Filial e porte andam juntos. A diferença pode ser da filial, ou de atender cliente pequeno: a contagem mostra que não dá para saber.' },
+    { a: 'Central de atendimento', s: 'O tempo de espera é maior à tarde, e maior no telefone que no chat. Cruzando, só o telefone à tarde está fora do normal.', o: ['Reforçar a equipe da tarde inteira.', 'Reforçar o telefone no período da tarde.'], r: 1, why: 'Ler um corte de cada vez espalha o problema por duas equipes. O cruzamento acha a única combinação que destoa.' },
+    { a: 'Treinamento', s: 'Quatro pessoas fizeram o curso novo de vendas, e três bateram a meta no mês seguinte.', o: ['O curso funciona: 75% de quem fez bateu a meta.', 'Quatro pessoas não sustentam conclusão. Dá direção; para decidir, mais turmas, e comparar com quem não fez.'], r: 1, why: 'Com quatro casos, uma pessoa a mais ou a menos muda o percentual em 25 pontos. O tamanho vai escrito ao lado, e a decisão espera.' },
+    { a: 'Política comercial', s: 'A média dos descontos de cada pedido é 4%. Somando todo o desconto e dividindo pela receita bruta, dá 9%. Quanto o desconto custou à empresa?', o: ['9%: o desconto total sobre a receita total.', '4%: a média dos descontos dos pedidos.'], r: 0, why: 'Os pedidos grandes levaram os maiores descontos. A média das médias faz o pedido pequeno pesar igual e esconde onde o dinheiro saiu.' }
+  ];
+  var quEl = document.getElementById('quQuiz'), quScore = document.getElementById('quScore'), quAns = {};
+  QU.forEach(function (q, i) {
+    var d = document.createElement('div'); d.className = 'qz-item';
+    d.innerHTML = '<span class="area">' + q.a + '</span><p>' + q.s + '</p><div class="opts read" role="group" aria-label="Qual leitura">' + q.o.map(function (o, j) { return '<button type="button" data-v="' + j + '" aria-pressed="false">' + o + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+    var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+    bs.forEach(function (b) { b.addEventListener('click', function () {
+      pressGroup(bs, function (x) { return x === b; });
+      var ok = +b.dataset.v === q.r; quAns[i] = ok;
+      fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+      fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'A outra. ') + '</b>' + q.why;
+      var n = Object.keys(quAns).length, c = Object.keys(quAns).filter(function (k) { return quAns[k]; }).length;
+      quScore.textContent = n + ' de ' + QU.length + ' respondidas · ' + c + ' certas' + (n === QU.length ? ' · em todas, a leitura errada era uma conta certa' : '');
+    }); });
+    quEl.appendChild(d);
+  });
+  quScore.textContent = '0 de ' + QU.length + ' respondidas';
+
+  /* 8 · o pedido */
+  var MT = [
+    { t: 'Média de coisas de tamanhos diferentes', d: 'margem, preço médio, prazo médio', l: 'Se houver mais de um jeito defensável de calcular uma média (do total, ou média das médias), mostre os dois com a fórmula ao lado e diga qual responde a "quanto a empresa ganhou ou perdeu".' },
+    { t: 'Casos que ainda não terminaram', d: 'em andamento, a vencer, em aberto', l: 'Antes de qualquer taxa, diga quantos casos há em cada status. Se houver casos que ainda não terminaram, calcule a taxa com e sem eles e mostre as duas lado a lado.' },
+    { t: 'Um total que variou', d: 'receita, custo, volume', l: 'Abra toda variação de total nas parcelas que o compõem (quantidade e preço), com a fórmula de cada uma, e confira que elas somam o total. Ao lado de todo percentual, escreva o valor em reais.' },
+    { t: 'Uma coluna de resultado', d: 'volta, renova, cancela, compra de novo', l: 'Se existir uma coluna de resultado, não ordene as médias: compare cada item entre os grupos desse resultado e mostre a diferença.' },
+    { t: 'Grupos para comparar', d: 'canal, filial, vendedor, região', l: 'Antes de comparar grupos, cruze a coluna do grupo com as outras colunas de categoria numa tabela de contagem. Se duas andam juntas, diga que a base não separa as duas, em vez de concluir.' },
+    { t: 'Duas dimensões ao mesmo tempo', d: 'turno e etapa, região e produto', l: 'Com duas dimensões, mostre cada uma sozinha e depois o cruzamento das duas, e diga qual explica a outra.' },
+    { t: 'Poucos casos', d: 'poucas respostas, poucos desfechos', l: 'Ao lado de toda média ou taxa, escreva quantos casos entraram. Se um recorte tiver poucos casos, diga isso em vez de tirar conclusão. Se a pergunta não tiver resposta com esta base, recuse e diga por quê. Zero que quer dizer "não aconteceu" fica fora das médias.' }
+  ];
+  var mtList = document.getElementById('mtList'), mtAsk = document.getElementById('mtAsk');
+  MT.forEach(function (m, i) {
+    var lb = document.createElement('label');
+    lb.innerHTML = '<input type="checkbox" data-mt="' + i + '" checked><span>' + m.t + '</span><small>' + m.d + '</small>';
+    mtList.appendChild(lb);
+  });
+  var mtBoxes = mtList.querySelectorAll('[data-mt]');
+  function mtRender() {
+    var on = Array.prototype.filter.call(mtBoxes, function (b) { return b.checked; }).map(function (b) { return MT[+b.dataset.mt]; });
+    var q = mtAsk.value.trim();
+    var out = 'Anexei uma planilha. A minha pergunta é: ' + (q ? esc(q) : '<i>[a sua pergunta, com o que você vai decidir depois]</i>') + '\n\n' +
+      '<b>Nesta mensagem, só as contas e as escolhas.</b> Ainda não escreva conclusão nem recomendação.\n\n' +
+      '<b>As escolhas que você não pode fazer calada:</b>\n' +
+      (on.length ? on.map(function (m) { return '- ' + esc(m.l); }).join('\n') : '<i>[marque ao menos uma armadilha]</i>') + '\n\n' +
+      'Para cada número, escreva em uma linha a escolha que você fez para chegar nele (quem entrou na conta, como pesou, que grupo comparou com qual). Se alguma coluna estiver ambígua, pergunte antes de calcular.';
+    document.getElementById('mtOut').innerHTML = out;
+  }
+  mtBoxes.forEach(function (b) { b.addEventListener('change', mtRender); });
+  mtAsk.addEventListener('input', mtRender);
+  mtRender();
+})();
+</script>
+</body>
+</html>

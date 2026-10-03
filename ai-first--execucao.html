@@ -366,8 +366,8 @@ h1, h2, h3 { text-wrap: pretty; }
         <li>Liste as perguntas que queremos responder com estas seis entrevistas.</li>
         <li class="pd-cut">Tire das seis transcrições a conversa de abertura e o que fugiu do assunto. Devolva só os trechos que respondem às perguntas.</li>
         <li>Analise uma entrevista por vez: cada dor citada, com a frase que a sustenta.</li>
-        <li>Conte em quantas entrevistas cada dor aparece.</li>
-        <li>Ordene as dores pela contagem e proponha três prioridades.</li>
+        <li>Classifique cada dor em três faixas: emergência (dano que não se recupera), estrutural (precisa de projeto e prazo) ou decisão de cima (depende de orçamento ou de outra pessoa).</li>
+        <li>Proponha três prioridades pela faixa, não pelo número de entrevistas: a emergência entra primeiro mesmo que tenha sido dita uma vez só.</li>
         <li>Para cada prioridade, aponte as frases de origem.</li>
       </ol>
       <div class="verdict" id="pdVer"></div>
@@ -648,7 +648,7 @@ Não inclua as opções que descartamos nem a história desta conversa. Se algum
   /* 3 · o passo que tira */
   var PD = {
     um: { c: 'no', t: '<b>A conversa de abertura entra na análise.</b> O cafezinho, a história de cada um na empresa e o comentário sobre o trânsito disputam espaço com as dores, e nada diz o que ficou de fora.' },
-    seis: { c: 'ok', t: '<b>O segundo pedido é o que tira.</b> Sem ele, os passos 3 a 6 gastariam espaço analisando conversa que não responde a nenhuma pergunta. Cada resposta dá para conferir antes de virar a entrada do pedido seguinte.' }
+    seis: { c: 'ok', t: '<b>O segundo pedido é o que tira.</b> Sem ele, os passos 3 a 6 gastariam espaço analisando conversa que não responde a nenhuma pergunta. Cada resposta dá para conferir antes de virar a entrada do pedido seguinte. E o passo 5 prioriza pela faixa, não pela contagem: o que mais se repete é o que incomoda mais gente, não o mais grave, e o grave costuma ser dito uma vez, de passagem.' }
   };
   var pdBtns = document.querySelectorAll('[data-pd]');
   function setPd(k) {

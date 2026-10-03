@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--pergunta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A pergunta que decide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.4. Peças: o pedido sem pergunta em três tempos (o pedido, o que voltou, a reunião), quiz "decide, resumo ou resposta embutida?", o teste da resposta incômoda com veredito, stepper com a escada dos quatro degraus em SVG, as três versões do mesmo pedido com gráfico por loja, simulador liga-desliga de recorte, janela e causas, montador da ficha da pergunta com copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.qz-fb[hidden] { display: none; }
+.sec > * { min-width: 0; }
+
+/* 1 · o pedido sem pergunta */
+.rq { display: grid; gap: 10px; }
+.rq-msg { border-radius: 8px; padding: 12px 16px; font-size: .95rem; display: grid; gap: 6px; max-width: 64ch; }
+.rq-msg.user { background: var(--accent-soft); border: 1px solid var(--accent); justify-self: end; }
+.rq-msg.ai { background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.rq-msg.room { background: var(--atencao-soft); border: 1px solid var(--atencao); color: var(--atencao-texto); }
+.rq-msg p { color: inherit; }
+
+/* 2 · decide ou descreve */
+.is-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.is-grid .card.yes { border-color: var(--ok); }
+.is-grid .card.not { border-color: var(--atencao); }
+.is-grid .card .eyebrow { color: var(--text-dim); }
+
+/* 3 · a resposta incômoda */
+.mq-box { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.mq-q { font-size: 1.15rem; }
+.mq-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+.mq-opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 7px 14px; font-size: .93rem; }
+.mq-opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+/* 4 · a escada (svg) */
+.dg-svg { min-width: 640px; }
+.dg-step rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.dg-step.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.dg-step.done rect { fill: var(--bg-elev); stroke: var(--ok); }
+.dg-step .t { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.dg-step .b { font: 500 14px var(--font-body); fill: var(--text); }
+.dg-step .s { font: 400 11.5px var(--font-body); fill: var(--text-muted); }
+.dg-step.on .t { fill: var(--accent); }
+.dg-zone { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+.dg-line { stroke: var(--border-strong); stroke-width: 1.2; stroke-dasharray: 4 4; }
+
+/* 5 · três versões */
+.vs-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.vs-back { display: grid; gap: 10px; }
+.vs-back .card p { color: var(--text); }
+.bar-svg { min-width: 520px; }
+.bar-svg .lbl { font: 500 12px var(--font-mono); fill: var(--text-muted); }
+.bar-svg .val { font: 500 11.5px var(--font-mono); fill: var(--text-muted); }
+.bar-svg .bg { fill: var(--border); }
+.bar-svg .fg { fill: var(--border-strong); }
+.bar-svg .fg.hi { fill: var(--atencao); }
+.bar-svg .fg.ac { fill: var(--accent); }
+.bar-svg .val.hi { fill: var(--atencao-texto); }
+.kpi { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.kpi div { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; display: grid; gap: 4px; }
+.kpi small { font-size: .8rem; color: var(--text-dim); }
+.kpi .big { font-size: 1.5rem; }
+
+/* 6 · recorte, janela, causas */
+.sw-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.sw-row button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 999px; padding: 7px 14px; font-size: .93rem; color: var(--text-muted); }
+.sw-row button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.sw-row button::before { content: "○ "; }
+.sw-row button[aria-pressed="true"]::before { content: "● "; }
+.sw-out ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--text-muted); font-size: .95rem; }
+.sw-out li b { color: var(--text); font-weight: 600; }
+
+/* 7 · a ficha */
+.fi-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.fi-form { display: grid; gap: 10px; }
+.fi-form label { display: grid; gap: 4px; font-size: .92rem; }
+.fi-form label small { color: var(--text-dim); font-size: .82rem; }
+.fi-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.fi-out { display: grid; gap: 10px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 860px) {
+  .is-grid, .vs-grid, .fi-grid { grid-template-columns: 1fr; }
+  .rq-msg.user { justify-self: stretch; }
+}
+@media (max-width: 520px) { .kpi { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .dg-step rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--comunicar.html">← 9.3 Comunicar</a><a href="./dados--armadilhas.html">9.5 Armadilhas da conta →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html"><b>9.3</b>Comunicar</a><a href="./dados--pergunta.html" aria-current="page"><b>9.4</b>A pergunta</a><a href="./dados--armadilhas.html"><b>9.5</b>Armadilhas da conta</a><a href="./dados--decidir.html"><b>9.6</b>Decidir</a></div>
+  </nav>
+  <span class="eyebrow">9.4 · 4 de 6</span>
+  <h1>A pergunta que decide</h1>
+  <p class="sub">Análise é o que responde a uma pergunta cuja resposta muda o que você vai fazer; o resto é descrição</p>
+  <p class="lead">Anexar a planilha e escrever “faça uma análise” volta, em menos de um minuto, meia página correta que não decide nada. Não é a IA indo mal: é o pedido sendo atendido. Esta página trata do que se decide <strong>antes de abrir a planilha</strong>: a pergunta, a decisão que depende dela, o pedaço dos dados que você vai olhar e a resposta que você menos quer receber. Depois dela vem o trabalho com o arquivo, em <a href="./dados--planilha.html">analisar planilha com IA</a>, e a busca de explicação fora dele, em <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-pedido">Faça uma análise disso</a><a href="#s-resumo">Resumo ou análise</a><a href="#s-incomoda">A resposta que você menos quer</a><a href="#s-degraus">Da curiosidade à decisão</a><a href="#s-versoes">Três versões do mesmo pedido</a><a href="#s-recorte">Recorte, janela e causas</a><a href="#s-ficha">A ficha da pergunta</a><a href="#s-cerca">O que a pergunta não resolve</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-pedido" aria-labelledby="h-pedido">
+  <span class="eyebrow">Faça uma análise disso</span>
+  <h2 id="h-pedido">O pedido sem pergunta volta como resumo, e o resumo está certo</h2>
+  <p class="intro">Você deixa o carro na oficina e diz “dá uma olhada geral”. O mecânico roda no quarteirão, confere o óleo e devolve: “está tudo dentro do normal”. Se você tivesse dito “faz um estalo quando eu faço a curva devagar”, ele teria ido direto na peça. <strong>Com a planilha é igual: “faça uma análise” é o “dá uma olhada geral”.</strong> Veja o que acontece em três tempos.</p>
+  <div class="seg" role="group" aria-label="Qual momento" id="rqSeg">
+    <button type="button" data-rq="pedido" aria-pressed="true">Sexta: o pedido</button>
+    <button type="button" data-rq="volta" aria-pressed="false">O que voltou</button>
+    <button type="button" data-rq="reuniao" aria-pressed="false">Segunda: a reunião</button>
+  </div>
+  <div class="rq" id="rqOut" aria-live="polite"></div>
+  <p class="hint">Depois de uma reunião assim, como o texto está correto, quem desconfia é você de si mesmo: talvez não houvesse nada de interessante no dado. Quase sempre havia. Ninguém perguntou.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-resumo" aria-labelledby="h-resumo">
+  <span class="eyebrow">Resumo ou análise</span>
+  <h2 id="h-resumo">Uma pergunta serve para análise quando a resposta muda o que você faz</h2>
+  <p class="intro">Na reunião de orçamento, o diretor financeiro só pede um número quando sabe o que fará com ele: “se passar de cinquenta mil, vai para o conselho”. Esse é o teste inteiro, e ele não é sobre a redação. <strong>Se você imagina duas respostas possíveis e as duas levam você a fazer a mesma coisa na semana seguinte, a pergunta não está trabalhando.</strong> O resto é descrição: contar o que já está à vista na planilha.</p>
+  <div class="is-grid">
+    <div class="card yes"><span class="eyebrow">é</span><h3>Muda uma ação</h3><p>Você diz, antes de perguntar, o que faz se der A e o que faz se der B.</p></div>
+    <div class="card yes"><span class="eyebrow">é</span><h3>Aceita contrariar você</h3><p>Se a única resposta possível é a que você já esperava, não há o que descobrir.</p></div>
+    <div class="card not"><span class="eyebrow">não é</span><h3>Resumo com nome de análise</h3><p>“Analise”, “avalie”, “traga insights” pedem descrição do que está à vista.</p></div>
+    <div class="card not"><span class="eyebrow">não é</span><h3>Resposta já embutida</h3><p>“Confirme que foi o frete” pede concordância, e ela vem. Por que vem está em <a href="./limites-da-ia--a-ia-concorda.html#s-pergunta">a IA concorda com você</a>.</p></div>
+  </div>
+  <h3>Decide, resumo ou resposta embutida?</h3>
+  <div class="qz" id="rsQuiz"></div>
+  <p class="qz-score" id="rsScore" aria-live="polite"></p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-incomoda" aria-labelledby="h-incomoda">
+  <span class="eyebrow">A resposta que você menos quer</span>
+  <h2 id="h-incomoda">O teste: escreva antes a resposta que incomodaria você</h2>
+  <p class="intro">Quem prepara uma reunião difícil ensaia a pergunta que não quer ouvir do diretor, porque é ela que mostra onde o argumento é fraco. Antes de perguntar à IA, faça o mesmo: <strong>escreva a resposta que você menos quer receber.</strong> Se ela existe e obrigaria você a fazer alguma coisa diferente, a pergunta está de pé. Se nenhuma resposta incomoda, o que você tem na mão é um pedido de resumo. Escolha uma pergunta e julgue.</p>
+  <div class="seg" role="group" aria-label="A pergunta" id="mqSeg">
+    <button type="button" data-mq="0" aria-pressed="true">Clientes e margem</button>
+    <button type="button" data-mq="1" aria-pressed="false">Vendas do trimestre</button>
+    <button type="button" data-mq="2" aria-pressed="false">O treinamento novo</button>
+    <button type="button" data-mq="3" aria-pressed="false">Os dados do atendimento</button>
+  </div>
+  <div class="mq-box">
+    <p class="mq-q" id="mqQ"></p>
+    <div class="mq-opts" role="group" aria-label="O seu julgamento" id="mqOpts">
+      <button type="button" data-mv="pe" aria-pressed="false">Tem resposta incômoda: está de pé</button>
+      <button type="button" data-mv="resumo" aria-pressed="false">Nenhuma incomoda: é resumo</button>
+    </div>
+    <div class="verdict" id="mqVer" aria-live="polite"></div>
+  </div>
+  <p class="hint">Escrever a resposta incômoda é o mesmo gesto de pedir à pesquisa que tente derrubar a sua tese, o “derrubar” de <a href="./dados--pesquisa.html#s-tipos">três tipos de hipótese</a>. Aqui ele vem antes: valida a pergunta, não a fonte.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-degraus" aria-labelledby="h-degraus">
+  <span class="eyebrow">Da curiosidade à decisão</span>
+  <h2 id="h-degraus">Quatro degraus: o que aconteceu, contra o quê, por quê, o que eu faço</h2>
+  <p class="intro">Na reunião de resultado, a conversa sobe sozinha: quanto vendemos, contra a meta, por que ficou abaixo, o que muda no mês que vem. Uma pergunta para a IA também tem degrau, e <strong>os dois primeiros a planilha responde sozinha com uma fórmula; os dois últimos são onde a análise passa a valer o tempo.</strong> O exemplo é o mesmo nos quatro: uma rede de nove lojas de material de construção cuja receita caiu. Suba.</p>
+  <div class="stepbar"><span class="eyebrow" id="dgLab">Degrau 1 de 4</span><div class="nav"><button type="button" class="btn" id="dgPrev">← Anterior</button><button type="button" class="btn primary" id="dgNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="dg-svg" viewBox="0 0 720 250" role="img" aria-labelledby="dg-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="dg-t">A escada da pergunta: descrição, comparação, causa e decisão, em quatro degraus que sobem; os dois primeiros a planilha responde com uma fórmula, os dois últimos são onde a análise começa</title>
+      <text class="dg-zone" x="12" y="236">A PLANILHA RESPONDE SOZINHA</text>
+      <text class="dg-zone" x="372" y="236">ONDE A ANÁLISE COMEÇA</text>
+      <line class="dg-line" x1="360" y1="20" x2="360" y2="244"/>
+      <g class="dg-step" data-dg="1"><rect x="12" y="150" width="160" height="66" rx="8"/><text class="t" x="24" y="172">DEGRAU 1</text><text class="b" x="24" y="192">Descrição</text><text class="s" x="24" y="208">o que aconteceu?</text></g>
+      <g class="dg-step" data-dg="2"><rect x="188" y="110" width="160" height="66" rx="8"/><text class="t" x="200" y="132">DEGRAU 2</text><text class="b" x="200" y="152">Comparação</text><text class="s" x="200" y="168">mudou em relação a quê?</text></g>
+      <g class="dg-step" data-dg="3"><rect x="372" y="70" width="160" height="66" rx="8"/><text class="t" x="384" y="92">DEGRAU 3</text><text class="b" x="384" y="112">Causa</text><text class="s" x="384" y="128">por que mudou?</text></g>
+      <g class="dg-step" data-dg="4"><rect x="548" y="30" width="160" height="66" rx="8"/><text class="t" x="560" y="52">DEGRAU 4</text><text class="b" x="560" y="72">Decisão</text><text class="s" x="560" y="88">o que eu faço a respeito?</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="dgCap" aria-live="polite"></div>
+  <p class="punch">A pergunta boa quase nunca nasce no degrau 4. <em>Ela é de causa, e é a causa que abre a decisão.</em></p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-versoes" aria-labelledby="h-versoes">
+  <span class="eyebrow">Três versões do mesmo pedido</span>
+  <h2 id="h-versoes">A média confirmou a tese; o recorte mostrou onde estava a perda</h2>
+  <p class="intro">O inventário da loja pode bater no total e esconder uma prateleira inteira faltando, compensada por outra que sobrou. A média faz isso com a análise. A gerente comercial da rede de nove lojas acha que a receita caiu por causa do desconto da promoção. <strong>A planilha é a mesma nas três versões; muda só o que foi escrito junto com o anexo</strong>, e a terceira não é mais longa que a segunda. Troque a versão.</p>
+  <div class="seg" role="group" aria-label="Versão do pedido" id="vsSeg">
+    <button type="button" data-vs="0" aria-pressed="true">Versão 1 · o pedido de sempre</button>
+    <button type="button" data-vs="1" aria-pressed="false">Versão 2 · cadeira e hipótese</button>
+    <button type="button" data-vs="2" aria-pressed="false">Versão 3 · recorte e duas causas</button>
+  </div>
+  <div class="vs-grid">
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow" id="vsTag">O pedido</span><button type="button" class="btn" data-copy="vsPedido">Copiar</button></div>
+      <pre id="vsPedido"></pre>
+    </div>
+    <div class="vs-back" id="vsBack" aria-live="polite"></div>
+  </div>
+  <div class="chart">
+    <span class="eyebrow" id="vsChartTag"></span>
+    <div class="scroll"><svg class="bar-svg" id="vsChart" viewBox="0 0 640 300" role="img" aria-labelledby="vsChartT" xmlns="http://www.w3.org/2000/svg"><title id="vsChartT">Gráfico da versão escolhida</title></svg></div>
+    <p class="hint" id="vsChartHint"></p>
+  </div>
+  <p class="hint">A média que dilui o grupo que mais pesa é assunto de <a href="./dados--planilha.html#s-segmento">a média que esconde o grupo</a>, do lado da conta. Aqui o ponto é outro: <strong>quem escolheu olhar a rede inteira foi o pedido</strong>, antes de qualquer conta.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-recorte" aria-labelledby="h-recorte">
+  <span class="eyebrow">Recorte, janela e causas</span>
+  <h2 id="h-recorte">Entre a versão 2 e a 3 não entrou texto melhor: entraram três decisões</h2>
+  <p class="intro">O auditor que chega dizendo “vou olhar as notas de março a maio das filiais B e F” termina numa tarde o que a auditoria geral não termina num mês. O que mudou entre a versão 2 e a 3 foram três escolhas feitas antes de perguntar: <strong>o recorte</strong> (o pedaço dos dados que você olha: as nove lojas, e não a rede), <strong>a janela</strong> (o período que você compara contra qual outro) e <strong>as causas concorrentes</strong> (duas explicações possíveis postas lado a lado, para o dado escolher entre elas). Ligue e desligue cada uma.</p>
+  <div class="sw-row" role="group" aria-label="O que entra no pedido">
+    <button type="button" data-sw="recorte" aria-pressed="false">Recorte: loja por loja</button>
+    <button type="button" data-sw="janela" aria-pressed="false">Janela declarada</button>
+    <button type="button" data-sw="causas" aria-pressed="false">Duas causas na disputa</button>
+  </div>
+  <div class="two">
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">O pedido · ao vivo</span><button type="button" class="btn" data-copy="swPedido">Copiar</button></div>
+      <pre id="swPedido"></pre>
+    </div>
+    <div class="panel sw-out">
+      <span class="eyebrow">O que volta</span>
+      <ul id="swOut"></ul>
+    </div>
+  </div>
+  <div class="verdict" id="swVer" aria-live="polite"></div>
+  <p class="hint">Sobre a janela: a mesma base, medida de março contra setembro, mostra uma queda de 9,8%; comparando a média de março a maio com a de julho a setembro, 7,5%. Nenhum dos dois números está errado. <strong>Errada é a resposta que não diz qual janela usou.</strong></p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-ficha" aria-labelledby="h-ficha">
+  <span class="eyebrow">A ficha da pergunta</span>
+  <h2 id="h-ficha">Cinco linhas antes de abrir a planilha</h2>
+  <p class="intro">A manutenção não abre ordem de serviço sem três respostas: o que quebrou, onde e desde quando. A pergunta da análise também tem ficha, e ela tem cinco linhas. <strong>A quinta, a resposta que você menos quer, é a que valida as outras quatro.</strong> A cadeira (o cargo de onde você pergunta e o que você decide nele) é a primeira coisa que a IA escolhe sozinha quando você não diz, e costuma escolher a do artigo genérico. Escolha um exemplo, edite e copie.</p>
+  <div class="seg" role="group" aria-label="Exemplo" id="fiSeg">
+    <button type="button" data-fi="0" aria-pressed="true">Lojas e desconto</button>
+    <button type="button" data-fi="1" aria-pressed="false">Chamados reabertos</button>
+    <button type="button" data-fi="2" aria-pressed="false">Em branco</button>
+  </div>
+  <div class="fi-grid">
+    <div class="fi-form">
+      <label>1 · A pergunta, escrita inteira <small>com o recorte, a janela e as causas que disputam</small><textarea id="fi1" rows="3"></textarea></label>
+      <label>2 · A cadeira de onde eu pergunto <small>o cargo e o que você decide nele</small><textarea id="fi2" rows="2"></textarea></label>
+      <label>3 · A decisão que depende da resposta <small>se der A, faço isto; se der B, faço aquilo</small><textarea id="fi3" rows="2"></textarea></label>
+      <label>4 · O material que eu já tenho <small>o que vai anexado</small><textarea id="fi4" rows="2"></textarea></label>
+      <label>5 · A resposta que eu menos quero receber <small>se ficar vazia, volte à linha 1</small><textarea id="fi5" rows="2"></textarea></label>
+    </div>
+    <div class="fi-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O pedido · ao vivo</span><button type="button" class="btn" data-copy="fiOut">Copiar</button></div>
+        <pre id="fiOut"></pre>
+      </div>
+      <div class="verdict" id="fiVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <h3>Se travar na escolha da pergunta</h3>
+  <div class="three">
+    <div class="card"><span class="eyebrow">regra 1</span><h3>A conversa que se repete</h3><p>O assunto que volta em toda reunião de resultado sem nunca fechar costuma ser uma pergunta que ninguém respondeu com material.</p></div>
+    <div class="card"><span class="eyebrow">regra 2</span><h3>Onde você chuta</h3><p>“Eu acho que é o fornecedor”, dito com convicção e sem número, é uma pergunta esperando para nascer.</p></div>
+    <div class="card"><span class="eyebrow">regra 3</span><h3>Pequena e específica</h3><p>“Por que a empresa perde margem” não cabe numa tarde. “Por que a loja B perdeu receita no terceiro trimestre” cabe, e ensina o mesmo método.</p></div>
+  </div>
+  <p class="hint">Não conta como pergunta: “quero entender melhor os meus dados”. Não tem recorte, não tem período, e nenhuma resposta contraria você. Se a sua ficou parecida, escolha um número que incomodou você nos últimos trinta dias e pergunte sobre ele.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-cerca" aria-labelledby="h-cerca">
+  <span class="eyebrow">O que a pergunta não resolve</span>
+  <h2 id="h-cerca">Pergunta boa não cria dado, e não garante que a resposta seja verdadeira</h2>
+  <p class="intro">Um bom roteiro de entrevista faz o candidato falar do que importa, e não garante que ele diga a verdade. A pergunta certa dirige a busca; <strong>a resposta que volta pode ser inventada do mesmo jeito</strong>, com a mesma segurança. São duas coisas independentes, e a análise precisa das duas.</p>
+  <div class="three">
+    <div class="card"><h3>Não cria dado que não existe</h3><p>Se a informação que responde não está em lugar nenhum da empresa, a pergunta continua boa e a resposta vai ser levantada fora: é o trabalho de <a href="./dados--pesquisa.html">pesquisa com hipótese</a>.</p></div>
+    <div class="card"><h3>Pode mudar no meio, às claras</h3><p>A primeira resposta às vezes mostra que o recorte estava errado. Reescrever a pergunta é o trabalho funcionando. O que não pode é ela mudar em silêncio, e você responder outra coisa sem perceber.</p></div>
+    <div class="card"><h3>Decisão tomada não vira pergunta</h3><p>Quando a escolha já está feita e o que se procura é material que a sustente, o trabalho é legítimo, mas não é análise: você vai achar o que foi procurar. Ver <a href="./limites-da-ia--a-ia-concorda.html#s-material">prova a favor, prova contra</a>.</p></div>
+  </div>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>A pergunta entrega</th><th>Ela não resolve</th><th>Onde se resolve</th></tr>
+      <tr><td>recorte, janela e decisão amarrados</td><td>se a conta que veio é conta ou estimativa</td><td><a href="./dados--planilha.html#s-calcula">fez a conta ou leu por cima</a></td></tr>
+      <tr><td>duas causas postas para disputar</td><td>se a causa que venceu está no dado ou só é plausível</td><td><a href="./limites-da-ia--alucinacao.html#s-voltou">alucinação</a> e <a href="./ai-first--ipo.html#s-causa">perguntar por quê até a causa</a></td></tr>
+      <tr><td>o pedaço dos dados que importa</td><td>se a conta escolhida (a taxa, a média) leva a decidir errado</td><td><a href="./dados--armadilhas.html">a conta certa que decide errado</a></td></tr>
+      <tr><td>a decisão que depende da resposta</td><td>qual caminho seguir quando há mais de um</td><td><a href="./dados--decidir.html">comparar caminhos antes de decidir</a></td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Análise responde a uma pergunta</h3><p>Se as respostas possíveis levam todas à mesma ação, você pediu um resumo, e ele vai voltar correto e inútil.</p></div>
+    <div class="take-card"><h3>Escreva a resposta incômoda</h3><p>Antes de perguntar, a resposta que você menos quer receber. Se nenhuma incomoda, volte à pergunta.</p></div>
+    <div class="take-card"><h3>Decida antes de perguntar</h3><p>Recorte, janela e duas causas na disputa. Sem eles, a média confirma a tese fraca.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Análise</dt><dd>O trabalho que responde a uma pergunta cuja resposta muda uma decisão. O resto é descrição.</dd>
+    <dt>Descrição</dt><dd>Contar o que está à vista na planilha: total, média, maior, menor. Tem resposta certa e não decide nada sozinha.</dd>
+    <dt>Recorte</dt><dd>O pedaço dos dados que você escolhe olhar: quais lojas, quais clientes, qual equipe.</dd>
+    <dt>Janela</dt><dd>O período comparado contra outro período. Janelas diferentes dão números diferentes na mesma base.</dd>
+    <dt>Causa concorrente</dt><dd>Uma de duas ou mais explicações possíveis, postas lado a lado no pedido para o dado escolher entre elas.</dd>
+    <dt>Mix</dt><dd>A composição do que o cliente compra: quanto da venda é de cada linha de produto.</dd>
+    <dt>Ponto</dt><dd>A diferença entre duas porcentagens. De 3,1% para 5,2% são 2,1 pontos, não 2,1%.</dd>
+    <dt>Cadeira</dt><dd>O cargo de onde você pergunta e a decisão que cabe a ele. Decide o que a resposta vai medir.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A rede de nove lojas, as lojas por letra, a gerente, todos os valores (receita, desconto por loja, participação do acabamento, os 81%, os 7,5% e os 9,8%), as equipes de atendimento e as perguntas dos exercícios são exemplos inventados, com contas fechadas entre si. A ordem desta página é a de quem pensa antes de abrir o arquivo; na família, ela vem antes da planilha. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--planilha.html">analisar planilha com IA</a>, <a href="./dados--pesquisa.html">pesquisa com hipótese</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>, <a href="./dados--armadilhas.html">a conta certa que decide errado</a>, <a href="./dados--decidir.html">comparar caminhos antes de decidir</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados--comunicar.html"><span>← anterior</span><b>9.3 · Comunicar o resultado</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <a class="famfoot-next" href="./dados--armadilhas.html"><span>próxima →</span><b>9.5 · A conta certa que decide errado</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+  }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · o pedido sem pergunta */
+  var RQ = {
+    pedido: '<div class="rq-msg user"><span class="eyebrow">Você, sexta à tarde, com a planilha anexada</span><p>Faça uma análise disso.</p></div><p class="hint">Sete meses de vendas de uma rede de nove lojas, uma linha por pedido. Nenhuma palavra sobre o que está em jogo.</p>',
+    volta: '<div class="rq-msg user"><span class="eyebrow">Você</span><p>Faça uma análise disso.</p></div><div class="rq-msg ai"><span class="eyebrow">A IA, em menos de um minuto</span><p>A rede faturou R$ 16,2 milhões de março a setembro, média mensal de R$ 2,31 milhões. Maio foi o mês de maior faturamento e agosto o de menor. Material básico responde por 52% da receita, acabamento por 31% e ferramentas por 17%.</p></div><p class="hint">Cada número confere com a planilha. Você cola no material da reunião de segunda.</p>',
+    reuniao: '<div class="rq-msg ai"><span class="eyebrow">O texto, lido em voz alta</span><p>A rede faturou R$ 16,2 milhões… Maio foi o melhor mês… Material básico responde por 52%…</p></div><div class="rq-msg room"><span class="eyebrow">A diretora</span><p>Tá. E o que a gente faz?</p></div><p class="hint">A resposta não está no texto. Não por estar errado: nenhuma daquelas frases aponta para alguma coisa que alguém deva fazer. O pedido foi atendido; a pergunta nunca chegou a existir por escrito.</p>'
+  };
+  var rqBtns = document.querySelectorAll('[data-rq]'), rqOut = document.getElementById('rqOut');
+  function setRq(k) { pressGroup(rqBtns, function (x) { return x.dataset.rq === k; }); rqOut.innerHTML = RQ[k]; }
+  rqBtns.forEach(function (b) { b.addEventListener('click', function () { setRq(b.dataset.rq); }); });
+  setRq('pedido');
+
+  /* 2 · decide, resumo ou embutida */
+  quiz(document.getElementById('rsQuiz'), document.getElementById('rsScore'), [
+    { s: '“Faça uma análise das vendas do semestre.”', a: 'resumo', why: 'Nenhuma decisão em jogo, nenhum recorte. Volta o total, a média e o melhor mês.' },
+    { s: '“Confirme que a queda no atendimento foi por causa do sistema novo.”', a: 'embutida', why: 'A resposta veio junto com a pergunta. Ela vai achar o que sustenta o sistema novo como culpado.' },
+    { s: '“Dos 14 fornecedores, quais atrasaram mais de três entregas desde março, e algum deles concentra os pedidos urgentes? Se sim, mudo a regra de urgência.”', a: 'decide', why: 'Recorte, período e o que você faz com cada resposta. Sim e não levam a ações diferentes.' },
+    { s: '“Traga insights sobre a pesquisa de clima.”', a: 'resumo', why: '“Insights” é o nome bonito do resumo. Qualquer coisa que volte serve, e por isso nada decide.' },
+    { s: '“Mostre que o vendedor novo está abaixo da média do time.”', a: 'embutida', why: '“Mostre que” pede prova a favor. A pergunta que decide seria: em quais etapas ele difere do time, e é diferença de carteira ou de método?' },
+    { s: '“A hora extra subiu por volume de pedidos ou por falta na escala? Se for falta, abro vaga; se for volume, renegocio prazo com o cliente.”', a: 'decide', why: 'Duas causas postas para disputar e uma ação para cada uma. É uma pergunta de causa que abre a decisão.' }
+  ], [['decide', 'Decide'], ['resumo', 'É resumo'], ['embutida', 'Resposta embutida']], 'resumo e resposta embutida são os dois jeitos mais comuns de não perguntar.');
+
+  /* 3 · a resposta incômoda */
+  var MQ = [
+    { q: '“Quais dos 12 clientes puxaram a queda de margem do trimestre, e em cada um foi desconto ou mudança no que ele compra?”', a: 'pe',
+      w: 'Ela está de pé. <b>A resposta que você menos quer:</b> que a queda venha de um cliente só, e que seja o maior. Isso mudaria tudo: em vez de regra de desconto para o time, uma conversa com o dono daquela conta.' },
+    { q: '“Como foram as vendas do trimestre?”', a: 'resumo',
+      w: 'É resumo. Qualquer resposta (subiu, caiu, ficou igual) vira um slide e ninguém faz nada diferente. <b>Para virar pergunta:</b> escolha o número que incomodou e pergunte por que ele mudou, e onde.' },
+    { q: '“O treinamento novo reduziu os chamados reabertos nas seis equipes?”', a: 'pe',
+      w: 'Ela está de pé. <b>A resposta que você menos quer:</b> que não reduziu, ou que reduziu só numa equipe. Uma leva a não renovar o contrato do treinamento; a outra, a entender o que aquela equipe fez de diferente.' },
+    { q: '“Quero entender melhor os dados do atendimento.”', a: 'resumo',
+      w: 'É resumo. Sem recorte, sem período e sem nada que possa contrariar você. <b>Para virar pergunta:</b> qual número do atendimento incomodou você nos últimos trinta dias? Comece por ele.' }
+  ];
+  var mqBtns = document.querySelectorAll('[data-mq]'), mqOptBtns = document.querySelectorAll('[data-mv]'), mqVer = document.getElementById('mqVer'), mqCur = 0;
+  function mqLoad(k) {
+    mqCur = k;
+    pressGroup(mqBtns, function (x) { return +x.dataset.mq === k; });
+    pressGroup(mqOptBtns, function () { return false; });
+    document.getElementById('mqQ').textContent = MQ[k].q;
+    mqVer.className = 'verdict no';
+    mqVer.innerHTML = '<b>Antes de julgar:</b> tente escrever, de cabeça, a resposta que você menos gostaria de receber para esta pergunta. Ela existe?';
+  }
+  mqOptBtns.forEach(function (b) { b.addEventListener('click', function () {
+    var m = MQ[mqCur], ok = b.dataset.mv === m.a;
+    pressGroup(mqOptBtns, function (x) { return x === b; });
+    mqVer.className = 'verdict ' + (ok ? 'ok' : 'no');
+    mqVer.innerHTML = (ok ? '' : '<b>Olhe de novo.</b> ') + m.w;
+  }); });
+  mqBtns.forEach(function (b) { b.addEventListener('click', function () { mqLoad(+b.dataset.mq); }); });
+  mqLoad(0);
+
+  /* 4 · os degraus */
+  var DG = [
+    { t: 'Degrau 1 · Descrição: o que aconteceu?', d: '“Quanto a rede faturou por mês?” Volta um número correto: total, média, maior, menor. Uma fórmula na planilha já responde, e sozinho ele não decide nada. É aqui que para quem pede “faça uma análise”.' },
+    { t: 'Degrau 2 · Comparação: mudou em relação a quê?', d: '“A receita da média de março a maio contra a de julho a setembro.” Volta uma variação: caiu 7,5%. Precisa de um contra o quê (o mês anterior, a meta, outra loja), e a variação já aponta onde olhar.' },
+    { t: 'Degrau 3 · Causa: por que mudou?', d: '“Em quais lojas caiu, e em cada uma foi desconto ou mudança no que o cliente compra?” Volta uma explicação, e explicação plausível não é verificada: é o degrau em que a IA mais convence estando errada (ver <a href="./limites-da-ia--alucinacao.html#s-voltou">alucinação</a>). Por isso a pergunta põe duas causas para disputar, em vez de pedir “a causa”.' },
+    { t: 'Degrau 4 · Decisão: o que eu faço a respeito?', d: '“Mudo a regra de desconto da promoção nas lojas B e F?” Volta um caminho, com o que se ganha e o que se abre mão. Chegar aqui exige ter passado pelos três de baixo com material de verdade. Pular direto para cá produz “revisar a política de descontos”, que serve para qualquer empresa. Como comparar caminhos está em <a href="./dados--decidir.html">comparar caminhos antes de decidir</a>.' }
+  ];
+  var dgSteps = document.querySelectorAll('.dg-step');
+  stepper(DG.length, document.getElementById('dgPrev'), document.getElementById('dgNext'), document.getElementById('dgLab'), 'Degrau', function (k) {
+    dgSteps.forEach(function (g) { var i = +g.dataset.dg; g.classList.toggle('on', i === k); g.classList.toggle('done', i < k); });
+    var p = DG[k - 1];
+    document.getElementById('dgCap').innerHTML = '<h3>' + p.t + '</h3><p>' + p.d + '</p>';
+  });
+
+  /* 5 · três versões */
+  var LOJAS = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+  var QUEDA = [8, 52, 4, 7, 6, 61, 3, 33, 6]; /* R$ mil por mês; soma 180 */
+  var DESC0 = [3.1, 3.0, 3.1, 3.1, 3.1, 3.2, 3.1, 3.1, 3.1];
+  var DESC1 = [3.4, 11.0, 3.2, 3.3, 3.4, 13.0, 3.2, 3.1, 3.5];
+  function br(n, d) { return n.toFixed(d === undefined ? 1 : d).replace('.', ','); }
+  function hbars(svg, rows, max, unit) {
+    var h = 28, top = 14, x0 = 64, w = 330, out = '';
+    rows.forEach(function (r, i) {
+      var y = top + i * h, bw = Math.max(2, Math.round(w * r.v / max));
+      out += '<text class="lbl" x="12" y="' + (y + 15) + '">' + r.l + '</text>' +
+        '<rect class="bg" x="' + x0 + '" y="' + (y + 3) + '" width="' + w + '" height="16" rx="3"/>' +
+        '<rect class="fg ' + (r.c || '') + '" x="' + x0 + '" y="' + (y + 3) + '" width="' + bw + '" height="16" rx="3"/>' +
+        '<text class="val ' + (r.c === 'hi' ? 'hi' : '') + '" x="' + (x0 + w + 8) + '" y="' + (y + 15) + '">' + r.t + '</text>';
+    });
+    svg.setAttribute('viewBox', '0 0 640 ' + (top * 2 + rows.length * h));
+    svg.innerHTML = '<title id="vsChartT">' + unit + '</title>' + out;
+  }
+  var VS = [
+    { tag: 'Versão 1 · o pedido que quase todo mundo faz',
+      p: 'Analise as vendas da planilha em anexo.',
+      back: '<div class="card"><span class="eyebrow">O que voltou</span><p>A rede faturou R$ 16,2 milhões em sete meses, média mensal de R$ 2,31 milhões. Maio foi o melhor mês e agosto o pior. Material básico responde por 52% da receita.</p></div><div class="verdict no"><b>Correto, e não decide nada.</b> Você já sabia tudo. O pedido não disse o que estava em jogo.</div>',
+      ct: 'O que a versão 1 enxerga · receita por linha de produto',
+      chart: function (s) { hbars(s, [{ l: 'básico', v: 52, t: '52%' }, { l: 'acabam.', v: 31, t: '31%' }, { l: 'ferram.', v: 17, t: '17%' }], 60, 'Receita por linha de produto: básico 52%, acabamento 31%, ferramentas 17%'); },
+      ch: 'Um retrato da rede. Não há loja, nem antes e depois.' },
+    { tag: 'Versão 2 · entram a cadeira e a hipótese',
+      p: 'Sou gerente comercial da rede e preciso\ndecidir se mudo a regra de desconto\nda promoção.\nMinha hipótese é que a receita caiu por\ncausa do desconto, e não por mudança\nno que o cliente compra.\nAnalise a planilha à luz disso.',
+      back: '<div class="card"><span class="eyebrow">O que voltou</span><p>A receita média mensal caiu de R$ 2,40 milhões para R$ 2,22 milhões (7,5%). O desconto médio das lojas subiu de 3,1% para 5,2% no mesmo período. Os dados são compatíveis com a sua hipótese.</p></div><div class="verdict no"><b>Tem tamanho e direção, e ainda não decide.</b> A média subiu 2,1 pontos e confirmou a tese. Ela esconde que sete das nove lojas quase não mexeram no desconto, e que duas puxaram a média sozinhas. A média confirma tese fraca com facilidade, e quem pediu para olhar a rede foi você.</div>',
+      ct: 'O que a versão 2 enxerga · desconto médio das nove lojas',
+      chart: function (s) { hbars(s, [{ l: 'antes', v: 3.1, t: '3,1%' }, { l: 'depois', v: 5.2, t: '5,2%', c: 'ac' }], 14, 'Desconto médio das nove lojas: 3,1% antes, 5,2% depois'); },
+      ch: 'Uma barra subiu. Parece a prova, e é a média de nove lojas.' },
+    { tag: 'Versão 3 · entram o recorte, a janela e as duas causas',
+      p: 'Sou gerente comercial da rede e preciso\ndecidir, nas próximas duas semanas,\nse mudo a regra de desconto da promoção.\nDas 9 lojas, quais puxaram a queda de\nreceita entre a média de março a maio e\na de julho a setembro (junho fica fora:\né quando a promoção começa), quanto\ncada uma pesa nessa queda, e em cada\ncaso a perda veio do desconto ou de\nmudança no que o cliente compra?',
+      back: '<div class="card"><span class="eyebrow">O que voltou</span><p>Três das nove lojas respondem por 81% da queda (R$ 146 mil dos R$ 180 mil por mês). Nas lojas B e F o que o cliente compra ficou igual, e o desconto foi de 3% para 11% e 13%. Na loja H o desconto não se mexeu: o acabamento, a linha de maior valor, caiu de 38% para 17% da receita dela.</p></div><div class="kpi"><div><small>queda da receita</small><span class="big">7,5%</span><small>mar–mai × jul–set</small></div><div><small>em três lojas</small><span class="big">81%</span><small>da queda em reais</small></div><div><small>causas</small><span class="big">2</span><small>desconto · mix</small></div></div><div class="verdict ok"><b>Agora existe decisão, e são duas.</b> Em B e F o assunto é a regra de desconto, conversa com os gerentes de loja. Em H é o acabamento que sumiu, outra conversa, com outra pessoa. A hipótese estava certa para duas lojas e errada para a terceira, e era nela que a regra de desconto teria sido mudada à toa.</div>',
+      ct: 'O que a versão 3 enxerga · quanto cada loja pesa na queda (R$ mil por mês)',
+      chart: function (s) { hbars(s, LOJAS.map(function (l, i) { var hi = QUEDA[i] > 30; return { l: 'loja ' + l, v: QUEDA[i], t: QUEDA[i] + ' mil' + (hi ? (l === 'H' ? ' · mix' : ' · desconto ' + br(DESC0[i]) + '→' + br(DESC1[i])) : ''), c: hi ? 'hi' : '' }; }), 70, 'Queda de receita por loja, em reais mil por mês: B 52, F 61 e H 33 somam 146 dos 180'); },
+      ch: 'B e F por desconto, H por mix. As outras seis somam 34 mil.' }
+  ];
+  var vsBtns = document.querySelectorAll('[data-vs]'), vsChart = document.getElementById('vsChart');
+  function setVs(k) {
+    var v = VS[k];
+    pressGroup(vsBtns, function (x) { return +x.dataset.vs === k; });
+    document.getElementById('vsTag').textContent = v.tag;
+    document.getElementById('vsPedido').textContent = v.p;
+    document.getElementById('vsBack').innerHTML = v.back;
+    document.getElementById('vsChartTag').textContent = v.ct;
+    v.chart(vsChart);
+    document.getElementById('vsChartHint').textContent = v.ch;
+  }
+  vsBtns.forEach(function (b) { b.addEventListener('click', function () { setVs(+b.dataset.vs); }); });
+  setVs(0);
+
+  /* 6 · recorte, janela, causas */
+  var SW = { recorte: false, janela: false, causas: false };
+  var swBtns = document.querySelectorAll('[data-sw]');
+  function swRender() {
+    pressGroup(swBtns, function (x) { return SW[x.dataset.sw]; });
+    var p = 'Sou gerente comercial da rede e preciso decidir se mudo a regra de desconto da promoção.\n';
+    p += SW.recorte ? 'Das 9 lojas, quais puxaram a queda de receita' : 'Quanto caiu a receita da rede';
+    p += SW.janela ? ' entre a média de março a maio e a de julho a setembro (junho fica fora: é quando a promoção começa)' : '';
+    p += SW.recorte ? ', e quanto cada uma pesa nessa queda?' : '?';
+    p += SW.causas ? '\nEm cada caso, a perda veio do desconto ou de mudança no que o cliente compra?' : '\nMinha hipótese é que caiu por causa do desconto.';
+    document.getElementById('swPedido').textContent = p;
+    var li = [];
+    li.push(SW.recorte ? '<b>Quem:</b> três das nove lojas, B, F e H, somam 81% da queda.' : '<b>Quem:</b> “a rede”. Ninguém muda a regra de desconto da rede; muda a de alguém.');
+    li.push(SW.janela ? '<b>Quando:</b> 7,5%, média de março a maio contra a de julho a setembro, e a resposta diz que foi essa a janela.' : '<b>Quando:</b> 9,8%, março contra setembro, a janela que ela escolheu sozinha. A resposta não diz qual usou.');
+    li.push(SW.causas ? '<b>Por quê:</b> B e F por desconto; H por mix, com o desconto parado. Duas conversas diferentes.' : '<b>Por quê:</b> “compatível com a sua hipótese”, para todas. A causa que você não pôs na disputa não aparece.');
+    document.getElementById('swOut').innerHTML = li.map(function (l) { return '<li>' + l + '</li>'; }).join('');
+    var n = (SW.recorte ? 1 : 0) + (SW.janela ? 1 : 0) + (SW.causas ? 1 : 0), ver = document.getElementById('swVer');
+    ver.className = 'verdict ' + (n === 3 ? 'ok' : 'no');
+    ver.innerHTML = n === 3 ? '<b>Três de três.</b> Esta é a versão 3: uma resposta, dois caminhos que não se misturam, e cada número dizendo de onde veio.' : '<b>' + n + ' de 3 decisões tomadas.</b> ' + (n === 0 ? 'Esta é a versão 2: a média confirma a sua tese e você muda a regra das nove lojas.' : 'Melhorou, e o que falta ainda é escolhido por ela, sem avisar.');
+  }
+  swBtns.forEach(function (b) { b.addEventListener('click', function () { SW[b.dataset.sw] = !SW[b.dataset.sw]; swRender(); }); });
+  swRender();
+
+  /* 7 · a ficha */
+  var FI = [
+    { a: 'Das 9 lojas, quais puxaram a queda de receita entre a média de março a maio e a de julho a setembro, e em cada uma foi desconto ou mudança no que o cliente compra?', b: 'Gerente comercial da rede, decidindo se mudo a regra de desconto da promoção antes do fim do trimestre.', c: 'Se for desconto, levo a regra para os gerentes de loja. Se for mix, abro a conversa com compras sobre o acabamento.', d: 'As vendas por pedido de março a setembro, com loja, linha e desconto; a regra atual da promoção.', e: 'Que a queda venha de uma loja só, e que seja a maior da rede.' },
+    { a: 'Das 6 equipes de atendimento, quais puxaram a alta de chamados reabertos entre abril–maio e agosto–setembro, e em cada uma foi falta de treinamento ou mudança no tipo de chamado que chega?', b: 'Coordenadora de atendimento, decidindo se renovo o contrato do treinamento antes de outubro.', c: 'Se for treinamento, renovo só para as equipes que pioraram. Se for tipo de chamado, levo o assunto para o time do produto.', d: 'A planilha de chamados com equipe, tipo, data de abertura e de reabertura; a lista de quem fez o treinamento.', e: 'Que as equipes que fizeram o treinamento sejam as que mais reabrem.' },
+    { a: '', b: '', c: '', d: '', e: '' }
+  ];
+  var fiBtns = document.querySelectorAll('[data-fi]');
+  var f1 = document.getElementById('fi1'), f2 = document.getElementById('fi2'), f3 = document.getElementById('fi3'), f4 = document.getElementById('fi4'), f5 = document.getElementById('fi5');
+  function val(el, ph) { var v = el.value.trim(); return v ? esc(v) : '<i>' + ph + '</i>'; }
+  function fiRender() {
+    var out = '<b>Antes de analisar, leia a ficha da minha pergunta.</b>\n\n' +
+      'Cadeira: ' + val(f2, '[o seu cargo e o que você decide nele]') + '\n' +
+      'Pergunta: ' + val(f1, '[a pergunta, com recorte, janela e causas]') + '\n' +
+      'O que depende da resposta: ' + val(f3, '[se der A, faço isto; se der B, aquilo]') + '\n' +
+      'Material anexado: ' + val(f4, '[o que vai junto]') + '\n' +
+      'A resposta que eu menos quero receber: ' + val(f5, '[escreva antes de perguntar]') + '\n\n' +
+      '<b>Regras</b>\n' +
+      '- Procure também o que sustentaria a resposta que eu menos quero, e diga se encontrou.\n' +
+      '- Em cada número, diga o recorte e a janela que usou.\n' +
+      '- Se faltar dado para responder, diga o que falta em vez de estimar.';
+    document.getElementById('fiOut').innerHTML = out;
+    var ver = document.getElementById('fiVer'), q = f1.value.trim().toLowerCase();
+    if (!f5.value.trim()) { ver.className = 'verdict no'; ver.innerHTML = '<b>Linha 5 vazia.</b> Sem uma resposta que incomode, a linha 1 é um pedido de resumo. Volte a ela.'; }
+    else if (/analis|análise|insight|avali|entender melhor/.test(q)) { ver.className = 'verdict no'; ver.innerHTML = '<b>A linha 1 ainda pede descrição.</b> “Analise”, “avalie” e “insights” devolvem resumo. Troque por quem, quando e qual das causas.'; }
+    else if (!f3.value.trim()) { ver.className = 'verdict no'; ver.innerHTML = '<b>Linha 3 vazia.</b> Se você não diz o que faz com cada resposta, não dá para saber se a pergunta decide alguma coisa.'; }
+    else { ver.className = 'verdict ok'; ver.innerHTML = '<b>A ficha está de pé.</b> Tem uma resposta que incomoda e uma decisão que depende dela. Agora, sim, é hora de abrir a planilha.'; }
+  }
+  function fiLoad(k) {
+    var f = FI[k];
+    pressGroup(fiBtns, function (x) { return +x.dataset.fi === k; });
+    f1.value = f.a; f2.value = f.b; f3.value = f.c; f4.value = f.d; f5.value = f.e;
+    fiRender();
+  }
+  fiBtns.forEach(function (b) { b.addEventListener('click', function () { fiLoad(+b.dataset.fi); }); });
+  [f1, f2, f3, f4, f5].forEach(function (i) { i.addEventListener('input', fiRender); });
+  fiLoad(0);
+})();
+</script>
+</body>
+</html>

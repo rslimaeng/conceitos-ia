@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="dados--decidir">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparar caminhos antes de decidir</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 9.6. Peças: uma recomendação × três caminhos, montador do pedido dos três caminhos com linhas liga-desliga e copiar, quiz "três caminhos ou um em três tamanhos?", cenários com premissas marcáveis e a premissa que derruba, matriz de decisão com pesos deslizantes e a frase de sensibilidade, tabela cheia × tabela honesta e quiz "estilo ou efeito?", ata × plano e conferidor de linha do plano, pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px; display: grid; gap: 12px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+.qz { display: grid; gap: 10px; }
+.qz-item { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; }
+.qz-item .opts { display: flex; gap: 8px; flex-wrap: wrap; }
+.qz-item .opts button { border: 1px solid var(--border-strong); background: var(--bg); border-radius: 6px; padding: 6px 14px; font-size: .92rem; }
+.qz-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.qz-fb { font-size: .93rem; border-radius: 6px; padding: 9px 13px; border: 1px solid; }
+.qz-fb.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.qz-fb.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.qz-score { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.fam { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.fam a { display: grid; gap: 4px; text-decoration: none; color: var(--text); background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 12px 14px; }
+.fam a:hover { border-color: var(--accent); }
+.fam a.here { border-color: var(--accent); background: var(--accent-soft); }
+.fam a span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.fam a small { color: var(--text-muted); font-size: .85rem; }
+.field { display: grid; gap: 6px; }
+.field label { font-size: .95rem; }
+.field .row { display: grid; grid-template-columns: minmax(0, 1fr) 72px; gap: 12px; align-items: center; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field output { font-family: var(--font-mono); font-size: 1.05rem; text-align: right; }
+.big { font-family: var(--font-mono); font-size: 2.1rem; color: var(--accent); line-height: 1; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.qz-fb[hidden] { display: none; }
+.sec > * { min-width: 0; }
+
+/* 1 · uma recomendação × três caminhos */
+.dc-case { font-family: var(--font-mono); font-size: .9rem; background: var(--bg-elev); border: 1px dashed var(--border-strong); border-radius: 6px; padding: 12px 16px; }
+.dc-out { display: grid; gap: 10px; }
+.dc-rec { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.dc-paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dc-path { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.dc-path b { font-family: var(--font-mono); font-weight: 500; color: var(--accent); font-size: .85rem; }
+.dc-path p { font-size: .93rem; color: var(--text-muted); }
+.dc-path .cost { color: var(--atencao-texto); }
+
+/* 2 · montador */
+.mo-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.mo-form { display: grid; gap: 10px; }
+.mo-form > label { display: grid; gap: 4px; font-size: .92rem; }
+.mo-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.mo-tog { display: grid; gap: 6px; }
+.mo-tog label { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: start; font-size: .9rem; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; cursor: pointer; }
+.mo-tog input { accent-color: var(--accent); margin-top: 4px; }
+.mo-tog small { grid-column: 2; color: var(--text-dim); font-size: .82rem; }
+.mo-tog label.off { border-color: var(--atencao); background: var(--atencao-soft); }
+.mo-tog label.off small { color: var(--atencao-texto); }
+.mo-out { display: grid; gap: 10px; }
+
+/* 4 · premissas */
+.pr-box { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.pr-list { display: grid; gap: 8px; }
+.pr-item { border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 12px; display: grid; gap: 8px; background: var(--bg); }
+.pr-item.crit { border-color: var(--atencao); }
+.pr-item .tag { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .06em; color: var(--atencao-texto); }
+.pr-item .opts { display: flex; gap: 6px; flex-wrap: wrap; }
+.pr-item .opts button { border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 4px 12px; font-size: .86rem; }
+.pr-item .opts button[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.pr-fail { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: .95rem; }
+.pr-fail input { accent-color: var(--atencao); }
+.pr-count { font-family: var(--font-mono); font-size: .9rem; color: var(--text-muted); }
+
+/* 5 · matriz */
+.mx { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 18px 20px; display: grid; gap: 16px; }
+.mx-w { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.mx-rows { display: grid; gap: 10px; }
+.mx-row { display: grid; grid-template-columns: 110px minmax(0, 1fr) 56px; gap: 10px; align-items: center; }
+.mx-row .nm { font-size: .92rem; }
+.mx-row .nm small { display: block; color: var(--text-dim); font-size: .78rem; }
+.mx-track { height: 14px; border-radius: 4px; background: var(--border); overflow: hidden; }
+.mx-fill { height: 100%; background: var(--border-strong); border-radius: 4px; transition: width .25s ease; }
+.mx-row.lead .mx-fill { background: var(--accent); }
+.mx-row .sc { font-family: var(--font-mono); font-size: .95rem; text-align: right; }
+.mx-tog { display: flex; gap: 10px; align-items: flex-start; font-size: .93rem; }
+.mx-tog input { accent-color: var(--atencao); margin-top: 5px; }
+
+/* 6 · lado a lado */
+.vtable td.miss { color: var(--atencao-texto); font-style: italic; }
+.vtable td.flag { color: var(--atencao-texto); }
+.ll-notes { display: grid; gap: 6px; font-size: .93rem; color: var(--text-muted); margin: 0; padding-left: 18px; }
+
+/* 7 · escolher */
+.vd { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.vd .card.focal h3 { color: var(--accent); }
+
+/* 8 · plano */
+.pl-out { display: grid; gap: 10px; }
+.pl-ata { background: var(--bg-elev); border: 1px solid var(--atencao); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.pl-plan { background: var(--bg-elev); border: 1px solid var(--ok); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
+.pl-plan ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.pl-plan li span { color: var(--text-dim); font-size: .9rem; }
+.ck { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 10px; }
+.ck input { font: inherit; font-size: .95rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 9px 11px; background: var(--bg); color: var(--text); width: 100%; }
+.ck-res { display: grid; gap: 6px; }
+.ck-res p { font-size: .93rem; border-radius: 6px; padding: 7px 12px; border: 1px solid; }
+.ck-res p.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.ck-res p.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .fam { grid-template-columns: 1fr 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 520px) { .fam { grid-template-columns: 1fr; } }
+@media (max-width: 860px) {
+  .dc-paths, .mo-grid, .mx-w, .vd { grid-template-columns: 1fr; }
+  .mx-row { grid-template-columns: 84px minmax(0, 1fr) 48px; }
+}
+@media (prefers-reduced-motion: reduce) { .mx-fill { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Trabalhar com dados">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./dados.html">Família 9 · Trabalhar com dados</a></span><span class="famhead-pn"><a href="./dados--armadilhas.html">← 9.5 Armadilhas da conta</a><a href="./dados.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./dados.html">Visão geral</a><a href="./dados--planilha.html"><b>9.1</b>Planilha</a><a href="./dados--pesquisa.html"><b>9.2</b>Pesquisa</a><a href="./dados--comunicar.html"><b>9.3</b>Comunicar</a><a href="./dados--pergunta.html"><b>9.4</b>A pergunta</a><a href="./dados--armadilhas.html"><b>9.5</b>Armadilhas da conta</a><a href="./dados--decidir.html" aria-current="page"><b>9.6</b>Decidir</a></div>
+  </nav>
+  <span class="eyebrow">9.6 · 6 de 6</span>
+  <h1>Comparar caminhos antes de decidir</h1>
+  <p class="sub">Uma recomendação sozinha não dá para julgar, só para aprovar: peça três caminhos, veja o que cada um supõe e escolha você</p>
+  <p class="lead">A análise acabou, a causa está conferida e você pergunta à IA o que fazer. Volta uma recomendação bem escrita, coerente e convincente. O problema é que não existe nada para comparar com ela. Esta página mostra como pedir que a IA <strong>prepare a decisão sem tomar a decisão</strong>: três caminhos com o custo de cada um, as premissas que podem derrubar cada caminho, uma matriz com pesos à mostra, propostas comparadas item por item e, depois da escolha, um plano que alguém executa. Por que uma recomendação que você não construiu não se defende sozinha está em <a href="./usar-ia--delegar-ou-pensar.html">delegar ou pensar junto</a>; como apresentar a decisão a quem aprova, em <a href="./dados--comunicar.html">comunicar o resultado</a>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-sozinha">Recomendação sem par</a><a href="#s-tres">Três caminhos, nenhum eleito</a><a href="#s-tamanhos">Um caminho em três tamanhos</a><a href="#s-premissa">A premissa que derruba</a><a href="#s-pesos">Quanto pesa cada critério</a><a href="#s-lado">Proposta contra proposta</a><a href="#s-escolha">Escolher e dizer por que não</a><a href="#s-plano">Da escolha ao plano</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-sozinha" aria-labelledby="h-sozinha">
+  <span class="eyebrow">Recomendação sem par</span>
+  <h2 id="h-sozinha">Uma recomendação sozinha não se avalia: só se aprova</h2>
+  <p class="intro">Compras não fecha pedido com uma cotação só: com um número na mesa, você acha o preço salgado e não tem o que fazer com essa impressão, porque não existe um segundo número para dizer se está caro. Com a IA é igual. Diante de uma recomendação isolada, <strong>o que você consegue julgar é a redação dela, não o mérito</strong>. E ela vai estar bem escrita. Abaixo, a mesma causa, perguntada de dois jeitos.</p>
+  <p class="dc-case">A margem do canal de distribuição caiu de 24,6% para 21,8%. A causa conferida: desconto concentrado em dois dos doze clientes, que passaram de 5% para 13% e 15%. O que eu faço?</p>
+  <div class="seg" role="group" aria-label="Como foi pedido">
+    <button type="button" data-dc="uma" aria-pressed="true">“O que eu faço?”</button>
+    <button type="button" data-dc="tres" aria-pressed="false">“Três caminhos, com o custo de cada”</button>
+  </div>
+  <div class="dc-out" id="dcOut" aria-live="polite"></div>
+  <p class="hint"><strong>Alçada</strong> é o limite de desconto que cada pessoa pode dar sem pedir aprovação a ninguém. Repare que a recomendação do primeiro botão é o caminho A do segundo: o custo existia nos dois casos, só num deles ele estava na tela quando você decidiu.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tres" aria-labelledby="h-tres">
+  <span class="eyebrow">Três caminhos, nenhum eleito</span>
+  <h2 id="h-tres">Peça três caminhos e escreva: não recomende nenhum ainda</h2>
+  <p class="intro">Quem abre uma concorrência não conta aos fornecedores qual proposta prefere antes de receber as três: se contar, elas chegam parecidas com a preferida. No pedido à IA, <strong>caminho</strong> é uma forma diferente de resolver o mesmo problema, com o que ela muda, o que custa e quem aprova. Pedir três custa a mesma mensagem que pedir um. O <strong>“ainda”</strong> no fim da frase importa: sem ele, a resposta traz três e já elege um, e você volta a avaliar uma recomendação. Escreva a sua decisão e desligue uma linha para ver o que ela evita.</p>
+  <div class="mo-grid">
+    <div class="mo-form">
+      <label>A decisão <textarea id="moDec" rows="2">O que fazer com o desconto concentrado em dois clientes do canal de distribuição.</textarea></label>
+      <label>O que você já sabe <textarea id="moCtx" rows="3">A margem do canal caiu de 24,6% para 21,8%. A causa conferida é desconto: dois dos doze clientes passaram de 5% para 13% e 15%. O mix de produtos desses dois ficou estável.</textarea></label>
+      <div class="mo-tog" id="moTog"></div>
+    </div>
+    <div class="mo-out">
+      <div class="copy">
+        <div class="copy-head"><span class="eyebrow">O pedido dos três caminhos · ao vivo</span><button type="button" class="btn" data-copy="moOut">Copiar</button></div>
+        <pre id="moOut"></pre>
+      </div>
+      <div class="verdict" id="moVer" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="hint">A última frase do pedido não descreve o texto que você quer: descreve a pergunta que alguém vai fazer na reunião. A resposta só serve se sobreviver a ela.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-tamanhos" aria-labelledby="h-tamanhos">
+  <span class="eyebrow">Um caminho em três tamanhos</span>
+  <h2 id="h-tamanhos">Se os três caminhos são decididos pela mesma pessoa, provavelmente é um só</h2>
+  <p class="intro">Três propostas do mesmo fornecedor, no plano básico, no intermediário e no completo, parecem escolha, mas o contrato é um só. O resultado mais comum do pedido sem a linha de descarte é esse: <strong>o mesmo caminho em três intensidades</strong>. O teste rápido: os três caminhos levam a conversas com pessoas diferentes? Se todos se resolvem na mesma sala, peça de novo. E o piloto, o teste pequeno antes de fazer em grande escala, aparece em quase toda lista, mas não é um caminho: é o jeito de executar qualquer um deles. Classifique.</p>
+  <div class="qz" id="tmQuiz"></div>
+  <p class="qz-score" id="tmScore" aria-live="polite"></p>
+  <p class="hint">Os três caminhos que a IA traz são os mais frequentes para esse tipo de problema. A alternativa que depende de conhecer a sua empresa, o histórico com aqueles clientes ou o que já foi tentado no ano passado não vai aparecer. Quando ela existir, acrescente como quarto caminho.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-premissa" aria-labelledby="h-premissa">
+  <span class="eyebrow">A premissa que derruba</span>
+  <h2 id="h-premissa">Cada caminho com as premissas à mostra, e a que, se falhar, derruba o caminho</h2>
+  <p class="intro">O orçamento anual que diz “considerando que o volume cresce 5%” avisa o que vigiar; o que não diz, só descobre em julho. <strong>Premissa</strong> é o que precisa ser verdade para um caminho dar certo. Pedir “o que você acha?” devolve uma opinião morna, dos dois lados, sem premissa nenhuma. Pedir cenários, um por caminho, com as premissas escritas, devolve o que você precisa conferir. E a pergunta que mais rende: <strong>qual premissa, se falhar, derruba o caminho?</strong> O exemplo: o frete subiu três meses seguidos e o contrato vence em quatro meses. Escolha um caminho, marque cada premissa como fato conferido ou suposição da IA, e simule a falha.</p>
+  <div class="seg" role="group" aria-label="Caminho" id="prSeg">
+    <button type="button" data-pr="0" aria-pressed="true">Renovar</button>
+    <button type="button" data-pr="1" aria-pressed="false">Renegociar agora</button>
+    <button type="button" data-pr="2" aria-pressed="false">Trocar de transportadora</button>
+  </div>
+  <div class="pr-box">
+    <p class="pr-count" id="prCount"></p>
+    <div class="pr-list" id="prList"></div>
+    <label class="pr-fail"><input type="checkbox" id="prFail"> A premissa que derruba falhou</label>
+    <div class="verdict" id="prVer" aria-live="polite"></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Cenários com premissas · e a linha de correção</span><button type="button" class="btn" data-copy="prPrompt">Copiar</button></div>
+<pre id="prPrompt">A decisão: <i>[renovar o contrato de frete, renegociar agora ou trocar de transportadora antes do vencimento]</i>.
+O que já se sabe: <i>[os números e os fatos, sem nome de empresa]</i>.
+
+Monte um cenário para cada caminho. Em cada um, escreva as premissas: o que precisa ser verdade para ele dar certo. Marque em cada premissa se ela vem do que eu mandei ou se é suposição sua.
+Aponte, em cada cenário, a premissa que, se falhar, derruba o cenário.
+Não recomende nenhum: a escolha é minha.
+Se faltar dado para sustentar uma premissa, diga qual dado seria preciso ter.
+
+<b>Depois de conferir as premissas, a correção vai na mesma conversa:</b>
+A premissa <i>[1]</i> do caminho <i>[renovar]</i> está errada: <i>[o fato]</i>. Refaça só esse caminho.</pre>
+  </div>
+  <p class="hint">Conferir a premissa é trabalho seu: ela é a parte da resposta que parece fato e muitas vezes é estimativa. Para pedir à IA o argumento contra um caminho já escolhido, ou imaginar o fracasso dele antes de começar (o pré-mortem), os pedidos prontos estão em <a href="./limites-da-ia--a-ia-concorda.html#s-pedir">a IA concorda com você</a>.</p>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-pesos" aria-labelledby="h-pesos">
+  <span class="eyebrow">Quanto pesa cada critério</span>
+  <h2 id="h-pesos">Matriz de decisão: os pesos escritos, e a pergunta que vale mais: se o peso mudar um pouco, a escolha muda?</h2>
+  <p class="intro">Numa banca de seleção, quem combina antes quanto vale a prova e quanto vale a entrevista não discute o resultado depois: discute o peso, se precisar. A <strong>matriz de decisão</strong> faz isso com as opções: cada critério ganha um <strong>peso</strong> (quanto ele conta no total), cada opção ganha uma nota por critério, e a conta dá um ranking. O ranking é a parte menos útil. A que mais rende é a <strong>sensibilidade</strong>: quanto o peso precisa mudar para o primeiro lugar trocar. Se dois pontos de peso invertem tudo, a escolha não está na conta, está em você. Três cotações de um componente, com notas de 1 a 5. Mexa nos pesos.</p>
+  <div class="mx">
+    <div class="mx-w" id="mxW"></div>
+    <div class="mx-rows" id="mxRows"></div>
+    <label class="mx-tog"><input type="checkbox" id="mxMedia"> Dar nota média de prazo ao fornecedor C, que nunca entregou para vocês, “por falta de dado”</label>
+    <div class="verdict" id="mxVer" aria-live="polite"></div>
+  </div>
+  <div class="tablewrap">
+    <table class="vtable">
+      <tr><th>Fornecedor</th><th>O que a cotação diz</th><th>Notas · preço / prazo / flexibilidade</th></tr>
+      <tr><td>A</td><td>Preço médio. Entrega em 60 dias, um atraso em oito entregas. Pedido mínimo alto.</td><td>4 / 4 / 2</td></tr>
+      <tr><td>B</td><td>O mais caro. Entrega em 35 dias, nenhum atraso em cinco entregas. Pedido mínimo flexível.</td><td>2 / 5 / 4</td></tr>
+      <tr><td>C</td><td>O mais barato. Entrega em 75 dias, fornecedor novo, sem histórico. Exige pagamento antecipado.</td><td>5 / 1 / 2</td></tr>
+    </table>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A matriz com sensibilidade · para adaptar</span><button type="button" class="btn" data-copy="mxPrompt">Copiar</button></div>
+<pre id="mxPrompt">Monte uma matriz de decisão com os critérios e os pesos abaixo. Dê a cada opção uma nota de 1 a 5 em cada critério, com o motivo em uma linha. Calcule o total e mostre a conta.
+
+Critérios e pesos: <i>[preço 40% · prazo confiável 35% · flexibilidade 25%]</i>
+Opções: <i>[os dados de cada uma, sem nome real e, se preciso, com o preço em índice]</i>
+
+Depois do ranking, a sensibilidade: qual mudança de peso inverte o resultado? Escreva a frase "o resultado inverte se...".
+
+Regras: use só os dados que eu mandei. Opção sem histórico não ganha nota média por falta de dado: falta de dado é risco, e você declara. Não diga qual escolher. Eu confiro a conta na mão e decido.</pre>
+  </div>
+  <p class="hint">Confira a conta do primeiro colocado na mão antes de levar. E nem toda decisão cabe em nota: quando o critério é mexer na autonomia de uma equipe ou na regra de comissão, somar pesos inventados dá aparência de objetividade a uma escolha que é sua. Aí, o quadro dos três caminhos, com o custo escrito em palavras, serve melhor que a soma.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-lado" aria-labelledby="h-lado">
+  <span class="eyebrow">Proposta contra proposta</span>
+  <h2 id="h-lado">Comparar o que é comparável: item por item, com o buraco à mostra</h2>
+  <p class="intro">Quem confere a nota fiscal contra o pedido de compra olha linha por linha, não o total: o total pode bater com dois erros que se anulam. Propostas chegam em formatos diferentes, uma em tabela, outra em texto corrido, outra em moeda estrangeira. A IA lê todas e monta <strong>uma tabela comum</strong>, mas só é justa se três coisas aparecerem: o campo que falta escrito como <strong>“não informado”</strong>, a moeda convertida com aviso, e o alerta quando dois fornecedores cotaram itens diferentes. Compare a tabela cheia com a honesta.</p>
+  <div class="seg" role="group" aria-label="Qual tabela">
+    <button type="button" data-ll="cheia" aria-pressed="true">Tabela cheia</button>
+    <button type="button" data-ll="honesta" aria-pressed="false">Tabela honesta</button>
+  </div>
+  <div id="llOut" aria-live="polite"></div>
+  <h3>Minuta contra contrato vigente: estilo ou efeito?</h3>
+  <p>A <strong>minuta</strong> é a versão proposta de um contrato, antes de assinar; o <strong>contrato vigente</strong> é o que vale hoje. O fornecedor manda a renovação “igual à anterior”, e a comparação certa separa o que mudou só na redação (estilo) do que muda o efeito. Uma regra resolve a maioria: <strong>mudança de prazo, de valor ou de índice nunca é estilo</strong>. Classifique cinco diferenças.</p>
+  <div class="qz" id="esQuiz"></div>
+  <p class="qz-score" id="esScore" aria-live="polite"></p>
+  <div class="seg" role="group" aria-label="Qual pedido" id="llPSeg">
+    <button type="button" data-lp="cot" aria-pressed="true">Pedido das propostas</button>
+    <button type="button" data-lp="min" aria-pressed="false">Pedido da minuta</button>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow" id="llPLab">Propostas numa tabela comum · com os arquivos anexados</span><button type="button" class="btn" data-copy="llPrompt">Copiar</button></div>
+    <pre id="llPrompt"></pre>
+  </div>
+  <p class="hint">Cotação com preço que não pode vazar e contrato com nome das partes: antes de anexar, tire o que identifica. Como decidir o que pode subir está em <a href="./limites-da-ia--o-que-pode-subir.html">o que pode subir para a IA</a>. Depois, confira duas cláusulas críticas no original: a IA achou o que você achou? Diferença que ela marcou como estilo, confira antes de aceitar.</p>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-escolha" aria-labelledby="h-escolha">
+  <span class="eyebrow">Escolher e dizer por que não</span>
+  <h2 id="h-escolha">A escolha é sua, com uma linha para cada caminho descartado</h2>
+  <p class="intro">Na ata de um comitê de compras, além do vencedor fica escrito por que os outros perderam; é essa linha que responde quando alguém pergunta, um ano depois, “e por que não o outro?”. Com os caminhos comparados, escolher é com você, e o que mais vale é a segunda metade: <strong>um motivo por caminho descartado</strong>. “Era pior” não serve: é conclusão, não motivo. O motivo é o custo específico que você não quis pagar.</p>
+  <h3>Travou entre dois? Três perguntas de desempate</h3>
+  <div class="three">
+    <div class="card"><span class="eyebrow">desfazer</span><h3>Qual dá para voltar atrás?</h3><p>Entre dois caminhos parecidos, o reversível vale mais, mesmo entregando um pouco menos.</p></div>
+    <div class="card"><span class="eyebrow">sinal cedo</span><h3>Qual avisa antes que deu errado?</h3><p>Prefira o que mostra resultado rápido: errar cedo custa menos que acertar tarde.</p></div>
+    <div class="card"><span class="eyebrow">à luz do dia</span><h3>Qual você explicaria sem constrangimento?</h3><p>Se um caminho depende de ninguém perceber, ele já foi respondido.</p></div>
+  </div>
+  <div class="panel">
+    <h3>O que a IA não sabe, e decide a escolha</h3>
+    <ul>
+      <li>Quem aprova de verdade na sua empresa, e quem precisa ser ouvido antes.</li>
+      <li>Quanto custa, politicamente, mexer com aquela equipe ou com aquele cliente.</li>
+      <li>O que já foi tentado no ano passado, e por que parou.</li>
+    </ul>
+    <p class="hint">Por isso “pedir que ela decida e adotar a resposta” não conta como escolha. Ela prepara o espaço da decisão; o julgamento fica com quem responde por ele.</p>
+  </div>
+  <h3>Depois de escolher, um veredito em três</h3>
+  <p>Escolhido o caminho, imagine que ele já falhou e pergunte por quê: é o pré-mortem, e o pedido pronto está em <a href="./limites-da-ia--a-ia-concorda.html#s-pedir">a IA concorda com você</a>. O que sai dele não é uma lista de medos: é um <strong>veredito</strong>, a resposta curta sobre se o caminho anda agora.</p>
+  <div class="vd">
+    <div class="card"><span class="eyebrow">1</span><h3>Segue</h3><p>Os riscos apareceram, cada um tem uma providência escrita, e nenhum é irreversível.</p></div>
+    <div class="card"><span class="eyebrow">2</span><h3>Não segue</h3><p>Apareceu um motivo de falha que você não consegue evitar nem aguentar. Melhor descobrir agora que no terceiro mês.</p></div>
+    <div class="card focal"><span class="eyebrow">3</span><h3>Falta informação</h3><p>O risco depende de um dado que você não tem. É uma resposta, não uma indecisão, e vem com o que precisa ser descoberto e até quando.</p></div>
+  </div>
+  <p class="hint">O terceiro é o que quase ninguém escreve, porque parece fraqueza na reunião. É o contrário: é o único dos três que diz o que fazer amanhã de manhã. Decisão adiada sem essa frase volta igual na reunião seguinte.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-plano" aria-labelledby="h-plano">
+  <span class="eyebrow">Da escolha ao plano</span>
+  <h2 id="h-plano">Plano é o que outra pessoa executa sem você na sala</h2>
+  <p class="intro">A ata que diz “o comercial vai alinhar com os clientes” sai da reunião com todo mundo de acordo, e três meses depois o número volta igual no relatório. Faltaram três coisas que ninguém escreveu: quem, até quando, e como se vai saber se funcionou. Um <strong>plano</strong> é a decisão escrita em linhas, cada uma com nome, data e um <strong>indicador</strong> (o número que diz, num dia marcado, se aquilo deu certo). Três a cinco linhas bastam. Compare as duas versões da mesma decisão.</p>
+  <div class="seg" role="group" aria-label="Qual versão">
+    <button type="button" data-pl="ata" aria-pressed="true">O que entra na ata</button>
+    <button type="button" data-pl="plano" aria-pressed="false">O que alguém executa</button>
+  </div>
+  <div class="pl-out" id="plOut" aria-live="polite"></div>
+  <h3>Confira uma linha do seu plano</h3>
+  <p><strong>Verbo de postura</strong> é o verbo que descreve uma atitude, não uma tarefa: acompanhar, alinhar, monitorar, revisar. Ninguém nunca termina de acompanhar, e por isso ninguém nunca está atrasado. Escreva uma linha e veja.</p>
+  <div class="ck">
+    <label for="ckIn" class="eyebrow">Uma linha do plano</label>
+    <input id="ckIn" value="Acompanhar o impacto do reajuste na margem nos próximos meses">
+    <div class="ck-res" id="ckRes" aria-live="polite"></div>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">O pedido do plano · depois da escolha e do pré-mortem</span><button type="button" class="btn" data-copy="plPrompt">Copiar</button></div>
+<pre id="plPrompt">A decisão tomada: <i>[o caminho escolhido, em uma frase]</i>.
+O motivo de falha mais provável, do pré-mortem: <i>[a história de como isso falha]</i>.
+
+Escreva um plano de no máximo cinco linhas. A primeira linha trata o motivo de falha do pré-mortem.
+Cada linha com seis campos: o que fazer · por que a linha existe · que papel faz · até quando · como se faz · um indicador com número e prazo que diga se funcionou.
+
+Regras:
+- Nada de verbo de postura (acompanhar, alinhar, monitorar, revisar). Toda linha começa com uma ação que tem fim.
+- Não escreva nome de pessoa: escreva o papel. Eu troco pelo nome depois.
+- Prazo em dias contados de um evento do plano, não em data de calendário.
+- Se o indicador for uma conta, escreva a conta junto.
+- Se faltar informação para propor um indicador, escreva "indicador a definir" e diga qual dado seria preciso.
+
+A resposta serve se eu conseguir mandar cada linha para o dono dela sem reescrever, e se ele souber o que fazer sem me perguntar.</pre>
+  </div>
+  <div class="three">
+    <div class="card"><span class="eyebrow">o que só você faz</span><h3>Trocar o papel pelo nome</h3><p>Se você não souber o nome de alguma linha, achou o primeiro problema do plano. E nome no plano só vale depois de falar com a pessoa: dono que não sabe que é dono é plano que parece pronto e não anda.</p></div>
+    <div class="card"><span class="eyebrow">o calendário</span><h3>O prazo final é seu</h3><p>Fechamento, férias coletivas, ciclo de aprovação: a IA não conhece a agenda da sua empresa. O prazo que ela propõe é rascunho.</p></div>
+    <div class="card"><span class="eyebrow">o teste do estranho</span><h3>Mande para quem não estava</h3><p>Se alguém de fora da conversa começa a primeira linha sem te perguntar nada, o plano existe. Se te procura primeiro, você escreveu um lembrete para você mesmo.</p></div>
+  </div>
+  <p class="hint">Indicador cria comportamento, inclusive o que você não quis: medir só a margem pode levar a equipe a recusar pedido bom de margem menor. Olhe o indicador junto de um segundo número que ele poderia estragar.</p>
+</section>
+
+<!-- 9 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Uma opção só não se julga</h3><p>Diante de uma recomendação, você avalia a redação. Com três caminhos e o custo de cada um, avalia o mérito. Peça três, e “não recomende nenhum ainda”.</p></div>
+    <div class="take-card"><h3>Vale mais o que derruba</h3><p>A premissa que, se falhar, derruba o caminho, e o peso que, se mudar um pouco, troca a escolha. São as frases que antecipam a reunião.</p></div>
+    <div class="take-card"><h3>A IA prepara, você decide</h3><p>Ela não sabe quem aprova, o custo político nem o calendário. Escolha com um motivo por caminho descartado, e amarre num plano com nome e data.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Caminho</dt><dd>Uma forma diferente de resolver o mesmo problema, com o que muda, o que custa e quem aprova. Três caminhos de verdade levam a conversas com pessoas diferentes.</dd>
+    <dt>Premissa</dt><dd>O que precisa ser verdade para um caminho dar certo. Pode ser fato conferido ou suposição: a diferença só aparece quando você marca.</dd>
+    <dt>Premissa que derruba</dt><dd>A premissa de que o caminho inteiro depende. É a primeira a conferir, e a que você vigia depois de decidir.</dd>
+    <dt>Matriz de decisão</dt><dd>Uma tabela com critérios, pesos e notas por opção, que soma tudo num ranking. Serve quando os critérios dão para medir.</dd>
+    <dt>Sensibilidade</dt><dd>Quanto o peso precisa mudar para o primeiro lugar trocar. Mudança pequena quer dizer escolha frágil.</dd>
+    <dt>Não informado</dt><dd>O que a tabela comum escreve quando a proposta não traz o dado. Melhor que um número estimado no lugar do buraco.</dd>
+    <dt>Minuta</dt><dd>A versão proposta de um contrato, antes de assinar. Comparada com o contrato vigente, separa estilo de efeito.</dd>
+    <dt>Veredito</dt><dd>A resposta curta depois do pré-mortem: segue, não segue, ou falta informação, com o que descobrir e até quando.</dd>
+    <dt>Verbo de postura</dt><dd>Acompanhar, alinhar, monitorar, revisar: descreve atitude, não tarefa, e por isso nunca atrasa.</dd>
+    <dt>Indicador</dt><dd>O número que diz, num dia marcado, se a linha do plano funcionou. Com a conta escrita junto.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A distribuidora, a queda de margem, os descontos, a transportadora, os fornecedores A a D, as notas, os pesos, as cotações, as cláusulas e as linhas do plano são exemplos inventados, e todos os números deles também. A matriz de decisão é um método conhecido de comparar opções; a frase de sensibilidade e as regras do pedido vêm de cursos dados a turmas de gestores. Família <a href="./dados.html">Trabalhar com dados</a>; irmãs: <a href="./dados--planilha.html">analisar planilha</a>, <a href="./dados--pesquisa.html">pesquisa com hipótese</a>, <a href="./dados--comunicar.html">comunicar o resultado</a>, <a href="./dados--pergunta.html">a pergunta</a>, <a href="./dados--armadilhas.html">as armadilhas</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Trabalhar com dados: anterior e próxima">
+  <a class="famfoot-prev" href="./dados--armadilhas.html"><span>← anterior</span><b>9.5 · A conta certa que decide errado</b></a>
+  <a class="famfoot-fam" href="./dados.html#mapa">Família 9 · Trabalhar com dados · o mapa</a>
+  <a class="famfoot-next" href="./dados.html"><span>volta ao começo ↺</span><b>Visão geral · Trabalhar com dados</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function quiz(el, scoreEl, items, opts, total) {
+    var ans = {};
+    items.forEach(function (q, i) {
+      var d = document.createElement('div'); d.className = 'qz-item';
+      d.innerHTML = '<p>' + q.s + '</p><div class="opts" role="group" aria-label="Escolha">' + opts.map(function (o) { return '<button type="button" data-v="' + o[0] + '" aria-pressed="false">' + o[1] + '</button>'; }).join('') + '</div><div class="qz-fb" hidden aria-live="polite"></div>';
+      var bs = d.querySelectorAll('button'), fb = d.querySelector('.qz-fb');
+      bs.forEach(function (b) { b.addEventListener('click', function () {
+        pressGroup(bs, function (x) { return x === b; });
+        var ok = b.dataset.v === q.a; ans[i] = ok;
+        var lab = opts.filter(function (o) { return o[0] === q.a; })[0][1];
+        fb.hidden = false; fb.className = 'qz-fb ' + (ok ? 'ok' : 'no');
+        fb.innerHTML = '<b>' + (ok ? 'Isso. ' : 'É ' + lab.toLowerCase() + '. ') + '</b>' + q.why;
+        var n = Object.keys(ans).length, c = Object.keys(ans).filter(function (k) { return ans[k]; }).length;
+        scoreEl.textContent = n + ' de ' + items.length + ' respondidas · ' + c + ' certas' + (n === items.length && total ? ' · ' + total : '');
+      }); });
+      el.appendChild(d);
+    });
+    scoreEl.textContent = '0 de ' + items.length + ' respondidas';
+  }
+
+  /* 1 · uma recomendação × três caminhos */
+  var DC = {
+    uma: '<div class="dc-rec"><span class="eyebrow">A resposta</span><p>“Recomenda-se revisar a política de alçada de desconto do canal, com aprovação obrigatória da diretoria comercial acima de 8% e revisão trimestral dos casos aprovados.”</p><p class="hint">Coerente, específica e sem par. A única pergunta que dá para fazer é “concordo?”. A pergunta “comparado com o quê?” não tem resposta, porque não há com o quê.</p></div>',
+    tres: '<div class="dc-paths">' +
+      '<div class="dc-path"><b>A · Apertar a alçada</b><p>Resolve rápido.</p><p class="cost">Custo: passa o conflito para o vendedor, que perde autonomia justo nos dois maiores clientes dele.</p><p>Aprova: diretoria comercial.</p></div>' +
+      '<div class="dc-path"><b>B · Subir a tabela da linha afetada</b><p>Protege a margem sem mexer na equipe.</p><p class="cost">Custo: todos os clientes pagam um aumento que só dois causaram.</p><p>Aprova: comercial e financeiro.</p></div>' +
+      '<div class="dc-path"><b>C · Aceitar o desconto e cobrar volume</b><p>Mantém a relação com os dois clientes.</p><p class="cost">Custo: só funciona se o volume vier, e ninguém garante.</p><p>Aprova: conversa com os dois clientes.</p></div>' +
+      '</div><p class="hint">Agora o primeiro deixa de ser “a resposta” e vira “um dos três”. E os dois que você não escolher fizeram o trabalho mesmo assim: deram escala ao escolhido.</p>'
+  };
+  var dcBtns = document.querySelectorAll('[data-dc]'), dcOut = document.getElementById('dcOut');
+  function setDc(k) { pressGroup(dcBtns, function (x) { return x.dataset.dc === k; }); dcOut.innerHTML = DC[k]; }
+  dcBtns.forEach(function (b) { b.addEventListener('click', function () { setDc(b.dataset.dc); }); });
+  setDc('uma');
+
+  /* 2 · montador do pedido dos três caminhos */
+  var MO = [
+    { t: 'Não recomende nenhum ainda, e não ordene por preferência.', off: 'Volta com três e já elege um. Você volta a avaliar uma recomendação, agora com dois figurantes.' },
+    { t: 'Se dois caminhos forem variação do mesmo, descarte um e traga outro de verdade.', off: 'Volta “apertar a alçada”, “apertar a alçada com exceções” e “apertar a alçada aos poucos”: um caminho em três tamanhos.' },
+    { t: 'Nada de “fazer um piloto” como caminho: piloto é como se faz, não o que se faz.', off: 'Aparece um piloto na lista. Ele serve a qualquer um dos três, e ocupa a vaga de um caminho de verdade.' },
+    { t: 'Se faltar informação para estimar um custo, escreva “não dá para estimar com o que eu tenho” e diga o que seria preciso saber.', off: 'Todos os custos vêm preenchidos, inclusive os que ninguém teria como saber com o que você mandou.' }
+  ];
+  var moTog = document.getElementById('moTog'), moDec = document.getElementById('moDec'), moCtx = document.getElementById('moCtx');
+  moTog.innerHTML = MO.map(function (m, i) { return '<label data-mo="' + i + '"><input type="checkbox" checked data-mi="' + i + '"><span>' + m.t + '</span><small>Ligada.</small></label>'; }).join('');
+  var moChecks = moTog.querySelectorAll('input');
+  function moRender() {
+    var on = [], offs = [];
+    moChecks.forEach(function (c) {
+      var i = +c.dataset.mi, lab = moTog.querySelector('[data-mo="' + i + '"]');
+      lab.classList.toggle('off', !c.checked);
+      lab.querySelector('small').textContent = c.checked ? 'Ligada.' : 'Desligada: ' + MO[i].off;
+      if (c.checked) { on.push(MO[i].t); } else { offs.push(MO[i].off); }
+    });
+    var out = '<b>A decisão:</b> ' + esc(moDec.value.trim() || '[a decisão em uma frase]') + '\n' +
+      '<b>O que eu já sei:</b> ' + esc(moCtx.value.trim() || '[a causa conferida e os números]') + '\n\n' +
+      'Traga três caminhos possíveis, bem diferentes entre si. Em cada um: o que ele muda na prática, o que custa em dinheiro ou em risco, em quanto tempo dá para saber se funcionou, quem precisa aprovar, e o que ele fecha que não dá para desfazer depois.\n' +
+      (on.length ? '\n' + on.map(esc).join('\n') + '\n' : '') +
+      '\nA resposta serve se eu conseguir defender a escolha numa reunião e responder “e por que não o outro caminho?” sem voltar a pedir nada.';
+    document.getElementById('moOut').innerHTML = out;
+    var v = document.getElementById('moVer');
+    if (!offs.length) { v.className = 'verdict ok'; v.innerHTML = '<b>As quatro linhas ligadas.</b> Cada uma existe por causa de um erro comum. Desligue uma para ver qual.'; }
+    else { v.className = 'verdict no'; v.innerHTML = '<b>' + offs.length + (offs.length === 1 ? ' linha desligada.' : ' linhas desligadas.') + '</b> O que costuma voltar: ' + offs.join(' ') ; }
+  }
+  moChecks.forEach(function (c) { c.addEventListener('change', moRender); });
+  [moDec, moCtx].forEach(function (i) { i.addEventListener('input', moRender); });
+  moRender();
+
+  /* 3 · três caminhos ou um em três tamanhos */
+  quiz(document.getElementById('tmQuiz'), document.getElementById('tmScore'), [
+    { s: 'Apertar a alçada para 8% · apertar para 8% com exceção para os maiores clientes · apertar um ponto por mês até 8%.', a: 'um', why: 'Os três se decidem na mesma sala, pela mesma pessoa. É uma régua com três posições.' },
+    { s: 'Apertar a alçada · subir a tabela da linha afetada · aceitar o desconto e cobrar volume em troca.', a: 'tres', why: 'Cada um leva a uma conversa diferente: com a equipe de vendas, com o financeiro, com os dois clientes.' },
+    { s: 'Renegociar com a transportadora atual · trocar de transportadora · fazer um piloto com uma transportadora nova em uma rota.', a: 'piloto', why: 'O piloto é o jeito de executar a troca, não um terceiro caminho. Peça outro no lugar dele.' },
+    { s: 'Contratar uma pessoa · contratar uma pessoa temporária por três meses · contratar alguém em meio período.', a: 'um', why: 'Contratar em três tamanhos. Falta o caminho que não passa por contratar, como tirar uma tarefa da equipe.' },
+    { s: 'Manter o sistema atual e treinar a equipe · trocar de sistema · terceirizar a rotina inteira.', a: 'tres', why: 'Três conversas diferentes: com quem treina, com quem vende o sistema novo, com quem assumiria a rotina.' }
+  ], [['tres', 'Três caminhos'], ['um', 'Um caminho em três tamanhos'], ['piloto', 'Tem um piloto na lista']], 'o teste é sempre o mesmo: com quem é cada conversa?');
+
+  /* 4 · premissas */
+  var PR = [
+    { n: 'Renovar', p: [
+      { t: 'O volume do próximo trimestre cresce, e o preço por entrega se dilui.', crit: true },
+      { t: 'O reajuste do contrato novo para no índice que o contrato atual já prevê.' },
+      { t: 'Não há outra transportadora com capacidade na região antes do vencimento.' } ],
+      fail: 'O volume cai em vez de crescer. Renovar passa a ser pagar mais caro por menos entregas, e o caminho que parecia o mais seguro vira o mais caro.',
+      fix: 'A premissa 1 do caminho “renovar” está errada: o volume do próximo trimestre vai cair, não crescer. Refaça só esse caminho.' },
+    { n: 'Renegociar agora', p: [
+      { t: 'A transportadora aceita rever o preço antes do vencimento.', crit: true },
+      { t: 'Vocês têm volume a oferecer em troca de um preço menor.' },
+      { t: 'A conversa não piora o atendimento enquanto o contrato vale.' } ],
+      fail: 'A transportadora não aceita abrir a conversa agora. O caminho vira esperar o vencimento, com quatro meses de frete caro e nenhuma alternativa preparada.',
+      fix: 'A premissa 1 do caminho “renegociar agora” está errada: a transportadora só revê preço no vencimento. Refaça só esse caminho.' },
+    { n: 'Trocar de transportadora', p: [
+      { t: 'Existe uma concorrente com capacidade para assumir até o vencimento.', crit: true },
+      { t: 'O custo da troca (cadastro, ajustes, o primeiro mês de erros) cabe no ganho do primeiro ano.' },
+      { t: 'O prazo de entrega aos clientes não piora na transição.' } ],
+      fail: 'Nenhuma concorrente assume a tempo. A troca empurra para depois do vencimento, e você renova às pressas, sem poder de negociação.',
+      fix: 'A premissa 1 do caminho “trocar” está errada: nenhuma concorrente assume antes de seis meses. Refaça só esse caminho.' }
+  ];
+  var prBtns = document.querySelectorAll('[data-pr]'), prList = document.getElementById('prList'), prFail = document.getElementById('prFail'), prCur = 0, prMarks = PR.map(function (c) { return c.p.map(function () { return ''; }); });
+  function prVerdict() {
+    var c = PR[prCur], m = prMarks[prCur], v = document.getElementById('prVer');
+    var conf = m.filter(function (x) { return x === 'fato'; }).length, chute = m.filter(function (x) { return x === 'chute'; }).length;
+    document.getElementById('prCount').textContent = 'Caminho “' + c.n + '” · ' + conf + ' de ' + c.p.length + ' premissas conferidas · ' + chute + ' marcadas como suposição';
+    if (prFail.checked) { v.className = 'verdict no'; v.innerHTML = '<b>O caminho caiu.</b> ' + c.fail + '<br><span class="hint">A correção, na mesma conversa: “' + c.fix + '”</span>'; return; }
+    if (m[0] === 'chute') { v.className = 'verdict no'; v.innerHTML = '<b>A premissa que derruba é suposição.</b> O caminho inteiro está apoiado numa coisa que ninguém conferiu. É a primeira a checar, antes de comparar com os outros.'; return; }
+    if (m[0] === 'fato') { v.className = 'verdict ok'; v.innerHTML = '<b>A premissa que derruba está conferida.</b> O caminho fica de pé enquanto ela valer, e é ela que você vigia depois de decidir.'; return; }
+    v.className = 'verdict no'; v.innerHTML = '<b>Ainda sem marcar.</b> Marque cada premissa: você sabe que é verdade, ou é a IA que está supondo? Comece pela que derruba.';
+  }
+  function prRender() {
+    var c = PR[prCur];
+    pressGroup(prBtns, function (x) { return +x.dataset.pr === prCur; });
+    prList.innerHTML = c.p.map(function (p, i) {
+      var mk = prMarks[prCur][i];
+      return '<div class="pr-item' + (p.crit ? ' crit' : '') + '">' + (p.crit ? '<span class="tag">A PREMISSA QUE DERRUBA</span>' : '') + '<p>' + (i + 1) + '. ' + p.t + '</p><div class="opts" role="group" aria-label="Fato ou suposição"><button type="button" data-pi="' + i + '" data-pm="fato" aria-pressed="' + (mk === 'fato') + '">Fato conferido</button><button type="button" data-pi="' + i + '" data-pm="chute" aria-pressed="' + (mk === 'chute') + '">Suposição da IA</button></div></div>';
+    }).join('');
+    prList.querySelectorAll('[data-pm]').forEach(function (b) { b.addEventListener('click', function () { prMarks[prCur][+b.dataset.pi] = b.dataset.pm; prRender(); }); });
+    prVerdict();
+  }
+  prBtns.forEach(function (b) { b.addEventListener('click', function () { prCur = +b.dataset.pr; prFail.checked = false; prRender(); }); });
+  prFail.addEventListener('change', prVerdict);
+  prRender();
+
+  /* 5 · matriz de decisão */
+  var CR = ['Preço', 'Prazo confiável', 'Flexibilidade'], W = [40, 35, 25];
+  var SUP = [{ n: 'A', s: [4, 4, 2] }, { n: 'B', s: [2, 5, 4] }, { n: 'C', s: [5, 1, 2] }];
+  var mxW = document.getElementById('mxW'), mxRows = document.getElementById('mxRows'), mxMedia = document.getElementById('mxMedia');
+  mxW.innerHTML = CR.map(function (c, i) { return '<div class="field"><label for="mxw' + i + '">Peso de ' + c.toLowerCase() + '</label><div class="row"><input type="range" id="mxw' + i + '" min="0" max="100" step="1" value="' + W[i] + '"><output id="mxo' + i + '" for="mxw' + i + '">' + W[i] + '%</output></div></div>'; }).join('');
+  function notes(k) { var s = SUP[k].s.slice(); if (k === 2 && mxMedia.checked) { s[1] = 3; } return s; }
+  function scores(w) { var t = w[0] + w[1] + w[2] || 1; return SUP.map(function (x, k) { var s = notes(k); return (w[0] * s[0] + w[1] * s[1] + w[2] * s[2]) / t; }); }
+  function leader(sc) { var best = 0; sc.forEach(function (v, i) { if (v > sc[best] + 1e-9) { best = i; } }); var tie = sc.filter(function (v) { return Math.abs(v - sc[best]) < 1e-9; }).length > 1; return { i: best, tie: tie }; }
+  function fmt(v) { return v.toFixed(2).replace('.', ','); }
+  function mxRender() {
+    var t = W[0] + W[1] + W[2] || 1, nw = W.map(function (w) { return w * 100 / t; });
+    W.forEach(function (w, i) { document.getElementById('mxo' + i).textContent = Math.round(nw[i]) + '%'; });
+    var sc = scores(nw), L = leader(sc);
+    mxRows.innerHTML = SUP.map(function (x, k) { return '<div class="mx-row' + (k === L.i ? ' lead' : '') + '"><span class="nm">Fornecedor ' + x.n + '<small>' + notes(k).join(' / ') + '</small></span><div class="mx-track"><div class="mx-fill" data-w="' + (sc[k] / 5 * 100).toFixed(1) + '"></div></div><span class="sc">' + fmt(sc[k]) + '</span></div>'; }).join('');
+    mxRows.querySelectorAll('.mx-fill').forEach(function (f) { f.style.width = f.dataset.w + '%'; });
+    var v = document.getElementById('mxVer');
+    if (L.tie) { v.className = 'verdict no'; v.innerHTML = '<b>Empate.</b> A conta não decide: a escolha está nos critérios que a matriz não mede.' + (mxMedia.checked ? ' E repare em quem empatou: o fornecedor C chegou lá com uma nota de prazo que ninguém mediu.' : ''); return; }
+    var best = null;
+    for (var i = 0; i < 3; i++) { for (var j = 0; j < 3; j++) { if (i === j) { continue; }
+      for (var d = 1; d <= 60 && d <= nw[i]; d++) { var w2 = nw.slice(); w2[i] -= d; w2[j] += d; var L2 = leader(scores(w2));
+        if (L2.i !== L.i || L2.tie) { if (!best || d < best.d) { best = { d: d, i: i, j: j, k: L2.i, tie: L2.tie }; } break; } } } }
+    var head = 'Na frente: fornecedor ' + SUP[L.i].n + ', com ' + fmt(sc[L.i]) + '.';
+    if (!best) { v.className = 'verdict ok'; v.innerHTML = '<b>' + head + '</b> Nenhuma mudança de até 60 pontos de peso inverte o resultado: com estes pesos, a escolha é robusta.'; return; }
+    var frase = 'O resultado inverte se ' + CR[best.j].toLowerCase() + ' ganhar ' + best.d + (best.d === 1 ? ' ponto' : ' pontos') + ' de peso tirados de ' + CR[best.i].toLowerCase() + (best.tie ? ': aí ' + SUP[L.i].n + ' empata.' : ': aí ganha ' + SUP[best.k].n + '.');
+    var fragil = best.d <= 5;
+    v.className = 'verdict ' + (fragil ? 'no' : 'ok');
+    v.innerHTML = '<b>' + head + '</b> ' + frase + ' ' + (fragil ? 'Escolha frágil: depende de um detalhe de peso. Leve essa frase para a reunião, porque é nela que a discussão vai cair.' : 'A escolha aguenta uma discordância razoável sobre os pesos.') + (mxMedia.checked ? ' <span class="hint">Com a nota média, C ganhou dois pontos de prazo que nunca mostrou. Falta de dado é risco, e se declara.</span>' : '');
+  }
+  W.forEach(function (w, i) { document.getElementById('mxw' + i).addEventListener('input', function (e) { W[i] = +e.target.value; mxRender(); }); });
+  mxMedia.addEventListener('change', mxRender);
+  mxRender();
+
+  /* 6 · tabela cheia × honesta */
+  var LL = {
+    cheia: { rows: [['A', 'R$ 4,30', '40 dias', '28 e 56 dias', 'ISO 9001'], ['B', 'R$ 3,70', '25 dias', 'à vista', 'ISO 9001'], ['C', 'R$ 4,10', '15 dias', '30 dias', 'ISO 9001'], ['D', 'R$ 3,90', '60 dias', '50% antecipado', 'ISO 9001']], notes: ['Mais barato: B. Depois D, depois C.', 'Todos certificados, todos com o mesmo item.'], hint: 'Tudo preenchido, tudo comparável. Só que a proposta B não fala de certificação nenhuma, a D veio em dólar e a peça da D tem um conector diferente. A tabela não avisou nada disso.' },
+    honesta: { rows: [['A', 'R$ 4,30', '40 dias', '28 e 56 dias', 'ISO 9001'], ['B', 'R$ 3,70', '25 dias', 'à vista', '!não informado'], ['C', 'R$ 4,10', '15 dias', '30 dias', 'ISO 9001'], ['D', '*US$ 0,68 ≈ R$ 3,90', '60 dias', '50% antecipado', '!não informado']], notes: ['B: o mais barato, sem certificação declarada. Pergunte antes de comparar preço.', 'D: preço convertido com o câmbio que você informou. A peça tem um conector diferente: pode não ser o mesmo item, e o preço não compara direto.', 'Pergunta para todos: garantia. Nenhuma das quatro propostas fala dela.'], hint: 'A tabela tem buracos, e os buracos viram as perguntas que você faz aos fornecedores antes de fechar. Uma tabela honesta com buracos vale mais que uma cheia de números estimados.' }
+  };
+  var llBtns = document.querySelectorAll('[data-ll]'), llOut = document.getElementById('llOut');
+  function cell(v) { if (v.charAt(0) === '!') { return '<td class="miss">' + v.slice(1) + '</td>'; } if (v.charAt(0) === '*') { return '<td class="flag">' + v.slice(1) + ' *</td>'; } return '<td>' + v + '</td>'; }
+  function setLl(k) {
+    pressGroup(llBtns, function (x) { return x.dataset.ll === k; });
+    var t = LL[k];
+    llOut.innerHTML = '<div class="tablewrap"><table class="vtable"><tr><th>Fornecedor</th><th>Preço por peça</th><th>Prazo</th><th>Pagamento</th><th>Certificação</th></tr>' + t.rows.map(function (r) { return '<tr>' + r.map(cell).join('') + '</tr>'; }).join('') + '</table></div><ul class="ll-notes">' + t.notes.map(function (n) { return '<li>' + n + '</li>'; }).join('') + '</ul><div class="verdict ' + (k === 'cheia' ? 'no' : 'ok') + '">' + t.hint + '</div>';
+  }
+  llBtns.forEach(function (b) { b.addEventListener('click', function () { setLl(b.dataset.ll); }); });
+  setLl('cheia');
+
+  quiz(document.getElementById('esQuiz'), document.getElementById('esScore'), [
+    { s: '“A contratada” passou a ser chamada de “a fornecedora” em todo o texto.', a: 'estilo', why: 'Troca de nome, mesmo papel, mesmo efeito.' },
+    { s: 'O prazo de pagamento passou de 30 para 45 dias.', a: 'efeito', why: 'Prazo nunca é estilo: são quinze dias a mais com o dinheiro fora do seu caixa.' },
+    { s: 'O reajuste anual trocou um índice de preços por outro.', a: 'efeito', why: 'Índice nunca é estilo: dois índices andam diferente, e a diferença vira dinheiro todo ano.' },
+    { s: 'A cláusula de rescisão foi dividida em dois parágrafos, com as mesmas condições.', a: 'estilo', why: 'Mudou a forma, não o que acontece se alguém sair do contrato.' },
+    { s: 'Na multa por atraso, “a contratante poderá aplicar” virou “as partes poderão negociar”.', a: 'efeito', why: 'Parece redação, e mudou quem decide: a multa deixou de ser sua para virar conversa.' }
+  ], [['estilo', 'Estilo'], ['efeito', 'Muda o efeito']], 'na dúvida, é efeito: confira no original.');
+
+  var LP = {
+    cot: { lab: 'Propostas numa tabela comum · com os arquivos anexados', t: 'Anexei <i>[4]</i> propostas para o mesmo item, cada uma num formato. Leia todas e monte uma tabela comum com: fornecedor · preço por unidade · prazo de entrega · condição de pagamento · garantia · certificações.\n\nRegras:\n- Onde a proposta não traz o dado, escreva "não informado". Não estime.\n- Preço em outra moeda: mantenha o original e, se converter, sinalize e diga o câmbio que usou.\n- Se dois fornecedores cotaram itens diferentes, avise que a comparação pode não ser justa, e por quê.\n- Se algum arquivo estiver ilegível ou incompleto, diga qual.\n\nNo fim, as perguntas que eu deveria fazer a cada fornecedor por causa do que ficou de fora. Você apresenta; quem escolhe sou eu. Nada de "recomendo o fornecedor X".' },
+    min: { lab: 'Minuta contra contrato vigente · textos sem identificação', t: 'Compare os dois textos abaixo. Os nomes das partes foram tirados e os valores trocados por [V1], [V2].\n\nListe toda diferença de conteúdo, não de redação, numa tabela: cláusula · o que mudou · efeito prático · favorável, neutra ou desfavorável para nós.\nDiferença só de redação, sem efeito prático, marque como "estilo". Mudança de prazo, de valor ou de índice nunca é estilo.\nNão cite cláusula que não está nos textos. Não dê parecer: isto prepara a minha leitura.\nNo fim, os pontos para negociar antes de assinar, do mais relevante para o menos.\n\n<b>--- CONTRATO VIGENTE ---</b>\n<i>[cole as cláusulas relevantes]</i>\n\n<b>--- MINUTA NOVA ---</b>\n<i>[cole]</i>' }
+  };
+  var lpBtns = document.querySelectorAll('[data-lp]');
+  function setLp(k) { pressGroup(lpBtns, function (x) { return x.dataset.lp === k; }); document.getElementById('llPLab').textContent = LP[k].lab; document.getElementById('llPrompt').innerHTML = LP[k].t; }
+  lpBtns.forEach(function (b) { b.addEventListener('click', function () { setLp(b.dataset.lp); }); });
+  setLp('cot');
+
+  /* 8 · ata × plano */
+  var PL = {
+    ata: '<div class="pl-ata"><span class="eyebrow">A ata</span><p>“Ficou definido o reajuste de 4% na linha afetada. O comercial vai alinhar com os clientes e o financeiro acompanha o impacto na margem nos próximos meses.”</p><p class="hint">Três verbos e nenhum nome. “Alinhar” e “acompanhar” não têm começo nem fim; na semana que vem ninguém está atrasado, porque não havia prazo para atrasar.</p></div>',
+    plano: '<div class="pl-plan"><span class="eyebrow">O plano</span><ol><li>Avisar os dois clientes com 30 dias de antecedência, oferecendo prazo de pagamento maior no primeiro trimestre. <span>Gerente de cada conta · até a publicação da tabela.</span></li><li>Publicar a tabela nova no sistema. <span>Comercial e financeiro · 30 dias depois do aviso.</span></li><li>Medir a margem do canal no primeiro mês cheio, com a mesma conta da análise: receita total menos custo total, dividido pela receita total. <span>Você · 60 dias depois da publicação · funcionou se passar de 23,5%, contra 21,8% hoje.</span></li></ol><p class="hint">A linha 1 não estava na decisão: é o motivo de falha que apareceu no pré-mortem, os dois clientes levando volume para o concorrente. O pré-mortem não serve para preocupar; serve para virar a primeira linha do plano. E a conta escrita na linha 3 impede que alguém meça daqui a dois meses pela média das margens de cada pedido e ache outro número.</p></div>'
+  };
+  var plBtns = document.querySelectorAll('[data-pl]'), plOut = document.getElementById('plOut');
+  function setPl(k) { pressGroup(plBtns, function (x) { return x.dataset.pl === k; }); plOut.innerHTML = PL[k]; }
+  plBtns.forEach(function (b) { b.addEventListener('click', function () { setPl(b.dataset.pl); }); });
+  setPl('ata');
+
+  var POST = ['acompanhar', 'alinhar', 'monitorar', 'revisar', 'avaliar', 'melhorar', 'garantir', 'apoiar', 'buscar', 'trabalhar', 'reforçar', 'otimizar'];
+  var ckIn = document.getElementById('ckIn'), ckRes = document.getElementById('ckRes');
+  function ckRender() {
+    var t = ckIn.value.trim(), low = t.toLowerCase(), first = low.split(/\s+/)[0] || '';
+    var postura = POST.filter(function (p) { return first.indexOf(p) === 0 || new RegExp('(^|\\s)' + p + '(\\s|$)').test(low); });
+    var prazo = /(^|\s)at[ée](\s|$)|\bdias?\b|\bsemanas?\b|\bdia \d|\d+\/\d+|depois d/.test(low);
+    var numero = /\d/.test(t.replace(/\d+\s*(dias?|semanas?)/gi, ''));
+    var res = [];
+    res.push(postura.length ? ['no', 'Verbo de postura: “' + postura[0] + '”. Troque por uma ação que termina: medir, publicar, ligar, enviar, decidir.'] : ['ok', 'Sem verbo de postura: a linha descreve uma ação que termina.']);
+    res.push(prazo ? ['ok', 'Tem prazo. Melhor ainda se for contado de um evento do plano, e não do calendário.'] : ['no', 'Sem prazo. Até quando? De preferência contado de um evento do plano: “30 dias depois da publicação”.']);
+    res.push(numero ? ['ok', 'Tem um número além do prazo: dá para dizer, no dia marcado, se funcionou.'] : ['no', 'Sem número que diga se funcionou. “Melhorar a margem” não pode dar errado, e por isso não mede nada.']);
+    ckRes.innerHTML = t ? res.map(function (r) { return '<p class="' + r[0] + '">' + r[1] + '</p>'; }).join('') : '<p class="no">Escreva uma linha para conferir.</p>';
+  }
+  ckIn.addEventListener('input', ckRender);
+  ckRender();
+})();
+</script>
+</body>
+</html>

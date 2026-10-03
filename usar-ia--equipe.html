@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="pt-BR" data-conceito="usar-ia--equipe">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Levar a IA para a equipe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: página de conceito, família 1.4. Peças: proibir × regra da área (alternar), tabela de tarefas com cor calculada e dono, montador da regra de uma página com copiar, stepper com diagrama da conversa e da revisão, roteiro do que dizer por situação, frases da equipe com o que está em jogo, dois começos (equipe toda × uma pessoa em paralelo), pedidos para copiar. */
+/* ---------------------------------------------------------------------------
+     TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
+     Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
+     texto sobre o acento usa --bg-elev, que tem o mesmo valor.
+     Para atualizar: mexa na fonte lá, depois refaça a cópia aqui.
+     --------------------------------------------------------------------------- */
+:root {
+  --bg: #fafaf7;
+  --bg-elev: #ffffff;
+  --text: #1a1f2e;
+  --text-muted: #5a6172;
+  --text-dim: #666e7b;
+  --border: #e5e2da;
+  --border-strong: #d3cfc4;
+  --accent: #3b5b6b;
+  --accent-soft: #edf1f3;
+  --atencao-texto: #8f5628;
+  --atencao: #b5703a;
+  --atencao-soft: #f6ecdf;
+  --ok-texto: #4a6551;
+  --ok: #5e7d66;
+  --ok-soft: #eaf0eb;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+/* MODO CLARO, E SÓ. Decisão do dono, 30/09/2026 (contrato §8). */
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 17px; line-height: 1.6; }
+.page { max-width: 1040px; margin-inline: auto; padding-inline: 20px; padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--font-body); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--accent); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--text-dim); }
+.hint { font-size: .9rem; color: var(--text-dim); }
+.btn { border: 1px solid var(--text); background: var(--bg-elev); border-radius: 6px; padding: 8px 16px; font-size: .95rem; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg-elev); font-weight: 500; }
+.btn:disabled { opacity: .4; cursor: default; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; background: var(--bg-elev); width: fit-content; max-width: 100%; }
+.seg button { border: 0; background: transparent; padding: 9px 16px; font-size: .95rem; color: var(--text-muted); }
+.seg button + button { border-left: 1px solid var(--border-strong); }
+.seg button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+.punch { font-size: clamp(1.25rem, 2.6vw, 1.6rem); max-width: 44ch; }
+.punch em { font-style: normal; color: var(--accent); }
+.verdict { border-radius: 6px; padding: 12px 16px; border: 1px solid; }
+.verdict.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok-texto); }
+.verdict.no { background: var(--atencao-soft); border-color: var(--atencao); color: var(--atencao-texto); }
+.verdict b { font-weight: 600; }
+
+.hero { display: grid; gap: 18px; padding-bottom: 40px; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); letter-spacing: -.01em; }
+.hero .sub { font-size: clamp(1.15rem, 2.4vw, 1.5rem); color: var(--text-muted); font-weight: 300; max-width: 38ch; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+.toc a { border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px 12px; font-size: .88rem; color: var(--text-muted); background: var(--bg-elev); text-decoration: none; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+/* Rodapé de família: anterior, o mapa, próxima. Gerado por familias.py. */
+.famfoot { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: stretch; border-top: 1px solid var(--border); padding-top: 28px; }
+.famfoot a { text-decoration: none; color: var(--accent); }
+.famfoot-prev, .famfoot-next { display: grid; gap: 4px; align-content: start; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; }
+.famfoot-next { text-align: right; }
+.famfoot-prev:hover, .famfoot-next:hover { border-color: var(--accent); }
+.famfoot-prev span, .famfoot-next span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); }
+.famfoot b { font-weight: 500; font-size: .98rem; line-height: 1.3; }
+.famfoot-fam { align-self: center; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding-inline: 8px; }
+.famfoot-fam:hover { text-decoration: underline; }
+@media (max-width: 860px) { .famfoot { grid-template-columns: minmax(0, 1fr); } .famfoot-next { text-align: left; } .famfoot-fam { order: 3; text-align: left; padding-inline: 0; } }
+/* /Rodapé de família */
+/* Cabeçalho de família: o mesmo bloco em todas as páginas da família (mãe e filhas). Gerado por familias.py. */
+.famhead { display: grid; gap: 10px; border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; }
+.famhead-top { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; align-items: baseline; }
+.famhead-name { font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); text-decoration: none; }
+.famhead-crumb { font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); }
+.famhead-pn { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: .9rem; }
+.famhead-pn a { color: var(--accent); text-decoration: none; }
+.famhead a:hover { text-decoration: underline; }
+.famhead-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.famhead-chips a { border: 1px solid var(--accent); background: var(--bg-elev); border-radius: 999px; padding: 3px 12px; font-size: .86rem; color: var(--accent); text-decoration: none; }
+.famhead-chips a b { font-family: var(--font-mono); font-weight: 500; font-size: .8rem; margin-right: 4px; }
+.famhead-chips a[aria-current="page"] { background: var(--accent); color: var(--bg-elev); }
+.famhead-chips a.ext { border-style: dashed; background: transparent; }
+/* /Cabeçalho de família */
+
+.sec { border-top: 1px solid var(--border); padding-block: 44px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sec h2 { font-size: clamp(1.6rem, 3.4vw, 2.1rem); }
+.sec .intro { max-width: 64ch; color: var(--text-muted); }
+.sec .intro strong { color: var(--text); font-weight: 600; }
+.card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.card.focal { border-color: var(--accent); background: var(--accent-soft); }
+.card h3 { font-size: 1.15rem; }
+.card p { font-size: .95rem; color: var(--text-muted); }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
+.panel h3 { font-size: 1.25rem; }
+.panel ul { margin: 0; padding-left: 18px; color: var(--text-muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-elev); }
+.scroll svg { display: block; width: 100%; height: auto; }
+.stepbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.nav { display: flex; gap: 8px; }
+.caption { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 16px 20px; display: grid; gap: 6px; min-height: 110px; align-content: start; }
+.caption h3 { font-size: 1.2rem; }
+.copy { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; display: grid; }
+.copy-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.copy pre { margin: 0; padding: 14px 16px; font-family: var(--font-mono); font-size: .85rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy pre b { color: var(--accent); font-weight: 500; }
+.copy pre i { font-style: normal; background: var(--atencao-soft); color: var(--atencao-texto); border-radius: 3px; padding: 0 3px; }
+.vtable { width: 100%; border-collapse: collapse; background: var(--bg-elev); border: 1px solid var(--border-strong); }
+.vtable th, .vtable td { text-align: left; padding: 10px 14px; border-top: 1px solid var(--border); font-size: .95rem; vertical-align: top; }
+.vtable th { font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-top: 0; }
+.vtable td:first-child { font-weight: 600; }
+.tablewrap { overflow-x: auto; }
+
+.take { display: grid; grid-template-columns: 1.1fr 1fr 0.9fr; gap: 16px; }
+.take-card { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 6px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.take-card.focal { background: var(--accent-soft); border-color: var(--accent); }
+.take-card h3 { font-size: 1.3rem; }
+.take-card p { color: var(--text-muted); font-size: 1rem; }
+.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 8px 20px; margin: 0; }
+.gloss dt { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+.gloss dd { margin: 0; color: var(--text-muted); }
+.foot { font-size: .88rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* ---- só desta peça ---- */
+.sec > * { min-width: 0; }
+
+/* 1 · proibir × regra da área */
+#swOut, #iniOut { display: grid; gap: 12px; }
+.sw-box { background: var(--bg-elev); border: 1px solid var(--accent); border-radius: 8px; padding: 16px 18px; display: grid; gap: 12px; }
+.sw-row { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 4px 16px; padding-top: 10px; border-top: 1px solid var(--border); }
+.sw-row:first-of-type { border-top: 0; padding-top: 0; }
+.sw-row span { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); padding-top: 3px; }
+.sw-row p { font-size: .97rem; }
+
+/* 2 · tabela de tarefas */
+.tk-table { min-width: 760px; }
+.tk-table td { vertical-align: middle; }
+.tk-table td:first-child { font-weight: 500; max-width: 240px; }
+.tk-table select, .tk-table input { font: inherit; font-size: .88rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 6px 8px; background: var(--bg-elev); color: var(--text); width: 100%; min-width: 0; }
+.tk-table input.vazio { border-color: var(--atencao); background: var(--atencao-soft); }
+.tk-cor { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .85rem; white-space: nowrap; }
+.tk-cor i { width: 14px; height: 14px; border-radius: 50%; display: inline-block; border: 1px solid; flex: none; }
+.tk-cor i.g { background: var(--ok); border-color: var(--ok); }
+.tk-cor i.a { background: var(--bg-elev); border-color: var(--atencao); box-shadow: inset 0 0 0 3px var(--atencao-soft); }
+.tk-cor i.r { background: var(--atencao); border-color: var(--atencao); }
+.tk-sum { font-family: var(--font-mono); font-size: .95rem; color: var(--text-muted); }
+.tk-leg .card h3 { display: flex; align-items: center; gap: 8px; }
+
+/* 3 · montador da regra */
+.rg-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.rg-form { display: grid; gap: 10px; }
+.rg-form label { display: grid; gap: 4px; font-size: .92rem; }
+.rg-form label small { color: var(--text-dim); font-size: .82rem; }
+.rg-form input, .rg-form textarea { font: inherit; font-size: .92rem; border: 1px solid var(--border-strong); border-radius: 6px; padding: 8px 10px; background: var(--bg-elev); color: var(--text); width: 100%; }
+.rg-teste { border: 1px dashed var(--accent); border-radius: 8px; padding: 14px 16px; background: var(--accent-soft); display: grid; gap: 6px; }
+
+/* 4 · conversar e revisar (svg) */
+.rv-svg { min-width: 640px; }
+.rv-box rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.rv-box.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.rv-box.done rect { fill: var(--bg-elev); stroke: var(--ok); }
+.rv-box .t { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; text-anchor: middle; }
+.rv-box .b { font: 500 14px var(--font-body); fill: var(--text); text-anchor: middle; }
+.rv-box .s { font: 400 11.5px var(--font-body); fill: var(--text-muted); text-anchor: middle; }
+.rv-box.on .t { fill: var(--accent); }
+.rv-arr { stroke: var(--border-strong); stroke-width: 2; fill: none; }
+.rv-mk { fill: var(--border-strong); }
+.rv-chip rect { fill: var(--bg-elev); stroke: var(--border); stroke-dasharray: 4 3; }
+.rv-chip text { font: 400 11.5px var(--font-body); fill: var(--text-dim); }
+.rv-chip.on rect { fill: var(--atencao-soft); stroke: var(--atencao); stroke-dasharray: none; }
+.rv-chip.on text { fill: var(--atencao-texto); }
+.rv-zl { font: 500 11px var(--font-mono); fill: var(--text-dim); letter-spacing: .1em; }
+
+/* 5 · o que dizer */
+.dz-sit { font-size: 1.1rem; }
+.dz-pair .card.bad { border-color: var(--atencao); }
+.dz-pair .card.good { border-color: var(--ok); }
+.dz-pair .card p.fala { color: var(--text); font-size: 1rem; }
+
+/* 6 · frases da equipe */
+.fr-list { display: grid; gap: 8px; }
+.fr-list button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 8px; padding: 12px 14px; font-size: .98rem; }
+.fr-list button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.fr-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.fr-det { display: grid; gap: 10px; }
+.fr-det .card h3 { font-size: 1rem; }
+
+/* 7 · dois começos */
+.ini-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.ini-list li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4px 14px; background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 14px; font-size: .95rem; }
+.ini-list li span { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-dim); padding-top: 2px; }
+
+@media (max-width: 860px) {
+  .two, .three, .take { grid-template-columns: 1fr; }
+  .gloss { grid-template-columns: 1fr; }
+  .gloss dd { margin-bottom: 8px; }
+}
+@media (max-width: 860px) {
+  .rg-grid, .fr-grid { grid-template-columns: 1fr; }
+  .sw-row, .ini-list li { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .rv-box rect { transition: none; } }
+/* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
+   As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
+   o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
+.site-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 28px; }
+.site-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+.site-brand img { display: block; width: 36px; height: auto; flex: none; }
+.site-brand b { display: block; font-weight: 600; font-size: .98rem; line-height: 1.2; }
+.site-brand small { display: block; font-size: .82rem; color: var(--text-dim); }
+.site-ig { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); text-decoration: none; border: 1px solid var(--accent); border-radius: 999px; padding: 5px 12px; background: var(--bg-elev); }
+.site-ig:hover, .site-foot a:hover { text-decoration: underline; }
+.site-foot { margin-top: 56px; border-top: 1px solid var(--border); padding-top: 32px; display: flex; flex-wrap: wrap; gap: 24px 40px; align-items: center; justify-content: space-between; }
+.site-foot img { display: block; width: 240px; height: auto; flex: none; }
+.site-foot div { display: grid; gap: 6px; font-size: .92rem; color: var(--text-muted); }
+.site-foot a { color: var(--accent); font-weight: 500; text-decoration: none; }
+/* /Cabeçalho e rodapé do site */
+/* Largura e alinhamento do texto, iguais nas páginas todas. Gerado por familias.py.
+   Rafael, 02/10, opção B: o texto corrido ocupa ~90 letras por linha (antes ~62); justificado
+   com hifenização só no computador; no celular fica alinhado à esquerda, sem buracos. Vem por
+   último no <style> para valer sobre o limite de cada página. */
+.hero h1 { max-width: none; }
+h1, h2, h3 { text-wrap: pretty; }
+.hero .sub { max-width: 60ch; }
+.hero .lead, .sec .intro, .sec > p, .qp > p { max-width: 90ch; }
+.punch { max-width: 60ch; }
+@media (min-width: 861px) {
+  .hero .lead, .sec .intro, .sec > p, .qp > p { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+}
+/* /Largura e alinhamento do texto */
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- site-topo -->
+<header class="site-top">
+  <a class="site-brand" href="./index.html"><img src="./marca/rlima-simbolo.png" width="36" height="38" alt="R. Lima"><span><b>Conceitos de IA</b><small>Rafael Lima</small></span></a>
+  <a class="site-ig" href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a>
+</header>
+<!-- /site-topo -->
+
+<header class="hero">
+  <nav class="famhead" aria-label="Família Usar IA">
+    <div class="famhead-top"><span class="famhead-crumb"><a class="famhead-name" href="./index.html">Conceitos de IA</a> › <a class="famhead-name" href="./usar-ia.html">Família 1 · Usar IA</a></span><span class="famhead-pn"><a href="./usar-ia--onde-entra.html">← 1.3 Onde a IA entra</a><a href="./usar-ia.html">Visão geral ↺ →</a></span></div>
+    <div class="famhead-chips"><a href="./usar-ia.html">Visão geral</a><a href="./usar-ia--niveis.html"><b>1.1</b>Níveis de uso</a><a href="./usar-ia--delegar-ou-pensar.html"><b>1.2</b>Delegar ou pensar junto</a><a href="./usar-ia--onde-entra.html"><b>1.3</b>Onde a IA entra</a><a href="./usar-ia--equipe.html" aria-current="page"><b>1.4</b>Levar para a equipe</a></div>
+  </nav>
+  <span class="eyebrow">1.4 · 4 de 4</span>
+  <h1>Levar a IA para a equipe</h1>
+  <p class="sub">Quem lidera não decide se a equipe vai usar IA: decide se o uso acontece à vista, com regra e com dono, ou escondido</p>
+  <p class="lead">As outras páginas desta família falam com quem usa. Esta fala com quem responde pelo uso dos outros: a coordenadora, o gerente, quem assina o que a equipe entrega. São quatro gestos: <strong>não proibir no escuro, escrever a regra da área em uma página com um dono por tarefa, dizer o que a IA fez e o que você conferiu, e ler a resistência da equipe como informação.</strong> O que pode ou não subir para a IA está em <a href="./limites-da-ia--o-que-pode-subir.html">o que pode subir</a>; por qual tarefa começar, em <a href="./usar-ia--onde-entra.html">onde a IA entra</a>.</p>
+  <nav class="toc" aria-label="Nesta página">
+    <a href="#s-proibir">Proibir esconde o uso</a><a href="#s-tarefas">Uma cor e um dono por tarefa</a><a href="#s-pagina">A regra em uma página</a><a href="#s-revisar">Conversar e revisar a regra</a><a href="#s-dizer">O que a IA fez, o que você conferiu</a><a href="#s-resistencia">Resistência não é teimosia</a><a href="#s-cetico">Começar pelo mais cético</a>
+  </nav>
+</header>
+
+<!-- 1 -->
+<section class="sec" id="s-proibir" aria-labelledby="h-proibir">
+  <span class="eyebrow">Proibir esconde o uso</span>
+  <h2 id="h-proibir">A regra que só proíbe não tira a IA da equipe: tira da sua vista, e o dado vai junto</h2>
+  <p class="intro">Quando a empresa proíbe hora extra sem mexer no prazo, a hora extra não acaba: ela some do ponto e vai para casa, no notebook pessoal. Com a IA acontece o mesmo. “Ninguém usa até a empresa definir” parece prudente, mas quem tem pressa continua usando, só que no celular pessoal, numa conta pessoal, com o arquivo que levou para casa por e-mail. <strong>Você perde a vista do uso e, junto, a vista do dado que saiu.</strong> Compare as duas segundas-feiras.</p>
+  <div class="seg" role="group" aria-label="Como a área trata a IA">
+    <button type="button" data-sw="proibe" aria-pressed="true">Proibido até a empresa definir</button>
+    <button type="button" data-sw="regra" aria-pressed="false">Regra da área em uma página</button>
+  </div>
+  <div id="swOut" aria-live="polite"></div>
+  <div class="two">
+    <div class="card"><span class="eyebrow">da empresa</span><h3>As regras do jogo</h3><p>Governança (as regras de quem decide o quê, com que segurança) é da empresa e da área de tecnologia: quais ferramentas estão aprovadas, o que nunca sai, como cada conta é configurada. Você não escreve isso, e não precisa esperar por isso para agir.</p></div>
+    <div class="card focal"><span class="eyebrow">seu</span><h3>O uso dentro delas</h3><p>Em que tarefas da sua área a IA entra, com que dado, e quem confere cada uma. Isso a política da empresa não sabe responder, porque depende da rotina que só você conhece.</p></div>
+  </div>
+  <p class="hint">A regra da área pode existir antes da política da empresa e ser absorvida por ela depois. Quando a política existe, ela vence, inclusive quando é mais permissiva: a regra da área só detalha o que ela já permite, e usar só a ferramenta que a empresa aprovou é a primeira linha da própria regra.</p>
+</section>
+
+<!-- 2 -->
+<section class="sec" id="s-tarefas" aria-labelledby="h-tarefas">
+  <span class="eyebrow">Uma cor e um dono por tarefa</span>
+  <h2 id="h-tarefas">A regra da área classifica tarefas, não ferramentas, e cada linha tem quem responde</h2>
+  <p class="intro">Na tabela de alçadas, cada faixa de valor tem um nome ao lado: até tanto aprova a coordenação, acima disso a diretoria. Ninguém precisa perguntar a cada compra. A regra de uso da IA funciona igual: <strong>uma linha por tarefa da área, uma cor, e o nome de quem responde por ela</strong>, a pessoa que confere antes de sair e que atende quando alguém pergunta. A cor sai de duas perguntas: que dado a tarefa precisa, e quanto custa se a IA inventar alguma coisa no meio (preencher com algo que soa certo e não existe, o que se chama <a href="./limites-da-ia--alucinacao.html">alucinação</a>). O exemplo é uma coordenação de compras com seis pessoas. Mexa nas colunas e no dono.</p>
+  <div class="tablewrap">
+    <table class="vtable tk-table">
+      <thead><tr><th>Tarefa da área</th><th>Que dado ela precisa</th><th>Se a IA inventar algo</th><th>Cor</th><th>Quem responde</th></tr></thead>
+      <tbody id="tkBody"></tbody>
+    </table>
+  </div>
+  <p class="tk-sum" id="tkSum" aria-live="polite"></p>
+  <div class="three tk-leg">
+    <div class="card"><h3><span class="tk-cor"><i class="g"></i></span>Verde</h3><p>A equipe usa sem pedir licença. Quem entrega revisa como sempre revisou.</p></div>
+    <div class="card"><h3><span class="tk-cor"><i class="a"></i></span>Amarelo</h3><p>Usa com cuidado: o dado sobe sem identificação, a resposta passa pela conferência de fonte, número e consistência (<a href="./limites-da-ia--alucinacao.html#s-trinta">a ordem de conferir</a>), e quem responde lê antes de sair.</p></div>
+    <div class="card"><h3><span class="tk-cor"><i class="r"></i></span>Vermelho</h3><p>A IA fica fora do caso real. Dá para treinar o pedido com dado inventado; a decisão e o texto final são de gente.</p></div>
+  </div>
+  <p class="hint">Como decidir se um documento entra, entra sem identificação ou não entra está em <a href="./limites-da-ia--o-que-pode-subir.html#s-caixas">pode, sem nome, não pode</a>. Quanto a IA faz sozinha em cada tarefa verde é outra decisão, em <a href="./agente--autonomia.html">quanto a IA faz sozinha</a>. E se a sua tabela saiu toda verde, releia a coluna do dado: quase toda área tem pelo menos uma tarefa amarela e uma vermelha.</p>
+</section>
+
+<!-- 3 -->
+<section class="sec" id="s-pagina" aria-labelledby="h-pagina">
+  <span class="eyebrow">A regra em uma página</span>
+  <h2 id="h-pagina">Cinco partes, tom de quem habilita, e um teste de dois minutos</h2>
+  <p class="intro">O procedimento de reembolso que funciona é o que cabe numa folha: quem chega na empresa lê, entende o que pode pedir e a quem perguntar, sem marcar reunião. A regra de uso da área segue o mesmo formato, em cinco partes: <strong>para quem e para quê ela vale, o que pode, o que não pode, o que conferir antes de um documento feito com IA sair da área, e a quem perguntar.</strong> O tom é de quem habilita, não de quem fiscaliza: diz onde a IA é bem-vinda antes de dizer onde não é. Edite os campos; a folha se monta enquanto você escreve.</p>
+  <div class="rg-grid">
+    <div class="rg-form">
+      <label>A área <small>e quando a regra será revista</small><input id="rgArea"></label>
+      <label>1 · Para quem e para quê <small>quem segue a regra, e em que trabalho</small><textarea id="rgEscopo" rows="2"></textarea></label>
+      <label>2 · O que pode <small>as tarefas verdes e amarelas, uma por linha</small><textarea id="rgPode" rows="4"></textarea></label>
+      <label>3 · O que não pode <small>as vermelhas, e o que nunca sai</small><textarea id="rgNao" rows="3"></textarea></label>
+      <label>4 · Antes de sair da área <small>o que todo documento feito com IA passa</small><textarea id="rgConf" rows="3"></textarea></label>
+      <label>5 · A quem perguntar <small>um nome para a dúvida, outro para quando der errado</small><textarea id="rgQuem" rows="2"></textarea></label>
+    </div>
+    <div class="copy">
+      <div class="copy-head"><span class="eyebrow">A regra da área · ao vivo</span><button type="button" class="btn" data-copy="rgOut">Copiar</button></div>
+      <pre id="rgOut"></pre>
+    </div>
+  </div>
+  <div class="rg-teste">
+    <span class="eyebrow">O teste do recém-chegado</span>
+    <p>Entregue a folha a alguém que entrou na equipe este mês, por dois minutos, sem explicar nada. Se depois ele sabe o que pode, com que dado e quem revisa, a regra está pronta. Se ele precisa de você do lado explicando, ainda é rascunho: aperte mais uma rodada.</p>
+  </div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">Ou peça o rascunho à IA, a partir da sua tabela</span><button type="button" class="btn" data-copy="rgPrompt">Copiar</button></div>
+<pre id="rgPrompt">Vou colar abaixo a tabela das tarefas da minha área em que a equipe usa, ou pensa em usar, IA, com a cor de cada uma e quem responde por ela.
+
+<b>O que eu preciso:</b> a regra de uso da IA da minha área, em uma página, com cinco partes nesta ordem: (1) para quem e para quê ela vale; (2) o que a equipe pode fazer; (3) o que a equipe não pode fazer; (4) o que conferir antes de um documento feito com IA sair da área; (5) a quem perguntar na dúvida.
+
+<b>Restrições:</b> tom de quem habilita, não de quem fiscaliza: comece pelo que pode. Sem ameaça e sem juridiquês. Use só as tarefas e os nomes da tabela; não invente tarefa, cargo nem regra da empresa. Onde for preciso citar uma regra da empresa que eu não colei, escreva [conferir na política da empresa].
+
+<b>Na dúvida:</b> se uma tarefa estiver sem quem responde, não preencha. Liste essas tarefas no fim, para eu decidir.
+
+<i>[cole aqui a tabela: tarefa · dado · se a IA inventar · cor · quem responde]</i></pre>
+  </div>
+  <p class="hint">A IA rascunha a folha; quem assina a regra é você. Corte o que não se aplica, endureça o que a sua área exige, e confira cada linha contra a tabela antes de mostrar para a equipe.</p>
+</section>
+
+<!-- 4 -->
+<section class="sec" id="s-revisar" aria-labelledby="h-revisar">
+  <span class="eyebrow">Conversar e revisar a regra</span>
+  <h2 id="h-revisar">Apresentada numa conversa de quinze minutos, revista a cada trimestre</h2>
+  <p class="intro">Mudança na escala de plantão avisada só por e-mail vira “ninguém me avisou” na primeira sexta-feira. A regra da área tem o mesmo destino se for só um anexo. <strong>Ela é apresentada numa conversa curta, com espaço para pergunta, e o e-mail fica como registro, não como o jeito de avisar.</strong> E ela envelhece: uma tarefa muda de cor nos dois sentidos, porque a equipe ganhou prática ou porque a IA errou num caso que parecia seguro. Avance.</p>
+  <div class="stepbar"><span class="eyebrow" id="rvLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="rvPrev">← Anterior</button><button type="button" class="btn primary" id="rvNext">Próximo →</button></div></div>
+  <div class="scroll">
+    <svg class="rv-svg" viewBox="0 0 770 230" role="img" aria-labelledby="rv-t" xmlns="http://www.w3.org/2000/svg">
+      <title id="rv-t">A vida da regra da área em quatro momentos: a versão zero escrita, uma conversa de quinze minutos com a equipe, as perguntas da equipe virando a versão um, e uma revisão de dez minutos a cada trimestre em que tarefas mudam de cor</title>
+      <defs><marker id="mkrv" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="rv-mk"/></marker></defs>
+      <text class="rv-zl" x="10" y="20">A REGRA DA ÁREA, DO PRIMEIRO DIA AO TRIMESTRE</text>
+      <g class="rv-box" data-rv="1"><rect x="10" y="34" width="170" height="90" rx="8"/><text class="t" x="95" y="58">SEMANA 1</text><text class="b" x="95" y="84">A versão zero</text><text class="s" x="95" y="106">a tabela e a folha</text></g>
+      <g class="rv-box" data-rv="2"><rect x="200" y="34" width="170" height="90" rx="8"/><text class="t" x="285" y="58">SEMANA 1</text><text class="b" x="285" y="84">Quinze minutos</text><text class="s" x="285" y="106">contexto, regra, perguntas</text></g>
+      <g class="rv-box" data-rv="3"><rect x="390" y="34" width="170" height="90" rx="8"/><text class="t" x="475" y="58">MÊS 1</text><text class="b" x="475" y="84">As perguntas</text><text class="s" x="475" y="106">viram a versão um</text></g>
+      <g class="rv-box" data-rv="4"><rect x="580" y="34" width="170" height="90" rx="8"/><text class="t" x="665" y="58">TODO TRIMESTRE</text><text class="b" x="665" y="84">Dez minutos</text><text class="s" x="665" y="106">a cor ainda bate?</text></g>
+      <path class="rv-arr" d="M180,79 H194" marker-end="url(#mkrv)"/><path class="rv-arr" d="M370,79 H384" marker-end="url(#mkrv)"/><path class="rv-arr" d="M560,79 H574" marker-end="url(#mkrv)"/>
+      <path class="rv-arr" d="M750,100 H762 V214 H95 V130" marker-end="url(#mkrv)"/>
+      <g class="rv-chip" data-on="2"><rect x="200" y="140" width="170" height="26" rx="5"/><text x="212" y="157">o e-mail fica de registro</text></g>
+      <g class="rv-chip" data-on="3"><rect x="390" y="140" width="360" height="26" rx="5"/><text x="402" y="157">pergunta da equipe vira linha nova na tabela</text></g>
+      <g class="rv-chip" data-on="4"><rect x="390" y="172" width="360" height="26" rx="5"/><text x="402" y="189">resposta a fornecedor: de amarelo para verde</text></g>
+      <g class="rv-chip" data-on="4"><rect x="200" y="172" width="170" height="26" rx="5"/><text x="212" y="189">relatório: verde → amarelo</text></g>
+    </svg>
+  </div>
+  <div class="caption" id="rvCap" aria-live="polite"></div>
+  <div class="three">
+    <div class="card"><span class="eyebrow">morre de</span><h3>Só por e-mail</h3><p>Enviada, nunca conversada. Três semanas depois, ninguém lembra que ela existe, e a primeira dúvida vira palpite.</p></div>
+    <div class="card"><span class="eyebrow">morre de</span><h3>Linha sem dono</h3><p>A tarefa está na tabela, mas ninguém responde por ela. Na primeira dúvida, cada um decide sozinho, que era o problema de antes.</p></div>
+    <div class="card"><span class="eyebrow">morre de</span><h3>Sem data para voltar</h3><p>A rotina mudou, a cor da tarefa não. A regra vira documento de gaveta, e a equipe passa a seguir a prática, não a folha.</p></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="sec" id="s-dizer" aria-labelledby="h-dizer">
+  <span class="eyebrow">O que a IA fez, o que você conferiu</span>
+  <h2 id="h-dizer">Diga a divisão: o que a IA gerou e o que você conferiu, contra o quê</h2>
+  <p class="intro">O laudo técnico diz o que foi medido, com que instrumento e por quem; é isso que deixa outra pessoa assinar embaixo sem refazer a medição. Um trabalho feito com IA pede a mesma coisa. Há dois jeitos de errar: esconder (“fiz tudo eu”), e a entrega rápida demais vira suspeita na primeira pergunta; ou terceirizar (“foi a IA que gerou”), e a assinatura fica sem dono. <strong>O que funciona é dizer as duas partes: o que a IA produziu e o que você conferiu, contra o quê.</strong> Escolha a situação.</p>
+  <div class="seg" role="group" aria-label="A situação" id="dzSeg">
+    <button type="button" data-dz="0" aria-pressed="true">Entregou rápido demais</button>
+    <button type="button" data-dz="1" aria-pressed="false">O gestor desconfia</button>
+    <button type="button" data-dz="2" aria-pressed="false">De onde saiu o número?</button>
+    <button type="button" data-dz="3" aria-pressed="false">A norma ainda vale?</button>
+  </div>
+  <p class="dz-sit" id="dzSit"></p>
+  <div class="two dz-pair">
+    <div class="card bad"><span class="eyebrow">em vez de</span><p class="fala" id="dzBad"></p></div>
+    <div class="card good"><span class="eyebrow">diga</span><p class="fala" id="dzGood"></p></div>
+  </div>
+  <div class="verdict ok" id="dzWhy" aria-live="polite"></div>
+  <div class="copy">
+    <div class="copy-head"><span class="eyebrow">A nota de entrega · quatro linhas no fim do documento ou do e-mail</span><button type="button" class="btn" data-copy="dzNota">Copiar</button></div>
+<pre id="dzNota"><b>Feito com IA:</b> <i>[o que ela produziu: a estrutura, o rascunho, o resumo, a tabela]</i>
+<b>Conferido por mim:</b> <i>[o que você conferiu e contra o quê: valores contra o sistema, datas contra o contrato, nomes contra a lista]</i>
+<b>Não conferido:</b> <i>[o que ficou como premissa ou estimativa, e está marcado no texto]</i>
+<b>Quem responde:</b> <i>[o seu nome]</i></pre>
+  </div>
+  <p class="hint">Peça o mesmo da equipe: todo trabalho feito com IA chega com essas linhas. É o jeito mais barato de saber o que já foi conferido sem refazer. E decisão se explica pelos motivos dela, não por “a IA sugeriu”: se você não consegue defender um número sem citar a ferramenta, ele ainda não está pronto para subir.</p>
+</section>
+
+<!-- 6 -->
+<section class="sec" id="s-resistencia" aria-labelledby="h-resistencia">
+  <span class="eyebrow">Resistência não é teimosia</span>
+  <h2 id="h-resistencia">Quem mais resiste costuma ser quem faz o trabalho bem</h2>
+  <p class="intro">Quando chega o sistema novo de estoque, quem mais reclama costuma ser o almoxarife que sabe de cabeça onde está cada peça: ele não tem medo da tela, tem medo de deixar de ser quem sabe. A resistência à IA é parecida. Raramente é falta de jeito com a ferramenta; é o medo de perder o que levou anos para construir: <strong>ser quem conhece o assunto, quem confere, quem a equipe procura.</strong> Tratada como teimosia, ela se esconde. Lida como informação, ela aponta onde a regra precisa de cuidado. Clique em cada frase.</p>
+  <div class="fr-grid">
+    <div class="fr-list" role="group" aria-label="Frases da equipe" id="frList"></div>
+    <div class="fr-det" id="frDet" aria-live="polite"></div>
+  </div>
+  <div class="panel">
+    <span class="eyebrow">o sinal mais caro é o silencioso</span>
+    <h3>A adoção de fachada</h3>
+    <p>A pessoa usa a ferramenta nova para constar e decide pela planilha antiga. Na reunião, todo mundo “usa”; na prática, nada mudou, e a regra que você escreveu descreve um trabalho que não acontece. Não cobre o uso: pergunte o que a planilha antiga tem que o jeito novo não tem. Muitas vezes é uma regra que só aquela pessoa conhece, e ela merece ir para a tabela.</p>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="sec" id="s-cetico" aria-labelledby="h-cetico">
+  <span class="eyebrow">Começar pelo mais cético</span>
+  <h2 id="h-cetico">Uma pessoa, em paralelo, antes da equipe inteira</h2>
+  <p class="intro">Ninguém troca o fornecedor principal no dia em que recebe a primeira amostra do novo: compra um lote pequeno e compara com o de sempre. Levar a IA para a equipe segue a mesma lógica. <strong>Rodar em paralelo</strong> quer dizer que a IA faz a tarefa ao lado, e a decisão continua saindo pelo jeito de sempre até a comparação fechar. Compare os dois começos.</p>
+  <div class="seg" role="group" aria-label="Como começar">
+    <button type="button" data-ini="todos" aria-pressed="true">A equipe toda, na segunda</button>
+    <button type="button" data-ini="um" aria-pressed="false">Uma pessoa, um mês, em paralelo</button>
+  </div>
+  <div id="iniOut" aria-live="polite"></div>
+  <div class="two">
+    <div class="card"><h3>O cético respeitado primeiro</h3><p>Escolha quem desconfia e é ouvido pelos colegas. Dê a ele o papel de tentar derrubar: cada erro que ele acha vira uma linha amarela na tabela. Quando ele aprovar alguma coisa, a equipe acredita.</p></div>
+    <div class="card"><h3>Diga o medo em voz alta</h3><p>“Vai sobrar gente?” está na cabeça de todos, dita ou não. Fale do assunto antes que ele vire boato, e prometa só o que você pode cumprir.</p></div>
+    <div class="card"><h3>O tempo que sobra tem destino</h3><p>Diga antes para onde vai a hora liberada: o atendimento que vive atrasado, a análise que nunca dá tempo de fazer. Sem destino, ela some em reunião, e a equipe lê como corte que vem depois.</p></div>
+    <div class="card"><h3>Mostre os seus erros</h3><p>Conte onde a IA enganou você e como você pegou. Quem lidera e erra em voz alta tira da equipe o medo de parecer incompetente enquanto aprende.</p></div>
+  </div>
+  <p class="hint">Para preparar a conversa com quem vai ter a rotina mexida, há um pedido pronto em <a href="./usar-ia--delegar-ou-pensar.html#s-pedidos">os dois pedidos para copiar</a>. Qual tarefa escolher para esse primeiro mês é assunto de <a href="./usar-ia--onde-entra.html">onde a IA entra</a>.</p>
+</section>
+
+<!-- 8 -->
+<section class="sec" id="s-levar" aria-labelledby="h-levar">
+  <span class="eyebrow">Para levar</span>
+  <h2 id="h-levar">Três ideias</h2>
+  <div class="take">
+    <div class="take-card focal"><h3>Proibir esconde</h3><p>A regra que só proíbe tira o uso da sua vista, e o dado sai junto. Orientar custa menos que descobrir depois.</p></div>
+    <div class="take-card"><h3>Toda tarefa tem dono</h3><p>Uma cor e um nome por linha. E quem responde diz o que a IA gerou e o que conferiu.</p></div>
+    <div class="take-card"><h3>Resistência é informação</h3><p>Quem resiste costuma saber onde a IA vai errar. Ponha essa pessoa para testar primeiro.</p></div>
+  </div>
+  <dl class="gloss">
+    <dt>Regra de uso da área</dt><dd>Uma página que diz em que tarefas a equipe usa IA, com que dado, o que conferir e a quem perguntar. Detalha a política da empresa; não a substitui.</dd>
+    <dt>Política da empresa</dt><dd>As regras que valem para todos: ferramentas aprovadas, segurança, o que nunca sai. Quando existe, vence a regra da área.</dd>
+    <dt>Quem responde</dt><dd>A pessoa nomeada numa linha da tabela: confere antes de sair e atende quando alguém pergunta.</dd>
+    <dt>Uso escondido</dt><dd>O uso de IA fora da vista de quem lidera, em conta ou aparelho pessoal. É o efeito mais comum de proibir sem regra.</dd>
+    <dt>Alucinação</dt><dd>Quando a IA preenche uma lacuna com algo que soa certo e não existe: um número, uma cláusula, uma norma.</dd>
+    <dt>Adoção de fachada</dt><dd>Usar a ferramenta nova para constar e decidir pelo jeito antigo.</dd>
+    <dt>Rodar em paralelo</dt><dd>A IA faz a tarefa ao lado do jeito de sempre, e a decisão segue pelo jeito de sempre até a comparação fechar.</dd>
+  </dl>
+  <p class="foot">Simplificação didática. A coordenação de compras, as tarefas, as pessoas, as frases da equipe e as semanas dos exemplos são inventados; a regra das cores é uma forma de organizar a decisão, não uma medida. Os prazos (quinze minutos de conversa, dez minutos de revisão, um trimestre, um mês em paralelo) são o ritmo de um jeito que funciona, não uma norma. Isto não é orientação jurídica e não substitui a política da sua empresa nem quem responde por proteção de dados onde você trabalha. Família <a href="./usar-ia.html">Usar IA</a>; irmãs: <a href="./usar-ia--niveis.html">níveis de uso</a>, <a href="./usar-ia--delegar-ou-pensar.html">delegar ou pensar junto</a>, <a href="./usar-ia--onde-entra.html">onde a IA entra</a>.</p>
+</section>
+
+<!-- rodape -->
+<nav class="famfoot" aria-label="Família Usar IA: anterior e próxima">
+  <a class="famfoot-prev" href="./usar-ia--onde-entra.html"><span>← anterior</span><b>1.3 · Onde a IA entra no seu trabalho</b></a>
+  <a class="famfoot-fam" href="./usar-ia.html#mapa">Família 1 · Usar IA · o mapa</a>
+  <a class="famfoot-next" href="./usar-ia.html"><span>volta ao começo ↺</span><b>Visão geral · Usar IA</b></a>
+</nav>
+<!-- /rodape -->
+
+<!-- site-rodape -->
+<footer class="site-foot">
+  <img src="./marca/rlima-logo.png" width="240" height="155" alt="R. Lima · Treinamentos e consultoria">
+  <div><span>Conceitos de IA · uma biblioteca de Rafael Lima</span><a href="https://www.instagram.com/iacomrafael/" target="_blank" rel="noopener">Instagram · @iacomrafael ↗</a><a href="./index.html">Todas as famílias</a></div>
+</footer>
+<!-- /site-rodape -->
+</div>
+
+<script>
+(function () {
+  function pressGroup(btns, pred, attr) { Array.prototype.forEach.call(btns, function (b) { b.setAttribute(attr || 'aria-pressed', String(pred(b))); }); }
+  function copyText(txt, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(function () { btn.textContent = o === 'Copiado' ? 'Copiar' : o; }, 1500); };
+    var falhou = function () { btn.textContent = 'Não copiou: selecione e copie'; setTimeout(function () { btn.textContent = 'Copiar'; }, 2500); };
+    if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt).then(done, falhou); } else { falhou(); }
+  }
+  document.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(document.getElementById(b.dataset.copy).innerText, b); }); });
+  document.querySelectorAll('[role="button"]:not(button)').forEach(function (el) { el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }); });
+  function esc(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function stepper(n, prev, next, lab, word, go) {
+    var cur = 1;
+    function to(k) { cur = Math.max(1, Math.min(n, k)); go(cur); lab.textContent = word + ' ' + cur + ' de ' + n; prev.disabled = cur === 1; next.textContent = cur === n ? 'Recomeçar ↺' : 'Próximo →'; }
+    prev.addEventListener('click', function () { to(cur - 1); });
+    next.addEventListener('click', function () { to(cur === n ? 1 : cur + 1); });
+    to(1);
+    return to;
+  }
+
+  /* 1 · proibir × regra da área */
+  var SW = {
+    proibe: { rows: [
+      ['Onde a equipe usa', 'No celular pessoal, numa conta pessoal, fora do horário. Quem tem pressa não para de usar: para de contar.'],
+      ['O que você enxerga', 'Nada. A pergunta “alguém aqui usa IA?” recebe “não”.'],
+      ['Para onde vai o dado', 'O arquivo vai por e-mail para casa e sobe de lá inteiro, com nome, valor e cliente.'],
+      ['Quando dá errado', 'Você descobre semanas depois, num comentário de corredor.']
+    ], v: 'no', vt: '<b>Ausência de regra não é ausência de uso.</b> É uso sem critério, e sem você saber onde.' },
+    regra: { rows: [
+      ['Onde a equipe usa', 'Nas tarefas da tabela, na ferramenta que a empresa aprovou.'],
+      ['O que você enxerga', 'Quem usa, em que tarefa, e quem confere cada uma.'],
+      ['Para onde vai o dado', 'Sobe sem identificação, ou não sobe, conforme a cor da tarefa.'],
+      ['Quando dá errado', 'A pessoa pergunta antes, porque sabe a quem perguntar.']
+    ], v: 'ok', vt: '<b>A pergunta “o que você está passando para a IA?” vira conversa, não auditoria.</b> Quem estava escondido passa a ser orientado.' }
+  };
+  var swBtns = document.querySelectorAll('[data-sw]'), swOut = document.getElementById('swOut');
+  function setSw(k) {
+    pressGroup(swBtns, function (x) { return x.dataset.sw === k; });
+    var s = SW[k];
+    swOut.innerHTML = '<div class="sw-box">' + s.rows.map(function (r) { return '<div class="sw-row"><span>' + r[0] + '</span><p>' + r[1] + '</p></div>'; }).join('') + '<div class="verdict ' + s.v + '">' + s.vt + '</div></div>';
+  }
+  swBtns.forEach(function (b) { b.addEventListener('click', function () { setSw(b.dataset.sw); }); });
+  setSw('proibe');
+
+  /* 2 · tabela de tarefas */
+  var DADO = [['n', 'nada da casa, ou já público'], ['i', 'interno, ou sensível já sem identificação'], ['s', 'só funciona com a identificação']];
+  var ERRO = [['b', 'fica na equipe, corrige em minutos'], ['m', 'sai da área ou sobe assinado'], ['a', 'decide sobre pessoa, ou não tem volta']];
+  var NIV = { n: 0, i: 1, s: 2, b: 0, m: 1, a: 2 };
+  var COR = [['g', 'verde'], ['a', 'amarelo'], ['r', 'vermelho']];
+  var TK = [
+    { t: 'Redigir o aviso interno de mudança no horário de recebimento', d: 'n', e: 'b', w: 'a analista de compras' },
+    { t: 'Comparar três cotações do mesmo item, com o nome dos fornecedores trocado por código', d: 'i', e: 'm', w: 'o comprador sênior' },
+    { t: 'Rascunhar a resposta a um fornecedor sobre entrega atrasada', d: 'i', e: 'm', w: '' },
+    { t: 'Montar o relatório mensal de economia que vai para a diretoria', d: 'i', e: 'm', w: 'a coordenadora' },
+    { t: 'Avaliar o desempenho de cada comprador no semestre', d: 's', e: 'a', w: 'a coordenadora' },
+    { t: 'Resumir a norma interna de compras para quem acabou de chegar', d: 'n', e: 'b', w: 'a analista de compras' }
+  ];
+  var tkBody = document.getElementById('tkBody');
+  function opts(list, sel) { return list.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === sel ? ' selected' : '') + '>' + o[1] + '</option>'; }).join(''); }
+  function tkCor(r) { return COR[Math.max(NIV[r.d], NIV[r.e])]; }
+  function tkSum() {
+    var c = { g: 0, a: 0, r: 0 }, semDono = 0;
+    TK.forEach(function (r) { c[tkCor(r)[0]]++; if (!r.w.trim()) semDono++; });
+    document.getElementById('tkSum').textContent = c.g + ' verdes · ' + c.a + ' amarelas · ' + c.r + ' vermelhas · ' + (semDono ? semDono + (semDono === 1 ? ' linha sem dono: ela ainda não vale' : ' linhas sem dono: elas ainda não valem') : 'todas com dono');
+  }
+  function tkRow(i) {
+    var r = TK[i], cor = tkCor(r), tr = tkBody.children[i];
+    tr.querySelector('[data-cell="cor"]').innerHTML = '<span class="tk-cor"><i class="' + cor[0] + '"></i>' + cor[1] + '</span>';
+    tr.querySelector('input').classList.toggle('vazio', !r.w.trim());
+  }
+  tkBody.innerHTML = TK.map(function (r, i) {
+    return '<tr><td>' + r.t + '</td>' +
+      '<td><select data-i="' + i + '" data-k="d" aria-label="Que dado a tarefa precisa">' + opts(DADO, r.d) + '</select></td>' +
+      '<td><select data-i="' + i + '" data-k="e" aria-label="Quanto custa se a IA inventar">' + opts(ERRO, r.e) + '</select></td>' +
+      '<td data-cell="cor"></td>' +
+      '<td><input data-i="' + i + '" value="' + esc(r.w) + '" placeholder="nome ou cargo" aria-label="Quem responde por esta tarefa"></td></tr>';
+  }).join('');
+  tkBody.querySelectorAll('select').forEach(function (s) { s.addEventListener('change', function () { TK[+s.dataset.i][s.dataset.k] = s.value; tkRow(+s.dataset.i); tkSum(); }); });
+  tkBody.querySelectorAll('input').forEach(function (inp) { inp.addEventListener('input', function () { TK[+inp.dataset.i].w = inp.value; tkRow(+inp.dataset.i); tkSum(); }); });
+  TK.forEach(function (r, i) { tkRow(i); });
+  tkSum();
+
+  /* 3 · a regra em uma página */
+  var RG = {
+    rgArea: 'Coordenação de compras · revisão no fim do trimestre',
+    rgEscopo: 'As seis pessoas da coordenação, em todo trabalho da área feito com IA, na ferramenta que a empresa aprovou.',
+    rgPode: 'Redigir avisos internos e resumir a norma de compras.\nComparar cotações com o nome dos fornecedores trocado por código.\nRascunhar respostas a fornecedor e o relatório mensal, com revisão antes de sair.',
+    rgNao: 'Avaliar pessoa: desempenho, promoção, desligamento.\nSubir contrato, preço negociado ou nome de fornecedor sem trocar por código.',
+    rgConf: 'Todo número, data e cláusula conferidos na origem.\nNada que a IA citou e não estava no que você enviou.\nA nota de entrega: o que a IA fez e o que você conferiu.',
+    rgQuem: 'Na dúvida antes de usar: a coordenadora.\nSe algo saiu errado: avise no mesmo dia, sem medo; o erro avisado vira linha nova na tabela.'
+  };
+  var rgIds = Object.keys(RG);
+  function rgLines(t, pre) { return t.split('\n').map(function (l) { return l.trim(); }).filter(function (l) { return l; }).map(function (l) { return pre + esc(l); }).join('\n'); }
+  function rgRender() {
+    var v = {}; rgIds.forEach(function (id) { v[id] = document.getElementById(id).value; });
+    document.getElementById('rgOut').innerHTML =
+      '<b>Regra de uso da IA · ' + (esc(v.rgArea.trim()) || '<i>[a área]</i>') + '</b>\n\n' +
+      '<b>1 · Para quem e para quê</b>\n' + (esc(v.rgEscopo.trim()) || '<i>[quem segue, e em que trabalho]</i>') + '\n\n' +
+      '<b>2 · O que pode</b>\n' + (rgLines(v.rgPode, '- ') || '<i>[as tarefas verdes e amarelas]</i>') + '\n\n' +
+      '<b>3 · O que não pode</b>\n' + (rgLines(v.rgNao, '- ') || '<i>[as vermelhas]</i>') + '\n\n' +
+      '<b>4 · Antes de sair da área</b>\n' + (rgLines(v.rgConf, '- ') || '<i>[o que todo documento passa]</i>') + '\n\n' +
+      '<b>5 · A quem perguntar</b>\n' + (rgLines(v.rgQuem, '') || '<i>[um nome para a dúvida]</i>');
+  }
+  rgIds.forEach(function (id) { var el = document.getElementById(id); el.value = RG[id]; el.addEventListener('input', rgRender); });
+  rgRender();
+
+  /* 4 · conversar e revisar */
+  var RV = [
+    { t: 'Semana 1: a versão zero', d: 'A tabela das tarefas, com cor e dono, e a folha de cinco partes. Não precisa estar perfeita: precisa existir antes da conversa. A IA pode rascunhar a folha a partir da tabela; quem assina é você.' },
+    { t: 'Semana 1: quinze minutos de conversa', d: 'Na reunião que já existe, não numa nova: o porquê em dois minutos, a tabela na tela, e o resto do tempo para pergunta. O e-mail com a folha vai depois, como registro do que foi combinado. Anote as duas melhores perguntas que surgirem.' },
+    { t: 'Mês 1: as perguntas viram a versão um', d: 'Cada dúvida que apareceu é uma linha que faltava. “Posso usar para traduzir o e-mail de um fornecedor estrangeiro?” vira tarefa nova na tabela, com cor e dono. A regra que cresce com as perguntas da equipe é a que a equipe reconhece como dela.' },
+    { t: 'Todo trimestre: dez minutos de revisão', d: 'Uma pergunta só: a cor de cada tarefa ainda bate com a prática? A resposta ao fornecedor pode descer para verde porque a equipe pegou o jeito; o relatório mensal pode subir para amarelo porque a IA errou um total que ninguém viu a tempo. Marque já a data da próxima revisão.' }
+  ];
+  var rvBoxes = document.querySelectorAll('.rv-box'), rvChips = document.querySelectorAll('.rv-chip');
+  stepper(RV.length, document.getElementById('rvPrev'), document.getElementById('rvNext'), document.getElementById('rvLab'), 'Passo', function (k) {
+    rvBoxes.forEach(function (g) { var i = +g.dataset.rv; g.classList.toggle('on', i === k); g.classList.toggle('done', i < k); });
+    rvChips.forEach(function (g) { g.classList.toggle('on', +g.dataset.on === k); });
+    var p = RV[k - 1];
+    document.getElementById('rvCap').innerHTML = '<h3>' + p.t + '</h3><p>' + p.d + '</p>';
+  });
+
+  /* 5 · o que dizer */
+  var DZ = [
+    { s: 'Você entregou em uma hora o que costumava levar dois dias.', bad: '“Ah, foi rápido.” E mais nada.', good: '“Usei IA para a estrutura e o rascunho. Os números eu conferi um a um contra o fechamento, e posso explicar cada item.”', why: '<b>Rapidez sem explicação vira suspeita na primeira pergunta.</b> Dita junto com o que você conferiu, vira competência: mostra que você domina a ferramenta, e não que depende dela.' },
+    { s: 'O gestor olha o relatório e pergunta: “isso foi a IA?”', bad: '“Foi, mas ela é muito boa.”', good: '“Esta parte a IA gerou. Esta eu conferi e corrigi: os valores contra o sistema, as datas contra os contratos.”', why: '<b>A pergunta não é sobre a ferramenta, é sobre quem se responsabiliza.</b> Separar as duas partes mostra onde está a garantia, e onde ela ainda não está.' },
+    { s: 'Na reunião, alguém pergunta de onde saiu um número do relatório.', bad: '“A IA calculou.”', good: '“Saiu do relatório de setembro, na quarta página; conferi a soma antes de pôr aqui.”', why: '<b>A resposta aponta a origem, não a ferramenta.</b> Se a única resposta possível é “a IA calculou”, o número ainda não estava pronto para subir.' },
+    { s: 'Um cliente pergunta se a norma citada no documento ainda está em vigor.', bad: '“Está, sim.” Sem ter conferido.', good: '“Me dá um momento para confirmar a versão em vigor.” E confirme na fonte antes de responder.', why: '<b>Norma, lei e número de versão são o que a IA cita com segurança e pode ter mudado.</b> Pedir um momento custa menos que corrigir depois, por escrito.' }
+  ];
+  var dzBtns = document.querySelectorAll('[data-dz]');
+  function setDz(k) {
+    var z = DZ[k];
+    pressGroup(dzBtns, function (x) { return +x.dataset.dz === k; });
+    document.getElementById('dzSit').textContent = z.s;
+    document.getElementById('dzBad').textContent = z.bad;
+    document.getElementById('dzGood').textContent = z.good;
+    document.getElementById('dzWhy').innerHTML = z.why;
+  }
+  dzBtns.forEach(function (b) { b.addEventListener('click', function () { setDz(+b.dataset.dz); }); });
+  setDz(0);
+
+  /* 6 · frases da equipe */
+  var FR = [
+    { f: '“Eu faço esse relatório há oito anos e nunca saiu errado.”', j: 'A competência construída. Ela é a pessoa que acerta, e a IA parece dizer que acertar ficou barato.', a: 'Ponha ela como quem confere o que a IA produz. O critério dela vira a régua da tarefa, e ela continua sendo a referência do assunto.' },
+    { f: '“Se a máquina faz, eu sirvo para quê?”', j: 'O lugar na equipe. Não é o relatório: é ser necessária.', a: 'Diga com nome o que fica mais valioso quando o rascunho fica barato: o julgamento, a exceção, o conhecimento do cliente. E diga para onde vai o tempo que sobrar.' },
+    { f: '“Isso inventa coisa, eu já vi.”', j: 'A reputação de quem assina. A pessoa tem razão, e sabe disso.', a: 'Concorde, e dê a ela o papel de tentar derrubar. Cada erro que ela achar vira linha amarela na tabela, com o nome dela como quem responde.' },
+    { f: '“Uso, sim.” (e entrega como sempre entregou)', j: 'Nada declarado: é a adoção de fachada. Usa para constar e decide pela planilha antiga.', a: 'Não cobre o uso. Pergunte o que a planilha antiga tem que o jeito novo não tem; muitas vezes é uma regra que só ela conhece.' },
+    { f: '“Vão cortar gente com isso?”', j: 'O emprego. É o medo que todos têm e quase ninguém fala na reunião.', a: 'Fale do assunto antes que ele vire boato, e prometa só o que você pode cumprir. Silêncio sobre isso é ouvido como resposta.' }
+  ];
+  var frList = document.getElementById('frList'), frDet = document.getElementById('frDet');
+  frList.innerHTML = FR.map(function (x, i) { return '<button type="button" data-fr="' + i + '" aria-pressed="false">' + x.f + '</button>'; }).join('');
+  var frBtns = frList.querySelectorAll('[data-fr]');
+  function setFr(k) {
+    pressGroup(frBtns, function (x) { return +x.dataset.fr === k; });
+    var x = FR[k];
+    frDet.innerHTML = '<div class="card"><span class="eyebrow">o que está em jogo</span><p>' + x.j + '</p></div><div class="card focal"><span class="eyebrow">o que ajuda</span><p>' + x.a + '</p></div>';
+  }
+  frBtns.forEach(function (b) { b.addEventListener('click', function () { setFr(+b.dataset.fr); }); });
+  setFr(0);
+
+  /* 7 · dois começos */
+  var INI = {
+    todos: { rows: [
+      ['Segunda', 'E-mail para a equipe toda, com o acesso à ferramenta e a regra em anexo.'],
+      ['Semana 2', 'Metade nem abriu. Quem abriu usa no que achou mais fácil, sem olhar a cor da tarefa.'],
+      ['Semana 3', 'Um total errado sai num relatório. A conversa da equipe vira “eu avisei”.'],
+      ['Mês 2', 'A ferramenta é “aquela que inventa”, e quem ainda usa volta a usar escondido.']
+    ], v: 'no', vt: '<b>O primeiro erro público vira a história da ferramenta.</b> E quem desconfiava ganha razão sem ter testado nada.' },
+    um: { rows: [
+      ['Semana 1', 'O mais cético da equipe, que os colegas respeitam, faz uma tarefa amarela com a IA, ao lado do jeito de sempre.'],
+      ['Semana 2', 'Ele compara as duas versões e anota onde a IA errou. As anotações viram linhas da regra.'],
+      ['Semanas 3 e 4', 'A decisão continua saindo pelo jeito antigo até a comparação fechar. O tempo que sobrou já tem destino combinado.'],
+      ['Mês 2', 'Ele conta à equipe o que funcionou e o que não funcionou. Os colegas ouvem de quem desconfiava.']
+    ], v: 'ok', vt: '<b>O erro aparece cedo, numa tarefa que ainda não valia.</b> E quem apresenta o resultado é a pessoa em quem a equipe mais confia para dizer que não presta.' }
+  };
+  var iniBtns = document.querySelectorAll('[data-ini]'), iniOut = document.getElementById('iniOut');
+  function setIni(k) {
+    pressGroup(iniBtns, function (x) { return x.dataset.ini === k; });
+    var s = INI[k];
+    iniOut.innerHTML = '<ol class="ini-list">' + s.rows.map(function (r) { return '<li><span>' + r[0] + '</span><p>' + r[1] + '</p></li>'; }).join('') + '</ol><div class="verdict ' + s.v + '">' + s.vt + '</div>';
+  }
+  iniBtns.forEach(function (b) { b.addEventListener('click', function () { setIni(b.dataset.ini); }); });
+  setIni('todos');
+})();
+</script>
+</body>
+</html>
