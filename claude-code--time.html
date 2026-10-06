@@ -279,7 +279,7 @@ h1, h2, h3 { text-wrap: pretty; }
   <span class="eyebrow">8.8 · 8 de 8</span>
   <h1>Um time de especialistas na pasta</h1>
   <p class="sub">Cada especialista vira um arquivo e trabalha numa mesa separada; para a sua conversa volta só a entrega</p>
-  <p class="lead">O time de <a href="./assistente--montar-time.html">montar um time de especialistas</a> nasceu para o chat. Esta página é o mesmo time numa pasta do computador, no Claude Code: <strong>cada especialista vira um arquivo, quem distribui vira um trecho do manual, e cada especialista trabalha numa mesa separada.</strong> O exemplo é o mesmo: o manual de gestão de pequena empresa, em seis especialistas com nome de função.</p>
+  <p class="lead">O time de <a href="./assistente--montar-time.html">montar um time de especialistas</a> nasceu para o chat. Esta página é o mesmo time numa pasta do computador, no Claude Code: <strong>cada especialista vira um arquivo, o orquestrador (quem distribui as perguntas) vira um trecho do manual, e cada especialista trabalha numa mesa separada.</strong> O exemplo é o mesmo: o manual de gestão de pequena empresa, em seis especialistas com nome de função.</p>
   <nav class="toc" aria-label="Nesta página">
     <a href="#s-mesa">Uma mesa por especialista</a><a href="#s-onde">Onde cada parte mora</a><a href="#s-ficha">A ficha em arquivo</a><a href="#s-conversa">Quem conversa com você</a><a href="#s-jornada">Só a entrega volta</a><a href="#s-revisor">Quem confere não conserta</a><a href="#s-vale">Mesa separada ou aqui</a>
   </nav>
@@ -289,7 +289,7 @@ h1, h2, h3 { text-wrap: pretty; }
 <section class="sec" id="s-mesa" aria-labelledby="h-mesa">
   <span class="eyebrow">Uma mesa por especialista</span>
   <h2 id="h-mesa">No chat o time divide uma conversa; na pasta, cada um trabalha na própria mesa</h2>
-  <p class="intro">O consultor de fora não senta na sua reunião: recebe o dossiê, trabalha no escritório dele e devolve o parecer. No chat, quem distribui lê a pergunta e <strong>vira</strong> o especialista ali mesmo, na mesma conversa. Na pasta, cada especialista pode ser um <strong>subagente</strong>: um ajudante que trabalha numa conversa separada, que começa vazia, e devolve à sua conversa só a entrega. Compare o caminho da mesma pergunta.</p>
+  <p class="intro">O consultor de fora não senta na sua reunião: recebe o dossiê, trabalha no escritório dele e devolve o parecer. No chat, o orquestrador lê a pergunta e <strong>vira</strong> o especialista ali mesmo, na mesma conversa. Na pasta, cada especialista pode ser um <strong>subagente</strong>: um ajudante que trabalha numa conversa separada, que começa vazia, e devolve à sua conversa só a entrega. Compare o caminho da mesma pergunta.</p>
   <div class="seg" role="group" aria-label="Onde o time trabalha">
     <button type="button" data-ms="chat" aria-pressed="true">No chat</button>
     <button type="button" data-ms="pasta" aria-pressed="false">Na pasta</button>
@@ -361,8 +361,8 @@ Não espere resposta. Entregue com a lacuna marcada e, no fim, escreva o que pre
 <!-- 4 -->
 <section class="sec" id="s-conversa" aria-labelledby="h-conversa">
   <span class="eyebrow">Quem conversa com você</span>
-  <h2 id="h-conversa">O especialista não para para perguntar: quem pergunta é quem distribui, antes de chamar</h2>
-  <p class="intro">O perito que recebe o processo pelo correio não liga para tirar dúvida: trabalha com o que veio no envelope. No chat, o especialista abria com uma hipótese e fazia até três perguntas. Na pasta, <strong>ele recebe um pedido, trabalha e devolve</strong>, sem ver a sua conversa e sem poder perguntar nada no meio. Por isso as perguntas mudam de lugar: quem distribui faz as perguntas antes de chamar, e o pedido que desce leva o caso inteiro. Compare os dois envelopes.</p>
+  <h2 id="h-conversa">O especialista não para para perguntar: quem pergunta é o orquestrador, antes de chamar</h2>
+  <p class="intro">O perito que recebe o processo pelo correio não liga para tirar dúvida: trabalha com o que veio no envelope. No chat, o especialista abria com uma hipótese e fazia até três perguntas. Na pasta, <strong>ele recebe um pedido, trabalha e devolve</strong>, sem ver a sua conversa e sem poder perguntar nada no meio. Por isso as perguntas mudam de lugar: o orquestrador faz as perguntas antes de chamar, e o pedido que desce leva o caso inteiro. Compare os dois envelopes.</p>
   <div class="seg" role="group" aria-label="O que desce para o especialista">
     <button type="button" data-en="magro" aria-pressed="true">Envelope magro</button>
     <button type="button" data-en="cheio" aria-pressed="false">Envelope completo</button>
@@ -376,7 +376,7 @@ Não espere resposta. Entregue com a lacuna marcada e, no fim, escreva o que pre
   <div class="copy">
     <div class="copy-head"><span class="eyebrow">O trecho do time · vai no CLAUDE.md da pasta</span><button type="button" class="btn" data-copy="enPrompt">Copiar</button></div>
 <pre id="enPrompt">## O time
-Você é quem distribui as perguntas deste time. Os especialistas estão em .claude/agents/: só existe quem está lá. Você não faz o trabalho deles.
+Você é o orquestrador deste time: distribui as perguntas. Os especialistas estão em .claude/agents/: só existe quem está lá. Você não faz o trabalho deles.
 1. Antes de chamar, faça até 3 perguntas, só as que mudam a resposta: a decisão em uma frase e até quando; o que já foi tentado; o que muda se a decisão sair errada.
 2. Escolha pela descrição de cada especialista e diga em uma frase quem vai chamar e por quê.
 3. O especialista não vê esta conversa. Passe o caso inteiro por escrito: o que eu disse, os números, os arquivos da pasta que tratam disso, a decisão em jogo e a entrega esperada.
@@ -436,7 +436,7 @@ Você é quem distribui as perguntas deste time. Os especialistas estão em .cla
   <h2 id="h-levar">Três ideias</h2>
   <div class="take">
     <div class="take-card focal"><h3>Uma ficha, um arquivo</h3><p>O cabeçalho diz quando chamar; o corpo, como trabalhar. É pela descrição que ele é escolhido.</p></div>
-    <div class="take-card"><h3>O caso desce inteiro</h3><p>O especialista não vê a conversa e não pergunta no meio. Quem pergunta é quem distribui, antes.</p></div>
+    <div class="take-card"><h3>O caso desce inteiro</h3><p>O especialista não vê a conversa e não pergunta no meio. Quem pergunta é o orquestrador, antes.</p></div>
     <div class="take-card"><h3>Muito para ler, outra mesa</h3><p>Vale quando a leitura é grande e a entrega é pequena. Uma linha de planilha não precisa de time.</p></div>
   </div>
   <dl class="gloss">
@@ -498,13 +498,13 @@ Você é quem distribui as perguntas deste time. Os especialistas estão em .cla
   var MS = {
     chat: { steps: [
       ['sua conversa', 'Você: “Vendemos bem, mas no fim do mês nunca sobra dinheiro.”'],
-      ['sua conversa', 'Quem distribui escolhe quem olha o caixa e passa a falar como ele.'],
+      ['sua conversa', 'O orquestrador escolhe quem olha o caixa e passa a falar como ele.'],
       ['sua conversa', 'Ele lê o extrato de três meses e a planilha do que falta receber. Tudo o que ele lê entra na sua conversa.'],
       ['sua conversa', 'Ele pergunta, você responde, e sai o mapa do caixa.']
     ], v: ['ok', '<b>Bom para conversar.</b> Tudo numa conversa só: as perguntas, o extrato lido, os rascunhos e a entrega. A mesa enche, e o combinado do começo vai ficando no fundo da pilha.'] },
     pasta: { steps: [
       ['sua conversa', 'Você: “Vendemos bem, mas no fim do mês nunca sobra dinheiro.”'],
-      ['sua conversa', 'Quem distribui faz as perguntas que faltam e escolhe quem olha o caixa.'],
+      ['sua conversa', 'O orquestrador faz as perguntas que faltam e escolhe quem olha o caixa.'],
       ['mesa dele', 'Ele recebe o caso por escrito, abre o extrato e a planilha na pasta e faz as contas. Começou com a mesa vazia.', 1],
       ['sua conversa', 'Volta o mapa do caixa, numa página. O extrato lido ficou na mesa dele.']
     ], v: ['ok', '<b>Bom para ler muito.</b> Na sua conversa ficam a pergunta, o caso e a entrega. A leitura pesada ficou do lado de lá, e a sua mesa continua com espaço.'] }
@@ -520,11 +520,11 @@ Você é quem distribui as perguntas deste time. Os especialistas estão em .cla
 
   /* 2 · onde cada parte mora */
   var TR = [
-    { t: 'O bilhete de quem distribui', c: 'as instruções do projeto', p: 'um trecho do manual da pasta, o <a href="./claude-code--claude-md.html">CLAUDE.md</a>, que ele lê antes da sua primeira mensagem', l: 'a conversa principal, sempre' },
+    { t: 'O bilhete do orquestrador', c: 'as instruções do projeto', p: 'um trecho do manual da pasta, o <a href="./claude-code--claude-md.html">CLAUDE.md</a>, que ele lê antes da sua primeira mensagem', l: 'a conversa principal, sempre' },
     { t: 'A pasta do time', c: 'um arquivo só no conhecimento do projeto, com as seis fichas em sequência', p: 'uma pasta que o Claude Code reconhece como o lugar dos especialistas; cada arquivo dentro dela é um especialista', l: 'a conversa principal lê só a descrição de cada um, para escolher' },
     { t: 'Uma ficha, um arquivo', c: 'uma ficha entre as outras, no arquivo do time', p: 'um arquivo por especialista: o cabeçalho diz quando chamar, o corpo diz como trabalhar', l: 'só o próprio especialista, quando é chamado' },
     { t: 'A fonte', c: 'resumida dentro das fichas, porque o projeto tem espaço contado', p: 'o material inteiro na pasta; cada especialista abre a parte dele quando precisa (como em <a href="./claude-code--referencia.html">referência</a>)', l: 'o especialista, na mesa dele' },
-    { t: 'O caderno de progresso', c: 'um documento que você atualiza na conversa', p: 'um arquivo que cresce a cada camada concluída, como o <a href="./claude-code--onde-paramos.html">onde paramos</a>', l: 'quem distribui, no começo e no fim de cada camada' }
+    { t: 'O caderno de progresso', c: 'um documento que você atualiza na conversa', p: 'um arquivo que cresce a cada camada concluída, como o <a href="./claude-code--onde-paramos.html">onde paramos</a>', l: 'o orquestrador, no começo e no fim de cada camada' }
   ];
   var trBtns = document.querySelectorAll('[data-tr]');
   function setTr(btn) {
