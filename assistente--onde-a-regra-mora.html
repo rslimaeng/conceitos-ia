@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: página de conceito, família 4.2. Peças: anéis de acesso clicáveis, mapa sempre/às vezes/na hora/fora com painel, classificador, camadas empilhadas com contradição, barras da mesa, tabela e quiz regra × fato, calculadora de falhas com tranca. */
+/* Layout: página de conceito, família 4.2. Peças: anéis de acesso clicáveis, mapa sempre/às vezes/na hora com painel, classificador, camadas empilhadas com contradição, barras da mesa, tabela e quiz regra × fato, calculadora de falhas com tranca. */
 /* ---------------------------------------------------------------------------
      TOKENS · cópia declarada de ~/developer/17-padrao-visual/aula/tokens-aula.css
      Mesmo bloco do llm-e-harness.html, menos --on-accent (não existe no 17):
@@ -169,16 +169,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .ac-core-t { font: 600 12px var(--font-mono); fill: var(--bg-elev); text-anchor: middle; letter-spacing: .08em; }
 
 /* 2 · mapa dos lugares */
-.mp { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.mp { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
 .mp-col { display: grid; gap: 8px; align-content: start; }
 .mp-col > span { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-dim); border-bottom: 2px solid var(--border-strong); padding-bottom: 6px; }
 .mp-col.c1 > span { border-color: var(--accent); color: var(--accent); }
-.mp-col.c4 > span { border-color: var(--atencao); color: var(--atencao-texto); }
 .mp-col button { text-align: left; border: 1px solid var(--border-strong); background: var(--bg-elev); border-radius: 6px; padding: 10px 12px; display: grid; gap: 2px; }
 .mp-col button b { font-weight: 600; font-size: .95rem; }
 .mp-col button small { color: var(--text-muted); font-size: .82rem; }
 .mp-col button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
-.mp-col.c4 button[aria-pressed="true"] { border-color: var(--atencao); background: var(--atencao-soft); }
 .mp-dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; }
 .mp-dl dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-dim); padding-top: 3px; }
 .mp-dl dd { margin: 0; }
@@ -272,7 +270,7 @@ h1, h2, h3 { text-wrap: pretty; }
   <p class="sub">Cada coisa que você quer que a IA saiba tem um lugar, e o lugar decide quando ela lê</p>
   <p class="lead">A mesma frase pode ser digitada no pedido, guardada nas instruções, empacotada num procedimento ou buscada na hora num sistema. <strong>Não existe o lugar melhor: existe o lugar certo para aquela frase.</strong> E quem escolhe o lugar não é a importância da regra, é uma pergunta: ela precisa estar à mão sempre, às vezes, ou nunca?</p>
   <nav class="toc" aria-label="Nesta página">
-    <a href="#s-acessos">Quatro níveis de acesso</a><a href="#s-lugares">Onde guardar cada coisa</a><a href="#s-classificar">Oito regras, quatro lugares</a><a href="#s-pilha">Todas as regras valem juntas</a><a href="#s-mesa">Por que não pôr tudo nas instruções</a><a href="#s-memoria">Regra, fato e lembrança</a><a href="#s-tranca">Quando a regra vira trava</a>
+    <a href="#s-acessos">Quatro níveis de acesso</a><a href="#s-lugares">Onde guardar cada coisa</a><a href="#s-classificar">Sete regras, três lugares</a><a href="#s-pilha">Todas as regras valem juntas</a><a href="#s-mesa">Por que não pôr tudo nas instruções</a><a href="#s-memoria">Regra, fato e lembrança</a><a href="#s-tranca">Quando a regra vira trava</a>
   </nav>
 </header>
 
@@ -301,19 +299,19 @@ h1, h2, h3 { text-wrap: pretty; }
 <!-- 2 -->
 <section class="sec" id="s-lugares" aria-labelledby="h-lugares">
   <span class="eyebrow">Onde guardar cada coisa</span>
-  <h2 id="h-lugares">Sempre, às vezes, na hora, e uma quarta coluna que não é lugar</h2>
+  <h2 id="h-lugares">Sempre, às vezes ou na hora</h2>
   <p class="intro">No escritório, o regimento fica no mural, o manual de um processo fica na estante, e o extrato se puxa do banco na hora: ninguém pendura o extrato no mural. Com a IA, os nomes desses lugares mudam de ferramenta para ferramenta e de versão para versão. <strong>A coluna em que cada lugar cai não muda.</strong> E duas palavras que parecem a mesma: <strong>regra é o que você quer que ela siga; instrução é o campo onde você escreve a regra.</strong> Clique em qualquer um para ver o que guardar ali, quando é lido e quanto custa.</p>
   <div class="mp" id="mpMap"></div>
   <div class="panel" id="mpPanel" aria-live="polite"></div>
   <p class="hint">Um exemplo de como o nome muda: as instruções do projeto são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
   <div class="card"><h3>O perfil está por baixo de todas as outras camadas</h3><p>As Instruções para o Claude, no Perfil da conta, entram em toda conversa de todos os trabalhos. <strong>Uma linha pensada para um trabalho só, escrita no perfil, aparece em todos.</strong></p></div>
-  <p class="punch">Nas três primeiras colunas, ela lê ou busca o que precisa. Na quarta, <em>ela não lê nada</em>: a tranca é um passo que uma pessoa faz, fora da IA. Por que ela existe está em <a href="#s-tranca">quando a regra vira trava</a>.</p>
+  <p class="punch">Nas três colunas, ela lê ou busca o que precisa. O que não pode depender da leitura dela não mora em nenhuma: é assunto de <a href="#s-tranca">quando a regra vira trava</a>.</p>
 </section>
 
 <!-- 3 -->
 <section class="sec" id="s-classificar" aria-labelledby="h-classificar">
-  <span class="eyebrow">Oito regras, quatro lugares</span>
-  <h2 id="h-classificar">Oito regras de uma área comercial</h2>
+  <span class="eyebrow">Sete regras, três lugares</span>
+  <h2 id="h-classificar">Sete regras de uma área comercial</h2>
   <p class="intro">É a pergunta do almoxarife ao receber material: isso sai todo dia, de vez em quando, ou fica no depósito até alguém pedir? Responda só a pergunta. <strong>O lugar aparece sozinho na resposta.</strong> Uma delas admite duas respostas defensáveis, e a explicação diz qual.</p>
   <div class="qz" id="clQuiz"></div>
   <p class="qz-score" id="clScore" aria-live="polite"></p>
@@ -363,13 +361,13 @@ h1, h2, h3 { text-wrap: pretty; }
 <section class="sec" id="s-memoria" aria-labelledby="h-memoria">
   <span class="eyebrow">Regra, fato e lembrança</span>
   <h2 id="h-memoria">O que você mandou, o que mudou, e o que ela lembrou</h2>
-  <p class="intro">Numa equipe, há o regulamento assinado, o quadro de avisos que muda toda semana e a lembrança de cada um sobre a última reunião: só o primeiro você pode cobrar. Com a IA, três coisas parecem a mesma e moram em lugares diferentes. <strong>Regra prescreve comportamento e fica. Fato descreve algo que pode mudar. Lembrança é o resumo que a própria IA faz das conversas.</strong></p>
+  <p class="intro">Numa equipe, há o regulamento assinado, o quadro de avisos que muda toda semana e a lembrança de cada um sobre a última reunião: só o primeiro você pode cobrar. Com a IA, três coisas parecem a mesma e moram em lugares diferentes. <strong>Regra prescreve comportamento e fica. Fato descreve algo que pode mudar. Lembrança é o resumo que a própria IA faz das conversas.</strong> O fato tem lugar próprio: o caderno de fatos, um arquivo que você mantém no projeto com status, contatos, decisões e datas.</p>
   <div class="tablewrap"><table class="vtable">
     <tr><th></th><th>A instrução</th><th>O caderno de fatos</th><th>A memória automática</th></tr>
     <tr><td>Quem escreve</td><td>Você, linha por linha</td><td>Você; quando você diz “lembre disso”, ela devolve a linha pronta</td><td>Ela, resumindo sozinha</td></tr>
     <tr><td>O que guarda</td><td>“sempre”, “nunca”, “antes de X, faça Y”</td><td>status, contato, decisão tomada, data</td><td>o que ela achou que importava</td></tr>
     <tr><td>Muda</td><td>quando você muda de ideia</td><td>toda semana</td><td>sem você ver</td></tr>
-    <tr><td>Quem lê</td><td>Quem divide o projeto com você, quando é a instrução do projeto</td><td>Quem tem acesso ao arquivo</td><td>Só você: não chega a quem divide o projeto</td></tr>
+    <tr><td>Quem lê</td><td>Quem divide o projeto com você (a do Perfil, só você)</td><td>Quem tem acesso ao arquivo</td><td>Só você: não chega a quem divide o projeto</td></tr>
     <tr><td>Serve para regra crítica?</td><td>Sim: está lá, igual, toda vez</td><td>Não: é fato, não comportamento</td><td>Não: pode não trazer a linha certa na hora certa</td></tr>
   </table></div>
   <p class="hint">Dá para ver na tela: em agosto de 2026, o painel da memória de um projeto no Claude vinha marcado “Apenas você”. <strong>Quem divide o projeto lê as mesmas instruções, mas não a sua memória.</strong> O que o time inteiro precisa seguir não pode morar nela.</p>
@@ -437,7 +435,7 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
     <dt>Conector</dt><dd>Não é regra, é caminho: o acesso ao dado que mora em outro sistema e muda toda hora.</dd>
     <dt>Tranca</dt><dd>Uma trava fora da IA, que não lê nem decide: etapa assinada, botão com alçada, arquivo fora da pasta.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes, na hora e fora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. O comportamento da memória do projeto foi visto na tela em agosto de 2026 e pode mudar com a versão. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
+  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes e na hora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. O comportamento da memória do projeto foi visto na tela em agosto de 2026 e pode mudar com a versão. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
 </section>
 
 <!-- rodape -->
@@ -525,8 +523,6 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
       { t: 'Conector', sm: 'o acesso a outro sistema', g: 'nada: é caminho até o dado que muda toda hora', l: 'enquanto estiver ligado, ocupa lugar mesmo sem uso', e: 'quem responde pela conta autoriza', cu: 'a porta aberta lê tudo que aquele sistema enxerga, não só o que você ia perguntar.', ex: 'a agenda de hoje, o saldo desta manhã' },
       { t: 'Anexo do dia', sm: 'o arquivo solto na conversa', g: 'o dado de hoje, que semana que vem está velho', l: 'só naquela conversa, enquanto ela durar', e: 'você', cu: 'subido como material fixo, vira duas planilhas, depois quatro, e ninguém sabe qual é a atual.', ex: 'a planilha de vendas desta semana' },
       { t: 'O pedido', sm: 'o que você digita', g: 'a tarefa da vez e o critério de sucesso dela', l: 'uma vez só, e some quando a conversa fecha', e: 'você, toda vez', cu: 'se você repete a mesma explicação toda vez, aquilo era regra e está no lugar errado.', ex: '“Feche o trimestre e me diga o que não entra no relatório.”' } ] },
-    { c: 'Fora da IA', k: 'c4', items: [
-      { t: 'Tranca', sm: 'um passo que uma pessoa faz', g: 'nada: não é texto para a IA, é um passo que uma pessoa faz (assinar, aprovar, deixar o arquivo fora da pasta)', l: 'não é lido: a IA não participa desse passo', e: 'o responsável pelo processo', cu: 'toda tranca cobra uma etapa, uma assinatura, um atraso. Só vale para o erro que não se desfaz.', ex: '“conferido por”, em branco, no modelo do relatório' } ] }
   ];
   var mpEl = document.getElementById('mpMap'), mpPanel = document.getElementById('mpPanel'), mpBtns = [];
   MP.forEach(function (col) {
@@ -549,10 +545,9 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
     { s: 'Nunca usar termo em inglês nas saídas.', a: 'sempre', why: 'É estilo da casa, vale para tudo. Instruções.' },
     { s: 'Gerar a proposta comercial no formato padrão.', a: 'vezes', why: 'Defensável como procedimento ou como comando. O comando ganha: proposta que sai na hora errada é problema, e você prefere disparar consciente.' },
     { s: 'Buscar o pedido no sistema, em vez de eu exportar toda vez.', a: 'hora', why: 'Não é regra, é caminho até o dado. Conector.' },
-    { s: 'Nenhum preço vai ao cliente sem aprovação.', a: 'tranca', why: 'Tem cara de instrução, e escrita seria cumprida quase sempre. Uma falha em cem num preço é margem ou cliente perdido: vira etapa assinada. Escrita, vale só como reforço.' },
     { s: 'Como conferir o ponto no fechamento do mês.', a: 'vezes', why: 'Procedimento com passos, uma vez por mês. Às vezes.' },
     { s: 'A planilha de vendas desta semana.', a: 'hora', why: 'Serve hoje e não serve na semana que vem. Anexo da conversa, nunca material fixo.' }
-  ], [['sempre', 'Sempre'], ['vezes', 'Às vezes'], ['hora', 'Na hora'], ['tranca', 'Tranca']], 'consegue defender cada uma em uma frase? É isso que conta, não o placar.');
+  ], [['sempre', 'Sempre'], ['vezes', 'Às vezes'], ['hora', 'Na hora']], 'consegue defender cada uma em uma frase? É isso que conta, não o placar.');
 
   /* 4 · pilha */
   var PL = {
