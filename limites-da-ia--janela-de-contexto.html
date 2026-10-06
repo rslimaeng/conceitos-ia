@@ -204,15 +204,18 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 
 /* 7 · gráfico */
 .chart { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px; display: grid; gap: 12px; }
-.chart svg { width: 100%; height: auto; display: block; }
-.ax { stroke: var(--border-strong); stroke-width: 1; }
-.grid-l { stroke: var(--border); stroke-width: 1; stroke-dasharray: 3 4; }
-.ln-l { fill: none; stroke: var(--atencao); stroke-width: 2.6; stroke-linejoin: round; transition: opacity .25s ease; }
-.ln-r { fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linejoin: round; transition: opacity .25s ease; }
-.ln-hidden { opacity: .12; }
-.axt { font: 500 11px var(--font-mono); fill: var(--text-dim); }
-.ev { font: 500 10.5px var(--font-mono); fill: var(--atencao-texto); text-anchor: middle; }
-.ev.r { fill: var(--accent); }
+.lb-act { display: flex; flex-wrap: wrap; gap: 10px; }
+.lb-act .btn:disabled { opacity: .45; cursor: default; }
+.lb { display: grid; gap: 8px; }
+.lb-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 110px; gap: 12px; align-items: center; font-size: .92rem; }
+.lb-rot { color: var(--text-muted); }
+.lb-n { font-family: var(--font-mono); font-size: .85rem; color: var(--text-muted); }
+.lb-track { height: 20px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); overflow: hidden; display: block; }
+.lb-bar { display: block; height: 100%; }
+.lb-bar.rc { background: var(--accent); }
+.lb-bar.lm { background: var(--atencao); }
+.sw.rc { background: var(--accent); border-color: var(--accent); }
+.sw.lm { background: var(--atencao); border-color: var(--atencao); }
 .costs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .cost { background: var(--bg-elev); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; display: grid; gap: 8px; }
 .cost.focal { border-color: var(--accent); background: var(--accent-soft); }
@@ -248,6 +251,10 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .mini-desk .row { display: flex; height: 26px; border: 1px solid var(--text); border-radius: 4px; overflow: hidden; background: var(--bg); }
 .mini-desk .r1 { background: var(--accent); }
 .mini-desk .r1.fraca { opacity: .35; }
+.mini-desk .r1.fixa { box-shadow: inset -2px 0 0 var(--text); }
+.sw.m1 { background: var(--accent); border-color: var(--accent); }
+.sw.m2 { background: var(--border-strong); border-color: var(--border-strong); }
+.sw.m3 { background: var(--atencao-soft); border-color: var(--atencao); }
 .mini-desk .r2 { background: var(--border-strong); }
 .mini-desk .r3 { background: var(--atencao-soft); border-left: 1px solid var(--atencao); }
 .pin { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; padding: 3px 8px; width: fit-content; background: var(--bg-elev); }
@@ -277,12 +284,12 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
   .facts { grid-template-columns: 1fr; }
   .seg-b.rules { font-size: 0; }
   .chunks { grid-template-columns: repeat(8, minmax(0, 1fr)); }
-  .chart { overflow-x: auto; }
-  .chart svg { min-width: 560px; }
+  .lb-row { grid-template-columns: 1fr auto; gap: 4px 10px; }
+  .lb-track { grid-column: 1 / -1; grid-row: 2; }
   .analogy li { grid-template-columns: 1fr; gap: 0; }
   .analogy li span:nth-child(2) { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .msg, .blk, .chunk { animation: none; } .seg-b, .rules-list li, .rg circle, .rg text, .ln-l, .ln-r { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .msg, .blk, .chunk { animation: none; } .seg-b, .rules-list li, .rg circle, .rg text { transition: none; } }
 /* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
    As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
    o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
@@ -401,16 +408,17 @@ h1, h2, h3 { text-wrap: pretty; }
 <section class="sec" id="s-circulos" aria-labelledby="h-circulos">
   <span class="eyebrow">O que ela sabe e o que ela vê</span>
   <h2 id="h-circulos">Se a mesa é tão pequena, como ela sabe tanta coisa?</h2>
-  <p class="intro">Um consultor experiente traz anos de formação, recebe a pasta do seu caso e, na mesa, só tem diante dos olhos as folhas abertas: são três coisas diferentes. Porque o que está na mesa não é tudo o que ela tem. São três círculos, um dentro do outro. <strong>Clique em cada um</strong>, e depois troque o momento da conversa.</p>
+  <p class="intro">Um consultor experiente traz anos de formação, recebe a pasta do seu caso e, na mesa, só tem diante dos olhos as folhas abertas: são três coisas diferentes. Com a IA é igual, em três círculos, um dentro do outro: <strong>a formação é o treinamento, a pasta é o que você trouxe para a conversa, e as folhas abertas são o que ainda está à vista.</strong> <strong>Clique em cada um</strong>, e depois troque o momento da conversa.</p>
   <div class="seg" role="group" aria-label="Momento da conversa"><button type="button" data-rm="3" aria-pressed="true">Mensagem 3</button><button type="button" data-rm="40" aria-pressed="false">Mensagem 40</button></div>
   <div class="rings">
     <svg viewBox="0 0 400 400" role="group" aria-label="Três círculos, um dentro do outro" xmlns="http://www.w3.org/2000/svg">
-      <g class="rg world" data-rg="world" tabindex="0" role="button" aria-label="O que existe no mundo"><circle cx="200" cy="200" r="190"/><text x="200" y="38">O MUNDO</text></g>
-      <g class="rg brought" data-rg="brought" tabindex="0" role="button" aria-label="O que você trouxe"><circle id="cBrought" cx="200" cy="235" r="72"/><text id="tBrought" x="200" y="180">O QUE VOCÊ TROUXE</text></g>
+      <g class="rg world" data-rg="world" tabindex="0" role="button" aria-label="O que ela aprendeu no treinamento"><circle cx="200" cy="200" r="190"/><text x="200" y="38">O TREINAMENTO</text></g>
+      <g class="rg brought" data-rg="brought" tabindex="0" role="button" aria-label="O que você trouxe"><circle id="cBrought" cx="200" cy="235" r="72"/><text id="tBrought" x="200" y="155">VOCÊ TROUXE</text></g>
       <g class="rg seen" data-rg="seen" tabindex="0" role="button" aria-label="O que ainda está à vista"><circle cx="200" cy="245" r="58"/><text x="200" y="250">À VISTA</text></g>
     </svg>
     <div class="rdetail" id="rdetail" aria-live="polite"></div>
   </div>
+  <p class="punch">Da mensagem 3 para a 40, só cresce o que você trouxe. <em>O círculo de dentro não cresce</em>, e é essa diferença que dá a sensação de que ela piorou.</p>
 </section>
 
 <!-- 5 -->
@@ -457,20 +465,13 @@ Não resuma o material inteiro. Eu vou levar a sua resposta para outra conversa,
 <section class="sec" id="s-lembrar" aria-labelledby="h-lembrar">
   <span class="eyebrow">Lembrar ou recomeçar</span>
   <h2 id="h-lembrar">Lembrar a regra parece grátis, e cobra toda vez</h2>
-  <p class="intro">Cada lembrete é mais um bilhete por cima da pilha: custa pouco, e afunda mais rápido que o anterior. Reconhecido o sinal, existem dois caminhos. O gráfico mostra quanto o combinado ainda pesa ao longo da conversa em cada um. <strong>Repare no intervalo entre as quedas.</strong></p>
-  <div class="seg" role="group" aria-label="Estratégia"><button type="button" data-st="ambos" aria-pressed="true">Os dois</button><button type="button" data-st="lembrar" aria-pressed="false">Lembrar a regra</button><button type="button" data-st="recomecar" aria-pressed="false">Recomeçar</button></div>
+  <p class="intro">Cada lembrete é mais um bilhete por cima da pilha: custa pouco, e afunda mais rápido que o anterior. Reconhecido o sinal, existem dois caminhos. Cada barra abaixo é quantas mensagens a regra aguenta antes de você precisar lembrá-la de novo. <strong>Clique em lembrar algumas vezes e repare no tamanho de cada barra.</strong></p>
   <div class="chart">
-    <svg viewBox="0 0 640 280" role="img" aria-labelledby="gt" xmlns="http://www.w3.org/2000/svg">
-      <title id="gt">Quanto o combinado pesa ao longo da conversa: lembrar a regra cria quedas cada vez mais próximas; recomeçar volta ao topo e dura</title>
-      <line class="grid-l" x1="50" y1="40" x2="620" y2="40"/><line class="grid-l" x1="50" y1="130" x2="620" y2="130"/>
-      <line class="ax" x1="50" y1="220" x2="620" y2="220"/><line class="ax" x1="50" y1="30" x2="50" y2="220"/>
-      <text class="axt" x="44" y="44" text-anchor="end">todo</text><text class="axt" x="44" y="224" text-anchor="end">nada</text>
-      <text class="axt" x="50" y="244">mensagem 1</text><text class="axt" x="620" y="244" text-anchor="end">mensagem 60</text>
-      <text class="axt" x="335" y="268" text-anchor="middle">o combinado à vista, ao longo da conversa</text>
-      <polyline id="plL" class="ln-l"/><polyline id="plR" class="ln-r"/>
-      <g id="evs"></g>
-    </svg>
-    <p class="hint">A forma, não a medida. Nenhuma ferramenta mostra esse número; ele descreve o que acontece com o combinado.</p>
+    <div class="lb-act"><button type="button" class="btn" id="lbLem">Lembrar a regra outra vez</button><button type="button" class="btn" id="lbRec">Recomeçar a conversa</button></div>
+    <div class="lb" id="lbList" role="list" aria-label="Quantas mensagens a regra dura depois de cada lembrete"></div>
+    <div class="legend" aria-hidden="true"><span><i class="sw rc"></i>a regra no começo de uma conversa</span><span><i class="sw lm"></i>a regra depois de um lembrete</span></div>
+    <div class="verdict" id="lbVer" aria-live="polite"></div>
+    <p class="hint">A forma, não a medida. Nenhuma ferramenta mostra quanto a regra dura; os números ilustram o que acontece com o combinado.</p>
   </div>
   <div class="costs">
     <div class="cost"><span class="eyebrow l">Lembrar a regra no meio</span><dl><div><dt>Custa</dt><dd>Um recado, toda vez.</dd></div><div><dt>Dura</dt><dd>Pouco. A regra repetida entra no fim da pilha, e a pilha continua crescendo. É a única das duas opções que piora com o uso.</dd></div></dl></div>
@@ -504,16 +505,17 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
   <div class="where">
     <div class="wcard">
       <h3>Conversa solta no chat</h3>
-      <div class="mini-desk" aria-hidden="true"><span class="hint">mensagem 3</span><div class="row"><div class="r1" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:10%"></div></div><span class="hint">mensagem 40</span><div class="row"><div class="r1 fraca" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:65%"></div></div></div>
+      <div class="mini-desk" aria-hidden="true"><span class="hint">mensagem 3</span><div class="row"><div class="r1" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:10%"></div></div><span class="hint">mensagem 40 · as regras desbotaram: estão lá, no fundo da pilha</span><div class="row"><div class="r1 fraca" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:65%"></div></div></div>
       <ul><li>As regras: você recola, toda vez</li><li>O arquivo: você anexa de novo</li><li>A regra afunda com a pilha como qualquer mensagem</li></ul>
     </div>
     <div class="wcard focal">
       <h3>Conversa dentro de um projeto</h3>
       <span class="pin">instruções · lidas no começo de toda conversa</span>
-      <div class="mini-desk" aria-hidden="true"><span class="hint">mensagem 3</span><div class="row"><div class="r2" style="width:25%"></div><div class="r3" style="width:10%"></div></div><span class="hint">mensagem 40</span><div class="row"><div class="r2" style="width:25%"></div><div class="r3" style="width:65%"></div></div></div>
+      <div class="mini-desk" aria-hidden="true"><span class="hint">mensagem 3</span><div class="row"><div class="r1 fixa" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:10%"></div></div><span class="hint">mensagem 40 · as regras continuam presas no começo, sem você recolar</span><div class="row"><div class="r1 fixa" style="width:10%"></div><div class="r2" style="width:25%"></div><div class="r3" style="width:65%"></div></div></div>
       <ul><li>As regras voltam sozinhas</li><li>O material fica guardado no projeto</li><li>A conversa ainda enche: projeto não aumenta a mesa</li></ul>
     </div>
   </div>
+  <div class="legend" aria-hidden="true"><span><i class="sw m1"></i>as regras</span><span><i class="sw m2"></i>o material</span><span><i class="sw m3"></i>a conversa</span><span><i class="sw x"></i>espaço livre</span></div>
   <p class="intro">O engano mais comum é achar que o projeto lembra a conversa de ontem. Não lembra: <strong>dentro do mesmo projeto, cada conversa começa sem o histórico das outras.</strong> Só passa de uma para a outra o que está nas instruções e nos arquivos. A decisão tomada no meio do chat que precisa valer amanhã vira uma linha das instruções.</p>
 </section>
 
@@ -609,7 +611,7 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
 
   /* 4 · círculos */
   var RG = {
-    world: { t: 'O que existe no mundo', d: 'Tudo o que ela viu no treinamento (os textos que leu antes de chegar a você), mais tudo o que ela nunca viu. É enorme, e não resolve nada da sua rotina: nenhum processo interno, nenhum número seu, nenhuma decisão da sua diretoria está aqui.' },
+    world: { t: 'O que ela aprendeu no treinamento', d: 'Os textos que ela leu antes de chegar a você: é daqui que vem a impressão de que ela sabe tanta coisa. É enorme, e não resolve nada da sua rotina: nenhum processo interno, nenhum número seu, nenhuma decisão da sua diretoria está aqui.' },
     brought: { t: 'O que você trouxe', d: 'A conversa inteira, do primeiro ao último recado: a sua instrução, os arquivos anexados, tudo o que você digitou e tudo o que ela respondeu. Este círculo cresce a cada troca.' },
     seen: { t: 'O que ainda está à vista', d: 'A parte que coube no tampo, agora. É só com isto que a próxima resposta é montada. O que passou do tampo perdeu o peso, e não volta sozinho.' }
   };
@@ -617,8 +619,7 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
   function showRg(k) {
     rgCur = k;
     rgs.forEach(function (g) { g.classList.toggle('on', g.dataset.rg === k); });
-    rd.innerHTML = '<span class="eyebrow">' + (rm === 3 ? 'Mensagem 3' : 'Mensagem 40') + '</span><h3>' + RG[k].t + '</h3><p>' + RG[k].d + '</p>' +
-      (k !== 'world' ? '<p class="hint">' + (rm === 3 ? 'Na mensagem 3 os dois círculos de dentro quase se confundem: quase tudo o que você trouxe ainda está à vista.' : 'Na mensagem 40 o círculo do que você trouxe cresceu. O de dentro continua do mesmo tamanho, e é essa diferença que dá a sensação de que ela piorou.') + '</p>' : '');
+    rd.innerHTML = '<span class="eyebrow">' + (rm === 3 ? 'Mensagem 3' : 'Mensagem 40') + '</span><h3>' + RG[k].t + '</h3><p>' + RG[k].d + '</p>';
   }
   rgs.forEach(function (g) {
     g.addEventListener('click', function () { showRg(g.dataset.rg); });
@@ -628,8 +629,8 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
   function setRm(v) {
     rm = v; press(rmBtns, function (b) { return +b.dataset.rm === v; });
     var c = document.getElementById('cBrought'), t = document.getElementById('tBrought');
-    if (v === 3) { c.setAttribute('r', 72); c.setAttribute('cy', 235); t.setAttribute('y', 180); }
-    else { c.setAttribute('r', 150); c.setAttribute('cy', 215); t.setAttribute('y', 92); }
+    if (v === 3) { c.setAttribute('r', 72); c.setAttribute('cy', 235); t.setAttribute('y', 155); }
+    else { c.setAttribute('r', 150); c.setAttribute('cy', 215); t.setAttribute('y', 112); }
     showRg(rgCur);
   }
   rmBtns.forEach(function (b) { b.addEventListener('click', function () { setRm(+b.dataset.rm); }); });
@@ -670,35 +671,22 @@ Na dúvida: se você não conseguir recuperar alguma parte do começo, diga isso
   chBtns.forEach(function (b) { b.addEventListener('click', function () { setCh(b.dataset.ch); }); });
   setCh('3');
 
-  /* 7 · gráfico */
-  function X(m) { return 50 + (m - 1) / 59 * 570; }
-  function Y(w) { return 220 - Math.max(0, Math.min(100, w)) / 100 * 180; }
-  var L = [], R = [], m, rem = [22, 32, 39, 44, 48, 51, 54, 57], rate = 2.6, age = 0, base = 100, k = 0;
-  for (m = 1; m <= 60; m++) {
-    if (rem.indexOf(m) > -1) { L.push(X(m) + ',' + Y(base - rate * age)); base = 92 - k * 4; age = 0; k++; rate *= 1.28; }
-    L.push(X(m) + ',' + Y(base - rate * age)); age++;
-  }
-  var restart = 24;
-  for (m = 1; m <= 60; m++) {
-    if (m === restart) R.push(X(m) + ',' + Y(100 - 2.6 * (m - 1)));
-    var w = m < restart ? 100 - 2.6 * (m - 1) : 100 - 1.5 * (m - restart);
-    R.push(X(m) + ',' + Y(w));
-  }
-  document.getElementById('plL').setAttribute('points', L.join(' '));
-  document.getElementById('plR').setAttribute('points', R.join(' '));
-  var evs = document.getElementById('evs');
-  [22, 32, 39, 44].forEach(function (mm, i) { evs.insertAdjacentHTML('beforeend', '<text class="ev l" x="' + X(mm) + '" y="' + (i % 2 ? 56 : 30) + '">lembrou</text>'); });
-  evs.insertAdjacentHTML('beforeend', '<text class="ev r" x="' + X(restart) + '" y="236">recomeçou</text>');
-  var stBtns = document.querySelectorAll('[data-st]');
-  function setSt(k2) {
-    press(stBtns, function (b) { return b.dataset.st === k2; });
-    document.getElementById('plL').classList.toggle('ln-hidden', k2 === 'recomecar');
-    document.getElementById('plR').classList.toggle('ln-hidden', k2 === 'lembrar');
-    evs.querySelectorAll('.ev.l').forEach(function (t) { t.style.opacity = k2 === 'recomecar' ? .15 : 1; });
-    evs.querySelectorAll('.ev.r').forEach(function (t) { t.style.opacity = k2 === 'lembrar' ? .15 : 1; });
-  }
-  stBtns.forEach(function (b) { b.addEventListener('click', function () { setSt(b.dataset.st); }); });
-  setSt('ambos');
+  /* 7 · quanto dura cada lembrete */
+  var LB = [10, 7, 5, 4, 3], lbN = 0, lbList = document.getElementById('lbList'), lbVer = document.getElementById('lbVer'), lbLem = document.getElementById('lbLem');
+  function lbRow(rot, n, cls) { lbList.insertAdjacentHTML('beforeend', '<div class="lb-row" role="listitem"><span class="lb-rot">' + rot + '</span><span class="lb-track"><span class="lb-bar ' + cls + '" style="width:' + (n / 20 * 100) + '%"></span></span><span class="lb-n">' + n + ' mensagens</span></div>'); }
+  function lbReset() { lbList.innerHTML = ''; lbN = 0; lbRow('começo da conversa', 20, 'rc'); lbLem.disabled = false; lbVer.className = 'verdict ok'; lbVer.innerHTML = '<b>No começo, a regra aguenta umas vinte mensagens.</b> Depois disso ela afunda na pilha. Agora clique em lembrar.'; }
+  lbLem.addEventListener('click', function () {
+    if (lbN >= LB.length) return;
+    lbRow((lbN + 1) + 'º lembrete', LB[lbN], 'lm'); lbN++;
+    lbVer.className = 'verdict no';
+    lbVer.innerHTML = lbN < LB.length ? '<b>O lembrete durou ' + LB[lbN - 1] + ' mensagens, menos que o anterior.</b> A regra repetida entra no fim da pilha, e a pilha continua crescendo.' : '<b>Daqui em diante, um lembrete a cada três mensagens.</b> Lembrar é a única das duas opções que piora com o uso. Experimente recomeçar.';
+    if (lbN >= LB.length) lbLem.disabled = true;
+  });
+  document.getElementById('lbRec').addEventListener('click', function () {
+    lbReset(); lbList.firstChild.querySelector('.lb-rot').textContent = 'conversa nova';
+    lbVer.innerHTML = '<b>Conversa nova, com duas ou três linhas do combinado:</b> a regra volta a ser a primeira coisa na mesa e aguenta de novo umas vinte mensagens.';
+  });
+  lbReset();
 
   /* 8 · teste */
   var RD = [
