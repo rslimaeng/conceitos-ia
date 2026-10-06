@@ -436,7 +436,7 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
 <section class="sec" id="s-desempate" aria-labelledby="h-desempate">
   <span class="eyebrow">Dois vizinhos, uma pergunta</span>
   <h2 id="h-desempate">Desempate errado custa mais que especialista fraco</h2>
-  <p class="intro">No balcão de atendimento, “é troca ou é defeito?” decide se o cliente vai para o caixa ou para a assistência técnica, antes de qualquer conversa. No time acontece o mesmo: <strong>dois especialistas vizinhos tocam o mesmo sintoma e dariam respostas opostas</strong>. Quem distribui as perguntas (a instrução que escolhe o especialista, ver <a href="./assistente--time.html#s-caminho">o caminho da pergunta</a>) resolve com uma pergunta só, escrita de antemão. Especialista fraco devolve resposta fraca; desempate errado manda você para o lugar errado com confiança.</p>
+  <p class="intro">No balcão de atendimento, “é troca ou é defeito?” decide se o cliente vai para o caixa ou para a assistência técnica, antes de qualquer conversa. No time acontece o mesmo: <strong>dois especialistas vizinhos tocam o mesmo sintoma e dariam respostas opostas</strong>. O orquestrador (a instrução que distribui as perguntas e escolhe o especialista, ver <a href="./assistente--time.html#s-caminho">o caminho da pergunta</a>) resolve com uma pergunta só, escrita de antemão. Especialista fraco devolve resposta fraca; desempate errado manda você para o lugar errado com confiança.</p>
   <div class="seg" role="group" aria-label="O sintoma" id="dzSeg">
     <button type="button" data-dz="0" aria-pressed="true">“Estamos sempre atrasados”</button>
     <button type="button" data-dz="1" aria-pressed="false">“O produto novo não sai”</button>
@@ -449,7 +449,7 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
     <div class="dz-opts" role="group" aria-label="Sua resposta" id="dzOpts"></div>
     <div class="verdict" id="dzVer" aria-live="polite"></div>
   </div>
-  <p class="hint">Onde mora: uma linha por par de vizinhos, no arquivo do time ou na instrução de quem distribui. “Se o sintoma é atraso, pergunte: coisas demais ou uma coisa demorando?” Sem ela, o time escolhe pelo palpite, e escolhe calado.</p>
+  <p class="hint">Onde mora: uma linha por par de vizinhos, no arquivo do time ou na instrução do orquestrador. “Se o sintoma é atraso, pergunte: coisas demais ou uma coisa demorando?” Sem ela, o time escolhe pelo palpite, e escolhe calado.</p>
 </section>
 
 <!-- 6 -->
@@ -494,15 +494,15 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
 <section class="sec" id="s-chat" aria-labelledby="h-chat">
   <span class="eyebrow">Montar no chat</span>
   <h2 id="h-chat">O arquivo do time no projeto, e um bilhete nas instruções</h2>
-  <p class="intro">O manual de oitenta páginas fica na estante da sala; na porta, só o bilhete “antes de responder, consulte o manual”. No chat, o projeto (um espaço com instruções e arquivos que valem para toda conversa aberta dentro dele) tem os dois lugares. <strong>O arquivo do time vai no conhecimento, a área de arquivos do projeto. Nas instruções, só o bilhete de quem distribui.</strong> O campo de instruções é feito para caber um bilhete, não um livro.</p>
+  <p class="intro">O manual de oitenta páginas fica na estante da sala; na porta, só o bilhete “antes de responder, consulte o manual”. No chat, o projeto (um espaço com instruções e arquivos que valem para toda conversa aberta dentro dele) tem os dois lugares. <strong>O arquivo do time vai no conhecimento, a área de arquivos do projeto. Nas instruções, só o bilhete do orquestrador.</strong> O campo de instruções é feito para caber um bilhete, não um livro.</p>
   <div class="three">
     <div class="card focal"><span class="eyebrow">com projeto</span><h3>Arquivo no conhecimento, bilhete nas instruções</h3><p>Abra um projeto só para o time. Suba o arquivo da fase 3 e cole o bilhete abaixo. Toda conversa nova ali já começa com o time montado.</p></div>
     <div class="card"><span class="eyebrow">sem projeto</span><h3>Cole no começo de toda conversa</h3><p>Sem essa função, cole o bilhete e o arquivo do time na primeira mensagem de cada conversa nova. É repetitivo, e o efeito é o mesmo. Guarde os dois numa pasta para copiar rápido.</p></div>
     <div class="card"><span class="eyebrow">antes de usar</span><h3>Dez perguntas reais</h3><p>Teste com perguntas que chegaram de verdade no último mês. Se ele escolheu errado, o defeito está no arquivo do time: um “chame quando” vago, ou um desempate que falta.</p></div>
   </div>
   <div class="copy">
-    <div class="copy-head"><span class="eyebrow">O bilhete de quem distribui · vai nas instruções</span><button type="button" class="btn" data-copy="chBilhete">Copiar</button></div>
-<pre id="chBilhete">Você é quem distribui as perguntas deste time. Não responde por conta própria. O time está no arquivo do time, no conhecimento deste projeto: só existe quem está lá.
+    <div class="copy-head"><span class="eyebrow">O bilhete do orquestrador · vai nas instruções</span><button type="button" class="btn" data-copy="chBilhete">Copiar</button></div>
+<pre id="chBilhete">Você é o orquestrador deste time: distribui as perguntas. Não responde por conta própria. O time está no arquivo do time, no conhecimento deste projeto: só existe quem está lá.
 
 1. Pergunta genérica ("quem está aqui?", "como funciona?"): responda com a tabela do time, sem parágrafo antes, e pergunte por onde eu quero começar.
 2. Escolha pelo "chame quando". Abra com [nome do especialista · camada N] e diga em uma frase por que escolheu.
@@ -519,7 +519,7 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
 
 <i>[cole aqui dez perguntas reais que você recebeu no último mês]</i></pre>
   </div>
-  <p class="hint"><strong>Se você usa a IA numa pasta do computador:</strong> no Claude Code, o mesmo time vira <a href="./claude-code--time.html">uma pasta com arquivos</a>, em vez de um projeto do chat. O desenho desta página não muda: um texto por especialista, o bilhete de quem distribui e o caderno. O que muda é onde cada parte mora; procedimento que só abre quando a tarefa aparece é assunto de <a href="./assistente--skill.html">skill</a>.</p>
+  <p class="hint"><strong>Se você usa a IA numa pasta do computador:</strong> no Claude Code, o mesmo time vira <a href="./claude-code--time.html">uma pasta com arquivos</a>, em vez de um projeto do chat. O desenho desta página não muda: um texto por especialista, o bilhete do orquestrador e o caderno. O que muda é onde cada parte mora; procedimento que só abre quando a tarefa aparece é assunto de <a href="./assistente--skill.html">skill</a>.</p>
 </section>
 
 <!-- 9 -->
@@ -533,7 +533,7 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
   </div>
   <dl class="gloss">
     <dt>Especialista</dt><dd>Um assistente com um pedaço do assunto e uma entrega só, escrito numa ficha dentro do arquivo do time.</dd>
-    <dt>Quem distribui</dt><dd>A instrução que lê a pergunta e escolhe qual especialista responde. Também chamada de orquestrador.</dd>
+    <dt>Orquestrador</dt><dd>A instrução que lê a pergunta e escolhe qual especialista responde: quem distribui as perguntas.</dd>
     <dt>Camada</dt><dd>A posição do especialista no caminho, na ordem em que a fonte ensina. Uma camada pode depender da anterior.</dd>
     <dt>Fonte primária</dt><dd>O material original. A derivada é o resumo ou a pesquisa sobre ele; o contexto é o material sobre onde ele vai ser aplicado.</dd>
     <dt>Marca de origem</dt><dd>A etiqueta em cada bloco do que o especialista sabe: de qual parte da fonte veio, ou [completado] se a IA preencheu.</dd>
@@ -733,7 +733,7 @@ Junte tudo num arquivo: o nome do time, a tabela da fase 1 e os especialistas na
     var i = cdSel, t = TEAM[i];
     if (i < n) { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · feita</h3><p>Aqui está, na íntegra, a entrega de ' + t.n.charAt(0).toLowerCase() + t.n.slice(1) + ': ' + t.d + '.</p>'; return; }
     var miss = DEP[i].filter(function (d) { return d > n; });
-    if (miss.length) { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · depende da ' + miss.join(' e da ') + '</h3><p>Quem distribui avisa em uma linha que ela depende de uma camada ainda não feita, e oferece duas opções: começar pela que falta, ou seguir com o que você tem e marcar as lacunas.</p>'; }
+    if (miss.length) { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · depende da ' + miss.join(' e da ') + '</h3><p>O orquestrador avisa em uma linha que ela depende de uma camada ainda não feita, e oferece duas opções: começar pela que falta, ou seguir com o que você tem e marcar as lacunas.</p>'; }
     else { cdCap.innerHTML = '<h3>Camada ' + (i + 1) + ' · pode começar</h3><p>Nada antes dela está faltando. ' + t.n + ' abre com uma hipótese, e a seção sai do cinza quando a entrega estiver pronta.</p>'; }
   }
   function cdRender() {

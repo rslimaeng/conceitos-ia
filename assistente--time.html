@@ -193,6 +193,18 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .fl-arr { stroke: var(--text-muted); stroke-width: 1.5; fill: none; }
 .fl-mk { fill: var(--text-muted); }
 .fl-hid { font: 500 10.5px var(--font-mono); fill: var(--text-dim); text-anchor: middle; letter-spacing: .1em; }
+.fl-box .tag { font: 600 9.5px var(--font-mono); fill: var(--accent); text-anchor: middle; letter-spacing: .1em; }
+.fl-base { fill: none; stroke: var(--border-strong); stroke-width: 1.2; stroke-dasharray: 5 4; transition: stroke .25s ease; }
+.fl-base.on { stroke: var(--accent); stroke-width: 1.8; }
+.fl-sp rect { fill: var(--bg); stroke: var(--border-strong); stroke-width: 1.2; transition: fill .25s ease, stroke .25s ease; }
+.fl-sp .t { font: 600 11px var(--font-mono); fill: var(--text); letter-spacing: .06em; }
+.fl-sp .s { font: 400 11px var(--font-body); fill: var(--text-muted); }
+.fl-sp.pick rect { stroke: var(--accent); }
+.fl-sp.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
+.fl-ln { opacity: .35; transition: opacity .25s ease, stroke .25s ease; }
+.fl-ln.on { opacity: 1; stroke: var(--accent); stroke-width: 2.2; }
+.fl-back { stroke-dasharray: 5 4; }
+.fl-back.on { stroke: var(--accent); stroke-width: 2; }
 
 /* 5 · vale a pena */
 .vp { display: grid; gap: 8px; }
@@ -215,9 +227,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 /* 8 · escada */
 .es-st rect { fill: var(--bg-elev); stroke: var(--border-strong); stroke-width: 1.3; }
 .es-st.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2.2; }
-.es-st .t { font: 600 11.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
-.es-st .b { font: 500 13px var(--font-body); fill: var(--text); }
-.es-st .c { font: 500 11.5px var(--font-mono); fill: var(--accent); }
+.es-st .t { font: 600 10.5px var(--font-mono); fill: var(--text-dim); letter-spacing: .08em; }
+.es-st .b { font: 500 12.5px var(--font-body); fill: var(--text); }
+.es-st .c { font: 500 10.5px var(--font-mono); fill: var(--accent); }
 .og-key { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--atencao-texto); border-bottom: 2px dashed var(--atencao); margin-right: 4px; }
 
 @media (max-width: 860px) {
@@ -232,7 +244,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
   .og-dl { grid-template-columns: 1fr; }
   .vp-row { grid-template-columns: 1fr; }
 }
-@media (prefers-reduced-motion: reduce) { .og-line, .og-r rect, .fl-box rect, .tv-sw button .k::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .og-line, .og-r rect, .fl-box rect, .fl-sp rect, .fl-ln, .fl-base, .tv-sw button .k::after { transition: none; } }
 /* Cabeçalho e rodapé do site: iguais nas páginas todas. Gerado por familias.py.
    As imagens são cópias reduzidas de 17-padrao-visual/marca/logos/, versão positiva (fundo claro):
    o símbolo a 36px (mínimo 32px) e a logo a 240px (abaixo disso o filete dourado some). marca §4. */
@@ -281,7 +293,7 @@ h1, h2, h3 { text-wrap: pretty; }
   <span class="eyebrow">4.4 · 4 de 6</span>
   <h1>Time de assistentes</h1>
   <p class="sub">Quando a pergunta cruza várias áreas, um assistente só devolve o meio-termo</p>
-  <p class="lead">Um assistente bem montado executa bem o trabalho dele. Pergunte a ele algo que atravessa custo, risco e operação ao mesmo tempo, e volta um texto equilibrado, razoável e sem opinião. <strong>Um time dá a cada olhar um escopo (o pedaço do assunto pelo qual ele responde) que não se cruza com o dos outros, e põe alguém para distribuir as perguntas.</strong> A discordância entre eles deixa de ser defeito e vira o produto.</p>
+  <p class="lead">Um assistente bem montado executa bem o trabalho dele. Pergunte a ele algo que atravessa custo, risco e operação ao mesmo tempo, e volta um texto equilibrado, razoável e sem opinião. <strong>Um time dá a cada olhar um escopo (o pedaço do assunto pelo qual ele responde) que não se cruza com o dos outros, e põe um orquestrador (a instrução que distribui as perguntas) para escolher quem responde.</strong> A discordância entre eles deixa de ser defeito e vira o produto.</p>
   <nav class="toc" aria-label="Nesta página">
     <a href="#s-meio">O meio-termo</a><a href="#s-papeis">Os papéis</a><a href="#s-caminho">O caminho da pergunta</a><a href="#s-voz">Falar como o especialista</a><a href="#s-rotear">Quem atende</a><a href="#s-vale">Vale montar?</a><a href="#s-confere">Quem confere</a><a href="#s-escada">O segundo degrau</a>
   </nav>
@@ -308,8 +320,8 @@ h1, h2, h3 { text-wrap: pretty; }
   <div class="og-wrap">
     <div class="scroll">
       <svg viewBox="0 0 720 280" role="img" aria-labelledby="og-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
-        <title id="og-t">Organograma de um time de revisão de proposta: quem distribui no topo, seis papéis abaixo (régua, caixa, fila, gente, freio e prazo) e duas tensões declaradas, caixa contra freio e prazo contra fila</title>
-        <g class="og-o"><rect x="250" y="12" width="220" height="58" rx="8"/><text x="360" y="38">QUEM DISTRIBUI</text><text class="s" x="360" y="57">não responde por conta própria</text></g>
+        <title id="og-t">Organograma de um time de revisão de proposta: o orquestrador no topo, seis papéis abaixo (régua, caixa, fila, gente, freio e prazo) e duas tensões declaradas, caixa contra freio e prazo contra fila</title>
+        <g class="og-o"><rect x="250" y="12" width="220" height="58" rx="8"/><text x="360" y="38">ORQUESTRADOR</text><text class="s" x="360" y="57">não responde por conta própria</text></g>
         <path class="og-line" data-ln="0" d="M360,70 V95 H65 V120"/>
         <path class="og-line" data-ln="1" d="M360,70 V95 H183 V120"/>
         <path class="og-line" data-ln="2" d="M360,70 V95 H301 V120"/>
@@ -344,16 +356,29 @@ h1, h2, h3 { text-wrap: pretty; }
   </div>
   <div class="stepbar"><span class="eyebrow" id="flLab">Passo 1 de 4</span><div class="nav"><button type="button" class="btn" id="flPrev">← Anterior</button><button type="button" class="btn primary" id="flNext">Próximo →</button></div></div>
   <div class="scroll">
-    <svg viewBox="0 0 760 150" role="img" aria-labelledby="fl-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
-      <title id="fl-t">O caminho da pergunta: você manda, quem distribui lê a base de especialistas, escolhe e incorpora um especialista, e a resposta chega na voz dele</title>
+    <svg viewBox="0 0 760 330" role="img" aria-labelledby="fl-t" xmlns="http://www.w3.org/2000/svg" style="min-width:640px">
+      <title id="fl-t">O caminho da pergunta: você manda, o orquestrador lê o arquivo do time e escolhe um dos seis especialistas, e a resposta volta assinada por ele</title>
       <defs><marker id="mkfl" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,1 L10,5 L0,9 z" class="fl-mk"/></marker></defs>
-      <text class="fl-hid" x="380" y="26">VOCÊ NÃO VÊ ESTES PASSOS</text>
-      <line class="fl-arr" x1="170" y1="36" x2="590" y2="36"/>
-      <g class="fl-box" data-fl="1"><rect x="10" y="52" width="140" height="74" rx="8"/><text class="t" x="80" y="84">VOCÊ</text><text class="s" x="80" y="104">manda a pergunta</text></g>
-      <g class="fl-box" data-fl="2"><rect x="170" y="52" width="140" height="74" rx="8"/><text class="t" x="240" y="84">A BASE</text><text class="s" x="240" y="104">lida antes de tudo</text></g>
-      <g class="fl-box" data-fl="3"><rect x="330" y="52" width="260" height="74" rx="8"/><text class="t" x="460" y="84" id="flSp">RÉGUA</text><text class="s" x="460" y="104">escolhido e incorporado</text></g>
-      <g class="fl-box" data-fl="4"><rect x="610" y="52" width="140" height="74" rx="8"/><text class="t" x="680" y="84">A RESPOSTA</text><text class="s" x="680" y="104">na voz dele</text></g>
-      <path class="fl-arr" d="M150,89 H164" marker-end="url(#mkfl)"/><path class="fl-arr" d="M310,89 H324" marker-end="url(#mkfl)"/><path class="fl-arr" d="M590,89 H604" marker-end="url(#mkfl)"/>
+      <text class="fl-hid" x="295" y="72">VOCÊ NÃO VÊ ESTE MEIO</text>
+      <rect class="fl-base" data-fl="2" x="444" y="10" width="298" height="248" rx="10"/>
+      <text class="fl-hid" x="593" y="276">O ARQUIVO DO TIME · OS SEIS ESCOPOS</text>
+      <g class="fl-box" data-fl="1"><rect x="10" y="95" width="140" height="70" rx="8"/><text class="t" x="80" y="125">VOCÊ</text><text class="s" x="80" y="145">a pergunta</text></g>
+      <path class="fl-arr" d="M150,130 H194" marker-end="url(#mkfl)"/>
+      <g class="fl-box orq" data-fl="2"><rect x="200" y="88" width="190" height="84" rx="8"/><text class="tag" x="295" y="110">INSTRUÇÕES</text><text class="t" x="295" y="134">ORQUESTRADOR</text><text class="s" x="295" y="155">escolhe quem responde</text></g>
+      <path class="fl-arr fl-ln" data-sp="0" d="M390,130 C420,130 420,38 452,38" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="0"><rect x="458" y="22" width="270" height="32" rx="6"/><text class="t" x="472" y="43">RÉGUA</text><text class="s" x="560" y="43">a origem do número</text></g>
+      <path class="fl-arr fl-ln" data-sp="1" d="M390,130 C420,130 420,76 452,76" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="1"><rect x="458" y="60" width="270" height="32" rx="6"/><text class="t" x="472" y="81">CAIXA</text><text class="s" x="560" y="81">custo e retorno</text></g>
+      <path class="fl-arr fl-ln" data-sp="2" d="M390,130 C420,130 420,114 452,114" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="2"><rect x="458" y="98" width="270" height="32" rx="6"/><text class="t" x="472" y="119">FILA</text><text class="s" x="560" y="119">o que já está rodando</text></g>
+      <path class="fl-arr fl-ln" data-sp="3" d="M390,130 C420,130 420,152 452,152" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="3"><rect x="458" y="136" width="270" height="32" rx="6"/><text class="t" x="472" y="157">GENTE</text><text class="s" x="560" y="157">quem perde o quê</text></g>
+      <path class="fl-arr fl-ln" data-sp="4" d="M390,130 C420,130 420,190 452,190" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="4"><rect x="458" y="174" width="270" height="32" rx="6"/><text class="t" x="472" y="195">FREIO</text><text class="s" x="560" y="195">o que dá errado</text></g>
+      <path class="fl-arr fl-ln" data-sp="5" d="M390,130 C420,130 420,228 452,228" marker-end="url(#mkfl)"/>
+      <g class="fl-sp" data-sp="5"><rect x="458" y="212" width="270" height="32" rx="6"/><text class="t" x="472" y="233">PRAZO</text><text class="s" x="560" y="233">dono e data</text></g>
+      <path class="fl-arr fl-back" d="M444,300 H396" marker-end="url(#mkfl)"/>
+      <g class="fl-box" data-fl="4"><rect x="10" y="272" width="380" height="50" rx="8"/><text class="t" x="200" y="293">A RESPOSTA, ASSINADA</text><text class="s" x="200" y="312" id="flSig">[Régua · a origem do número]</text></g>
     </svg>
   </div>
   <div class="caption" id="flCap" aria-live="polite"></div>
@@ -362,7 +387,7 @@ h1, h2, h3 { text-wrap: pretty; }
 <!-- 4 -->
 <section class="sec" id="s-voz" aria-labelledby="h-voz">
   <span class="eyebrow">Falar como o especialista</span>
-  <h2 id="h-voz">Quem distribui não descreve o especialista: vira ele</h2>
+  <h2 id="h-voz">O orquestrador não descreve o especialista: vira ele</h2>
   <p class="intro">Uma coisa é a secretária dizer “o jurídico provavelmente acharia arriscado”; outra é passar a ligação para o jurídico. Para o time fazer a segunda, basta uma frase na instrução, e é a que costuma faltar. <strong>Sem ela, o time devolve um relatório sobre o que seis pessoas achariam</strong>, que é o meio-termo com mais palavras.</p>
   <div class="seg" role="group" aria-label="Modo da resposta">
     <button type="button" data-vz="desc" aria-pressed="true">Descreve o especialista</button>
@@ -392,7 +417,7 @@ h1, h2, h3 { text-wrap: pretty; }
   <p class="hint">Até aqui o time mora numa conversa. Às vezes cada papel vira um <a href="./agente.html">agente</a>, um assistente que executa sozinho, com ferramentas, e entrega o resultado para o próximo. <strong>Aí cada passagem cobra:</strong> mais demora, mais custo e mais uma chance de o dado chegar torto. A regra é passar o dado o menor número de vezes: se um agente só, com um pedido bem escrito, dá conta, ele ganha do time.</p>
   <p class="hint">Esse arranjo tem nome, <strong>vários agentes</strong>: um que distribui e outros que executam. O argumento a favor é real: um agente só, com ferramentas demais, erra na hora de escolher qual usar, como um diretor com cem funcionários e nenhum chefe no meio. Dividir por área ajuda. Quem monta pela primeira vez costuma tropeçar em três defeitos, e os três aparecem logo nos primeiros testes.</p>
   <div class="three">
-    <div class="card"><span class="eyebrow">defeito 1</span><h3>Quem distribui faz o trabalho</h3><p>Em vez de passar o pedido adiante, ele mesmo escreve o e-mail. A instrução dele precisa dizer: você não executa, você passa.</p></div>
+    <div class="card"><span class="eyebrow">defeito 1</span><h3>O orquestrador faz o trabalho</h3><p>Em vez de passar o pedido adiante, ele mesmo escreve o e-mail. A instrução dele precisa dizer: você não executa, você passa.</p></div>
     <div class="card"><span class="eyebrow">defeito 2</span><h3>O pedido chega no lugar errado</h3><p>Quem executa procura o pedido num lugar, ele chegou em outro, e o trabalho sai sem ele. Teste cada um sozinho, com um pedido inventado, antes de ligar o time.</p></div>
     <div class="card"><span class="eyebrow">defeito 3</span><h3>Os dois ficam andando em círculo</h3><p>Um pede, o outro não tem a ferramenta para fazer e devolve, e o primeiro pede de novo. Antes de distribuir, confira se quem recebe tem como fazer.</p></div>
   </div>
@@ -431,18 +456,18 @@ Para cada um, diga se está lá e copie a linha onde está. Se faltar algum, dev
   <h2 id="h-escada">O segundo degrau, e ele só se sobe depois do primeiro</h2>
   <p class="intro">Plano de carreira não pula cargo: ninguém vira coordenador sem antes ter sido um bom analista. Do assistente para o time, muda o tamanho do problema e o custo de montar; o princípio é o mesmo. <strong>Quem ainda erra o pedido básico ganha, com o time, seis lugares novos para o mesmo erro aparecer.</strong> A escada inteira está em <a href="./ai-first.html">AI First</a> (pôr a IA no desenho do trabalho desde o começo, não só no fim).</p>
   <div class="scroll">
-    <svg viewBox="0 0 720 210" role="img" aria-labelledby="es-t" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
-      <title id="es-t">Escada de quatro degraus: um assistente com papel, um time com quem distribui, um método com fases e portões, uma empresa que confere a si mesma; o segundo degrau está destacado</title>
-      <g class="es-st"><rect x="10" y="150" width="170" height="50" rx="6"/><text class="t" x="22" y="170">DEGRAU 1</text><text class="b" x="22" y="190">Um assistente</text><text class="c" x="120" y="170">uma tarde</text></g>
-      <g class="es-st on"><rect x="185" y="105" width="170" height="95" rx="6"/><text class="t" x="197" y="125">DEGRAU 2</text><text class="b" x="197" y="147">Um time com</text><text class="b" x="197" y="165">quem distribui</text><text class="c" x="197" y="188">uma semana</text></g>
-      <g class="es-st"><rect x="360" y="60" width="170" height="140" rx="6"/><text class="t" x="372" y="80">DEGRAU 3</text><text class="b" x="372" y="102">Fases com portão</text><text class="b" x="372" y="120">entre elas</text><text class="c" x="372" y="188">semanas</text></g>
-      <g class="es-st"><rect x="535" y="15" width="175" height="185" rx="6"/><text class="t" x="547" y="35">DEGRAU 4</text><text class="b" x="547" y="57">Uma empresa que</text><text class="b" x="547" y="75">confere a si mesma</text><text class="c" x="547" y="188">meses, e nunca termina</text></g>
+    <svg viewBox="0 0 720 230" role="img" aria-labelledby="es-t" xmlns="http://www.w3.org/2000/svg" style="min-width:600px">
+      <title id="es-t">Escada de quatro degraus: um assistente com papel, um time com orquestrador, um método com fases e portões, uma empresa que confere a si mesma; o segundo degrau está destacado</title>
+      <g class="es-st"><rect x="10" y="140" width="170" height="80" rx="6"/><text class="t" x="24" y="162">DEGRAU 1</text><text class="b" x="24" y="184">Um assistente</text><text class="c" x="24" y="208">uma tarde</text></g>
+      <g class="es-st on"><rect x="185" y="100" width="170" height="120" rx="6"/><text class="t" x="199" y="122">DEGRAU 2</text><text class="b" x="199" y="144">Um time com</text><text class="b" x="199" y="162">orquestrador</text><text class="c" x="199" y="208">uma semana</text></g>
+      <g class="es-st"><rect x="360" y="60" width="170" height="160" rx="6"/><text class="t" x="374" y="82">DEGRAU 3</text><text class="b" x="374" y="104">Fases com portão</text><text class="b" x="374" y="122">entre elas</text><text class="c" x="374" y="208">semanas</text></g>
+      <g class="es-st"><rect x="535" y="20" width="175" height="200" rx="6"/><text class="t" x="549" y="42">DEGRAU 4</text><text class="b" x="549" y="64">Uma empresa que</text><text class="b" x="549" y="82">confere a si mesma</text><text class="c" x="549" y="208">meses, e nunca termina</text></g>
     </svg>
   </div>
   <div class="copy">
-    <div class="copy-head"><span class="eyebrow">A instrução de quem distribui · vai no campo de instruções; a base de papéis sobe como arquivo</span><button type="button" class="btn" data-copy="orqText">Copiar</button></div>
+    <div class="copy-head"><span class="eyebrow">A instrução do orquestrador · vai no campo de instruções; a base de papéis sobe como arquivo</span><button type="button" class="btn" data-copy="orqText">Copiar</button></div>
 <pre id="orqText"><b>## FUNÇÃO</b>
-Você é quem distribui. Não responde por conta própria: lê a pergunta, identifica qual papel do arquivo base deve responder, assume a voz dele e responde como ele.
+Você é o orquestrador deste time. Não responde por conta própria: lê a pergunta, identifica qual papel do arquivo base deve responder, assume a voz dele e responde como ele.
 
 <b>## PROTOCOLO, NESTA ORDEM</b>
 1. Leia o arquivo base de papéis antes de qualquer coisa.
@@ -460,7 +485,7 @@ Você é quem distribui. Não responde por conta própria: lê a pergunta, ident
 <b>## COMO COMEÇAR</b>
 Na primeira mensagem, liste os papéis em uma linha cada e pergunte qual decisão a pessoa quer revisar. Não comece respondendo.</pre>
   </div>
-  <p class="hint">Esta instrução é o esqueleto de quem distribui. Como montar o arquivo de papéis a partir de um material que você já tem está em <a href="./assistente--montar-time.html">montar um time de especialistas</a>.</p>
+  <p class="hint">Esta instrução é o esqueleto do orquestrador. Como montar o arquivo de papéis a partir de um material que você já tem está em <a href="./assistente--montar-time.html">montar um time de especialistas</a>.</p>
 </section>
 
 <!-- 9 -->
@@ -473,7 +498,7 @@ Na primeira mensagem, liste os papéis em uma linha cada e pergunte qual decisã
     <div class="take-card"><h3>Degrau, não atalho</h3><p>Primeiro um assistente que funciona. Sem uso toda semana, manter a base custa mais do que rende.</p></div>
   </div>
   <dl class="gloss">
-    <dt>Quem distribui</dt><dd>A instrução que lê a pergunta, escolhe o papel e empresta a voz dele. Também chamado de orquestrador ou roteador.</dd>
+    <dt>Orquestrador</dt><dd>A instrução que lê a pergunta, escolhe o papel e empresta a voz dele: quem distribui as perguntas. Também chamado de roteador.</dd>
     <dt>Base de papéis</dt><dd>O arquivo com um bloco por papel: escopo, tom, quando ativar, restrições e a pergunta característica.</dd>
     <dt>Tensão declarada</dt><dd>Dois papéis que discordam de propósito, escritos na base para que a discordância apareça em vez de virar média.</dd>
     <dt>Papel funcional</dt><dd>Um escopo com nome de função. Nunca uma pessoa real: imitar um nome traz autoridade emprestada a uma opinião que é sua.</dd>
@@ -568,21 +593,25 @@ Na primeira mensagem, liste os papéis em uma linha cada e pergunte qual decisã
 
   /* 3 · caminho */
   var FQ = [
-    { q: '“A mudança economiza 40 horas por mês.”', sp: 'RÉGUA · o dado', why: 'A pergunta cita tempo ganho: cai no escopo de quem pergunta pela origem do número.', ans: '“Quarenta horas medidas em quantos meses? Se é estimativa, a conta precisa estar na proposta.”' },
-    { q: '“Vou automatizar o envio das propostas.”', sp: 'FREIO · o risco', why: 'Automatizar uma etapa que chega ao cliente: cai em quem olha o que acontece quando dá errado.', ans: '“Se sair uma proposta com preço errado, quem percebe, e quantas já saíram até lá?”' },
-    { q: '“O técnico deixa de ser consultado.”', sp: 'GENTE · quem executa', why: 'A mudança tira trabalho de alguém: cai em quem procura o que essa pessoa perde de concreto.', ans: '“O que o técnico passa a fazer na segunda-feira, e o que ele perde com isso?”' }
+    { q: '“A mudança economiza 40 horas por mês.”', k: 0, sig: '[Régua · a origem do número]', why: 'A pergunta cita tempo ganho: cai no escopo de quem pergunta pela origem do número.', ans: '“Quarenta horas medidas em quantos meses? Se é estimativa, a conta precisa estar na proposta.”' },
+    { q: '“Vou automatizar o envio das propostas.”', k: 4, sig: '[Freio · o que dá errado]', why: 'Automatizar uma etapa que chega ao cliente: cai em quem olha o que acontece quando dá errado.', ans: '“Se sair uma proposta com preço errado, quem percebe, e quantas já saíram até lá?”' },
+    { q: '“O técnico deixa de ser consultado.”', k: 3, sig: '[Gente · quem perde o quê]', why: 'A mudança tira trabalho de alguém: cai em quem procura o que essa pessoa perde de concreto.', ans: '“O que o técnico passa a fazer na segunda-feira, e o que ele perde com isso?”' }
   ];
-  var fqCur = 0, flStep = 1, fqBtns = document.querySelectorAll('[data-fq]'), flBoxes = document.querySelectorAll('.fl-box');
+  var fqCur = 0, flStep = 1, fqBtns = document.querySelectorAll('[data-fq]'), flBoxes = document.querySelectorAll('.fl-box'), flSps = document.querySelectorAll('.fl-sp'), flLns = document.querySelectorAll('.fl-ln');
   var FL = [
     function (f) { return ['Você manda a pergunta', 'Do jeito que ela sai: ' + f.q + ' Ela é ambígua entre dois ou três assuntos, e está certo que seja.']; },
-    function () { return ['Quem distribui lê a base', 'Antes de qualquer resposta, ele consulta o arquivo com os seis escopos. Papel que não está lá não existe.']; },
-    function (f) { return ['Escolhe, e vira o especialista', f.why + ' Ele assume o tom, a pergunta característica e as restrições daquele papel.']; },
-    function (f) { return ['A resposta chega na voz certa', f.ans + ' Quem distribui some no meio da resposta.']; }
+    function () { return ['O orquestrador lê o arquivo do time', 'Ele não responde nada ainda. Antes de qualquer resposta, consulta o arquivo com os seis escopos, o tracejado à direita. Papel que não está lá não existe.']; },
+    function (f) { return ['Escolhe um dos seis, e vira ele', f.why + ' Ele assume o tom, a pergunta característica e as restrições daquele papel. Os outros cinco ficam quietos.']; },
+    function (f) { return ['A resposta volta assinada', f.ans + ' A assinatura diz qual papel respondeu; o orquestrador some no meio da resposta.']; }
   ];
   function renderFl() {
     var f = FQ[fqCur];
-    document.getElementById('flSp').textContent = f.sp.toUpperCase();
+    document.getElementById('flSig').textContent = f.sig;
     flBoxes.forEach(function (g) { g.classList.toggle('on', +g.dataset.fl === flStep); });
+    document.querySelector('.fl-base').classList.toggle('on', flStep === 2);
+    flSps.forEach(function (g) { g.classList.toggle('on', flStep >= 3 && +g.dataset.sp === f.k); });
+    flLns.forEach(function (p) { p.classList.toggle('on', flStep >= 3 && +p.dataset.sp === f.k); });
+    document.querySelector('.fl-back').classList.toggle('on', flStep === 4);
     var c = FL[flStep - 1](f);
     document.getElementById('flCap').innerHTML = '<h3>' + c[0] + '</h3><p>' + c[1] + '</p>';
   }
