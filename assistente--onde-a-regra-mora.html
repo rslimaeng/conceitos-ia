@@ -301,13 +301,13 @@ h1, h2, h3 { text-wrap: pretty; }
 <!-- 2 -->
 <section class="sec" id="s-lugares" aria-labelledby="h-lugares">
   <span class="eyebrow">Onde guardar cada coisa</span>
-  <h2 id="h-lugares">Sempre, às vezes, nunca, e uma quarta coluna que não é lugar</h2>
-  <p class="intro">No escritório, o regimento fica no mural, o manual de um processo fica na estante, e o extrato se puxa do banco na hora: ninguém pendura o extrato no mural. Com a IA, os nomes desses lugares mudam de ferramenta para ferramenta e de versão para versão. <strong>A coluna em que cada lugar cai não muda.</strong> Clique em qualquer um para ver o que guardar ali, quando é lido e quanto custa.</p>
+  <h2 id="h-lugares">Sempre, às vezes, na hora, e uma quarta coluna que não é lugar</h2>
+  <p class="intro">No escritório, o regimento fica no mural, o manual de um processo fica na estante, e o extrato se puxa do banco na hora: ninguém pendura o extrato no mural. Com a IA, os nomes desses lugares mudam de ferramenta para ferramenta e de versão para versão. <strong>A coluna em que cada lugar cai não muda.</strong> E duas palavras que parecem a mesma: <strong>regra é o que você quer que ela siga; instrução é o campo onde você escreve a regra.</strong> Clique em qualquer um para ver o que guardar ali, quando é lido e quanto custa.</p>
   <div class="mp" id="mpMap"></div>
   <div class="panel" id="mpPanel" aria-live="polite"></div>
-  <p class="hint">Um exemplo de como o nome muda: as instruções do trabalho são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
-  <div class="card"><h3>O perfil está por baixo de todas as outras camadas</h3><p>As instruções gerais da conta, o perfil e as preferências, entram em toda conversa de todos os trabalhos. <strong>Uma linha pensada para um trabalho só, escrita no perfil, aparece em todos.</strong></p></div>
-  <p class="punch">Nas três primeiras colunas, ela lê ou busca o que precisa. Na quarta, <em>ela não lê nada</em>: a tranca tira a decisão de quem lê.</p>
+  <p class="hint">Um exemplo de como o nome muda: as instruções do projeto são o campo de instruções de um Projeto no Claude, de um GPT personalizado no ChatGPT ou de um Gem no Gemini. Três nomes, a mesma coluna.</p>
+  <div class="card"><h3>O perfil está por baixo de todas as outras camadas</h3><p>As Instruções para o Claude, no Perfil da conta, entram em toda conversa de todos os trabalhos. <strong>Uma linha pensada para um trabalho só, escrita no perfil, aparece em todos.</strong></p></div>
+  <p class="punch">Nas três primeiras colunas, ela lê ou busca o que precisa. Na quarta, <em>ela não lê nada</em>: a tranca é um passo que uma pessoa faz, fora da IA. Por que ela existe está em <a href="#s-tranca">quando a regra vira trava</a>.</p>
 </section>
 
 <!-- 3 -->
@@ -323,7 +323,7 @@ h1, h2, h3 { text-wrap: pretty; }
 <section class="sec" id="s-pilha" aria-labelledby="h-pilha">
   <span class="eyebrow">Todas as regras valem juntas</span>
   <h2 id="h-pilha">As camadas não obedecem hierarquia: são lidas juntas</h2>
-  <p class="intro">O regulamento da empresa, a norma do setor e o combinado da equipe valem ao mesmo tempo; se dois dizem o contrário, cada um segue um, e ninguém sabe qual. Com a IA é igual: a regra da empresa, as suas preferências, as instruções do trabalho e o arquivo da pasta chegam coladas uma na outra. <strong>Enquanto falam de coisas diferentes, funciona. Quando duas falam da mesma coisa e discordam, ela obedece uma, e você não controla qual.</strong></p>
+  <p class="intro">O regulamento da empresa, a norma do setor e o combinado da equipe valem ao mesmo tempo; se dois dizem o contrário, cada um segue um, e ninguém sabe qual. Com a IA é igual: a regra da empresa, as suas preferências, as instruções do projeto e o arquivo da pasta chegam coladas uma na outra. <strong>Enquanto falam de coisas diferentes, funciona. Quando duas falam da mesma coisa e discordam, ela obedece uma, e você não controla qual.</strong></p>
   <div class="seg" role="group" aria-label="Estado das camadas">
     <button type="button" data-pl="ok" aria-pressed="true">Cada camada no seu assunto</button>
     <button type="button" data-pl="clash" aria-pressed="false">Duas camadas se contradizem</button>
@@ -437,7 +437,7 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
     <dt>Conector</dt><dd>Não é regra, é caminho: o acesso ao dado que mora em outro sistema e muda toda hora.</dd>
     <dt>Tranca</dt><dd>Uma trava fora da IA, que não lê nem decide: etapa assinada, botão com alçada, arquivo fora da pasta.</dd>
   </dl>
-  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes, nunca e fora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. O comportamento da memória do projeto foi visto na tela em agosto de 2026 e pode mudar com a versão. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
+  <p class="foot">Simplificação didática. Os nomes dos lugares variam entre ferramentas e versões; as colunas sempre, às vezes, na hora e fora continuam. As barras e a contagem de falhas mostram a forma, não uma medida. O comportamento da memória do projeto foi visto na tela em agosto de 2026 e pode mudar com a versão. Família <a href="./assistente.html">assistente</a>; irmãs: <a href="./assistente--resposta-ancorada.html">resposta ancorada</a>, <a href="./assistente--skill.html">skill</a>, <a href="./assistente--time.html">time de assistentes</a>.</p>
 </section>
 
 <!-- rodape -->
@@ -515,18 +515,18 @@ Na dúvida: marque "dúvida" e diga as duas leituras, em vez de escolher por mim
   /* 2 · mapa */
   var MP = [
     { c: 'Sempre', k: 'c1', items: [
-      { t: 'Instruções gerais', sm: 'perfil, preferências da conta', g: 'como você quer ser tratado, idioma, formato, o que nunca fazer em lugar nenhum', l: 'em toda conversa, de qualquer trabalho', e: 'você', cu: 'ocupa a mesa sempre, até na tarefa que não tem nada a ver. A regra de um trabalho só, posta aqui, atrapalha todos os outros.', ex: '“Responda em português do Brasil, sem introdução.”' },
-      { t: 'Instruções do trabalho', sm: 'projeto, arquivo de regras da pasta', g: 'a regra daquele trabalho, o vocabulário da casa, o que nunca fazer ali', l: 'no começo de toda conversa daquele projeto ou pasta', e: 'você, a partir do que corrigiu duas vezes', cu: 'encheu, diluiu: as linhas que importam somem entre as que valem só às vezes.', ex: '“Unidade é o local que executa, não a área interna.”' } ] },
+      { t: 'Instruções para o Claude', sm: 'no Perfil da conta', g: 'como você quer ser tratado, idioma, formato, o que nunca fazer em lugar nenhum', l: 'em toda conversa, de qualquer trabalho', e: 'você', cu: 'ocupa a mesa sempre, até na tarefa que não tem nada a ver. A regra de um trabalho só, posta aqui, atrapalha todos os outros.', ex: '“Responda em português do Brasil, sem introdução.”' },
+      { t: 'Instruções do projeto', sm: 'projeto, arquivo de regras da pasta', g: 'a regra daquele trabalho, o vocabulário da casa, o que nunca fazer ali', l: 'no começo de toda conversa daquele projeto ou pasta', e: 'você, a partir do que corrigiu duas vezes', cu: 'encheu, diluiu: as linhas que importam somem entre as que valem só às vezes.', ex: '“Unidade é o local que executa, não a área interna.”' } ] },
     { c: 'Às vezes', k: 'c2', items: [
       { t: 'Material de consulta', sm: 'documentos guardados', g: 'norma, tabela, manual, glossário: o que se consulta, não se decora', l: 'quando a pergunta tem a ver com ele', e: 'a casa, e você escolhe o que sobe', cu: 'muitos arquivos parecidos fazem ela achar o trecho vizinho. Ver resposta ancorada.', ex: 'a tabela de preços vigente' },
       { t: 'Procedimento', sm: 'skill, habilidade', g: 'o passo a passo de um tipo de tarefa, com as exceções no lugar', l: 'quando ela percebe, pela etiqueta, que a tarefa é aquela', e: 'você, a partir de uma tarefa já feita', cu: 'ela precisa reconhecer a tarefa: etiqueta vaga é procedimento perfeito que nunca abre.', ex: 'os doze passos do fechamento do mês' },
       { t: 'Comando', sm: 'o mesmo procedimento, chamado pelo nome', g: 'o mesmo conteúdo do procedimento, com outro gatilho', l: 'quando você chama', e: 'você', cu: 'você precisa lembrar de chamar. Vale quando errar o momento sai caro.', ex: '“gerar proposta”, que só sai quando você manda' } ] },
-    { c: 'Nunca · busca na hora', k: 'c3', items: [
+    { c: 'Na hora', k: 'c3', items: [
       { t: 'Conector', sm: 'o acesso a outro sistema', g: 'nada: é caminho até o dado que muda toda hora', l: 'enquanto estiver ligado, ocupa lugar mesmo sem uso', e: 'quem responde pela conta autoriza', cu: 'a porta aberta lê tudo que aquele sistema enxerga, não só o que você ia perguntar.', ex: 'a agenda de hoje, o saldo desta manhã' },
       { t: 'Anexo do dia', sm: 'o arquivo solto na conversa', g: 'o dado de hoje, que semana que vem está velho', l: 'só naquela conversa, enquanto ela durar', e: 'você', cu: 'subido como material fixo, vira duas planilhas, depois quatro, e ninguém sabe qual é a atual.', ex: 'a planilha de vendas desta semana' },
       { t: 'O pedido', sm: 'o que você digita', g: 'a tarefa da vez e o critério de sucesso dela', l: 'uma vez só, e some quando a conversa fecha', e: 'você, toda vez', cu: 'se você repete a mesma explicação toda vez, aquilo era regra e está no lugar errado.', ex: '“Feche o trimestre e me diga o que não entra no relatório.”' } ] },
     { c: 'Fora da IA', k: 'c4', items: [
-      { t: 'Tranca', sm: 'etapa, botão, pasta', g: 'nada que ela leia: uma trava no caminho', l: 'nunca: não passa por quem decide', e: 'a casa, com quem tem alçada', cu: 'toda tranca cobra uma etapa, uma assinatura, um atraso. Só vale para estrago que não se desfaz.', ex: '“conferido por”, em branco, no modelo do relatório' } ] }
+      { t: 'Tranca', sm: 'um passo que uma pessoa faz', g: 'nada: não é texto para a IA, é um passo que uma pessoa faz (assinar, aprovar, deixar o arquivo fora da pasta)', l: 'não é lido: a IA não participa desse passo', e: 'o responsável pelo processo', cu: 'toda tranca cobra uma etapa, uma assinatura, um atraso. Só vale para o erro que não se desfaz.', ex: '“conferido por”, em branco, no modelo do relatório' } ] }
   ];
   var mpEl = document.getElementById('mpMap'), mpPanel = document.getElementById('mpPanel'), mpBtns = [];
   MP.forEach(function (col) {
